@@ -1,0 +1,470 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="robots" content="noindex,nofollow">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>상품 관리</title>
+<style>
+  :root{
+    --bg:#fafafa; --surface:#ffffff; --surface-2:#f5f5f5; --field:#fcfcfc;
+    --fg:#212529; --muted:#878a99; --line:#ebebeb; --line-2:#efefef;
+    --accent:#245ec3; --accent-soft:#e9f0fb;
+    --pkg:#1f7a5a; --pkg-soft:#dcf1e9; --single:#8a5a20; --single-soft:#f6ead6;
+    --on:#1a7f4b; --off:#9aa4b2; --wire:#aeb6c1;
+    --note:#6a5acd;--note-soft:rgba(106,90,205,.12);
+    --font-display:"Space Grotesk","Pretendard",-apple-system,BlinkMacSystemFont,sans-serif;
+    --font-body:"Pretendard",-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo",sans-serif;
+    --mono:"SF Mono",ui-monospace,"Roboto Mono",Menlo,monospace;
+  }
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+    --bg:#0f1218; --surface:#181c24; --surface-2:#1f242e; --field:#141821;
+    --fg:#e8ebf0; --muted:#98a2b0; --line:#2b313c; --line-2:#242a34;
+    --accent:#5b8cff; --accent-soft:#1b2640;
+    --pkg:#4cc585; --pkg-soft:#12301f; --single:#d69a52; --single-soft:#2f2410;
+    --on:#4cc585; --off:#5c6675; --wire:#3a414d;--note:#a99cf0;--note-soft:rgba(169,156,240,.16); color-scheme:dark;
+  }}
+  :root[data-theme="dark"]{
+    --bg:#0f1218; --surface:#181c24; --surface-2:#1f242e; --field:#141821;
+    --fg:#e8ebf0; --muted:#98a2b0; --line:#2b313c; --line-2:#242a34;
+    --accent:#5b8cff; --accent-soft:#1b2640;
+    --pkg:#4cc585; --pkg-soft:#12301f; --single:#d69a52; --single-soft:#2f2410;
+    --on:#4cc585; --off:#5c6675; --wire:#3a414d;--note:#a99cf0;--note-soft:rgba(169,156,240,.16); color-scheme:dark;
+  }
+  *{box-sizing:border-box}
+  body{background:var(--bg);color:var(--fg);font-family:var(--font-body);line-height:1.45;font-size:13.5px;margin:0}
+  .app{max-width:1180px;margin:0 auto;padding:16px 16px 56px}
+  .crumb{font-size:12px;color:var(--muted)}.crumb b{color:var(--fg);font-weight:600}
+  .toolbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:8px 0 12px}
+  .toolbar h1{font-family:var(--font-display);font-size:20px;margin:0}
+  .toolbar .sp{flex:1;min-width:0}
+  .ex{font-size:10px;font-weight:700;color:var(--note);background:var(--note-soft);border-radius:5px;padding:1px 6px;font-family:var(--font-display)}
+  .btn{font-size:13px;border-radius:8px;padding:8px 13px;border:1px solid var(--line);background:var(--surface);color:var(--fg);cursor:pointer;font-family:var(--font-body)}
+  .btn.pri{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+  .btn.ghost{background:none}.btn.sm{padding:6px 11px;font-size:12.5px}
+
+  .ipt,.sel{background:var(--field);border:1px solid var(--line);border-radius:7px;padding:7px 9px;font-size:13px;color:var(--fg);font-family:var(--font-body)}
+  .ipt::placeholder{color:var(--wire)}
+  textarea.ipt{resize:vertical;min-height:52px;line-height:1.4;width:100%}
+  .filters{display:flex;gap:8px;flex-wrap:wrap;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px;margin-bottom:12px}
+  .filters .f{display:flex;flex-direction:column;gap:3px}
+  .filters label{font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;font-family:var(--font-display)}
+  .search{min-width:200px;flex:1}
+
+  .panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+  .panel .ph{display:flex;align-items:center;gap:8px;padding:11px 14px;border-bottom:1px solid var(--line);font-family:var(--font-display);font-weight:600;font-size:13px}
+  .panel .ph .cnt{color:var(--muted);font-weight:400;font-size:12px}.panel .ph .sp{flex:1}
+  .tblwrap{overflow-x:auto}
+  table{border-collapse:collapse;width:100%;font-size:12.5px;min-width:840px}
+  th,td{padding:9px 12px;text-align:left;border-bottom:1px solid var(--line-2);white-space:nowrap}
+  th{background:var(--surface-2);font-family:var(--font-display);font-weight:600;font-size:11px;color:var(--muted)}
+  td.r,th.r{text-align:right;font-variant-numeric:tabular-nums}
+  tr.row{cursor:pointer}tr.row:hover td{background:var(--surface-2)}
+  .code{font-family:var(--mono);font-size:12px}.ver{font-family:var(--mono);font-size:11px;color:var(--muted)}
+  .tag{font-size:10.5px;font-weight:700;border-radius:5px;padding:2px 7px}
+  .t-pkg{background:var(--pkg-soft);color:var(--pkg)}.t-single{background:var(--single-soft);color:var(--single)}
+  .st{display:inline-flex;align-items:center;gap:5px;font-size:12px}.st .d{width:7px;height:7px;border-radius:50%;background:var(--on)}.st.off{color:var(--muted)}.st.off .d{background:var(--off)}
+  .mini{font-size:11px;border:1px solid var(--line);background:var(--surface);border-radius:6px;padding:3px 8px;cursor:pointer;color:var(--fg)}
+
+  /* 드로어 */
+  .ov{position:fixed;inset:0;background:rgba(10,14,22,.42);opacity:0;pointer-events:none;transition:opacity .18s;z-index:40}
+  .ov.show{opacity:1;pointer-events:auto}
+  .drawer{position:fixed;top:0;right:0;height:100%;width:min(660px,96vw);background:var(--surface);border-left:1px solid var(--line);box-shadow:-16px 0 40px rgba(10,14,22,.18);transform:translateX(100%);transition:transform .22s cubic-bezier(.4,0,.2,1);z-index:41;display:flex;flex-direction:column}
+  .drawer.show{transform:none}
+  .drawer.two{width:min(460px,92vw);z-index:43}
+  .ov.two{z-index:42}
+  .dh{display:flex;align-items:center;gap:8px;padding:13px 16px;border-bottom:1px solid var(--line)}
+  .dh h3{font-family:var(--font-display);font-size:15px;margin:0}.dh .sp{flex:1}.dh .code{color:var(--muted)}
+  .verbadge{font-family:var(--mono);font-size:11px;font-weight:700;color:var(--accent);background:var(--accent-soft);border:1px solid var(--accent);border-radius:6px;padding:2px 7px}
+  .x{border:1px solid var(--line);background:var(--surface);border-radius:7px;width:30px;height:30px;cursor:pointer;color:var(--fg);font-size:14px}
+  .db{overflow:auto;padding:4px 16px 16px;flex:1}
+  .dfoot{display:flex;gap:8px;align-items:center;padding:12px 16px;border-top:1px solid var(--line);background:var(--surface-2)}
+  .dfoot .sp{flex:1}.vnote{font-size:11.5px;color:var(--muted)}
+
+  .sec{padding:14px 0;border-bottom:1px solid var(--line-2)}
+  .sec:last-child{border-bottom:none}
+  .sl{font-family:var(--font-display);font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin:0 0 10px;display:flex;align-items:center;gap:8px}
+  .fld{margin:0 0 11px}
+  .fl{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.03em;font-family:var(--font-display);margin:0 0 5px}
+  .fl .req{color:var(--accent)}
+  .fld .ipt,.fld .sel{width:100%}
+  .row3{display:flex;gap:6px}.row3 .ipt{flex:1;min-width:70px}
+  .won{display:flex;align-items:center;gap:6px}.won .ipt{max-width:170px;text-align:right}.won .u{font-size:12px;color:var(--muted)}
+  .inline{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .toggle{display:inline-flex;align-items:center;gap:7px;font-size:12.5px}
+  .sw{width:34px;height:19px;border-radius:20px;background:var(--on);position:relative}.sw::after{content:"";position:absolute;top:2px;right:2px;width:15px;height:15px;border-radius:50%;background:#fff}
+  .dtrow{display:flex;gap:6px;align-items:center;flex-wrap:wrap}.dtrow .ipt{width:auto;flex:1;min-width:110px}.dtrow .t{color:var(--muted)}
+  .lockval{background:var(--surface-2);border:1px dashed var(--line);border-radius:8px;padding:8px 11px;font-size:12.5px;color:var(--muted);font-weight:600}
+  .autoval{background:var(--surface-2);border:1px dashed var(--line);border-radius:8px;padding:8px 11px;font-size:12.5px;color:var(--muted)}
+  .autoval.code{font-family:var(--mono)}
+  .ipt:disabled,.sel:disabled{background:var(--surface-2);color:var(--muted);border-style:dashed;-webkit-text-fill-color:var(--muted);opacity:1;cursor:not-allowed}
+
+  /* 구성 PSU */
+  .subtbl{width:100%;border-collapse:collapse;font-size:12.5px;border:1px solid var(--line-2);border-radius:10px;overflow:hidden;min-width:0}
+  .subtbl th,.subtbl td{padding:8px 10px;border-bottom:1px solid var(--line-2);text-align:left;white-space:nowrap}
+  .subtbl th{background:var(--surface-2);font-size:10.5px;color:var(--muted);font-family:var(--font-display);text-transform:uppercase}
+  .subtbl td.r{text-align:right}
+  .subtbl tr:last-child td{border-bottom:none}
+  .rowbtns{display:flex;gap:8px;margin-top:8px;align-items:center}
+
+  /* 프로모션 읽기 */
+  .prow{display:flex;align-items:center;gap:8px;padding:8px 11px;border:1px solid var(--line-2);border-radius:8px;background:var(--field);font-size:12.5px;margin-bottom:6px}
+  .prow .pt{font-size:10px;font-weight:600;border-radius:5px;padding:1px 6px;background:var(--accent-soft);color:var(--accent)}.prow .sp{flex:1}.prow .amt{color:var(--muted)}
+
+  /* 이미지 */
+  .imgtype{border:1px solid var(--line-2);border-radius:10px;padding:9px 11px;margin-bottom:8px}
+  .imgtype .it-h{font-size:12px;font-weight:600;margin-bottom:7px;display:flex;align-items:center;gap:6px}
+  .imgset{display:flex;gap:8px;flex-wrap:wrap}
+  .thumb{width:56px;height:56px;border-radius:8px;background:var(--surface-2);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:18px;position:relative}
+  .thumb .del{position:absolute;top:-6px;right:-6px;width:18px;height:18px;border-radius:50%;background:var(--surface);border:1px solid var(--line);font-size:11px;line-height:1;cursor:pointer;color:var(--muted)}
+  .addimg{width:56px;height:56px;border-radius:8px;border:1.5px dashed var(--line);background:var(--field);display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:11px;color:var(--muted);cursor:pointer}
+  .addimg:hover{border-color:var(--accent);color:var(--accent)}
+  .addimg .p{font-size:16px;line-height:1}
+
+  /* 메타 */
+  .metagrid{display:grid;grid-template-columns:1fr 1fr;gap:8px 14px;background:var(--surface-2);border:1px solid var(--line-2);border-radius:10px;padding:11px 13px}
+  .metagrid>div{display:flex;flex-direction:column;gap:2px}
+  .metagrid .mk{font-size:10.5px;color:var(--muted);text-transform:uppercase;font-family:var(--font-display)}
+  .metagrid .mv{font-size:12.5px;font-weight:600}.metagrid .mv.mono{font-family:var(--mono)}
+  .vhist{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}.vh{border:1px solid var(--line);border-radius:8px;padding:6px 10px;font-size:12px;background:var(--field)}
+  .vh.cur{border-color:var(--accent);background:var(--accent-soft);color:var(--accent);font-weight:600}.vh .mono{font-family:var(--mono)}
+
+  /* 안내(보라) */
+  .note{display:flex;gap:8px;background:var(--note-soft);border:1px solid var(--note);border-radius:10px;padding:10px 13px;font-size:12px;color:var(--fg);margin:0 0 12px}
+  .note::before{content:"안내";font-family:var(--font-display);font-size:9.5px;font-weight:700;color:#fff;background:var(--note);border-radius:5px;padding:2px 6px;height:fit-content;letter-spacing:.03em}
+  .kept{background:var(--note-soft);border:1px dashed var(--note);border-radius:9px;padding:9px 12px;font-size:12px;color:var(--fg)}
+  .kept .kh{font-family:var(--font-display);font-size:10px;font-weight:700;color:var(--note);letter-spacing:.03em;margin-bottom:4px}
+  .memo{background:var(--note-soft);border:1px solid var(--note);border-radius:11px;padding:11px 13px;margin-top:6px;font-size:12px}
+  .memo .mh{font-family:var(--font-display);font-weight:700;font-size:11px;color:var(--note);margin:0 0 6px;display:flex;gap:6px;align-items:center}
+  .memo .mh::before{content:"안내";font-size:9px;background:var(--note);color:#fff;border-radius:5px;padding:2px 6px}
+  .memo .mh .s{font-family:var(--font-body);font-weight:400;color:var(--muted);font-size:10.5px}
+  .memo ul{margin:0;padding-left:16px}.memo li{margin:3px 0}.memo b{color:var(--fg)}
+</style>
+
+<div class="app">
+  <div class="crumb">판매 관리 · <b>상품 관리</b></div>
+  <div class="toolbar">
+    <h1>상품 관리</h1><span class="ex">예시 데이터</span>
+    <span class="sp"></span>
+    <button class="btn pri" onclick="openProd(null)">+ 상품 등록</button>
+  </div>
+
+  <div class="note"><span>상품은 PSU를 묶어 파는 단위입니다. <b>구성·가격·노출·판매조건</b>을 정의하며, 가격은 다이나믹 프라이싱 연동, 자원·한정판매는 재고, 프로모션은 프로모션 관리 소관입니다. 데이터는 예시입니다.</span></div>
+
+  <div class="filters">
+    <div class="f search"><label>검색</label><input class="ipt" placeholder="상품명 · 코드"></div>
+    <div class="f"><label>유형</label><select class="sel"><option>전체</option><option>패키지</option><option>단품</option></select></div>
+    <div class="f"><label>카테고리</label><select class="sel"><option>전체</option><option>레이스</option><option>실내 액티비티</option><option>이용권</option></select></div>
+    <div class="f"><label>상태</label><select class="sel"><option>전체</option><option>활성</option><option>판매중지</option></select></div>
+  </div>
+
+  <div class="panel">
+    <div class="ph">상품 목록 <span class="cnt">· 6건</span><span class="sp"></span><span class="cnt">정렬: 수정일</span></div>
+    <div class="tblwrap"><table>
+      <thead><tr><th>상태</th><th>상품 코드</th><th>상품명</th><th>유형</th><th>카테고리</th><th class="r">구성</th><th class="r">정가</th><th>버전</th><th>수정일시</th><th></th></tr></thead>
+      <tbody id="rows"></tbody>
+    </table></div>
+  </div>
+</div>
+
+<!-- 상품 드로어 -->
+<div class="ov" id="ov" onclick="closeProd()"></div>
+<aside class="drawer" id="dw">
+  <div class="dh"><h3 id="dwTitle">상품 편집</h3><span class="code" id="dwCode"></span><span class="verbadge" id="dwVer">v1</span><span class="sp"></span><button class="x" onclick="closeProd()">✕</button></div>
+  <div class="db">
+
+    <div class="sec">
+      <p class="sl">기본 정보</p>
+      <div class="fld"><div class="fl">상품명 <span class="req">*</span></div><div class="row3"><input class="ipt" id="fName" placeholder="KR"><input class="ipt" placeholder="EN"><input class="ipt" placeholder="中"></div></div>
+      <div class="fld"><div class="fl">상품 유형 <span class="req">*</span></div>
+        <select class="sel" id="fType"><option value="패키지">패키지 (여러 PSU 묶음)</option><option value="단품">단품 (단일 PSU)</option></select>
+        <div class="lockval" id="typeRO" hidden></div>
+      </div>
+      <div class="fld"><div class="fl">카테고리</div>
+        <div class="inline"><select class="sel" id="fCat" style="flex:1"></select><button class="btn ghost sm" onclick="addCat()">+ 카테고리</button></div>
+      </div>
+      <div class="fld"><div class="fl">상품 코드</div><div class="autoval code" id="fCode">ICN-PKG-RACE</div></div>
+      <div class="fld"><div class="fl">상태</div><span class="toggle"><span class="sw"></span> 활성</span></div>
+    </div>
+
+    <div class="sec">
+      <p class="sl">상품 구성 (PSU)</p>
+      <div class="tblwrap"><table class="subtbl">
+        <thead><tr><th>PSU 코드</th><th>노출명</th><th>JAM 유형</th><th class="r">제공 수량</th><th>버전</th><th></th></tr></thead>
+        <tbody id="psuBody"></tbody>
+      </table></div>
+      <div class="rowbtns"><button class="btn ghost sm" id="addPsuBtn" onclick="openPick()">+ PSU 추가</button><span style="flex:1"></span><span class="ver" id="psuSum"></span></div>
+    </div>
+
+    <div class="sec">
+      <p class="sl">가격</p>
+      <div class="fld"><div class="fl">정가 (기준가) <span class="req">*</span></div><div class="won"><input class="ipt" id="fPrice" value="64,000"><span class="u">원</span></div></div>
+      <div class="kept">
+        <div class="kh">다이나믹 프라이싱 적용가 — 표시 영역 (연동 예정 · 킵)</div>
+        <div class="inline" style="gap:14px;color:var(--muted)">평시 <b style="color:var(--fg)">64,000</b> · 성수 <b style="color:var(--fg)">73,600</b> · 비수 <b style="color:var(--fg)">54,400</b></div>
+      </div>
+    </div>
+
+    <div class="sec">
+      <p class="sl">적용 프로모션 · 읽기 전용</p>
+      <div class="prow"><span class="pt">신분</span> 국가유공자·장애인 할인<span class="sp"></span><span class="amt">−15%</span></div>
+      <div class="prow"><span class="pt">지역</span> 인천시민 할인<span class="sp"></span><span class="amt">−20%</span></div>
+    </div>
+
+    <div class="sec">
+      <p class="sl">노출 · 이미지 <span class="ver">공통(앱·키오스크)</span></p>
+      <div class="fld"><div class="fl">노출명 <span class="req">*</span></div><div class="row3"><input class="ipt" value="981 레이스 풀패키지" placeholder="KR"><input class="ipt" placeholder="EN"><input class="ipt" placeholder="中"></div></div>
+      <div class="fld"><div class="fl">노출 설명</div><textarea class="ipt" placeholder="상품 상세 설명(다국어)">레이스 2회 + 실내 액티비티를 한 번에</textarea></div>
+      <div class="fld"><div class="fl">이미지 · 구성별 다중 등록</div>
+        <div id="imgTypes"></div>
+      </div>
+    </div>
+
+    <div class="sec">
+      <p class="sl">판매 조건</p>
+      <div class="fld"><div class="fl">노출 기간</div><div class="dtrow"><input class="ipt" value="2026-11-01"><input class="ipt" value="00:00" style="max-width:80px"><span class="t">~</span><input class="ipt" value="상시"></div></div>
+      <div class="fld"><div class="fl">판매 기간</div><div class="dtrow"><input class="ipt" value="2026-11-01"><input class="ipt" value="09:00" style="max-width:80px"><span class="t">~</span><input class="ipt" value="상시"></div></div>
+      <div class="fld"><div class="fl">판매 채널</div><div class="inline"><label class="toggle"><input type="checkbox" checked> 앱</label><label class="toggle"><input type="checkbox" checked> 키오스크</label><label class="toggle"><input type="checkbox" checked> 마이리얼트립</label><label class="toggle"><input type="checkbox"> 클룩</label></div></div>
+      <div class="fld"><div class="fl">OTA 연동 코드 <span class="ver">외부 매핑</span></div>
+        <div class="tblwrap"><table class="subtbl">
+          <thead><tr><th>외부 채널</th><th>외부 채널 코드</th><th>외부 상품 ID</th><th></th></tr></thead>
+          <tbody id="otaBody">
+            <tr><td>마이리얼트립</td><td class="code">MRT</td><td class="code">race_full_01</td><td><button class="mini" onclick="this.closest('tr').remove()">제거</button></td></tr>
+            <tr><td>클룩</td><td class="code">KLK</td><td class="code">981-RACE-01</td><td><button class="mini" onclick="this.closest('tr').remove()">제거</button></td></tr>
+          </tbody>
+        </table></div>
+        <div class="rowbtns"><button class="btn ghost sm" onclick="addOta()">+ 외부 상품 매핑</button><span class="ver" style="margin-left:8px">같은 외부 상품을 여러 ICN 상품에 중복 연결 금지</span></div>
+      </div>
+      <div class="fld"><div class="fl">판매 제외 기간</div>
+        <div class="tblwrap"><table class="subtbl">
+          <thead><tr><th>구분</th><th>기간</th><th></th></tr></thead>
+          <tbody id="excBody">
+            <tr><td>날짜별</td><td>2026-12-25 (종일)</td><td><button class="mini" onclick="this.closest('tr').remove()">제거</button></td></tr>
+            <tr><td>시간별</td><td>2026-11-15 14:00 ~ 16:00</td><td><button class="mini" onclick="this.closest('tr').remove()">제거</button></td></tr>
+          </tbody>
+        </table></div>
+        <div class="rowbtns"><button class="btn ghost sm" onclick="addExc()">+ 판매 제외 추가</button><span class="ver" style="margin-left:8px">날짜별 · 시간별 지정 가능</span></div>
+      </div>
+      <div class="fld"><div class="fl">한정 판매 <span class="ver">재고 소관 · 표시</span></div>
+        <div class="kept"><div class="kh">재고에서 설정된 한정 판매 정보 (표시만 · 킵 — 배치 위치 검토 필요)</div><div style="color:var(--muted)">현재 한정 판매 설정 없음</div></div>
+      </div>
+    </div>
+
+    <div class="sec">
+      <p class="sl">버전 · 등록 정보</p>
+      <div class="metagrid">
+        <div><span class="mk">현재 버전</span><span class="mv mono" id="mVer">v3</span></div>
+        <div><span class="mk">등록자</span><span class="mv" id="mBy">옵집사</span></div>
+        <div><span class="mk">등록일</span><span class="mv" id="mCr">2026-10-02</span></div>
+        <div><span class="mk">최종 수정</span><span class="mv" id="mUp">2026-10-20 14:10</span></div>
+      </div>
+      <div class="vhist" id="vhist"></div>
+    </div>
+
+    <div class="memo">
+      <div class="mh">안내 <span class="s">— 구현 시 제외 가능</span></div>
+      <ul>
+        <li>상품명은 내부 관리용 · 고객 노출명은 '노출·이미지'에서 관리</li>
+        <li>가격은 <b>정가만 입력</b> · 실제 판매가는 <b>다이나믹 프라이싱</b> 연동값(표시 영역, 킵)</li>
+        <li>프로모션은 <b>프로모션 관리</b>에서 연결 · 여기선 적용 목록만 표시</li>
+        <li>자원 연결·<b>한정 판매</b>는 <b>재고 관리</b> 소관 (여기 표시 위치는 검토 중 · 킵)</li>
+        <li>OTA 노출은 현재 범위에서 제외 · 공통(앱·키오스크)만</li>
+        <li>상품 코드는 <b>저장 시 자동 생성되는 유니크 키</b> · 수기 입력 아님</li>
+        <li><b>수정 시 코드·유형·구성(PSU)은 변경 불가</b> · 이름·가격·판매기간만 수정, 저장 시 버전 +1</li>
+      </ul>
+    </div>
+  </div>
+  <div class="dfoot"><span class="vnote">저장 시 버전 +1 · 기존 주문 금액 불변</span><span class="sp"></span><button class="btn ghost sm" onclick="closeProd()">취소</button><button class="btn pri sm" onclick="closeProd()">저장</button></div>
+</aside>
+
+<!-- PSU 추가 피커 -->
+<div class="ov two" id="ov2" onclick="closePick()"></div>
+<aside class="drawer two" id="pick">
+  <div class="dh"><h3>PSU 추가</h3><span class="sp"></span><button class="x" onclick="closePick()">✕</button></div>
+  <div class="db">
+    <input class="ipt" id="pickSearch" placeholder="PSU 코드·이름 검색" style="width:100%;margin-bottom:10px" oninput="renderPick()">
+    <div id="pickList"></div>
+  </div>
+  <div class="dfoot"><span class="vnote" id="pickCnt">0개 선택</span><span class="sp"></span><button class="btn ghost sm" onclick="closePick()">취소</button><button class="btn pri sm" onclick="addPicked()">추가</button></div>
+</aside>
+
+<script>
+/* ===== 데이터 ===== */
+var CATS=['레이스','실내 액티비티','이용권'];
+var IMG_TYPES=['아이콘','뱃지','썸네일','태그','콘텐츠'];
+var PSU_LIB=[
+  {code:'RACE-DRV',name:'레이스 운전',jt:'레이스 JAM',ver:3},
+  {code:'RACE-JR',name:'주니어 운전',jt:'레이스 JAM',ver:1},
+  {code:'MST-RACE',name:'마스터 레이스',jt:'마스터 레이스 JAM',ver:1},
+  {code:'ARENA',name:'아레나',jt:'일반 JAM',ver:2},
+  {code:'VECTO',name:'벡토',jt:'일반 JAM',ver:1},
+  {code:'VISION-3',name:'비전 3회권',jt:'일반 JAM',ver:1},
+  {code:'SPORTSLAB',name:'스포츠랩',jt:'일반 JAM',ver:1},
+  {code:'FNB-VCH',name:'F&B 교환',jt:'—',ver:1}
+];
+var PRODUCTS=[
+  {code:'ICN-PKG-RACE',name:'레이스 포함 패키지',type:'패키지',cat:'레이스',price:'64,000',ver:3,by:'정산이',cr:'2026-10-02',up:'2026-10-20 14:10',st:'on',
+   psus:[{code:'RACE-DRV',qty:2},{code:'ARENA',qty:1}]},
+  {code:'ICN-PKG-INDOOR',name:'실내 패키지',type:'패키지',cat:'실내 액티비티',price:'44,000',ver:2,by:'파수꾼',cr:'2026-10-05',up:'2026-10-18 11:20',st:'on',
+   psus:[{code:'ARENA',qty:1},{code:'VECTO',qty:1}]},
+  {code:'ICN-SGL-RACE',name:'레이스 단품',type:'단품',cat:'레이스',price:'25,000',ver:1,by:'옵집사',cr:'2026-10-08',up:'2026-10-08 09:30',st:'on',
+   psus:[{code:'RACE-DRV',qty:1}]},
+  {code:'ICN-SGL-JR',name:'주니어 레이스',type:'단품',cat:'레이스',price:'18,000',ver:1,by:'정산이',cr:'2026-10-10',up:'2026-10-10 10:00',st:'on',
+   psus:[{code:'RACE-JR',qty:1}]},
+  {code:'ICN-TKT-VISION',name:'비전 3회권 상품',type:'단품',cat:'이용권',price:'9,000',ver:1,by:'파수꾼',cr:'2026-10-12',up:'2026-10-12 15:40',st:'on',
+   psus:[{code:'VISION-3',qty:1}]},
+  {code:'ICN-PKG-MASTER',name:'포뮬러 G (마스터)',type:'패키지',cat:'레이스',price:'미정',ver:1,by:'옵집사',cr:'2026-10-22',up:'2026-10-22 17:00',st:'off',
+   psus:[{code:'MST-RACE',qty:1}]}
+];
+function psuOf(code){for(var i=0;i<PSU_LIB.length;i++)if(PSU_LIB[i].code===code)return PSU_LIB[i];return{code:code,name:code,jt:'—',ver:1};}
+
+/* ===== 목록 렌더 ===== */
+var rows=document.getElementById('rows');
+PRODUCTS.forEach(function(p){
+  var tr=document.createElement('tr'); tr.className='row'; tr._p=p;
+  tr.innerHTML=
+    '<td><span class="st '+(p.st==='on'?'on':'off')+'"><span class="d"></span>'+(p.st==='on'?'활성':'판매중지')+'</span></td>'+
+    '<td class="code">'+p.code+'</td>'+
+    '<td>'+p.name+'</td>'+
+    '<td>'+(p.type==='패키지'?'<span class="tag t-pkg">패키지</span>':'<span class="tag t-single">단품</span>')+'</td>'+
+    '<td>'+p.cat+'</td>'+
+    '<td class="r">'+p.psus.length+'</td>'+
+    '<td class="r">'+p.price+'</td>'+
+    '<td class="ver">v'+p.ver+'</td>'+
+    '<td class="ver">'+p.up+'</td>'+
+    '<td><button class="mini">편집</button></td>';
+  tr.addEventListener('click',function(e){openProd(p)});
+  rows.appendChild(tr);
+});
+
+/* ===== 카테고리 ===== */
+function renderCats(sel){
+  var s=document.getElementById('fCat'); s.innerHTML='';
+  CATS.forEach(function(c){var o=document.createElement('option');o.textContent=c;s.appendChild(o);});
+  if(sel) s.value=sel;
+}
+function addCat(){
+  var n=prompt('추가할 카테고리 이름'); if(!n) return; n=n.trim(); if(!n) return;
+  if(CATS.indexOf(n)<0) CATS.push(n);
+  renderCats(n);
+}
+
+/* ===== 이미지(구성별 다중) ===== */
+function renderImgTypes(){
+  var wrap=document.getElementById('imgTypes'); wrap.innerHTML='';
+  IMG_TYPES.forEach(function(t){
+    var box=document.createElement('div'); box.className='imgtype';
+    box.innerHTML='<div class="it-h">'+t+' <span class="ver">여러 장 등록 가능</span></div><div class="imgset"></div>';
+    var set=box.querySelector('.imgset');
+    var add=document.createElement('div'); add.className='addimg'; add.innerHTML='<span class="p">+</span>추가';
+    add.onclick=function(){
+      var th=document.createElement('div'); th.className='thumb'; th.innerHTML='🖼<span class="del" onclick="this.parentElement.remove()">✕</span>';
+      set.insertBefore(th,add);
+    };
+    set.appendChild(add);
+    wrap.appendChild(box);
+  });
+}
+
+/* ===== 구성 PSU 테이블 ===== */
+function renderPsuRows(psus,locked){
+  var b=document.getElementById('psuBody'); b.innerHTML='';
+  psus.forEach(function(x){
+    var p=psuOf(x.code), tr=document.createElement('tr');
+    tr.innerHTML='<td class="code">'+p.code+'</td><td>'+p.name+'</td><td>'+p.jt+'</td>'+
+      '<td class="r">'+x.qty+'</td><td class="ver">v'+p.ver+'</td>'+
+      '<td>'+(locked?'<span class="ver">잠금</span>':'<button class="mini" onclick="this.closest(\'tr\').remove();updSum()">제거</button>')+'</td>';
+    b.appendChild(tr);
+  });
+  updSum();
+}
+function updSum(){
+  var n=document.getElementById('psuBody').children.length;
+  document.getElementById('psuSum').textContent='구성 PSU '+n+'개';
+}
+
+/* ===== PSU 추가 피커 ===== */
+function openPick(){renderPick();document.getElementById('ov2').classList.add('show');document.getElementById('pick').classList.add('show');}
+function closePick(){document.getElementById('ov2').classList.remove('show');document.getElementById('pick').classList.remove('show');}
+function renderPick(){
+  var q=(document.getElementById('pickSearch').value||'').toLowerCase(), el=document.getElementById('pickList');
+  el.innerHTML=PSU_LIB.filter(function(p){return (p.code+p.name).toLowerCase().indexOf(q)>=0;}).map(function(p){
+    return '<label class="prow" style="cursor:pointer"><input type="checkbox" value="'+p.code+'" onchange="pickCnt()"> <b style="margin-left:4px">'+p.name+'</b> <span class="code" style="color:var(--muted)">'+p.code+'</span><span class="sp"></span><span class="amt">'+p.jt+' · v'+p.ver+'</span></label>';
+  }).join('');
+  pickCnt();
+}
+function pickCnt(){var n=document.querySelectorAll('#pickList input:checked').length;document.getElementById('pickCnt').textContent=n+'개 선택';}
+function addPicked(){
+  var b=document.getElementById('psuBody');
+  document.querySelectorAll('#pickList input:checked').forEach(function(c){
+    var p=psuOf(c.value), tr=document.createElement('tr');
+    tr.innerHTML='<td class="code">'+p.code+'</td><td>'+p.name+'</td><td>'+p.jt+'</td>'+
+      '<td class="r">1</td><td class="ver">v'+p.ver+'</td>'+
+      '<td><button class="mini" onclick="this.closest(\'tr\').remove();updSum()">제거</button></td>';
+    b.appendChild(tr);
+  });
+  updSum(); closePick();
+}
+
+/* ===== OTA 연동 코드 ===== */
+function addOta(){
+  var b=document.getElementById('otaBody'), tr=document.createElement('tr');
+  tr.innerHTML='<td><select class="sel" style="width:auto"><option>마이리얼트립</option><option>클룩</option></select></td>'+
+    '<td><input class="ipt code" placeholder="채널 코드" style="max-width:120px"></td>'+
+    '<td><input class="ipt code" placeholder="외부 상품 ID" style="max-width:160px"></td>'+
+    '<td><button class="mini" onclick="this.closest(\'tr\').remove()">제거</button></td>';
+  b.appendChild(tr);
+}
+
+/* ===== 판매 제외 기간 ===== */
+function addExc(){
+  var b=document.getElementById('excBody'), tr=document.createElement('tr');
+  tr.innerHTML='<td><select class="sel" style="width:auto"><option>날짜별</option><option>시간별</option></select></td>'+
+    '<td><input class="ipt" placeholder="예: 2026-12-25 (종일) / 14:00~16:00" style="min-width:220px"></td>'+
+    '<td><button class="mini" onclick="this.closest(\'tr\').remove()">제거</button></td>';
+  b.appendChild(tr);
+}
+
+/* ===== 수정 잠금 ===== */
+function lockDef(lock,type){
+  document.getElementById('fType').hidden=lock;
+  var ro=document.getElementById('typeRO'); ro.hidden=!lock; if(lock) ro.textContent=type+'  ·  변경 불가';
+  document.getElementById('addPsuBtn').style.display=lock?'none':'';
+}
+
+/* ===== 열기/닫기 ===== */
+function openProd(p){
+  renderImgTypes();
+  if(p){
+    document.getElementById('dwTitle').textContent='상품 편집';
+    document.getElementById('dwCode').textContent='· '+p.code;
+    document.getElementById('dwVer').textContent='v'+p.ver;
+    document.getElementById('fName').value=p.name;
+    document.getElementById('fType').value=p.type;
+    document.getElementById('fCode').textContent=p.code;
+    document.getElementById('fPrice').value=p.price;
+    renderCats(p.cat);
+    renderPsuRows(p.psus,true);
+    lockDef(true,p.type);
+    document.getElementById('mVer').textContent='v'+p.ver;
+    document.getElementById('mBy').textContent=p.by;
+    document.getElementById('mCr').textContent=p.cr;
+    document.getElementById('mUp').textContent=p.up;
+    var vh=document.getElementById('vhist'),h='';for(var i=1;i<=p.ver;i++)h+='<span class="vh'+(i===p.ver?' cur':'')+'"><span class="mono">v'+i+'</span>'+(i===p.ver?' 적용중':'')+'</span>';vh.innerHTML=h;
+  }else{
+    document.getElementById('dwTitle').textContent='상품 등록';
+    document.getElementById('dwCode').textContent='· 신규';
+    document.getElementById('dwVer').textContent='신규';
+    document.getElementById('fName').value='';
+    document.getElementById('fType').value='패키지';
+    document.getElementById('fCode').textContent='저장 시 자동 생성 · 유니크 키';
+    document.getElementById('fPrice').value='';
+    renderCats(CATS[0]);
+    renderPsuRows([],false);
+    lockDef(false,'패키지');
+    document.getElementById('mVer').textContent='—';document.getElementById('mBy').textContent='정산이';document.getElementById('mCr').textContent='저장 시 기록';document.getElementById('mUp').textContent='—';
+    document.getElementById('vhist').innerHTML='';
+  }
+  document.getElementById('ov').classList.add('show');
+  document.getElementById('dw').classList.add('show');
+}
+function closeProd(){document.getElementById('ov').classList.remove('show');document.getElementById('dw').classList.remove('show');}
+</script>

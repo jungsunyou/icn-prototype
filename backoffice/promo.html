@@ -1,0 +1,838 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="robots" content="noindex,nofollow">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>프로모션 관리</title>
+<style>
+  /* 레이아웃: 프로모션(정책) / 쿠폰(발급·사용) 분리 · 목록+드로어 · 상품 피커 */
+  :root{
+    --bg:#fafafa; --surface:#ffffff; --surface-2:#f5f5f5; --field:#fcfcfc;
+    --fg:#212529; --muted:#878a99; --line:#ebebeb; --line-2:#efefef;
+    --accent:#245ec3; --accent-soft:#e9f0fb;
+    --gen:#1f7a5a; --gen-soft:#dcf1e9; --id:#8a5a20; --id-soft:#f6ead6; --exc:#7a3f9a; --exc-soft:#f0e6f7;
+    --on:#1a7f4b; --on-soft:#dcf1e9; --off:#9aa4b2; --used:#878a99; --used-soft:#e9edf1; --cancel:#b3701a; --cancel-soft:#fbeed6; --wait:#245ec3; --wait-soft:#e9f0fb;
+    --wire:#aeb6c1; --note:#6a5acd; --note-soft:rgba(106,90,205,.12); --red:#da222b;
+    --font-display:"Space Grotesk","Pretendard",-apple-system,BlinkMacSystemFont,sans-serif;
+    --font-body:"Pretendard",-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo",sans-serif;
+    --mono:"SF Mono",ui-monospace,"Roboto Mono",Menlo,monospace;
+  }
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+    --bg:#0f1218; --surface:#181c24; --surface-2:#1f242e; --field:#141821;
+    --fg:#e8ebf0; --muted:#98a2b0; --line:#2b313c; --line-2:#242a34;
+    --accent:#5b8cff; --accent-soft:#1b2640;
+    --gen:#4cc585; --gen-soft:#12301f; --id:#d69a52; --id-soft:#2f2410; --exc:#c08fe0; --exc-soft:#2b1f36;
+    --on:#4cc585; --on-soft:#12301f; --off:#5c6675; --used:#98a2b0; --used-soft:#242a34; --cancel:#e0a94a; --cancel-soft:#33280f; --wait:#5b8cff; --wait-soft:#1b2640;
+    --wire:#3a414d; --note:#a99cf0; --note-soft:rgba(169,156,240,.16); color-scheme:dark;
+  }}
+  :root[data-theme="dark"]{
+    --bg:#0f1218; --surface:#181c24; --surface-2:#1f242e; --field:#141821;
+    --fg:#e8ebf0; --muted:#98a2b0; --line:#2b313c; --line-2:#242a34;
+    --accent:#5b8cff; --accent-soft:#1b2640;
+    --gen:#4cc585; --gen-soft:#12301f; --id:#d69a52; --id-soft:#2f2410; --exc:#c08fe0; --exc-soft:#2b1f36;
+    --on:#4cc585; --on-soft:#12301f; --off:#5c6675; --used:#98a2b0; --used-soft:#242a34; --cancel:#e0a94a; --cancel-soft:#33280f; --wait:#5b8cff; --wait-soft:#1b2640;
+    --wire:#3a414d; --note:#a99cf0; --note-soft:rgba(169,156,240,.16); color-scheme:dark;
+  }
+  *{box-sizing:border-box}
+  body{background:var(--bg);color:var(--fg);font-family:var(--font-body);line-height:1.45;font-size:13.5px}
+  .app{max-width:1200px;margin:0 auto;padding-inline:16px;padding-block:16px 56px}
+  .crumb{font-size:12px;color:var(--muted)}.crumb b{color:var(--fg)}
+  .toolbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:8px 0 4px}
+  .toolbar h1{font-family:var(--font-display);font-size:20px;margin:0}.toolbar .sp{flex:1;min-width:0}
+  .ex{font-size:10px;font-weight:700;color:var(--note);background:var(--note-soft);border-radius:5px;padding:1px 6px;font-family:var(--font-display)}
+  .lead{font-size:12.5px;color:var(--muted);margin:0 0 12px}
+  .btn{font-size:13px;border-radius:8px;padding:8px 13px;border:1px solid var(--line);background:var(--surface);color:var(--fg);cursor:pointer;font-family:var(--font-body)}
+  .btn.pri{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}.btn.ghost{background:none}.btn.sm{padding:5px 10px;font-size:12px}
+
+  .nav{display:flex;gap:4px;background:var(--surface-2);border:1px solid var(--line);border-radius:9px;padding:3px;width:fit-content;margin-bottom:14px;flex-wrap:wrap}
+  .nav button{font-family:var(--font-display);font-size:12.5px;font-weight:600;color:var(--muted);background:none;border:none;border-radius:6px;padding:7px 14px;cursor:pointer}
+  .nav button.on{background:var(--surface);color:var(--fg);box-shadow:0 1px 2px rgba(0,0,0,.06)}
+  .nav button .sub{font-weight:400;font-size:10px;color:var(--muted);display:block}
+  .tabpane[hidden]{display:none}
+
+  .ipt,.sel{background:var(--field);border:1px solid var(--line);border-radius:7px;padding:7px 9px;font-size:13px;color:var(--fg);font-family:var(--font-body)}
+  textarea.ipt{resize:vertical;min-height:56px;width:100%;line-height:1.4}
+  .filters{display:flex;gap:8px;flex-wrap:wrap;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-bottom:12px}
+  .filters .search{flex:1;min-width:180px}.filters .sp{flex:1}
+
+  .panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+  .panel .ph{display:flex;align-items:center;gap:8px;padding:11px 14px;border-bottom:1px solid var(--line);font-family:var(--font-display);font-weight:600;font-size:13px}
+  .panel .ph .sp{flex:1}.panel .ph .cnt{color:var(--muted);font-weight:400;font-size:12px}
+  .tblwrap{overflow-x:auto}
+  table{border-collapse:collapse;width:100%;font-size:12.5px;min-width:620px}
+  th,td{padding:10px 12px;border-bottom:1px solid var(--line-2);text-align:left;white-space:nowrap}
+  th{background:var(--surface-2);font-family:var(--font-display);font-size:10.5px;color:var(--muted);text-transform:uppercase}
+  td.r,th.r{text-align:right;font-variant-numeric:tabular-nums}
+  tr.click{cursor:pointer}tr.click:hover td{background:var(--surface-2)}
+  .code{font-family:var(--mono);font-size:12px}
+  .typ,.pill{font-size:10.5px;font-weight:600;border-radius:5px;padding:1px 6px}
+  .y-gen{background:var(--gen-soft);color:var(--gen)}.y-id{background:var(--id-soft);color:var(--id)}.y-exc{background:var(--exc-soft);color:var(--exc)}
+  .s-on{background:var(--on-soft);color:var(--on)}.s-used{background:var(--used-soft);color:var(--used)}.s-cancel{background:var(--cancel-soft);color:var(--cancel)}.s-wait{background:var(--wait-soft);color:var(--wait)}.s-del{background:var(--used-soft);color:var(--used);text-decoration:line-through}
+  .pager{display:flex;gap:5px;align-items:center;justify-content:flex-end;padding:11px 14px;border-top:1px solid var(--line-2);font-size:12px;color:var(--muted)}
+  .pg{border:1px solid var(--line);border-radius:6px;padding:4px 9px;background:var(--field);cursor:pointer}.pg.on{background:var(--accent);border-color:var(--accent);color:#fff}
+  .mini{font-size:11.5px;color:var(--accent);background:none;border:none;cursor:pointer;padding:0}
+
+  .grid2{display:grid;grid-template-columns:1.1fr .9fr;gap:14px;align-items:start}
+  @media(max-width:860px){.grid2{grid-template-columns:1fr}}
+  .sec{padding:15px}
+  .fld{display:grid;grid-template-columns:120px 1fr;gap:8px;align-items:start;margin:10px 0}
+  .fld>.fl{font-size:12px;color:var(--muted);padding-top:8px}.fld .fl .req{color:var(--accent)}
+  .fc{min-width:0}.row3{display:flex;gap:6px;flex-wrap:wrap}.row3 .ipt{flex:1;min-width:80px}
+  .seg{display:flex;gap:4px;background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:3px;width:fit-content;flex-wrap:wrap}
+  .seg button{font-size:12px;font-weight:600;color:var(--muted);background:none;border:none;border-radius:6px;padding:6px 12px;cursor:pointer}.seg button.on{background:var(--surface);color:var(--fg)}
+  .radio{display:flex;gap:6px;flex-wrap:wrap}.radio .opt{border:1px solid var(--line);border-radius:7px;padding:6px 11px;font-size:12.5px;background:var(--field);cursor:pointer}.radio .opt.on{border-color:var(--accent);background:var(--accent-soft);color:var(--accent);font-weight:600}
+  .fh{color:var(--note);font-size:11px;margin-top:4px}
+  .toggle{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;cursor:pointer}
+  .sw{width:34px;height:19px;border-radius:20px;background:var(--on);position:relative}.sw::after{content:"";position:absolute;top:2px;right:2px;width:15px;height:15px;border-radius:50%;background:#fff}
+  .sw.off{background:var(--off)}.sw.off::after{right:auto;left:2px}
+  .dtrow{display:flex;gap:6px;align-items:center;flex-wrap:wrap}.dtrow .ipt{flex:1;min-width:120px}.dtrow .t{color:var(--muted)}
+  .slot{border:1.5px dashed var(--line);border-radius:10px;background:var(--field);width:110px;height:80px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:var(--muted);cursor:pointer}
+  .slot .plus{font-size:20px}.slot .nm{font-size:11.5px;font-weight:600}.slot .spec{font-size:10px;color:var(--note)}
+  .codeprev{background:var(--field);border:1px dashed var(--line);border-radius:8px;padding:10px 12px;font-family:var(--mono);font-size:12px;color:var(--muted);display:flex;flex-wrap:wrap;gap:6px 14px}
+
+  /* 상품 피커 */
+  .picker{border:1px solid var(--line);border-radius:10px;background:var(--field);overflow:hidden}
+  .picker .psearch{display:flex;gap:6px;padding:8px;border-bottom:1px solid var(--line-2)}
+  .picker .psearch .ipt{flex:1}
+  .cands{max-height:170px;overflow:auto}
+  .cand{display:flex;align-items:center;gap:9px;padding:8px 11px;border-bottom:1px solid var(--line-2);cursor:pointer;font-size:12.5px}
+  .cand:hover{background:var(--surface-2)}
+  .cand .ck{width:16px;height:16px;border:1.5px solid var(--wire);border-radius:4px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;color:#fff}
+  .cand.sel .ck{background:var(--accent);border-color:var(--accent)}
+  .cand .t{font-size:10px;color:var(--muted);border:1px solid var(--line);border-radius:5px;padding:0 5px;margin-left:auto}
+  .selbar{display:flex;flex-wrap:wrap;gap:6px;padding:9px 11px;border-top:1px solid var(--line-2);background:var(--surface-2);min-height:40px;align-items:center}
+  .chip{display:inline-flex;align-items:center;gap:6px;background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:3px 6px 3px 10px;font-size:12px}
+  .chip b{font-family:var(--font-display);font-weight:600}
+  .chip .rm{color:var(--muted);cursor:pointer;font-size:14px;line-height:1}
+  .selcount{font-size:11.5px;color:var(--muted)}
+
+  /* 드로어 (넓게) */
+  .overlay{position:fixed;inset:0;background:rgba(0,0,0,.35);opacity:0;pointer-events:none;transition:.2s}.overlay.show{opacity:1;pointer-events:auto}
+  .drawer{position:fixed;top:0;right:0;height:100%;width:min(620px,96vw);background:var(--surface);border-left:1px solid var(--line);transform:translateX(100%);transition:.22s;display:flex;flex-direction:column;z-index:5}
+  .drawer.show{transform:none}
+  .drawer .dh{display:flex;align-items:center;gap:8px;padding:14px 16px;border-bottom:1px solid var(--line)}
+  .drawer .dh h3{font-family:var(--font-display);font-size:15px;margin:0}.drawer .dh .sp{flex:1}
+  .drawer .db{overflow:auto;padding:6px 16px 16px}
+  .drawer .dfoot{display:flex;gap:8px;padding:12px 16px;border-top:1px solid var(--line);background:var(--surface-2)}.drawer .dfoot .sp{flex:1}
+  .x{font-size:18px;color:var(--muted);background:none;border:none;cursor:pointer}
+  .dgrp{margin:4px 0 14px}.dgrp>.dl{font-family:var(--font-display);font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin:0 0 8px;padding-bottom:5px;border-bottom:1px dashed var(--line)}
+  .kv{display:grid;grid-template-columns:96px 1fr;gap:6px 10px;font-size:13px}.kv .k{color:var(--muted)}
+  .tl{list-style:none;margin:0;padding:0}
+  .tl li{position:relative;padding:0 0 12px 18px;font-size:12.5px}
+  .tl li::before{content:"";position:absolute;left:3px;top:4px;width:8px;height:8px;border-radius:50%;background:var(--accent)}
+  .tl li::after{content:"";position:absolute;left:6px;top:12px;bottom:0;width:1px;background:var(--line)}
+  .tl li:last-child::after{display:none}
+  .tl .tt{color:var(--muted);font-size:11px;margin-left:6px}
+  .heroamt{font-family:var(--font-display);font-size:22px}
+  .statrow{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+  .stat{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:8px 13px;font-size:12px;color:var(--muted)}
+  .stat b{font-family:var(--font-display);color:var(--fg);font-size:15px;margin-left:6px;font-variant-numeric:tabular-nums}
+  .statrow.kept .stat{background:var(--note-soft);border-color:var(--note);color:var(--note)}
+  .statrow.kept .stat b{color:var(--note)}
+  .keptlbl{font-size:11px;color:var(--note);margin:-4px 0 12px}
+  .lgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px}
+  .lgrid .lf{display:flex;flex-direction:column;gap:4px}
+  .lgrid label{font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.03em;font-family:var(--font-display)}
+  .lgrid .ipt,.lgrid .sel{width:100%}
+  .lgrid .dt{display:flex;gap:5px;align-items:center}.lgrid .dt .ipt{flex:1;min-width:0}.lgrid .dt .t{color:var(--muted)}
+  .lgrid .lf{position:relative}
+  .datepick{display:flex;align-items:center;gap:8px;background:var(--field);border:1px solid var(--line);border-radius:8px;padding:8px 11px;font-size:13px;color:var(--fg);cursor:pointer;width:100%;font-family:var(--font-body);text-align:left}
+  .datepick svg{color:var(--muted);flex-shrink:0}.datepick .cv{margin-left:auto;color:var(--muted)}
+  .caldrop{position:absolute;top:100%;left:0;margin-top:6px;z-index:30;background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:0 16px 38px rgba(10,14,22,.20);padding:14px;width:300px;display:none}
+  .caldrop.show{display:block}
+  .calhead{display:flex;align-items:center;justify-content:center;gap:18px;margin-bottom:10px}
+  .calhead .cnav{background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px;padding:2px 8px;border-radius:6px}.calhead .cnav:hover{background:var(--surface-2)}
+  .calhead .my{font-weight:600;font-size:14px;font-family:var(--font-display)}
+  .calgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;text-align:center}
+  .calgrid .wd{font-size:11px;color:var(--muted);padding:4px 0}
+  .calgrid .wd.sun,.calgrid .day.sun{color:var(--red)}.calgrid .wd.sat,.calgrid .day.sat{color:var(--red)}
+  .calgrid .day{font-size:12.5px;padding:8px 0;border-radius:50%;cursor:pointer}
+  .calgrid .day.oth{color:var(--wire)}.calgrid .day:hover{background:var(--surface-2)}
+  .calgrid .day.inrange{background:var(--accent-soft);border-radius:0}
+  .calgrid .day.sel{background:var(--accent);color:#fff;font-weight:700;border-radius:50%}
+  .calfoot{border-top:1px solid var(--line-2);margin-top:10px;padding-top:9px;font-size:13px}
+  .calfoot .fr{display:flex;justify-content:space-between;padding:4px 2px}.calfoot .fk{color:var(--accent);font-weight:600}.calfoot .fv{font-weight:600}
+  .pbar{height:9px;border-radius:5px;background:var(--surface-2);overflow:hidden;margin:6px 0 4px}
+  .pbar span{display:block;height:100%;background:var(--accent)}
+  .pbarlbl{font-size:11.5px;color:var(--muted)}
+
+  .dmemo{background:var(--note-soft);border:1px solid var(--note);border-radius:11px;padding:11px 13px;margin-top:10px;font-size:12px}
+  .dmemo .mh{font-family:var(--font-display);font-weight:700;font-size:11px;color:var(--note);margin:0 0 6px;display:flex;gap:6px;align-items:center}
+  .dmemo .mh::before{content:"안내";font-size:9px;background:var(--note);color:#fff;border-radius:5px;padding:2px 6px;letter-spacing:.03em}
+  .dmemo ul{margin:0;padding-left:16px}.dmemo li{margin:3px 0}.dmemo b{color:var(--fg)}
+  .keptline{background:var(--note-soft);border:1px dashed var(--note);border-radius:8px;padding:8px 11px;font-size:12px;color:var(--fg)}
+  .autoval{background:var(--surface-2);border:1px dashed var(--line);border-radius:8px;padding:8px 11px;font-size:12.5px;color:var(--muted)}
+  .autoval.code{font-family:var(--mono)}
+  .grouphd{display:flex;align-items:center;gap:8px;margin:0 0 10px;font-family:var(--font-display);font-weight:600;font-size:13.5px}
+  .grouphd.sub{margin-top:22px;color:var(--muted);font-size:12.5px}
+  .grouphd .cnt{color:var(--muted);font-weight:400;font-size:12px}
+  .rulecards{display:flex;flex-direction:column;gap:8px}
+  .rulecard{display:flex;align-items:center;gap:12px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;flex-wrap:wrap}
+  .rulecard.ro{background:var(--surface-2);border-style:dashed}
+  .rulecard .trg{font-size:11.5px;font-weight:700;color:var(--accent);background:var(--accent-soft);border:1px solid var(--accent);border-radius:20px;padding:3px 11px;white-space:nowrap}
+  .rulecard.ro .trg{color:var(--muted);background:var(--surface);border-color:var(--line)}
+  .rulecard .arrow{color:var(--wire);font-size:15px}
+  .rulecard .act{font-size:13px}.rulecard .act b{font-family:var(--font-display)}
+  .rulecard .sp{flex:1;min-width:12px}
+  .rulecard .rc-act{display:flex;align-items:center;gap:12px}
+  .keptline b{color:var(--note)}
+  .drawer.keptall{border-left:3px solid var(--note)}
+  .drawer.keptall .dh{background:var(--note-soft)}
+  .drawer.keptall .db{background:var(--note-soft)}
+  .keptbanner{background:var(--note);color:#fff;border-radius:8px;padding:8px 12px;font-size:12px;margin:8px 0 14px}
+  .btn.keptbtn{border-color:var(--note);color:var(--note);background:var(--note-soft)}
+  .keptzone{background:var(--note-soft);border:1px solid var(--note);border-radius:14px;padding:16px}
+  .keptzone .rulecard{border-color:var(--note);background:var(--note-soft)}
+  .keptzone .rulecard .trg{color:var(--note);background:var(--surface);border-color:var(--note)}
+  .keptzone .grouphd{color:var(--note)}
+  .keptzone .btn.pri{background:var(--note);border-color:var(--note)}
+  .keptzone .pill{background:var(--surface);color:var(--note)}
+  .keptzone .mini{color:var(--note)}
+  .nav button.keptnav{color:var(--note)}
+  .nav button.keptnav.on{background:var(--note-soft);color:var(--note)}
+  .notep{border-color:var(--note)!important;margin-top:14px}
+  .notep .ph{background:var(--note-soft);color:var(--note);border-bottom-color:var(--note)}
+  .guide{padding:14px}.guide ul{margin:0;padding-left:18px;font-size:13px;columns:2;column-gap:26px}@media(max-width:640px){.guide ul{columns:1}}
+  .guide li{margin:5px 0;break-inside:avoid}.guide li b{font-family:var(--font-display);color:var(--note)}
+  .warnbox{display:flex;gap:8px;background:var(--note-soft);border:1px dashed var(--note);border-radius:10px;padding:11px 13px;font-size:12.5px;margin-top:12px}.warnbox b{color:var(--note)}
+  .opts{display:grid;grid-template-columns:1fr 1fr;gap:12px}@media(max-width:720px){.opts{grid-template-columns:1fr}}
+  .optcard{border:1px solid var(--line);border-radius:12px;padding:14px;background:var(--surface)}.optcard h4{font-family:var(--font-display);font-size:14px;margin:0 0 4px}.optcard p{font-size:12px;color:var(--muted);margin:0 0 8px}.optcard .mini2{font-size:11.5px}
+</style>
+
+<div class="app">
+  <div class="crumb">프로모션</div>
+  <div class="toolbar"><h1>프로모션 · 쿠폰</h1><span class="ex">예시 데이터</span></div>
+
+  <div class="nav">
+    <button class="on" data-t="promo">프로모션 <span class="sub">정책 정의</span></button>
+    <button data-t="coupon">쿠폰 <span class="sub">발급·사용 관리</span></button>
+    <button data-t="lookup">쿠폰 조회 <span class="sub">보유·사용·교환처리</span></button>
+    <button data-t="auto" class="keptnav">자동 혜택</button>
+  </div>
+
+  <!-- 탭1: 프로모션 (정책) -->
+  <section class="tabpane" data-p="promo">
+    <div class="filters">
+      <input class="ipt search" placeholder="프로모션명·코드 검색">
+      <select class="sel"><option>전체 유형</option><option>일반</option><option>신분</option><option>교환</option></select>
+      <select class="sel"><option>전체 상태</option><option>활성</option><option>종료</option></select>
+      <span class="sp"></span>
+      <button class="btn pri sm" onclick="openDrawer('신규 프로모션','일반')">+ 프로모션 등록</button>
+    </div>
+    <div class="panel">
+      <div class="ph">프로모션 <span class="cnt">· 42건</span><span class="sp"></span><span class="cnt">정렬: 최신순</span></div>
+      <div class="tblwrap"><table>
+        <thead><tr><th>유형</th><th>프로모션명</th><th>코드</th><th>할인</th><th>적용 상품</th><th>상태</th><th>활성 기간</th><th class="r">연결 쿠폰</th><th></th></tr></thead>
+        <tbody>
+          <tr class="click" onclick="openDrawer('오픈 기념 할인','일반')"><td><span class="typ y-gen">일반</span></td><td>오픈 기념 할인</td><td class="code">PRM-OPEN</td><td>−5,000</td><td>2개</td><td><span class="pill s-on">활성</span></td><td>11-01 ~ 12-31</td><td class="r">3종</td><td><button class="mini">편집</button></td></tr>
+          <tr class="click" onclick="openDrawer('국가유공자·장애인','신분')"><td><span class="typ y-id">신분</span></td><td>국가유공자·장애인</td><td class="code">PRM-NAT</td><td>−15%</td><td>전체</td><td><span class="pill s-on">활성</span></td><td>상시</td><td class="r">1종</td><td><button class="mini">편집</button></td></tr>
+          <tr class="click" onclick="openDrawer('인천시민 할인','신분')"><td><span class="typ y-id">신분</span></td><td>인천시민 할인</td><td class="code">PRM-ICN</td><td>−20%</td><td>전체</td><td><span class="pill s-on">활성</span></td><td>상시</td><td class="r">1종</td><td><button class="mini">편집</button></td></tr>
+          <tr class="click" onclick="openDrawer('크루 할인','신분')"><td><span class="typ y-id">신분</span></td><td>크루 할인</td><td class="code">PRM-CREW</td><td>−30%</td><td>전체</td><td><span class="pill s-on">활성</span></td><td>상시</td><td class="r">1종</td><td><button class="mini">편집</button></td></tr>
+          <tr class="click" onclick="openDrawer('F&amp;B 교환','교환')"><td><span class="typ y-exc">교환</span></td><td>F&amp;B 교환</td><td class="code">PRM-FNB</td><td>교환</td><td>F&amp;B PSU</td><td><span class="pill s-on">활성</span></td><td>11-01 ~ 12-31</td><td class="r">2종</td><td><button class="mini">편집</button></td></tr>
+        </tbody>
+      </table></div>
+      <div class="pager"><span style="margin-right:auto">총 42건 · 20/페이지</span><span class="pg">‹</span><span class="pg on">1</span><span class="pg">2</span><span class="pg">3</span><span class="pg">›</span></div>
+    </div>
+  </section>
+
+  <!-- 탭2: 쿠폰 (발급 건/배치 단위) -->
+  <section class="tabpane" data-p="coupon" hidden>
+    <div class="statrow kept">
+      <span class="stat">발급 건<b>4</b></span>
+      <span class="stat">총 발급<b>10,790</b></span>
+      <span class="stat">사용<b>4,443</b></span>
+      <span class="stat">미사용<b>6,347</b></span>
+    </div>
+    <div class="keptlbl">※ 요약 수치는 예시 · 집계 항목·표시 방식 검토(킵)</div>
+
+    <div class="filters">
+      <input class="ipt search" placeholder="쿠폰명·연결 프로모션 검색">
+      <select class="sel"><option>전체 방식</option><option>난수번호</option><option>프로모션 코드</option><option>수동</option></select>
+      <select class="sel"><option>전체 상태</option><option>활성</option><option>종료</option></select>
+      <span class="sp"></span>
+      <button class="btn pri sm" onclick="openIssue()">+ 쿠폰 발급</button>
+    </div>
+    <div class="warnbox" style="margin-bottom:12px">📌 <span><b>발급 건(배치) 단위 관리</b> — 만 명 발급도 <b>1건</b>으로 표현. 개별 쿠폰 만 장은 여기 나열하지 않고, <b>배치 상세에서 집계·엑셀 다운로드</b>, 개별 확인은 <b>쿠폰 조회(검색)</b>. 데이터는 예시.</span></div>
+    <div class="panel">
+      <div class="ph">발급 목록 <span class="cnt">· 4건</span></div>
+      <div class="tblwrap"><table>
+        <thead><tr><th>쿠폰명</th><th>연결 프로모션</th><th>발급 방식</th><th class="r">발급</th><th class="r">사용</th><th class="r">미사용</th><th>사용 기간</th><th>상태</th><th></th></tr></thead>
+        <tbody id="batchBody"></tbody>
+      </table></div>
+    </div>
+  </section>
+
+  <!-- 탭: 쿠폰 조회 -->
+  <section class="tabpane" data-p="lookup" hidden>
+    <!-- A. 쿠폰 검색 (대량 개별 쿠폰 조회) -->
+    <div class="warnbox" style="margin-bottom:12px">🔒 <span><b>개인정보 최소화 지침</b> — 조회는 <b>티켓번호 기준</b>, 표시는 <b>닉네임</b>만. 실명·전화번호 등 개인정보는 <b>노출 금지</b>(개인정보보호법). 데이터는 예시.</span></div>
+    <div class="panel">
+      <div class="ph">쿠폰 검색 <span class="cnt">· 개별 쿠폰 단위</span></div>
+      <div class="sec">
+        <div class="lgrid">
+          <div class="lf"><label>검색어</label><input class="ipt" placeholder="쿠폰명 · 닉네임 · 쿠폰코드"></div>
+          <div class="lf"><label>상태</label><select class="sel"><option>전체</option><option>미사용</option><option>사용완료</option><option>사용취소</option><option>수신대기</option></select></div>
+          <div class="lf"><label>발급일</label>
+            <button class="datepick" id="dpBtn" onclick="toggleCal(event)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg><span id="dpLabel">2026-11-01 ~ 2026-11-30</span><span class="cv">⌄</span></button>
+            <div class="caldrop" id="caldrop" onclick="event.stopPropagation()">
+              <div class="calhead"><button class="cnav" onclick="calMove(-1)">‹</button><span class="my" id="calMY"></span><button class="cnav" onclick="calMove(1)">›</button></div>
+              <div class="calgrid" id="calGrid"></div>
+              <div class="calfoot"><div class="fr"><span class="fk">시작</span><span class="fv" id="calS">—</span></div><div class="fr"><span class="fk">종료</span><span class="fv" id="calE">—</span></div></div>
+            </div>
+          </div>
+        </div>
+        <div class="seg" id="ctypeSeg" style="margin-top:12px"><button class="on" data-c="전체" onclick="filterType('전체')">전체</button><button data-c="할인" onclick="filterType('할인')">할인 쿠폰</button><button data-c="교환" onclick="filterType('교환')">교환 쿠폰</button></div>
+        <div style="display:flex;gap:8px;margin-top:12px"><button class="btn pri sm">조회</button><button class="btn ghost sm">엑셀 다운로드</button><span class="sp" style="flex:1"></span><span class="cnt" style="align-self:center;color:var(--muted)">검색 결과 <b style="color:var(--fg)">5,764</b>건</span></div>
+      </div>
+      <div class="tblwrap"><table>
+        <thead><tr><th>쿠폰코드</th><th>쿠폰명</th><th>티켓</th><th>소유(닉네임)</th><th>상태</th><th>발급일</th><th>사용일</th><th>사용 기간</th><th></th></tr></thead>
+        <tbody id="lookupBody">
+          <tr class="click" onclick="openCoupon(this)" data-code="OPEN-7K3P9QF2WX8A" data-name="오픈 기념 5천원" data-promo="오픈 기념 할인 (PRM-OPEN)" data-disc="−5,000" data-owner="질주하는곰" data-ticket="TKT-114A" data-issue="난수번호" data-issued="2026-11-02" data-use="2026-11-01 ~ 12-31" data-status="발급됨" data-status-c="s-on" data-gift="0"><td class="code">OPEN-7K3P9QF2WX8A</td><td>오픈 기념 5천원</td><td class="code">TKT-114A</td><td>질주하는곰</td><td><span class="pill s-on">미사용</span></td><td>11-02</td><td>—</td><td>~12-31</td><td><button class="mini">상세</button></td></tr>
+          <tr class="click" onclick="openCoupon(this)" data-code="OPEN-2M4D8H7T1CQZ" data-name="오픈 기념 5천원" data-promo="오픈 기념 할인 (PRM-OPEN)" data-disc="−5,000" data-owner="번개레이서" data-ticket="TKT-227B" data-issue="난수번호" data-issued="2026-11-02" data-use="2026-11-01 ~ 12-31" data-usedat="2026-11-14" data-status="사용완료" data-status-c="s-used" data-gift="0"><td class="code">OPEN-2M4D8H7T1CQZ</td><td>오픈 기념 5천원</td><td class="code">TKT-227B</td><td>번개레이서</td><td><span class="pill s-used">사용완료</span></td><td>11-02</td><td>11-14</td><td>~12-31</td><td><button class="mini">상세</button></td></tr>
+          <tr class="click" onclick="openCoupon(this)" data-code="OPEN-5H8N2P4T9WQR" data-name="오픈 기념 5천원" data-promo="오픈 기념 할인 (PRM-OPEN)" data-disc="−5,000" data-owner="드리프트킹" data-ticket="TKT-330C" data-issue="난수번호" data-issued="2026-11-03" data-use="2026-11-01 ~ 12-31" data-status="사용취소" data-status-c="s-cancel" data-gift="0"><td class="code">OPEN-5H8N2P4T9WQR</td><td>오픈 기념 5천원</td><td class="code">TKT-330C</td><td>드리프트킹</td><td><span class="pill s-cancel">사용취소</span></td><td>11-03</td><td>—</td><td>~12-31</td><td><button class="mini">상세</button></td></tr>
+          <tr class="click" onclick="openCoupon(this)" data-code="FNB-QX72KD" data-name="F&amp;B 교환권" data-promo="F&amp;B 교환 (PRM-FNB)" data-disc="교환(비JAM PSU)" data-owner="게스트(수신대기)" data-ticket="—" data-issue="수동" data-issued="2026-11-10" data-use="2026-11-01 ~ 12-31" data-status="수신대기" data-status-c="s-wait" data-gift="1" data-gift-to="선물 링크"><td class="code">FNB-QX72KD</td><td>F&amp;B 교환권</td><td class="code">—</td><td>게스트(수신대기)</td><td><span class="pill s-wait">수신대기</span></td><td>11-10</td><td>—</td><td>~12-31</td><td><button class="mini">상세</button></td></tr>
+          <tr class="click" onclick="openCoupon(this)" data-code="OPEN-9K2M7QX4P1ND" data-name="오픈 기념 5천원" data-promo="오픈 기념 할인 (PRM-OPEN)" data-disc="−5,000" data-owner="코너의달인" data-ticket="TKT-455D" data-issue="난수번호" data-issued="2026-11-05" data-use="2026-11-01 ~ 12-31" data-status="발급됨" data-status-c="s-on" data-gift="0"><td class="code">OPEN-9K2M7QX4P1ND</td><td>오픈 기념 5천원</td><td class="code">TKT-455D</td><td>코너의달인</td><td><span class="pill s-on">미사용</span></td><td>11-05</td><td>—</td><td>~12-31</td><td><button class="mini">상세</button></td></tr>
+        </tbody>
+      </table></div>
+      <div class="pager"><span style="margin-right:auto">총 5,764건 · 50/페이지</span><span class="pg">‹</span><span class="pg on">1</span><span class="pg">2</span><span class="pg">3</span><span class="pg">…</span><span class="pg">›</span></div>
+    </div>
+
+    <!-- B. 교환쿠폰 크루 사용처리 (킵) -->
+    <div class="panel notep" style="margin-top:14px">
+      <div class="ph">교환쿠폰 사용처리 (크루) <span class="cnt">· 위치 검토 중 · 킵</span></div>
+      <div class="sec">
+        <div class="warnbox" style="margin:0 0 12px">📌 <span><b>킵</b> — 교환쿠폰(F&amp;B·굿즈)을 조회해 크루가 현장 사용처리 하는 기능. <b>이 화면(프로모션)에 둘지, 별도 운영/POS로 이관할지 검토 필요.</b></span></div>
+        <div class="filters" style="margin:0 0 12px">
+          <input class="ipt search" placeholder="교환쿠폰 코드 스캔·입력">
+          <button class="btn pri sm">조회</button>
+        </div>
+        <div class="panel" style="box-shadow:none">
+          <div class="sec" style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+            <div>
+              <div style="font-family:var(--font-display);font-size:15px;font-weight:600">F&amp;B 교환권 <span class="typ y-exc">교환</span></div>
+              <div style="font-size:12px;color:var(--muted);margin-top:3px"><span class="code">FNB-QX72KD</span> · 소유 <b style="color:var(--fg)">번개레이서</b> · 티켓 <span class="code">TKT-227B</span> · 사용 기간 ~12-31</div>
+              <div style="font-size:12px;color:var(--muted);margin-top:2px">교환 대상: <b style="color:var(--fg)">F&amp;B 음료 1잔 (비JAM PSU)</b></div>
+            </div>
+            <span class="sp" style="flex:1"></span>
+            <span class="pill s-on" style="align-self:flex-start">사용 가능</span>
+            <button class="btn pri">사용처리</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  
+
+  <!-- 탭4: 자동 혜택 -->
+  <section class="tabpane keptzone" data-p="auto" hidden>
+      <div class="keptbanner">자동 혜택 전체가 <b>정책 미확정(킵)</b> — 트리거·규칙 구조 검토 중</div>
+      <div class="grouphd">자동 발급 규칙 <span class="cnt">· 사건 → 쿠폰 발급</span><span class="sp"></span><button class="btn pri sm" onclick="openRule(null)">+ 규칙</button></div>
+      <div class="rulecards" id="ruleCards"></div>
+
+      <div class="grouphd sub">시스템 기본 · 환불 연동 <span class="cnt">· 읽기전용</span></div>
+      <div class="rulecards">
+        <div class="rulecard ro"><span class="trg">전체 환불 완료</span><span class="arrow">→</span><div class="act">사용 쿠폰 복구 · 미사용 발급분 회수·삭제</div></div>
+        <div class="rulecard ro"><span class="trg">부분 환불 완료</span><span class="arrow">→</span><div class="act">쿠폰 유지</div></div>
+      </div>
+      <div class="warnbox" style="margin-top:16px">📌 <span><b>확장 구조</b> — 규칙은 <b>트리거 + 액션</b> 조합으로 카드가 자동 렌더돼, 새 트리거/액션을 등록하면 규칙도 바로 추가됨. 현재 <b>가입·구매·환불</b>만 지원 · 생일·자격 취득 등은 트리거 개발 후(킵).</span></div>
+  </section>
+
+  <!-- 안내(비구현) -->
+  <div class="panel notep">
+    <div class="ph">정책 안내 (구현 아님)</div>
+    <div class="guide"><ul>
+      <li>🔒 <b>개인정보 최소화 지침</b> — 조회는 <b>티켓번호 기준</b>, 표시는 <b>닉네임</b>. 실명·전화번호 등 개인정보 노출 금지(개인정보보호법). 전 화면 공통 적용</li>
+      <li><b>프로모션 vs 쿠폰</b> — 프로모션=정책(할인·적용상품·자격·활성기간), 쿠폰=발급 단위(명·이미지·설명·사용기간)</li>
+      <li><b>활성 기간</b>(프로모션) — 발급·운영 가능 기간</li>
+      <li><b>사용 기간</b>(쿠폰) — 발급 쿠폰 사용 가능 기간 · <b>시작·종료일 지정</b></li>
+      <li><b>발급 방식</b> — 난수번호 생성 · 프로모션 코드(입력형) · 수동(대상 지정, 발송 방법 선택)</li>
+      <li><b>코드 자동 생성</b> — 프로모션 코드·개별 쿠폰코드는 <b>시스템 자동 생성 유니크 키</b>(외부 매핑). 단, 입력형 redemption 코드(예: WELCOME2026)만 관리자가 지정</li>
+      <li><b>교환쿠폰 사용처리</b> — 크루 현장 처리 · <b>프로모션 vs 별도 운영 위치 검토 중(킵)</b></li>
+      <li><b>유형</b> — 일반·신분·교환. 직권할인은 OS 전용(별도)</li>
+      <li><b>자격 할인</b> — 신분·지역·크루 1개만 단독</li>
+      <li><b>난수 쿠폰</b> — 중복 없는 무작위 코드 대량 발급</li>
+      <li><b>크루 승인코드</b> — 크루별 일일 자동 생성 · "크루 확인 필요" 프로모션 적용 시 입력 · 승인 크루는 주문에 기록</li>
+      <li><b>선물</b> — 취소 없음 · 수신 대기 회수·삭제 안 함</li>
+      <li><b>적용 상품</b> — 연결은 프로모션 소유, 상품 화면은 읽기</li>
+      <li><b>정산 연계</b> — 프로모션 ID·유형·명만 제공</li>
+    </ul></div>
+  </div>
+</div>
+
+<!-- 프로모션(정책) 편집 드로어 -->
+<div class="overlay" id="ov" onclick="closeDrawer()"></div>
+<aside class="drawer" id="dw">
+  <div class="dh"><h3 id="dwTitle">프로모션 편집</h3><span class="sp"></span><button class="x" onclick="closeDrawer()">✕</button></div>
+  <div class="db">
+    <div class="fld"><div class="fl">유형 <span class="req">*</span></div><div class="fc"><div class="radio" id="typeRadio"><span class="opt on" data-y="일반" onclick="setPromoType('일반')">일반</span><span class="opt" data-y="신분" onclick="setPromoType('신분')">신분(자격)</span><span class="opt" data-y="교환" onclick="setPromoType('교환')">교환</span></div></div></div>
+    <div class="fld"><div class="fl">프로모션 코드</div><div class="fc"><div class="autoval code">PRM-OPEN · 저장 시 자동 생성</div></div></div>
+    <div class="fld"><div class="fl">프로모션명 <span class="req">*</span></div><div class="fc"><input class="ipt" value="오픈 기념 할인" style="width:100%"></div></div>
+
+    <!-- 일반·신분: 할인 -->
+    <div class="fld" id="discBlock"><div class="fl">할인 <span class="req">*</span></div><div class="fc"><div class="row3"><select class="sel" style="max-width:110px"><option>고정</option><option>비율</option></select><input class="ipt" value="5,000" style="max-width:120px"><input class="ipt" placeholder="최대 할인금액" style="max-width:130px"></div></div></div>
+
+    <!-- 신분: 자격 (유형=신분일 때만) -->
+    <div class="fld" id="qualBlock" hidden><div class="fl">자격 <span class="req">*</span></div><div class="fc"><div style="display:flex;gap:8px"><select class="sel" id="qualSel" style="flex:1"></select><button class="btn ghost sm" onclick="addQual()">+ 자격</button></div></div></div>
+
+    <!-- 교환: 교환 대상은 쿠폰에서 지정 -->
+    <div class="fld" id="excBlock" hidden><div class="fl">교환</div><div class="fc"><div class="keptline">교환 프로모션은 <b>교환권 발급 정책</b>만 정의 · <b>무엇을 교환할지는 쿠폰에서 지정</b></div></div></div>
+
+    <!-- 일반·신분: 적용 상품 -->
+    <div class="fld" id="applyBlock"><div class="fl">적용 상품 <span class="req">*</span></div><div class="fc">
+      <div class="picker">
+        <div class="psearch"><input class="ipt" placeholder="상품명·코드 검색"><button class="btn sm">전체</button></div>
+        <div class="cands" id="cands">
+          <div class="cand sel" onclick="tgl(this,'레이스 포함 패키지')"><span class="ck">✓</span> 레이스 포함 패키지 <span class="t">패키지</span></div>
+          <div class="cand sel" onclick="tgl(this,'실내 패키지')"><span class="ck">✓</span> 실내 패키지 <span class="t">패키지</span></div>
+          <div class="cand" onclick="tgl(this,'레이스 단품')"><span class="ck"></span> 레이스 단품 <span class="t">단품</span></div>
+          <div class="cand" onclick="tgl(this,'주니어 레이스')"><span class="ck"></span> 주니어 레이스 <span class="t">단품</span></div>
+          <div class="cand" onclick="tgl(this,'비전 3회권 상품')"><span class="ck"></span> 비전 3회권 상품 <span class="t">단품</span></div>
+        </div>
+        <div class="selbar" id="chips"><span class="selcount" id="selN">선택 2개</span>
+          <span class="chip"><b>레이스 포함 패키지</b><span class="rm" onclick="rm('레이스 포함 패키지')">✕</span></span>
+          <span class="chip"><b>실내 패키지</b><span class="rm" onclick="rm('실내 패키지')">✕</span></span>
+        </div>
+      </div>
+    </div></div>
+
+    <div class="fld"><div class="fl">크루 확인 필요</div><div class="fc"><span class="toggle" onclick="toggleCrew()"><span class="sw off" id="crewSw"></span> <span id="crewLbl">사용 안 함</span></span></div></div>
+    <div id="crewBlock" hidden>
+      <div class="fld"><div class="fl">크루 확인 안내</div><div class="fc"><input class="ipt" id="crewGuide" style="width:100%" placeholder="예: 국가유공자증 확인"></div></div>
+      <div class="fld"><div class="fl">확인 시점</div><div class="fc"><div class="autoval" id="crewWhen">할인 적용 시</div></div></div>
+    </div>
+
+    <div class="fld"><div class="fl">활성 기간 <span class="req">*</span></div><div class="fc"><div class="dtrow"><input class="ipt" value="2026-11-01"><span class="t">~</span><input class="ipt" value="2026-12-31"></div></div></div>
+    <div class="fld"><div class="fl">상태</div><div class="fc"><span class="toggle"><span class="sw"></span> 활성</span></div></div>
+
+    <div class="dmemo">
+      <div class="mh">안내 <span style="font-weight:400;color:var(--muted)">— 구현 시 제외 가능</span></div>
+      <ul>
+        <li>프로모션명은 내부 관리용 · 고객 노출명은 <b>쿠폰</b>에서</li>
+        <li><b>유형</b> — 일반·신분·교환 중 하나. 직권할인은 OS 전용(별도)</li>
+        <li><b>신분(자격)</b> — 자격은 <b>이름으로 생성·재사용</b>(자격 추가 가능) · 1개 단독 적용</li>
+        <li><b>교환</b> — 할인 없음 · 프로모션은 교환권 발급 정책만, <b>교환 대상은 쿠폰에서 지정</b></li>
+        <li><b>적용 상품</b> — 여러 상품 선택 가능 · 연결은 프로모션 소유(상품 화면은 읽기)</li>
+        <li><b>크루 확인</b> — 켜면 적용 시(교환은 사용 시) 크루 승인코드 필요 · 코드는 크루별 일일 자동 생성 · 신분 유형 기본 ON</li>
+        <li><b>활성 중 크루 확인 설정 변경</b> — 변경 불가/신규 버전 처리 미정(킵)</li>
+        <li><b>활성 기간</b> — 발급·운영 가능 기간(쿠폰 사용 기간은 쿠폰에서)</li>
+      </ul>
+    </div>
+  </div>
+  <div class="dfoot"><span class="sp"></span><button class="btn ghost sm" onclick="closeDrawer()">취소</button><button class="btn pri sm" onclick="closeDrawer()">저장</button></div>
+</aside>
+
+<!-- 쿠폰 상세 드로어 (전체 킵 · 필요 여부 검토) -->
+<aside class="drawer keptall" id="dw2">
+  <div class="dh"><h3>쿠폰 상세</h3><span class="code" id="c_code" style="color:var(--muted)"></span><span class="sp"></span><button class="x" onclick="closeDrawer()">✕</button></div>
+  <div class="db">
+    <div class="keptbanner">이 상세 화면 자체가 <b>필요 여부 검토 중(킵)</b> — 조회 목록만으로 충분할 수 있어 구현 미확정</div>
+    <div style="display:flex;align-items:center;gap:10px;margin:8px 0 14px">
+      <span class="heroamt" id="c_disc">−5,000</span>
+      <span class="pill" id="c_status">발급됨</span>
+      <span class="sp" style="flex:1"></span>
+      <span class="ex" style="background:var(--note-soft);color:var(--note)">예시</span>
+    </div>
+
+    <div class="dgrp">
+      <p class="dl">기본 정보</p>
+      <div class="kv">
+        <span class="k">쿠폰코드</span><span class="code" id="c_code2">OPEN-7K3P9QF2WX8A</span>
+        <span class="k">쿠폰명</span><span id="c_name">오픈 기념 5천원</span>
+        <span class="k">연결 프로모션</span><span id="c_promo">오픈 기념 할인 (PRM-OPEN)</span>
+        <span class="k">혜택</span><span id="c_disc2">−5,000</span>
+      </div>
+    </div>
+
+    <div class="dgrp">
+      <p class="dl">발급</p>
+      <div class="kv">
+        <span class="k">발급 방식</span><span id="c_issue">난수번호</span>
+        <span class="k">발급일</span><span id="c_issued">2026-11-02</span>
+        <span class="k">사용 기간</span><span id="c_use">2026-11-01 ~ 12-31</span>
+      </div>
+    </div>
+
+    <div class="dgrp">
+      <p class="dl">소유</p>
+      <div class="kv">
+        <span class="k">닉네임</span><span id="c_owner">질주하는곰</span>
+        <span class="k">티켓</span><span class="code" id="c_ticket">TKT-114A</span>
+      </div>
+      <div class="keptline" style="margin-top:8px">실명·전화번호 등 <b>개인정보는 미표시</b> — 티켓·닉네임 기준(개인정보보호법)</div>
+    </div>
+
+    <div class="dgrp" id="c_giftbox" hidden>
+      <p class="dl">선물</p>
+      <div class="kv">
+        <span class="k">수신 방식</span><span id="c_giftto">선물 링크</span>
+        <span class="k">상태</span><span>수신 대기 (회수·삭제 불가)</span>
+      </div>
+    </div>
+
+    <div class="dgrp" id="c_usebox">
+      <p class="dl">사용</p>
+      <div class="kv">
+        <span class="k">사용일시</span><span id="c_usedat">—</span>
+      </div>
+      <div class="keptline" style="margin-top:8px">사용 <b>채널 구분값 미정</b> · 승인 크루 표시 여부 검토(킵)</div>
+    </div>
+
+    <div class="dgrp">
+      <p class="dl">이력</p>
+      <ul class="tl" id="c_tl">
+        <li>발급됨 <span class="tt">2026-11-02 10:20</span></li>
+        <li>회원 등록 <span class="tt">2026-11-03</span></li>
+      </ul>
+    </div>
+  </div>
+  <div class="dfoot">
+    <button class="btn keptbtn sm">회원 언매핑 (정책상 없음·킵)</button>
+    <span class="sp"></span>
+    <button class="btn ghost sm" id="c_cancel">사용 취소</button>
+    <button class="btn ghost sm" id="c_del">삭제</button>
+  </div>
+</aside>
+
+<!-- 쿠폰 발급 드로어 -->
+<aside class="drawer" id="dwC">
+  <div class="dh"><h3>쿠폰 발급</h3><span class="sp"></span><button class="x" onclick="closeDrawer()">✕</button></div>
+  <div class="db">
+    <div class="sec">
+      <div class="fld"><div class="fl">연결 프로모션 <span class="req">*</span></div><div class="fc"><select class="sel" id="cPromo" style="width:100%" onchange="cPromoChange()"><option data-exc="0">오픈 기념 할인 (PRM-OPEN · −5,000)</option><option data-exc="1">F&amp;B 교환 (PRM-FNB · 교환)</option></select><div class="fh">쿠폰은 프로모션의 정책(할인·자격·기간)을 상속</div></div></div>
+      <div class="fld" id="cExcBlock" hidden><div class="fl">교환 대상 <span class="req">*</span></div><div class="fc"><select class="sel" style="width:100%"><option>F&amp;B 음료 (비JAM PSU)</option><option>F&amp;B 스낵 (비JAM PSU)</option><option>굿즈 · 티셔츠</option><option>굿즈 · 스티커</option><option>상품 · 레이스 단품</option></select><div class="fh">이 쿠폰으로 교환할 대상(교환 유형 프로모션일 때)</div></div></div>
+      <div class="fld"><div class="fl">쿠폰명 <span class="req">*</span></div><div class="fc"><div class="row3"><input class="ipt" value="오픈 기념 5천원 쿠폰" placeholder="KR"><input class="ipt" placeholder="EN"><input class="ipt" placeholder="中"></div><div class="fh">고객에게 노출되는 쿠폰 이름(다국어)</div></div></div>
+      <div class="fld"><div class="fl">이미지</div><div class="fc"><div class="slot"><span class="plus">+</span><span class="nm">쿠폰 이미지</span><span class="spec">규격 미확정</span></div></div></div>
+      <div class="fld"><div class="fl">설명</div><div class="fc"><textarea class="ipt" placeholder="쿠폰 상세 설명(다국어)">전 상품 5,000원 즉시 할인. 1인 1매.</textarea></div></div>
+      <div class="fld"><div class="fl">발급 방식 <span class="req">*</span></div><div class="fc"><div class="seg" id="methodSeg"><button class="on" data-m="random" onclick="setMethod('random')">난수번호 생성</button><button data-m="code" onclick="setMethod('code')">프로모션 코드</button><button data-m="manual" onclick="setMethod('manual')">수동(대상 지정)</button></div></div></div>
+
+      <!-- 난수번호 생성 -->
+      <div id="mRandom">
+        <div class="fld"><div class="fl">발급 수량 <span class="req">*</span></div><div class="fc"><div class="row3" style="max-width:150px"><input class="ipt" value="1,000"></div></div></div>
+        <div class="fld"><div class="fl">코드 형식</div><div class="fc"><div class="row3"><select class="sel" style="max-width:120px"><option>영문+숫자</option><option>숫자</option></select><input class="ipt" value="12" style="max-width:64px"><input class="ipt" value="OPEN-" placeholder="접두어" style="max-width:100px"></div></div></div>
+        <div class="fld"><div class="fl">미리보기</div><div class="fc"><div class="codeprev"><span>OPEN-7K3P9QF2WX8A</span><span>OPEN-2M4D8H7T1CQZ</span><span style="color:var(--note)">… 외 998건</span></div></div></div>
+      </div>
+
+      <!-- 프로모션 코드(입력형) -->
+      <div id="mCode" hidden>
+        <div class="fld"><div class="fl">프로모션 코드 <span class="req">*</span></div><div class="fc"><div class="row3"><input class="ipt" value="WELCOME2026" style="font-family:var(--mono)"><button class="btn ghost sm">랜덤</button></div><div class="fh">고객이 이 코드를 입력하면 쿠폰이 지급됨 (단일 공용 코드)</div></div></div>
+        <div class="fld"><div class="fl">총 발급 한도</div><div class="fc"><div class="row3" style="max-width:160px"><input class="ipt" value="500"><span class="t" style="align-self:center;color:var(--muted)">장까지</span></div><div class="fh">선착순 소진 시 코드 입력 마감</div></div></div>
+        <div class="fld"><div class="fl">1인 1회 제한</div><div class="fc"><span class="toggle"><span class="sw"></span> 제한함</span></div></div>
+      </div>
+
+      <!-- 수동(대상 지정) -->
+      <div id="mManual" hidden>
+        <div class="fld"><div class="fl">발급 대상 <span class="req">*</span></div><div class="fc"><div class="row3"><input class="ipt" placeholder="회원 검색(이름·전화)"><button class="btn ghost sm">CSV 업로드</button></div><div class="fh">개별 회원 지정 또는 명단 업로드</div></div></div>
+        <div class="fld"><div class="fl">발송 방법 <span class="req">*</span></div><div class="fc"><div class="radio"><span class="opt on">앱 푸시</span><span class="opt">알림톡</span><span class="opt">문자(SMS)</span><span class="opt">이메일</span></div><div class="fh">지정 대상에게 쿠폰 지급을 알리는 방법</div></div></div>
+        <div class="fld"><div class="fl">대상 수</div><div class="fc"><div class="row3" style="max-width:120px"><input class="ipt" value="0" disabled></div><div class="fh">선택·업로드한 대상 수만큼 발급</div></div></div>
+      </div>
+
+      <div class="fld"><div class="fl">사용 기간 <span class="req">*</span></div><div class="fc"><div class="dtrow"><input class="ipt" value="2026-11-01"><span class="t">~</span><input class="ipt" value="2026-12-31"></div><div class="fh">시작·종료일 지정 · 발급 쿠폰의 사용 가능 기간</div></div></div>
+      <div class="fld"><div class="fl">선물 가능</div><div class="fc"><span class="toggle"><span class="sw off"></span> 미허용</span></div></div>
+      <div class="fld"><div class="fl">중복 발급 제한</div><div class="fc"><span class="toggle"><span class="sw"></span> 제한함</span></div></div>
+    </div>
+  </div>
+  <div class="dfoot"><span style="flex:1;font-size:11.5px;color:var(--muted)">발급 = 코드 생성·상태 ‘발급됨’</span><button class="btn ghost sm" onclick="closeDrawer()">취소</button><button class="btn pri sm" onclick="closeDrawer()">발급</button></div>
+</aside>
+
+<!-- 자동 혜택 규칙 생성/편집 드로어 -->
+<aside class="drawer keptall" id="dwR">
+  <div class="dh"><h3 id="r_title">자동 발급 규칙</h3><span class="sp"></span><button class="x" onclick="closeDrawer()">✕</button></div>
+  <div class="db">
+    <div class="fld"><div class="fl">규칙명 <span class="req">*</span></div><div class="fc"><input class="ipt" id="r_name" value="" style="width:100%" placeholder="예: 가입 웰컴 쿠폰"></div></div>
+
+    <div class="fld"><div class="fl">사건(트리거) <span class="req">*</span></div><div class="fc">
+      <select class="sel" id="r_trg" style="width:100%">
+        <optgroup label="확정 이벤트(시스템 발생)"><option>회원 가입</option><option>구매(이용) 완료</option><option>첫 구매</option></optgroup>
+        <optgroup label="추가 개발 필요 · 킵" disabled><option disabled>생일 (추후)</option><option disabled>회원 자격 취득 (추후)</option></optgroup>
+      </select>
+      <div class="fh">시스템이 이미 발생시키는 명확한 이벤트만 사용 · 그 외는 트리거 신규 개발 필요(킵)</div>
+    </div></div>
+
+    <div class="fld"><div class="fl">대상 조건</div><div class="fc"><div class="keptline">현재는 <b>사건 발생 전체 대상</b> · 특정 상품·채널·자격 등 상세 조건은 <b>추가 개발 필요(킵)</b></div></div></div>
+
+    <div class="fld"><div class="fl">연결 프로모션 <span class="req">*</span></div><div class="fc"><select class="sel" id="r_promo" style="width:100%"><option>오픈 기념 할인 (PRM-OPEN)</option><option>크루 할인 (PRM-CREW)</option><option>F&amp;B 교환 (PRM-FNB)</option></select><div class="fh">발급할 쿠폰의 프로모션(할인·자격·기간 상속)</div></div></div>
+    <div class="fld"><div class="fl">발급 수량</div><div class="fc"><div class="row3" style="max-width:130px"><input class="ipt" id="r_qty" value="1"><span class="t" style="align-self:center;color:var(--muted)">인당</span></div></div></div>
+
+    <div class="fld"><div class="fl">중복 발급 방지</div><div class="fc"><span class="toggle"><span class="sw"></span> 같은 건 1회만</span><div class="fh">동일 사건·대상에 중복 실행 방지</div></div></div>
+    <div class="fld"><div class="fl">상태</div><div class="fc"><span class="toggle"><span class="sw"></span> 활성</span></div></div>
+
+    <div class="dmemo">
+      <div class="mh">안내 <span style="font-weight:400;color:var(--muted)">— 구현 시 제외 가능</span></div>
+      <ul>
+        <li>자동 발급 규칙 = <b>확정 이벤트(가입·구매) → 쿠폰 발급</b> · 발급은 연결 프로모션을 상속해 배치 생성</li>
+        <li><b>환불 연동</b>(전체=회수·복구 / 부분=유지)은 <b>시스템 기본 동작</b>이라 규칙으로 만들지 않음(읽기전용)</li>
+        <li><b>중복 방지</b> — 동일 사건·대상 1회 실행</li>
+        <li>생일·자격 취득·특정 상품/채널 조건 등은 트리거·조건 신규 개발 필요 → <b>추후(킵)</b></li>
+      </ul>
+    </div>
+  </div>
+  <div class="dfoot"><span class="sp"></span><button class="btn ghost sm" onclick="closeDrawer()">취소</button><button class="btn pri sm" onclick="closeDrawer()">저장</button></div>
+</aside>
+
+<!-- 발급 배치 상세 드로어 -->
+<aside class="drawer" id="dwB">
+  <div class="dh"><h3 id="b_name">쿠폰 발급 상세</h3><span class="sp"></span><button class="x" onclick="closeDrawer()">✕</button></div>
+  <div class="db">
+    <div style="display:flex;align-items:center;gap:10px;margin:8px 0 12px">
+      <span class="pill s-on" id="b_status">활성</span><span class="typ y-gen" id="b_method">난수번호</span>
+      <span class="sp" style="flex:1"></span><span class="ex" style="background:var(--note-soft);color:var(--note)">예시</span>
+    </div>
+    <div class="keptlbl">※ 발급·사용 집계 항목·표시 방식 검토(킵)</div>
+    <div class="statrow kept">
+      <span class="stat">발급<b id="b_issued">10,000</b></span>
+      <span class="stat">사용완료<b id="b_used">4,200</b></span>
+      <span class="stat">사용취소<b id="b_cancel">36</b></span>
+      <span class="stat">미사용<b id="b_unused">5,764</b></span>
+      <span class="stat" id="b_waitwrap">수신대기<b id="b_wait">0</b></span>
+    </div>
+    <div class="pbar"><span id="b_bar" style="width:42%"></span></div>
+    <div class="pbarlbl" id="b_rate">사용률 42%</div>
+
+    <div class="dgrp" style="margin-top:14px">
+      <p class="dl">기본 정보</p>
+      <div class="kv">
+        <span class="k">연결 프로모션</span><span id="b_promo">오픈 기념 할인 (PRM-OPEN)</span>
+        <span class="k">발급 방식</span><span id="b_method2">난수번호</span>
+        <span class="k" id="b_sendK" hidden>발송 방법</span><span id="b_send" hidden></span>
+        <span class="k">사용 기간</span><span id="b_use">2026-11-01 ~ 12-31</span>
+        <span class="k">발급일</span><span id="b_issuedAt">2026-11-02</span>
+        <span class="k">등록자</span><span id="b_by">옵집사</span>
+      </div>
+    </div>
+
+    <div class="dgrp" id="b_codesec" hidden>
+      <p class="dl">프로모션 코드</p>
+      <div class="codeprev"><b id="b_codeval" style="color:var(--fg);font-size:15px;letter-spacing:.02em">WELCOME2026</b></div>
+      <div class="fh">고객이 이 코드를 입력하면 쿠폰 지급</div>
+    </div>
+
+    <div class="dgrp">
+      <p class="dl">쿠폰번호</p>
+      <button class="btn ghost sm">쿠폰번호 엑셀 다운로드</button>
+      <div class="keptline" id="b_sendbox" style="margin-top:8px;display:none">발송 현황 — <b>구현 정책 미정(킵)</b> · 수동 발급 대상별 발송·수신 결과 표시 여부 검토</div>
+    </div>
+
+    <div class="keptline">개별 쿠폰 하나하나는 여기 나열하지 않습니다. <b>특정 회원·코드 확인은 ‘쿠폰 조회’ 탭에서 검색</b>하세요.</div>
+  </div>
+  <div class="dfoot"><span class="sp"></span><button class="btn ghost sm" onclick="closeDrawer()">닫기</button></div>
+</aside>
+
+<script>
+var BATCH=[
+  {name:'오픈 기념 5천원',promo:'오픈 기념 할인 (PRM-OPEN)',method:'난수번호',mcls:'y-gen',issued:10000,used:4200,cancel:36,wait:0,use:'2026-11-01 ~ 12-31',issuedAt:'2026-11-02',by:'정산이',st:'활성'},
+  {name:'F&B 교환권',promo:'F&B 교환 (PRM-FNB)',method:'수동',mcls:'y-id',issued:500,used:120,cancel:0,wait:20,use:'~12-31',issuedAt:'2026-11-10',by:'파수꾼',st:'활성',send:'알림톡'},
+  {name:'웰컴 코드',promo:'오픈 기념 할인 (PRM-OPEN)',method:'프로모션 코드',mcls:'y-exc',issued:210,used:90,cancel:0,wait:0,use:'~12-31',issuedAt:'2026-11-01',by:'옵집사',st:'활성',code:'WELCOME2026 (한도 500)'},
+  {name:'크루 감사 쿠폰',promo:'크루 할인 (PRM-CREW)',method:'수동',mcls:'y-id',issued:80,used:33,cancel:0,wait:0,use:'~12-31',issuedAt:'2026-11-05',by:'정산이',st:'활성',send:'앱 푸시'}
+];
+function nf(n){return n.toLocaleString('en-US');}
+(function(){
+  var b=document.getElementById('batchBody');
+  b.innerHTML=BATCH.map(function(x,i){
+    var unused=x.issued-x.used-x.cancel;
+    return '<tr class="click" onclick="openBatch('+i+')"><td>'+x.name+'</td><td>'+x.promo+'</td>'+
+      '<td><span class="typ '+x.mcls+'">'+x.method+'</span></td>'+
+      '<td class="r">'+nf(x.issued)+'</td><td class="r">'+nf(x.used)+'</td><td class="r">'+nf(unused)+'</td>'+
+      '<td>'+x.use+'</td><td><span class="pill s-on">'+x.st+'</span></td>'+
+      '<td><button class="mini" onclick="event.stopPropagation();openBatch('+i+')">상세</button></td></tr>';
+  }).join('');
+})();
+function openBatch(i){
+  var x=BATCH[i], unused=x.issued-x.used-x.cancel, rate=Math.round(x.used/x.issued*100);
+  document.getElementById('b_name').textContent=x.name;
+  document.getElementById('b_status').textContent=x.st;
+  var m=document.getElementById('b_method'); m.textContent=x.method; m.className='typ '+x.mcls;
+  document.getElementById('b_issued').textContent=nf(x.issued);
+  document.getElementById('b_used').textContent=nf(x.used);
+  document.getElementById('b_cancel').textContent=nf(x.cancel);
+  document.getElementById('b_unused').textContent=nf(unused);
+  document.getElementById('b_wait').textContent=nf(x.wait);
+  document.getElementById('b_waitwrap').style.display=(x.method==='수동'||x.wait>0)?'':'none';
+  document.getElementById('b_bar').style.width=rate+'%';
+  document.getElementById('b_rate').textContent='사용률 '+rate+'%';
+  document.getElementById('b_promo').textContent=x.promo;
+  document.getElementById('b_method2').textContent=x.method;
+  document.getElementById('b_use').textContent=x.use;
+  document.getElementById('b_issuedAt').textContent=x.issuedAt;
+  document.getElementById('b_by').textContent=x.by;
+  var codesec=document.getElementById('b_codesec');
+  if(x.code){codesec.hidden=false;document.getElementById('b_codeval').textContent=x.code;}else{codesec.hidden=true;}
+  var sendK=document.getElementById('b_sendK'),send=document.getElementById('b_send');
+  if(x.send){sendK.hidden=false;send.hidden=false;send.textContent=x.send;document.getElementById('b_sendbox').style.display='';}else{sendK.hidden=true;send.hidden=true;document.getElementById('b_sendbox').style.display='none';}
+  document.getElementById('ov').classList.add('show');
+  document.getElementById('dwB').classList.add('show');
+}
+
+(function(){
+  document.querySelectorAll('.nav button').forEach(function(b){b.addEventListener('click',function(){
+    document.querySelectorAll('.nav button').forEach(function(x){x.classList.remove('on')}); b.classList.add('on');
+    document.querySelectorAll('.tabpane').forEach(function(p){p.hidden=(p.dataset.p!==b.dataset.t)});
+  });});
+  // 라디오/일반 세그 토글 (발급 방식 세그는 setMethod에서 별도 처리)
+  document.querySelectorAll('.radio .opt, .seg:not(#methodSeg) button').forEach(function(b){b.addEventListener('click',function(){
+    var sib=b.parentElement.children; for(var i=0;i<sib.length;i++)sib[i].classList.remove('on'); b.classList.add('on');
+  });});
+})();
+function setMethod(m){
+  document.querySelectorAll('#methodSeg button').forEach(function(b){b.classList.toggle('on',b.dataset.m===m)});
+  document.getElementById('mRandom').hidden=(m!=='random');
+  document.getElementById('mCode').hidden=(m!=='code');
+  document.getElementById('mManual').hidden=(m!=='manual');
+}
+var QUALS=['군경·유공자·장애인','인천시민','크루'];
+function renderQuals(sel){
+  var s=document.getElementById('qualSel'); if(!s) return; s.innerHTML='';
+  QUALS.forEach(function(q){var o=document.createElement('option');o.textContent=q;s.appendChild(o);});
+  if(sel) s.value=sel;
+}
+function addQual(){var n=prompt('추가할 자격 이름 (예: OO대학교 재학생)'); if(!n) return; n=n.trim(); if(!n) return; if(QUALS.indexOf(n)<0) QUALS.push(n); renderQuals(n);}
+renderQuals();
+
+function cPromoChange(){
+  var s=document.getElementById('cPromo'); var exc=s.options[s.selectedIndex].dataset.exc==='1';
+  document.getElementById('cExcBlock').hidden=!exc;
+}
+
+function openDrawer(n,t){document.getElementById('dwTitle').textContent=n;setPromoType(t||'일반');document.getElementById('ov').classList.add('show');document.getElementById('dw').classList.add('show');}
+function setPromoType(t){
+  document.querySelectorAll('#typeRadio .opt').forEach(function(o){o.classList.toggle('on',o.dataset.y===t)});
+  var exc=(t==='교환');
+  document.getElementById('discBlock').hidden=exc;
+  document.getElementById('applyBlock').hidden=exc;
+  document.getElementById('qualBlock').hidden=(t!=='신분');
+  document.getElementById('excBlock').hidden=!exc;
+  setCrew(t==='신분');
+  document.getElementById('crewWhen').textContent=exc?'교환(사용) 시':'할인 적용 시';
+  document.getElementById('crewGuide').value=(t==='신분')?'신분증 확인':'';
+}
+function setCrew(on){var sw=document.getElementById('crewSw');sw.classList.toggle('off',!on);document.getElementById('crewLbl').textContent=on?'사용':'사용 안 함';document.getElementById('crewBlock').hidden=!on;}
+function toggleCrew(){setCrew(document.getElementById('crewSw').classList.contains('off'));}
+function openIssue(){cPromoChange();document.getElementById('ov').classList.add('show');document.getElementById('dwC').classList.add('show');}
+function closeDrawer(){document.getElementById('ov').classList.remove('show');document.getElementById('dw').classList.remove('show');document.getElementById('dw2').classList.remove('show');document.getElementById('dwC').classList.remove('show');document.getElementById('dwB').classList.remove('show');document.getElementById('dwR').classList.remove('show');}
+/* ===== 달력 date picker (CJU 스타일) ===== */
+var CAL={vy:2026,vm:10,start:'2026-11-01',end:'2026-11-30'}; // vm 0-based
+function toggleCal(e){e.stopPropagation();var d=document.getElementById('caldrop');d.classList.toggle('show');if(d.classList.contains('show'))renderCal();}
+function calMove(n){CAL.vm+=n;if(CAL.vm<0){CAL.vm=11;CAL.vy--;}if(CAL.vm>11){CAL.vm=0;CAL.vy++;}renderCal();}
+function iso(y,m,d){return y+'-'+String(m+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');}
+function renderCal(){
+  var y=CAL.vy,m=CAL.vm;
+  document.getElementById('calMY').textContent=y+'년 '+(m+1)+'월';
+  var first=new Date(y,m,1).getDay(), dim=new Date(y,m+1,0).getDate(), pdim=new Date(y,m,0).getDate();
+  var wd=['일','월','화','수','목','금','토'];
+  var h=wd.map(function(w,i){return '<div class="wd'+(i===0?' sun':i===6?' sat':'')+'">'+w+'</div>';}).join('');
+  for(var i=0;i<first;i++){var dd=pdim-first+1+i;h+='<div class="day oth">'+dd+'</div>';}
+  for(var d=1;d<=dim;d++){
+    var s=iso(y,m,d), dow=new Date(y,m,d).getDay(), cls='day';
+    if(dow===0)cls+=' sun';if(dow===6)cls+=' sat';
+    if(s===CAL.start||s===CAL.end)cls+=' sel';
+    else if(CAL.start&&CAL.end&&s>CAL.start&&s<CAL.end)cls+=' inrange';
+    h+='<div class="'+cls+'" onclick="calPick(\''+s+'\')">'+d+'</div>';
+  }
+  document.getElementById('calGrid').innerHTML=h;
+  document.getElementById('calS').textContent=CAL.start||'—';
+  document.getElementById('calE').textContent=CAL.end||'—';
+}
+function calPick(s){
+  if(!CAL.start||CAL.end){CAL.start=s;CAL.end=null;}
+  else if(s<CAL.start){CAL.end=CAL.start;CAL.start=s;}
+  else{CAL.end=s;}
+  renderCal();
+  document.getElementById('dpLabel').textContent=CAL.start+(CAL.end?(' ~ '+CAL.end):' ~ 종료 선택');
+}
+document.addEventListener('click',function(){var d=document.getElementById('caldrop');if(d)d.classList.remove('show');});
+
+// 트리거 레지스트리 (ready=현재 지원 / false=추가 개발 필요·킵) — 확장은 여기 한 줄
+var TRIGGERS=[
+  {label:'회원 가입',ready:true},
+  {label:'구매(이용) 완료',ready:true},
+  {label:'첫 구매',ready:true},
+  {label:'생일',ready:false},
+  {label:'회원 자격 취득',ready:false}
+];
+// 자동 발급 규칙 데이터 — 추가는 여기 한 줄
+var RULES=[
+  {name:'가입 웰컴 쿠폰',trg:'회원 가입',promo:'오픈 기념 할인',qty:1,active:true},
+  {name:'이용 완료 리워드',trg:'구매(이용) 완료',promo:'오픈 기념 할인',qty:1,active:true}
+];
+function renderRules(){
+  var el=document.getElementById('ruleCards'); if(!el) return;
+  el.innerHTML=RULES.map(function(r,i){
+    return '<div class="rulecard"><span class="trg">'+r.trg+'</span><span class="arrow">→</span>'+
+      '<div class="act">'+r.promo+' 쿠폰 <b>'+r.qty+'장</b> 발급 <span style="color:var(--muted)">· '+r.name+'</span></div>'+
+      '<span class="sp"></span><div class="rc-act"><span class="pill '+(r.active?'s-on':'s-cancel')+'">'+(r.active?'활성':'중지')+'</span>'+
+      '<button class="mini" onclick="openRule('+i+')">편집</button></div></div>';
+  }).join('');
+}
+function renderTrgSelect(){
+  var s=document.getElementById('r_trg'); if(!s) return;
+  var ready=TRIGGERS.filter(function(t){return t.ready}), no=TRIGGERS.filter(function(t){return !t.ready});
+  s.innerHTML='<optgroup label="확정 이벤트(시스템 발생)">'+ready.map(function(t){return '<option>'+t.label+'</option>'}).join('')+'</optgroup>'+
+    '<optgroup label="추가 개발 필요 · 킵">'+no.map(function(t){return '<option disabled>'+t.label+' (추후)</option>'}).join('')+'</optgroup>';
+}
+function openRule(i){
+  renderTrgSelect();
+  var r=(typeof i==='number')?RULES[i]:null;
+  if(r){
+    document.getElementById('r_title').textContent='자동 발급 규칙 편집';
+    document.getElementById('r_name').value=r.name;
+    document.getElementById('r_trg').value=r.trg;
+    document.getElementById('r_qty').value=r.qty;
+    var s=document.getElementById('r_promo');for(var k=0;k<s.options.length;k++){if(s.options[k].text.indexOf(r.promo)>=0){s.selectedIndex=k;break;}}
+  }else{
+    document.getElementById('r_title').textContent='자동 발급 규칙 등록';
+    document.getElementById('r_name').value='';
+    document.getElementById('r_trg').value='회원 가입';
+    document.getElementById('r_qty').value='1';
+  }
+  document.getElementById('ov').classList.add('show');
+  document.getElementById('dwR').classList.add('show');
+}
+renderRules();
+
+function filterType(c){
+  document.querySelectorAll('#ctypeSeg button').forEach(function(b){b.classList.toggle('on',b.dataset.c===c)});
+  document.querySelectorAll('#lookupBody tr').forEach(function(tr){
+    var t=(tr.dataset.disc||'').indexOf('교환')>=0?'교환':'할인';
+    tr.style.display=(c==='전체'||c===t)?'':'none';
+  });
+}
+function openCoupon(tr){
+  var d=tr.dataset;
+  document.getElementById('c_code').textContent='· '+d.code;
+  document.getElementById('c_code2').textContent=d.code;
+  document.getElementById('c_name').textContent=d.name;
+  document.getElementById('c_promo').textContent=d.promo;
+  document.getElementById('c_disc').textContent=d.disc;
+  document.getElementById('c_disc2').textContent=d.disc;
+  document.getElementById('c_owner').textContent=d.owner;
+  document.getElementById('c_ticket').textContent=d.ticket||'—';
+  document.getElementById('c_issue').textContent=d.issue;
+  document.getElementById('c_issued').textContent=d.issued;
+  document.getElementById('c_use').textContent=d.use;
+  var st=document.getElementById('c_status'); st.textContent=d.status; st.className='pill '+d.statusC;
+  var gift=d.gift==='1';
+  document.getElementById('c_giftbox').hidden=!gift;
+  if(gift) document.getElementById('c_giftto').textContent=d.giftTo||'—';
+  var used=!!d.usedat;
+  document.getElementById('c_usedat').textContent=used?d.usedat:'—';
+  // 이력 타임라인 상태별
+  var tl=document.getElementById('c_tl'); var h='<li>발급됨 <span class="tt">'+d.issued+'</span></li>';
+  if(d.owner.indexOf('회원')>-1) h+='<li>회원 등록 <span class="tt">발급 직후</span></li>';
+  if(gift) h+='<li>선물 발송(알림톡) · 수신 대기 <span class="tt">'+d.issued+'</span></li>';
+  if(used) h+='<li>사용완료 <span class="tt">'+d.usedat+'</span></li>';
+  tl.innerHTML=h;
+  // 액션 가용성
+  document.getElementById('c_cancel').disabled = (d.status!=='사용완료');
+  document.getElementById('c_del').disabled = (d.status==='사용완료'||gift);
+  document.getElementById('ov').classList.add('show');
+  document.getElementById('dw2').classList.add('show');
+}
+function recount(){var n=document.querySelectorAll('#cands .cand.sel').length;document.getElementById('selN').textContent='선택 '+n+'개';}
+function tgl(el,name){el.classList.toggle('sel');el.querySelector('.ck').textContent=el.classList.contains('sel')?'✓':'';syncChips();}
+function rm(name){var list=document.querySelectorAll('#cands .cand');list.forEach(function(c){if(c.textContent.indexOf(name)>-1){c.classList.remove('sel');c.querySelector('.ck').textContent='';}});syncChips();}
+function syncChips(){
+  var chips=document.getElementById('chips'); var sel=document.querySelectorAll('#cands .cand.sel');
+  var html='<span class="selcount" id="selN">선택 '+sel.length+'개</span>';
+  sel.forEach(function(c){var nm=c.textContent.replace('✓','').trim().replace(/\s+(패키지|옵션|추가구매)$/,'');html+='<span class="chip"><b>'+nm+'</b><span class="rm" onclick="rm(\''+nm+'\')">✕</span></span>';});
+  chips.innerHTML=html;
+}
+</script>

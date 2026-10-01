@@ -1,0 +1,194 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="robots" content="noindex,nofollow">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>재고 관리</title>
+<style>
+  :root{
+    --bg:#fafafa; --surface:#ffffff; --surface-2:#f5f5f5; --field:#fcfcfc;
+    --fg:#212529; --muted:#878a99; --line:#ebebeb; --line-2:#efefef;
+    --accent:#245ec3; --accent-soft:#e9f0fb;
+    --ok:#1a7f4b; --ok-soft:#dcf1e9; --near:#b3701a; --near-soft:#fbeed6; --soldout:#da222b; --soldout-soft:#fbe3e0; --stop:#878a99; --stop-soft:#e9edf1;
+    --wire:#aeb6c1;
+    --note:#6a5acd;--note-soft:rgba(106,90,205,.12);
+    --font-display:"Space Grotesk","Pretendard",-apple-system,BlinkMacSystemFont,sans-serif;
+    --font-body:"Pretendard",-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo",sans-serif;
+    --mono:"SF Mono",ui-monospace,"Roboto Mono",Menlo,monospace;
+  }
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+    --bg:#0f1218; --surface:#181c24; --surface-2:#1f242e; --field:#141821;
+    --fg:#e8ebf0; --muted:#98a2b0; --line:#2b313c; --line-2:#242a34;
+    --accent:#5b8cff; --accent-soft:#1b2640;
+    --ok:#4cc585; --ok-soft:#12301f; --near:#e0a94a; --near-soft:#33280f; --soldout:#e57368; --soldout-soft:#3a1d1a; --stop:#98a2b0; --stop-soft:#242a34;
+    --wire:#3a414d;--note:#a99cf0;--note-soft:rgba(169,156,240,.16); color-scheme:dark;
+  }}
+  :root[data-theme="dark"]{
+    --bg:#0f1218; --surface:#181c24; --surface-2:#1f242e; --field:#141821;
+    --fg:#e8ebf0; --muted:#98a2b0; --line:#2b313c; --line-2:#242a34;
+    --accent:#5b8cff; --accent-soft:#1b2640;
+    --ok:#4cc585; --ok-soft:#12301f; --near:#e0a94a; --near-soft:#33280f; --soldout:#e57368; --soldout-soft:#3a1d1a; --stop:#98a2b0; --stop-soft:#242a34;
+    --wire:#3a414d;--note:#a99cf0;--note-soft:rgba(169,156,240,.16); color-scheme:dark;
+  }
+  *{box-sizing:border-box}
+  body{background:var(--bg);color:var(--fg);font-family:var(--font-body);line-height:1.45;font-size:13.5px;margin:0}
+  .app{max-width:1160px;margin:0 auto;padding:16px 16px 56px}
+  .crumb{font-size:12px;color:var(--muted)}.crumb b{color:var(--fg);font-weight:600}
+  .toolbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:8px 0 12px}
+  .toolbar h1{font-family:var(--font-display);font-size:20px;margin:0}
+  .toolbar .sp{flex:1;min-width:0}
+  .ex{font-size:10px;font-weight:700;color:var(--note);background:var(--note-soft);border-radius:5px;padding:1px 6px;font-family:var(--font-display)}
+  .btn{font-size:13px;border-radius:8px;padding:8px 13px;border:1px solid var(--line);background:var(--surface);color:var(--fg);cursor:pointer;font-family:var(--font-body)}
+  .btn.ghost{background:none}.btn.sm{padding:6px 11px;font-size:12.5px}
+
+  .ctrlbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-bottom:12px}
+  .dsel{display:flex;align-items:center;gap:6px}
+  .ipt,.sel{background:var(--field);border:1px solid var(--line);border-radius:7px;padding:7px 9px;font-size:13px;color:var(--fg);font-family:var(--font-body)}
+  .tabs{display:flex;gap:4px;background:var(--surface-2);border:1px solid var(--line);border-radius:9px;padding:3px;flex-wrap:wrap}
+  .tab{font-family:var(--font-display);font-size:12.5px;font-weight:600;color:var(--muted);background:none;border:none;border-radius:6px;padding:7px 13px;cursor:pointer}
+  .tab.on{background:var(--surface);color:var(--fg);box-shadow:0 1px 2px rgba(0,0,0,.06)}
+
+  .panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden;margin-bottom:14px}
+  .panel .ph{display:flex;align-items:center;gap:8px;padding:11px 14px;border-bottom:1px solid var(--line);font-family:var(--font-display);font-weight:600;font-size:13px}
+  .panel .ph .sp{flex:1}.panel .ph .cnt{color:var(--muted);font-weight:400;font-size:12px}
+  .tblwrap{overflow-x:auto}
+  table{border-collapse:collapse;width:100%;font-size:13px;min-width:640px}
+  th,td{padding:10px 12px;border-bottom:1px solid var(--line-2);text-align:left;white-space:nowrap}
+  th{background:var(--surface-2);font-family:var(--font-display);font-size:11px;color:var(--muted);text-transform:uppercase}
+  td.r,th.r{text-align:right;font-variant-numeric:tabular-nums}
+  .slot{font-family:var(--mono);font-size:12.5px}
+  .capedit{width:74px;background:var(--field);border:1px solid var(--line);border-radius:6px;padding:5px 7px;font-size:12.5px;text-align:right;color:var(--fg);font-variant-numeric:tabular-nums}
+  .capedit:disabled{opacity:.5;cursor:not-allowed}
+  .pill{font-size:11px;font-weight:600;border-radius:20px;padding:2px 9px}
+  .p-ok{background:var(--ok-soft);color:var(--ok)}.p-near{background:var(--near-soft);color:var(--near)}.p-out{background:var(--soldout-soft);color:var(--soldout)}.p-stop{background:var(--stop-soft);color:var(--stop)}
+  .rowact{display:flex;gap:10px}.mini{font-size:11.5px;color:var(--accent);background:none;border:none;cursor:pointer;padding:0}
+  .mini.warn{color:var(--near)}
+
+  .os{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;padding:14px}
+  .oscard{background:var(--field);border:1px solid var(--line-2);border-radius:10px;padding:11px}
+  .oscard .l{font-size:11px;color:var(--muted)}
+  .oscard .v{font-family:var(--font-display);font-size:20px;font-variant-numeric:tabular-nums}
+  .track{display:flex;align-items:center;gap:8px;padding:8px 14px;border-top:1px solid var(--line-2);font-size:12.5px}
+  .track .nm{width:80px;font-weight:600}
+  .cong{font-size:11px;font-weight:600;border-radius:20px;padding:2px 9px;margin-left:auto}
+  .c-ok{background:var(--ok-soft);color:var(--ok)}.c-mid{background:var(--near-soft);color:var(--near)}.c-hi{background:var(--soldout-soft);color:var(--soldout)}
+  .bar{height:7px;border-radius:4px;background:var(--surface-2);flex:1;max-width:180px;overflow:hidden}
+  .bar span{display:block;height:100%}
+
+  /* 안내(보라) */
+  .notep{border-color:var(--note)}
+  .notep .ph{background:var(--note-soft);color:var(--note);border-bottom-color:var(--note)}
+  .notep .ph::before{content:"안내";font-size:9px;background:var(--note);color:#fff;border-radius:5px;padding:2px 6px;letter-spacing:.03em;font-family:var(--font-display)}
+  .guide{padding:14px}
+  .guide ul{margin:0;padding-left:18px;font-size:13px;columns:2;column-gap:26px}
+  @media(max-width:640px){.guide ul{columns:1}}
+  .guide li{margin:5px 0;break-inside:avoid}
+  .guide li b{font-family:var(--font-display);color:var(--note)}
+  .guide .gnote{margin:12px 0 0;padding-top:10px;border-top:1px dashed var(--note);font-size:12px;color:var(--muted)}
+</style>
+
+<div class="app">
+  <div class="crumb">운영 · <b>재고 관리</b></div>
+  <div class="toolbar">
+    <h1>재고 관리</h1><span class="ex">예시 데이터</span>
+    <span class="sp"></span>
+    <button class="btn ghost sm">CSV 내보내기</button>
+  </div>
+
+  <div class="ctrlbar">
+    <div class="dsel"><span style="color:var(--muted);font-size:12px">이용일</span><input class="ipt" value="2026-11-15" style="width:130px"><button class="btn ghost sm" style="padding:6px 10px">◀</button><button class="btn ghost sm" style="padding:6px 10px">▶</button></div>
+    <span class="sp"></span>
+    <div class="tabs" id="tabs"></div>
+  </div>
+
+  <div class="panel">
+    <div class="ph">시간대별 재고 — <span id="actName">레이스</span> <span class="cnt" id="dateLbl">· 2026-11-15</span><span class="sp"></span><span class="cnt" id="unitLbl">차량(대) 기준</span></div>
+    <div class="tblwrap">
+      <table>
+        <thead><tr><th>시간대</th><th class="r">수용 인원</th><th class="r">판매</th><th class="r">잔여</th><th>판매 상태</th><th>관리</th></tr></thead>
+        <tbody id="stockBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="ph">OS 실시간 (운영) <span class="cnt">· 참고 · 별도 화면</span><span class="sp"></span><span class="cnt" id="osSlot">10:00~11:00 슬롯</span></div>
+    <div class="os" id="osCards"></div>
+    <div id="osTracks"></div>
+  </div>
+
+  <div class="panel notep">
+    <div class="ph">재고 운영 기준</div>
+    <div class="guide">
+      <ul>
+        <li><b>슬롯 단위</b> — 레이스·마스터·아레나·벡토 모두 1시간</li>
+        <li><b>재고 단위</b> — 트랙(코스) 구분 없이 액티비티 단위로 하나의 재고</li>
+        <li><b>차감</b> — 레이스 1회 = 차량 1대, 탑승 인원 무관(동승 2인도 재고 1)</li>
+        <li><b>수용 인원</b> — 해당 액티비티 전체 처리량의 합</li>
+        <li><b>마스터 레이스</b> — 전용 트랙, 별도 재고 풀</li>
+        <li><b>아레나·벡토</b> — 인원(명) 단위로 수용 인원 설정</li>
+        <li><b>마이너스(초과) 재고</b> — OS 운영자 결제에서만 허용</li>
+        <li><b>대기·혼잡</b> — 트랙별 정확한 대기(분) 미제공, 혼잡 표시로 분산 유도</li>
+        <li>⏳ <b>결정 대기</b> — 재고 생성 방식(ST-006)·1인 슬롯당 구매 범위(ST-007) 확정 후 생성·차감·구매제한 UI 추가</li>
+      </ul>
+      <p class="gnote">조회·수용 인원 수정·판매중지·액티비티별 분리는 확정분, 생성·구매제한 UI는 보류.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+var ACTS=[
+  {id:'race',label:'레이스',unit:'차량(대)',
+    slots:[{t:'09:00 ~ 10:00',cap:720,sold:540,stop:false},{t:'10:00 ~ 11:00',cap:720,sold:712,stop:false},{t:'11:00 ~ 12:00',cap:720,sold:720,stop:false},{t:'12:00 ~ 13:00',cap:600,sold:210,stop:false},{t:'13:00 ~ 14:00',cap:720,sold:0,stop:true}],
+    os:{예약:712,탑승:655,잔여:8,'가동 트랙':'7/8'}, tracks:[{nm:'레드',load:55,c:'ok'},{nm:'블루',load:82,c:'mid'},{nm:'오렌지',load:96,c:'hi'}]},
+  {id:'master',label:'마스터 레이스',unit:'차량(대)',
+    slots:[{t:'10:00 ~ 11:00',cap:24,sold:18,stop:false},{t:'11:00 ~ 12:00',cap:24,sold:24,stop:false},{t:'14:00 ~ 15:00',cap:24,sold:6,stop:false}],
+    os:{예약:18,탑승:15,잔여:6,'가동 트랙':'1/1'}, tracks:[{nm:'마스터 트랙',load:70,c:'mid'}]},
+  {id:'arena',label:'아레나',unit:'인원(명)',
+    slots:[{t:'09:00 ~ 10:00',cap:40,sold:22,stop:false},{t:'10:00 ~ 11:00',cap:40,sold:38,stop:false},{t:'11:00 ~ 12:00',cap:40,sold:40,stop:false}],
+    os:{예약:38,입장:30,잔여:2,'가동 부스':'2/2'}, tracks:[{nm:'부스 A',load:60,c:'ok'},{nm:'부스 B',load:88,c:'mid'}]},
+  {id:'vecto',label:'벡토',unit:'인원(명)',
+    slots:[{t:'09:00 ~ 10:00',cap:30,sold:12,stop:false},{t:'10:00 ~ 11:00',cap:30,sold:28,stop:false}],
+    os:{예약:28,입장:20,잔여:2,'가동 기구':'2/3'}, tracks:[{nm:'기구 1',load:50,c:'ok'},{nm:'기구 2',load:75,c:'mid'}]}
+];
+var cur=0;
+
+function pill(cap,sold,stop){
+  if(stop) return '<span class="pill p-stop">판매중지</span>';
+  var rem=cap-sold;
+  if(rem<=0) return '<span class="pill p-out">매진</span>';
+  if(rem<=cap*0.05) return '<span class="pill p-near">매진 임박</span>';
+  return '<span class="pill p-ok">판매 가능</span>';
+}
+function renderTabs(){
+  var el=document.getElementById('tabs');
+  el.innerHTML=ACTS.map(function(a,i){return '<button class="tab'+(i===cur?' on':'')+'" onclick="pick('+i+')">'+a.label+'</button>';}).join('');
+}
+function renderStock(){
+  var a=ACTS[cur];
+  document.getElementById('actName').textContent=a.label;
+  document.getElementById('unitLbl').textContent=a.unit+' 기준';
+  var b=document.getElementById('stockBody');
+  b.innerHTML=a.slots.map(function(s){
+    var rem=s.stop?'—':(s.cap-s.sold);
+    var act=s.stop?'<button class="mini">재개</button>':'<button class="mini">저장</button> <button class="mini warn">판매중지</button>';
+    return '<tr><td class="slot">'+s.t+'</td>'+
+      '<td class="r"><input class="capedit" value="'+s.cap+'"'+(s.stop?' disabled':'')+'></td>'+
+      '<td class="r">'+(s.stop?0:s.sold)+'</td>'+
+      '<td class="r">'+rem+'</td>'+
+      '<td>'+pill(s.cap,s.sold,s.stop)+'</td>'+
+      '<td><div class="rowact">'+act+'</div></td></tr>';
+  }).join('');
+}
+function renderOS(){
+  var a=ACTS[cur];
+  document.getElementById('osCards').innerHTML=Object.keys(a.os).map(function(k){
+    return '<div class="oscard"><div class="l">'+k+'</div><div class="v">'+a.os[k]+'</div></div>';
+  }).join('');
+  var col={ok:'var(--ok)',mid:'var(--near)',hi:'var(--soldout)'}, lab={ok:'원활',mid:'보통',hi:'혼잡'};
+  document.getElementById('osTracks').innerHTML=a.tracks.map(function(t){
+    return '<div class="track"><span class="nm">'+t.nm+'</span><div class="bar"><span style="width:'+t.load+'%;background:'+col[t.c]+'"></span></div><span class="cong c-'+t.c+'">'+lab[t.c]+'</span></div>';
+  }).join('');
+}
+function pick(i){cur=i;renderTabs();renderStock();renderOS();}
+renderTabs();renderStock();renderOS();
+</script>

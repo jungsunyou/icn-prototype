@@ -1,735 +1,80 @@
-<title>결제 UI/UX 명세</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>ICN 프로토타입</title>
 <style>
-:root{
-  --ground:#F4F6F9; --surface:#FFFFFF; --surface-2:#FAFBFC; --panel-head:#FBFCFE;
-  --ink:#1A1E27; --ink-2:#3A4353; --muted:#697386; --faint:#9AA3B2;
-  --border:#E5E9EF; --border-strong:#D3D9E2;
-  --primary:#2F6BFF; --primary-ink:#1E4FD6; --primary-wash:#EAF0FF;
-  --success:#12894E; --success-wash:#E4F4EC;
-  --warn:#B4690E; --warn-wash:#F9EEDC;
-  --danger:#D22F2F; --danger-wash:#FBE7E7;
-  --shadow:0 1px 2px rgba(20,30,50,.04),0 4px 18px rgba(20,30,50,.06);
-  --radius:14px;
-}
-:root:not([data-theme="light"]){}
-@media (prefers-color-scheme:dark){
-  :root:not([data-theme="light"]){
-    --ground:#0E1116; --surface:#171B22; --surface-2:#1E232C; --panel-head:#1C222B;
-    --ink:#E7EBF2; --ink-2:#C2C9D6; --muted:#9AA4B4; --faint:#6B7484;
-    --border:#262C36; --border-strong:#343C48;
-    --primary:#5B86FF; --primary-ink:#9CB6FF; --primary-wash:#17233F;
-    --success:#40BE7E; --success-wash:#123020;
-    --warn:#E0A24B; --warn-wash:#33260F;
-    --danger:#F06A6A; --danger-wash:#331818;
-    --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 28px rgba(0,0,0,.4);
+  :root{
+    --bg:#fafafa; --surface:#ffffff; --fg:#212529; --muted:#878a99; --line:#ebebeb;
+    --accent:#245ec3; --accent-soft:#e9f0fb; --note:#6b4bc4; --note-soft:#f3effc;
+    --font:"Pretendard",-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo",sans-serif;
   }
-}
-:root[data-theme="dark"]{
-  --ground:#0E1116; --surface:#171B22; --surface-2:#1E232C; --panel-head:#1C222B;
-  --ink:#E7EBF2; --ink-2:#C2C9D6; --muted:#9AA4B4; --faint:#6B7484;
-  --border:#262C36; --border-strong:#343C48;
-  --primary:#5B86FF; --primary-ink:#9CB6FF; --primary-wash:#17233F;
-  --success:#40BE7E; --success-wash:#123020;
-  --warn:#E0A24B; --warn-wash:#33260F;
-  --danger:#F06A6A; --danger-wash:#331818;
-  --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 28px rgba(0,0,0,.4);
-}
-*{box-sizing:border-box}
-html{-webkit-text-size-adjust:100%}
-body{
-  margin:0;background:var(--ground);color:var(--ink);
-  font-family:"IBM Plex Sans KR","Noto Sans KR",system-ui,-apple-system,sans-serif;
-  font-size:15px;line-height:1.6;letter-spacing:-.01em;
-  -webkit-font-smoothing:antialiased;
-}
-.wrap{max-width:1120px;margin:0 auto;padding:0 24px}
-h1,h2,h3,h4{margin:0;text-wrap:balance;letter-spacing:-.02em}
-.mono{font-family:"IBM Plex Mono","IBM Plex Sans KR",monospace}
-.num{font-variant-numeric:tabular-nums}
-a{color:var(--primary)}
-
-/* header */
-header.top{border-bottom:1px solid var(--border);background:var(--surface);position:sticky;top:0;z-index:40}
-.top .wrap{display:flex;align-items:center;gap:18px;height:62px}
-.brand{font-weight:700;font-size:16px;letter-spacing:-.03em;display:flex;align-items:center;gap:9px}
-.brand .dot{width:9px;height:9px;border-radius:50%;background:var(--primary);box-shadow:0 0 0 4px var(--primary-wash)}
-.top nav{margin-left:auto;display:flex;gap:4px;flex-wrap:wrap}
-.top nav a{font-size:13px;color:var(--muted);text-decoration:none;padding:7px 11px;border-radius:8px;font-weight:500}
-.top nav a:hover{color:var(--ink);background:var(--surface-2)}
-.tbtn{border:1px solid var(--border-strong);background:var(--surface);color:var(--ink);width:34px;height:34px;border-radius:9px;cursor:pointer;font-size:15px;display:grid;place-items:center}
-.tbtn:hover{background:var(--surface-2)}
-
-/* hero */
-.hero{padding:52px 0 30px}
-.eyebrow{font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--primary-ink)}
-.hero h1{font-size:clamp(30px,4.4vw,44px);font-weight:700;margin:14px 0 14px;line-height:1.12}
-.hero p.lead{font-size:17px;color:var(--ink-2);max-width:62ch;margin:0}
-.meta{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px}
-.chip{font-size:12.5px;font-weight:500;padding:6px 12px;border-radius:999px;border:1px solid var(--border);background:var(--surface);color:var(--ink-2)}
-.chip b{color:var(--ink);font-weight:600}
-
-section.blk{padding:30px 0}
-.sect-head{display:flex;align-items:baseline;gap:14px;margin-bottom:22px;border-bottom:1px solid var(--border);padding-bottom:14px}
-.sect-head .idx{font-family:"IBM Plex Mono",monospace;font-size:13px;color:var(--faint);font-weight:500}
-.sect-head h2{font-size:23px;font-weight:700}
-.sect-head p{margin:0 0 0 auto;font-size:13.5px;color:var(--muted);text-align:right}
-
-.grid2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:26px;align-items:start}
-@media (max-width:860px){.grid2{grid-template-columns:1fr}}
-
-/* generic card */
-.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow)}
-.card .hd{padding:16px 18px;border-bottom:1px solid var(--border);font-weight:600;font-size:14.5px;display:flex;align-items:center;gap:8px;background:var(--panel-head);border-radius:var(--radius) var(--radius) 0 0}
-.card .bd{padding:18px}
-
-/* ---- mock ( admin reproduction) ---- */
-.mock{background:var(--surface);border:1px solid var(--border-strong);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
-.mock-bar{height:34px;background:var(--surface-2);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:6px;padding:0 12px}
-.mock-bar i{width:9px;height:9px;border-radius:50%;background:var(--border-strong);display:block}
-.mock-bar span{margin-left:8px;font-size:11.5px;color:var(--faint);font-family:"IBM Plex Mono",monospace}
-.pnl{padding:18px}
-.pnl h4{font-size:15px;font-weight:700;margin-bottom:2px}
-.pnl .sub{font-size:12px;color:var(--muted);margin-bottom:14px}
-.line{display:flex;justify-content:space-between;align-items:center;padding:9px 0;font-size:14px}
-.line + .line{border-top:1px solid var(--border)}
-.line .k{color:var(--muted)}
-.line .v{font-weight:600}
-.total{display:flex;justify-content:space-between;align-items:center;padding:14px 0 4px;margin-top:6px;border-top:2px solid var(--border-strong)}
-.total .k{font-weight:600}
-.total .v{font-size:20px;font-weight:700}
-
-.seg{display:inline-flex;padding:3px;background:var(--surface-2);border:1px solid var(--border);border-radius:10px;gap:2px;margin:14px 0 12px}
-.seg button{border:0;background:transparent;color:var(--muted);font:inherit;font-size:13px;font-weight:600;padding:6px 14px;border-radius:7px;cursor:pointer}
-.seg button.on{background:var(--surface);color:var(--ink);box-shadow:var(--shadow)}
-
-.payrow{display:grid;grid-template-columns:1fr 130px 34px;gap:8px;align-items:center;margin-bottom:8px}
-.sel{appearance:none;-webkit-appearance:none;border:1px solid var(--border-strong);background:var(--surface) url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23697386' stroke-width='2.5'><path d='M6 9l6 6 6-6'/></svg>") no-repeat right 11px center;
-  border-radius:9px;padding:10px 30px 10px 12px;font:inherit;font-size:13.5px;color:var(--ink);width:100%}
-.amt{border:1px solid var(--border-strong);border-radius:9px;padding:10px 12px;font:inherit;font-size:13.5px;text-align:right;width:100%;background:var(--surface);color:var(--ink)}
-.amt.err{border-color:var(--danger);background:var(--danger-wash)}
-.rm{border:1px solid var(--border);background:var(--surface);color:var(--muted);border-radius:9px;height:38px;cursor:pointer;font-size:15px}
-.rm:hover{color:var(--danger);border-color:var(--danger)}
-.addline{border:1px dashed var(--border-strong);background:transparent;color:var(--primary-ink);font:inherit;font-size:13px;font-weight:600;padding:9px;border-radius:9px;width:100%;cursor:pointer;margin-top:2px}
-.addline:hover{background:var(--primary-wash)}
-
-.balance{display:flex;justify-content:space-between;align-items:center;margin-top:14px;padding:11px 13px;border-radius:10px;font-size:13.5px;font-weight:600;border:1px solid var(--border)}
-.balance.ok{background:var(--success-wash);border-color:transparent;color:var(--success)}
-.balance.warn{background:var(--warn-wash);border-color:transparent;color:var(--warn)}
-.balance .amt-b{font-size:15px}
-.actions{display:flex;gap:10px;margin-top:16px}
-.btn{font:inherit;font-weight:600;font-size:14px;border-radius:10px;padding:11px 18px;cursor:pointer;border:1px solid transparent}
-.btn.ghost{background:var(--surface);border-color:var(--border-strong);color:var(--ink-2);flex:0 0 auto}
-.btn.ghost:hover{background:var(--surface-2)}
-.btn.pri{background:var(--primary);color:#fff;flex:1;display:flex;align-items:center;justify-content:center;gap:7px}
-.btn.pri:hover{background:var(--primary-ink)}
-.btn.pri:disabled{background:var(--border-strong);color:var(--surface);cursor:not-allowed;opacity:.85}
-:root[data-theme="dark"] .btn.pri:disabled,:root:not([data-theme="light"]) .btn.pri:disabled{color:var(--faint)}
-
-.banner{display:flex;gap:10px;align-items:flex-start;padding:12px 14px;border-radius:10px;font-size:13px;margin-top:14px;line-height:1.5}
-.banner.err{background:var(--danger-wash);color:var(--danger)}
-.banner.info{background:var(--primary-wash);color:var(--primary-ink)}
-.banner b{font-weight:700}
-.banner .ic{font-weight:700;flex:0 0 auto}
-
-/* badges */
-.badge{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:600;padding:3px 9px;border-radius:999px;letter-spacing:-.01em;white-space:nowrap}
-.badge::before{content:"";width:6px;height:6px;border-radius:50%}
-.b-pay{background:var(--primary-wash);color:var(--primary-ink)}.b-pay::before{background:var(--primary)}
-.b-refund{background:var(--warn-wash);color:var(--warn)}.b-refund::before{background:var(--warn)}
-.b-record{background:var(--surface-2);color:var(--muted)}.b-record::before{background:var(--faint)}
-.b-ok{background:var(--success-wash);color:var(--success)}.b-ok::before{background:var(--success)}
-.b-open{background:var(--danger-wash);color:var(--danger)}.b-open::before{background:var(--danger)}
-
-/* state tabs for mock */
-.states{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
-.states button{font:inherit;font-size:12.5px;font-weight:600;border:1px solid var(--border);background:var(--surface);color:var(--muted);padding:6px 12px;border-radius:8px;cursor:pointer}
-.states button[aria-selected="true"]{border-color:var(--primary);color:var(--primary-ink);background:var(--primary-wash)}
-.pane{display:none}.pane.on{display:block;animation:fade .28s ease}
-@keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
-@media (prefers-reduced-motion:reduce){.pane.on{animation:none}}
-
-/* spec tables */
-table{width:100%;border-collapse:collapse;font-size:13.5px}
-.tblwrap{overflow-x:auto;border:1px solid var(--border);border-radius:12px}
-th,td{text-align:left;padding:11px 13px;border-bottom:1px solid var(--border);vertical-align:top}
-th{background:var(--panel-head);font-weight:600;font-size:12.5px;color:var(--ink-2);position:sticky;top:0}
-tr:last-child td{border-bottom:0}
-td.mono,th.mono{font-family:"IBM Plex Mono",monospace;font-size:12.5px;white-space:nowrap}
-.matrix td:first-child,.matrix th:first-child{font-weight:600;background:var(--panel-head)}
-.dash{color:var(--faint)}
-
-ul.spec{margin:0;padding-left:0;list-style:none;display:flex;flex-direction:column;gap:10px}
-ul.spec li{padding-left:20px;position:relative;font-size:14px;color:var(--ink-2)}
-ul.spec li::before{content:"";position:absolute;left:2px;top:9px;width:7px;height:7px;border-radius:2px;background:var(--primary)}
-ul.spec li b{color:var(--ink);font-weight:600}
-ul.spec.warns li::before{background:var(--warn)}
-
-.seq{counter-reset:s;display:flex;flex-direction:column;gap:0}
-.seq li{list-style:none;position:relative;padding:12px 0 12px 44px;border-bottom:1px solid var(--border)}
-.seq li:last-child{border-bottom:0}
-.seq li::before{counter-increment:s;content:counter(s);position:absolute;left:0;top:11px;width:28px;height:28px;border-radius:8px;background:var(--primary-wash);color:var(--primary-ink);font-weight:700;font-size:13px;display:grid;place-items:center;font-family:"IBM Plex Mono",monospace}
-.seq li b{color:var(--ink);font-weight:600}
-.seq li .note{color:var(--muted);font-size:13px}
-
-.callout{border-left:3px solid var(--primary);background:var(--surface);border-radius:0 10px 10px 0;padding:14px 16px;font-size:13.5px;color:var(--ink-2)}
-.callout.open{border-left-color:var(--danger)}
-.callout b{color:var(--ink)}
-
-/* order detail mock bits */
-.od-row{display:flex;justify-content:space-between;padding:10px 0;font-size:13.5px;border-top:1px solid var(--border)}
-.od-row:first-child{border-top:0}
-.od-row .k{color:var(--muted)}
-.timeline{display:flex;flex-direction:column;gap:0;margin-top:4px}
-.timeline .ev{position:relative;padding:0 0 16px 22px;font-size:12.5px}
-.timeline .ev::before{content:"";position:absolute;left:3px;top:4px;width:8px;height:8px;border-radius:50%;background:var(--primary)}
-.timeline .ev::after{content:"";position:absolute;left:6px;top:12px;bottom:0;width:2px;background:var(--border)}
-.timeline .ev:last-child::after{display:none}
-.timeline .ev .t{color:var(--faint);font-family:"IBM Plex Mono",monospace;font-size:11px}
-.radio-list{display:flex;flex-direction:column;gap:8px;margin:6px 0 4px}
-.radio{display:flex;align-items:center;gap:11px;border:1px solid var(--border-strong);border-radius:10px;padding:11px 13px;cursor:pointer;font-size:13.5px}
-.radio .rc{width:17px;height:17px;border-radius:50%;border:2px solid var(--border-strong);flex:0 0 auto}
-.radio.sel{border-color:var(--primary);background:var(--primary-wash)}
-.radio.sel .rc{border-color:var(--primary);background:radial-gradient(circle,var(--primary) 0 42%,transparent 46%)}
-.radio .mtxt{font-weight:600}
-.radio .badge{margin-left:auto}
-
-footer{padding:40px 0 60px;color:var(--muted);font-size:13px;border-top:1px solid var(--border);margin-top:24px}
-
-@media print{
-  @page{margin:14mm}
-  html,body{background:#fff}
-  header.top{position:static;border-bottom:1px solid var(--border)}
-  #themeBtn,.top nav{display:none}
-  .hero{padding:22px 0 12px}
-  .states{display:none}
-  .pane{display:block !important;margin-bottom:14px;padding-top:10px;border-top:1px dashed var(--border-strong)}
-  .pane::before{display:block;font-size:10.5px;font-weight:700;color:var(--primary-ink);letter-spacing:.06em;margin-bottom:8px}
-  .pane[data-p="s1"]::before{content:"상태 · 단일(기본)"}
-  .pane[data-p="s2"]::before{content:"상태 · 분할 입력중 (남은금액 불일치)"}
-  .pane[data-p="s3"]::before{content:"상태 · 합계 일치 (결제하기 활성)"}
-  .pane[data-p="s4"]::before{content:"상태 · PG 실패"}
-  .pane[data-p="c1"]::before{content:"상태 · 주문 상세"}
-  .pane[data-p="c2"]::before{content:"상태 · 변경 모달"}
-  .pane[data-p="c3"]::before{content:"상태 · 확인"}
-  .pane[data-p="c4"]::before{content:"상태 · 완료·이력"}
-  .pane[data-p="r1"]::before{content:"상태 · 현재(주문건별)"}
-  .pane[data-p="r2"]::before{content:"상태 · 발행 모달(예약 단위 품목)"}
-  .pane[data-p="r3"]::before{content:"상태 · 발행된 영수증"}
-  section.blk{break-inside:avoid}
-  .card,.mock,.grid2>div{break-inside:avoid}
-  .pane.on{animation:none}
-}
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+    --bg:#0b0e13; --surface:#12161d; --fg:#e8ebf0; --muted:#98a2b0; --line:#232a34;
+    --accent:#5b8cff; --accent-soft:#18233b; --note:#b39cf0; --note-soft:#211a33; color-scheme:dark;
+  }}
+  :root[data-theme="dark"]{
+    --bg:#0b0e13; --surface:#12161d; --fg:#e8ebf0; --muted:#98a2b0; --line:#232a34;
+    --accent:#5b8cff; --accent-soft:#18233b; --note:#b39cf0; --note-soft:#211a33; color-scheme:dark;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--font);font-size:14px;line-height:1.55}
+  .wrap{max-width:880px;margin:0 auto;padding:48px 16px 64px}
+  .eyebrow{font-size:12px;font-weight:600;color:var(--accent);letter-spacing:.04em}
+  h1{font-size:26px;margin:6px 0 8px;letter-spacing:-.01em}
+  .lead{color:var(--muted);margin:0 0 28px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+  a.card{display:block;text-decoration:none;color:inherit;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:20px;transition:border-color .15s}
+  a.card:hover{border-color:var(--accent)}
+  .card .tag{display:inline-block;font-size:11px;font-weight:600;color:var(--accent);background:var(--accent-soft);border-radius:4px;padding:2px 8px}
+  .card h2{font-size:16.5px;margin:10px 0 6px}
+  .card p{margin:0;color:var(--muted);font-size:13px}
+  .card ul{margin:10px 0 0;padding-left:18px;color:var(--muted);font-size:13px}
+  .card .go{margin-top:14px;font-size:13px;font-weight:600;color:var(--accent)}
+  .legend{margin-top:28px;background:var(--note-soft);border-left:3px solid var(--note);border-radius:6px;padding:14px 16px;font-size:13px}
+  .legend b{color:var(--note)}
+  .legend ul{margin:6px 0 0;padding-left:18px}
+  footer{margin-top:36px;color:var(--muted);font-size:12px}
 </style>
-
-<header class="top">
-  <div class="wrap">
-    <div class="brand"><span class="dot"></span>파크 운영 시스템 · 결제 UI/UX</div>
-    <nav>
-      <a href="#overview">개요</a>
-      <a href="#split">분할결제</a>
-      <a href="#change">수단 변경</a>
-      <a href="#receipt">현금영수증</a>
-      <a href="#spec">상태·검증</a>
-      <a href="#edge">엣지케이스</a>
-    </nav>
-    <button class="tbtn" id="themeBtn" title="테마 전환" aria-label="테마 전환">◐</button>
-  </div>
-</header>
-
 <div class="wrap">
-  <div class="hero">
-    <div class="eyebrow">Payment · Info Desk</div>
-    <h1>결제수단 변경 &amp; 분할결제 화면 명세</h1>
-    <p class="lead">POS 철거 후 운영시스템에서 처리하는 두 결제 기능의 화면 목업과 개발 스펙. 인포데스크 · 크루가 1인으로 30~40명을 운영하는 환경을 전제로 탭 수와 실수 여지를 최소화했다.</p>
-    <div class="meta">
-      <span class="chip">대상 · <b>티켓 예매 / 예약 조회</b></span>
-      <span class="chip">수단 · <b>PG · 카드(POS) · 현금 · 통장입금 · 선결제(OTA)</b></span>
-      <span class="chip">기준 · <b>요건서 rev.4</b></span>
-      <span class="chip">금액 변경 · <b>없음(수단만)</b></span>
-    </div>
+  <div class="eyebrow">9.81 PARK · ICN</div>
+  <h1>인천파크 운영시스템 프로토타입</h1>
+  <p class="lead">ICN 백오피스와 결제 화면의 와이어프레임 모음이에요. 기획 검토용이고 실제 데이터는 들어 있지 않아요.</p>
+
+  <div class="grid">
+    <a class="card" href="backoffice/">
+      <span class="tag">백오피스</span>
+      <h2>판매 관리</h2>
+      <p>9.81 파크 관리 시스템 (ICN)의 판매 관리 메뉴예요.</p>
+      <ul>
+        <li>PSU 관리</li>
+        <li>상품 관리</li>
+        <li>재고 관리</li>
+        <li>프로모션 관리 (프로모션 · 쿠폰 · 쿠폰 조회)</li>
+      </ul>
+      <div class="go">열기 →</div>
+    </a>
+    <a class="card" href="payment-ui-spec.html">
+      <span class="tag">결제</span>
+      <h2>결제 UI/UX 명세</h2>
+      <p>인포데스크 결제 화면의 목업과 개발 스펙이에요.</p>
+      <ul>
+        <li>결제수단 변경</li>
+        <li>분할결제</li>
+        <li>현금영수증</li>
+      </ul>
+      <div class="go">열기 →</div>
+    </a>
   </div>
 
-  <!-- OVERVIEW / 3 types -->
-  <section class="blk" id="overview">
-    <div class="sect-head"><span class="idx">00</span><h2>공통 원칙 · 돈 처리 3유형</h2><p>두 기능 모두 이 3유형으로 귀결</p></div>
-    <div class="grid2">
-      <div class="card">
-        <div class="hd">PG 관여 여부로 처리가 갈린다</div>
-        <div class="bd">
-          <div class="tblwrap">
-            <table>
-              <thead><tr><th>유형</th><th>조건</th><th>처리</th><th>실 금전</th></tr></thead>
-              <tbody>
-                <tr><td><span class="badge b-pay">결제</span></td><td>신규수단 = PG</td><td>실제 PG로 정가 결제(수납)</td><td>수납</td></tr>
-                <tr><td><span class="badge b-refund">환불</span></td><td>원수단 = PG (신규≠PG)</td><td>실제 PG 환불 후 신규수단 차감 기록</td><td>환불</td></tr>
-                <tr><td><span class="badge b-record">차감</span></td><td>둘 다 PG 아님</td><td>시스템 차감 변경만</td><td>없음</td></tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-      <div class="card">
-        <div class="hd">UI가 지켜야 할 불변 규칙</div>
-        <div class="bd">
-          <ul class="spec">
-            <li><b>금액 불변</b> — 어떤 화면에서도 총결제금액은 바꿀 수 없다. 수단·구성만 변경.</li>
-            <li><b>PG만 실동작</b> — 현금·통장입금·카드(POS)는 시스템 차감 기록일 뿐 실 금전통·외부 연결이 없다. 결제/환불 로딩·확인은 <b>PG 라인에서만</b> 노출.</li>
-            <li><b>선결제(OTA) 제외</b> — 온사이트 변경·분할 수단 선택지에서 숨김.</li>
-            <li><b>이력 필수</b> — 변경·분할·부분환불은 라인 단위로 항상 이력을 남긴다.</li>
-          </ul>
-        </div>
-      </div>
-    </div>
-  </section>
+  <div class="legend">
+    <b>보라색 영역 읽는 법</b>
+    <ul>
+      <li>정책이 아직 정해지지 않았거나 검토 중인 부분이에요 (킵).</li>
+      <li>안내 문구와 예시 값도 보라색으로 따로 모아 두었어요. 실제 구현 대상이 아니에요.</li>
+    </ul>
+  </div>
 
-  <!-- SPLIT PAYMENT -->
-  <section class="blk" id="split">
-    <div class="sect-head"><span class="idx">01</span><h2>분할결제</h2><p>결제 화면 · 최종 결제 영역</p></div>
-    <div class="grid2">
-      <div>
-        <div class="states" role="tablist" aria-label="분할결제 상태">
-          <button role="tab" aria-selected="true" data-t="s1">단일(기본)</button>
-          <button role="tab" aria-selected="false" data-t="s2">분할 입력중</button>
-          <button role="tab" aria-selected="false" data-t="s3">합계 일치</button>
-          <button role="tab" aria-selected="false" data-t="s4">PG 실패</button>
-        </div>
-        <div class="mock">
-          <div class="mock-bar"><i></i><i></i><i></i><span>티켓 예매 · 최종 결제</span></div>
-          <div class="pnl">
-            <h4>최종 결제</h4>
-            <div class="sub">복합 패키지 A · 2026-08-28 10:00</div>
-            <div class="line"><span class="k">총 상품 가격</span><span class="v num">₩17,000</span></div>
-            <div class="line"><span class="k">총 할인 금액</span><span class="v num">₩0</span></div>
-            <div class="total"><span class="k">총 결제 금액</span><span class="v num">₩17,000</span></div>
-
-            <div class="seg" role="group" aria-label="결제 방식">
-              <button class="segbtn" data-seg="single">단일 결제</button>
-              <button class="segbtn on" data-seg="split">분할 결제</button>
-            </div>
-
-            <!-- s1 single -->
-            <div class="pane" data-p="s1">
-              <div class="payrow" style="grid-template-columns:1fr">
-                <select class="sel" aria-label="결제 방식">
-                  <option>결제 방식을 선택해주세요</option>
-                  <option>PG</option><option>카드(POS)</option><option>현금</option><option>통장입금</option>
-                </select>
-              </div>
-              <div class="actions"><button class="btn ghost">취소하기</button><button class="btn pri" disabled>결제하기</button></div>
-            </div>
-
-            <!-- s2 split, mismatch -->
-            <div class="pane on" data-p="s2">
-              <div class="payrow"><select class="sel"><option>현금</option></select><input class="amt num" value="10,000"><button class="rm">✕</button></div>
-              <button class="addline">+ 결제수단 추가</button>
-              <div class="balance warn"><span>남은 금액</span><span class="amt-b num">₩7,000</span></div>
-              <div class="actions"><button class="btn ghost">취소하기</button><button class="btn pri" disabled>결제하기</button></div>
-            </div>
-
-            <!-- s3 split, match -->
-            <div class="pane" data-p="s3">
-              <div class="payrow"><select class="sel"><option>현금</option></select><input class="amt num" value="10,000"><button class="rm">✕</button></div>
-              <div class="payrow"><select class="sel"><option>PG</option></select><input class="amt num" value="7,000"><button class="rm">✕</button></div>
-              <button class="addline">+ 결제수단 추가</button>
-              <div class="balance ok"><span>남은 금액</span><span class="amt-b num">₩0 ✓</span></div>
-              <div class="actions"><button class="btn ghost">취소하기</button><button class="btn pri">₩7,000 PG 결제 · 완료</button></div>
-            </div>
-
-            <!-- s4 PG fail -->
-            <div class="pane" data-p="s4">
-              <div class="payrow"><select class="sel"><option>현금</option></select><input class="amt num" value="10,000"><button class="rm">✕</button></div>
-              <div class="payrow"><select class="sel"><option>PG</option></select><input class="amt num err" value="7,000"><button class="rm">✕</button></div>
-              <div class="banner err"><span class="ic">!</span><span><b>PG 승인 실패</b> — 카드 승인이 거절되었습니다(코드 51). 다시 시도하거나 다른 수단으로 변경하세요. 현금 라인은 아직 기록되지 않았습니다.</span></div>
-              <div class="actions"><button class="btn ghost">취소하기</button><button class="btn pri">PG 재시도</button></div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div style="display:flex;flex-direction:column;gap:20px">
-        <div class="card">
-          <div class="hd">화면 동작</div>
-          <div class="bd">
-            <ul class="spec">
-              <li><b>단일 ↔ 분할 토글</b> — 기본은 단일(현행 드롭다운). 분할 선택 시 라인 입력 UI로 전환.</li>
-              <li><b>라인 = 수단 + 금액</b> — <b>결제수단 추가</b>로 N개 생성, 개수 제한 없음. 동일 수단 중복 허용(PG 2줄 가능).</li>
-              <li><b>실시간 잔액</b> — <span class="mono">남은 금액 = 총결제금액 − Σ라인금액</span>. 0이면 초록, 그 외 주황.</li>
-              <li><b>편의</b> — 마지막 라인 금액을 '남은 금액'으로 자동 채움. 새 라인 추가 시 잔액을 기본값으로 프리필.</li>
-            </ul>
-          </div>
-        </div>
-        <div class="card">
-          <div class="hd">결제하기 버튼 상태</div>
-          <div class="bd">
-            <div class="tblwrap">
-              <table>
-                <thead><tr><th>조건</th><th>버튼</th></tr></thead>
-                <tbody>
-                  <tr><td>남은 금액 ≠ 0</td><td><span class="badge b-record">비활성</span></td></tr>
-                  <tr><td>0원·빈 라인 존재</td><td><span class="badge b-record">비활성</span></td></tr>
-                  <tr><td>남은 금액 = 0 &amp; 모든 라인 유효</td><td><span class="badge b-ok">활성</span></td></tr>
-                  <tr><td>실행 중(PG 승인)</td><td><span class="badge b-pay">로딩·중복클릭 차단</span></td></tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="grid2" style="margin-top:24px">
-      <div class="card">
-        <div class="hd">결제 실행 시퀀스 · 원자성</div>
-        <div class="bd">
-          <ol class="seq">
-            <li><b>합계 검증</b> <span class="note">— Σ라인 = 총결제금액, 0원/빈 라인 없음.</span></li>
-            <li><b>PG 라인 실제 승인</b> <span class="note">— 리스크 있는 PG를 먼저 처리. 로딩 표시.</span></li>
-            <li><b>비PG 라인 차감 기록</b> <span class="note">— 모든 PG 성공 후에만 현금·통장입금·카드(POS) 기록.</span></li>
-            <li><b>주문 결제완료 커밋</b> <span class="note">— 라인 전체를 결제완료로 확정, 영수증 발행.</span></li>
-          </ol>
-        </div>
-      </div>
-      <div class="card">
-        <div class="hd">실패 처리 (PG 실패 = 오류)</div>
-        <div class="bd">
-          <ul class="spec warns">
-            <li><b>PG 승인 실패</b> → 오류 배너 노출, 주문은 <b>미완료</b> 유지.</li>
-            <li>이미 승인된 다른 PG 라인은 <b>자동 취소(void)</b>.</li>
-            <li>비PG 라인은 아직 기록 전 → <b>롤백 불필요</b>. 부분 성공 꼬임 없음(전부 성공 or 전부 미확정).</li>
-            <li>사용자는 <b>PG 재시도</b> 또는 해당 라인 수단 변경 후 재실행.</li>
-          </ul>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- PAYMENT METHOD CHANGE -->
-  <section class="blk" id="change">
-    <div class="sect-head"><span class="idx">02</span><h2>결제수단 변경</h2><p>예약 조회 → 주문 상세</p></div>
-    <div class="grid2">
-      <div>
-        <div class="states" role="tablist" aria-label="수단 변경 상태">
-          <button role="tab" aria-selected="true" data-t="c1">주문 상세</button>
-          <button role="tab" aria-selected="false" data-t="c2">변경 모달</button>
-          <button role="tab" aria-selected="false" data-t="c3">확인</button>
-          <button role="tab" aria-selected="false" data-t="c4">완료·이력</button>
-        </div>
-        <div class="mock">
-          <div class="mock-bar"><i></i><i></i><i></i><span>예약 조회 · 주문 상세</span></div>
-          <div class="pnl">
-            <!-- c1 detail -->
-            <div class="pane on" data-p="c1">
-              <h4>주문 상세</h4><div class="sub">주문번호 ORD-2001</div>
-              <div class="od-row"><span class="k">상품</span><span>복합 패키지 A · 1매</span></div>
-              <div class="od-row"><span class="k">티켓 상태</span><span><span class="badge b-ok">사용완료</span></span></div>
-              <div class="od-row"><span class="k">결제 상태</span><span><span class="badge b-ok">결제완료</span></span></div>
-              <div class="od-row"><span class="k">결제 수단</span><span><b>현금</b> · ₩17,000</span></div>
-              <div class="actions"><button class="btn pri" style="flex:0 0 auto">결제수단 변경</button><button class="btn ghost">영수증 재발행</button></div>
-              <div class="banner info" style="margin-top:16px"><span class="ic">↺</span><span>티켓을 모두 사용한 뒤에도 변경 가능(기간 제한 없음). 금액은 ₩17,000으로 고정, <b>수단만</b> 바뀝니다.</span></div>
-            </div>
-            <!-- c2 modal -->
-            <div class="pane" data-p="c2">
-              <h4>결제수단 변경</h4><div class="sub">현금 ₩17,000 → 변경할 수단 선택</div>
-              <div class="radio-list">
-                <div class="radio"><span class="rc"></span><span class="mtxt">통장입금</span><span class="badge b-record">차감 변경</span></div>
-                <div class="radio sel"><span class="rc"></span><span class="mtxt">PG</span><span class="badge b-pay">실제 결제(수납)</span></div>
-                <div class="radio"><span class="rc"></span><span class="mtxt">현금</span><span class="badge b-record" style="opacity:.5">현재 수단</span></div>
-              </div>
-              <div class="banner info"><span class="ic">i</span><span>PG 선택 시 <b>실제 ₩17,000이 PG로 결제</b>됩니다. 원 수단(현금)은 시스템 차감 해제.</span></div>
-              <div class="actions"><button class="btn ghost">취소</button><button class="btn pri">다음</button></div>
-            </div>
-            <!-- c3 confirm -->
-            <div class="pane" data-p="c3">
-              <h4>변경 확인</h4><div class="sub">아래 처리가 실행됩니다</div>
-              <div class="od-row"><span class="k">원 수단</span><span>현금 ₩17,000 <span class="badge b-record">차감 해제</span></span></div>
-              <div class="od-row"><span class="k">신규 수단</span><span>PG ₩17,000 <span class="badge b-pay">실제 결제</span></span></div>
-              <div class="od-row"><span class="k">담당</span><span>데스크 · 담당A</span></div>
-              <div class="banner info"><span class="ic">i</span><span>카드 단말/PG로 <b>₩17,000 결제</b> 진행. 승인 성공 시에만 수단이 변경됩니다.</span></div>
-              <div class="actions"><button class="btn ghost">뒤로</button><button class="btn pri">PG 결제 실행</button></div>
-            </div>
-            <!-- c4 done -->
-            <div class="pane" data-p="c4">
-              <h4>변경 완료</h4><div class="sub">주문번호 ORD-2001</div>
-              <div class="od-row"><span class="k">결제 수단</span><span><b>PG</b> · ₩17,000 <span class="badge b-ok">변경됨</span></span></div>
-              <div style="margin-top:12px;font-size:12px;color:var(--muted);font-weight:600">변경 이력</div>
-              <div class="timeline">
-                <div class="ev"><div>PG로 변경 · ₩17,000 승인(#PG-0001)</div><div class="t">2026-08-28 14:22 · 데스크 담당A</div></div>
-                <div class="ev"><div>현금 차감 해제</div><div class="t">2026-08-28 14:22 · 시스템</div></div>
-                <div class="ev"><div>최초 결제 · 현금 ₩17,000</div><div class="t">2026-08-28 10:03 · 크루 담당B</div></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div style="display:flex;flex-direction:column;gap:20px">
-        <div class="card">
-          <div class="hd">전환 매트릭스 · 신규수단별 처리·문구</div>
-          <div class="bd">
-            <div class="tblwrap">
-              <table class="matrix">
-                <thead><tr><th>원 → 신규</th><th>현금</th><th>통장입금</th><th>PG</th></tr></thead>
-                <tbody>
-                  <tr><td>현금</td><td class="dash">–</td><td><span class="badge b-record">차감</span></td><td><span class="badge b-pay">결제</span></td></tr>
-                  <tr><td>통장입금</td><td><span class="badge b-record">차감</span></td><td class="dash">–</td><td><span class="badge b-pay">결제</span></td></tr>
-                  <tr><td>PG</td><td><span class="badge b-refund">환불</span></td><td><span class="badge b-refund">환불</span></td><td class="dash">–</td></tr>
-                  <tr><td>카드(POS)</td><td><span class="badge b-record">차감</span></td><td><span class="badge b-record">차감</span></td><td><span class="badge b-pay">결제</span></td></tr>
-                </tbody>
-              </table>
-            </div>
-            <ul class="spec" style="margin-top:14px">
-              <li>신규수단 선택 즉시 <b>유형 배지</b>가 뜨고, 안내 배너 문구가 유형에 맞게 바뀐다.</li>
-              <li>카드(POS)·선결제는 신규수단 목록에서 <b>제외</b>(카드POS 철거 · 선결제 OTA 전용).</li>
-            </ul>
-          </div>
-        </div>
-        <div class="card">
-          <div class="hd">유형별 확인 문구</div>
-          <div class="bd">
-            <div class="tblwrap">
-              <table>
-                <thead><tr><th>유형</th><th>확인 다이얼로그 문구</th></tr></thead>
-                <tbody>
-                  <tr><td><span class="badge b-pay">결제</span></td><td>“카드 단말/PG로 <b>₩N 결제</b> 진행. 승인 성공 시에만 수단이 변경됩니다.”</td></tr>
-                  <tr><td><span class="badge b-refund">환불</span></td><td>“PG <b>₩N 환불</b> 후 {신규수단}으로 변경됩니다.”</td></tr>
-                  <tr><td><span class="badge b-record">차감</span></td><td>“실 금전 이동 없이 <b>기록만</b> {원수단}→{신규수단}으로 변경됩니다.”</td></tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- CASH RECEIPT -->
-  <section class="blk" id="receipt">
-    <div class="sect-head"><span class="idx">03</span><h2>현금영수증 · 예약 단위 전체 발행</h2><p>주문건별 → 예약번호 묶음 · 품목 명세</p></div>
-    <div class="grid2">
-      <div>
-        <div class="states" role="tablist" aria-label="현금영수증 상태">
-          <button role="tab" aria-selected="true" data-t="r1">현재(주문건별)</button>
-          <button role="tab" aria-selected="false" data-t="r2">발행 모달</button>
-          <button role="tab" aria-selected="false" data-t="r3">발행된 영수증</button>
-        </div>
-        <div class="mock">
-          <div class="mock-bar"><i></i><i></i><i></i><span>예약 조회 · 현금영수증</span></div>
-          <div class="pnl">
-            <div class="pane on" data-p="r1">
-              <h4>결제 상세 정보</h4><div class="sub">주문번호 ORD-1001 · 현행</div>
-              <div class="od-row"><span class="k">상품명</span><span>복합 이용권 3회 · A코스</span></div>
-              <div class="od-row"><span class="k">PG</span><span>ONSITE</span></div>
-              <div class="od-row"><span class="k">결제 방식</span><span class="mono">ONSITE_PAY_CASH</span></div>
-              <div class="od-row"><span class="k">결제 금액</span><span class="num">₩44,500</span></div>
-              <div class="banner warn"><span class="ic">!</span><span><b>현행 한계</b> — 주문건별로 금액만 발행. 예약에 여러 주문이 있어도 <b>상품·수량 명세가 없음</b>.</span></div>
-              <div class="actions"><button class="btn pri" style="flex:1;background:var(--success)">현금영수증 발행</button></div>
-            </div>
-            <div class="pane" data-p="r2">
-              <h4>현금영수증 발행</h4><div class="sub">예약번호 RSV-0001 · 현금 결제분 전체</div>
-              <div class="tblwrap" style="margin:4px 0 12px">
-                <table>
-                  <thead><tr><th>상품명</th><th style="text-align:center">수량</th><th style="text-align:right">금액</th></tr></thead>
-                  <tbody>
-                    <tr><td>복합 이용권 3회 · A코스<div style="font-size:11px;color:var(--faint);font-family:'IBM Plex Mono',monospace">주문 ORD-1001</div></td><td style="text-align:center" class="num">1</td><td style="text-align:right" class="num">₩44,500</td></tr>
-                    <tr><td>체험 이용권 1회<div style="font-size:11px;color:var(--faint);font-family:'IBM Plex Mono',monospace">주문 ORD-1002</div></td><td style="text-align:center" class="num">2</td><td style="text-align:right" class="num">₩30,000</td></tr>
-                  </tbody>
-                </table>
-              </div>
-              <div class="line" style="border-top:2px solid var(--border-strong)"><span class="k" style="font-weight:600">현금 결제분 합계</span><span class="v num">₩74,500</span></div>
-              <div style="font-size:12px;color:var(--muted);margin:10px 0 2px;font-weight:600">발행 구분</div>
-              <div class="radio-list">
-                <div class="radio sel"><span class="rc"></span><span class="mtxt">소비자</span></div>
-                <div class="radio"><span class="rc"></span><span class="mtxt">사업자</span></div>
-                <div class="radio"><span class="rc"></span><span class="mtxt">자진발급</span></div>
-              </div>
-              <div class="actions"><button class="btn ghost">취소</button><button class="btn pri">확인</button></div>
-            </div>
-            <div class="pane" data-p="r3">
-              <h4>현금영수증 (발행됨)</h4><div class="sub">예약번호 RSV-0001 · 소비자 · 승인 2026-08-28</div>
-              <div class="tblwrap" style="margin:4px 0 12px">
-                <table>
-                  <thead><tr><th>상품명</th><th style="text-align:center">수량</th><th style="text-align:right">금액</th></tr></thead>
-                  <tbody>
-                    <tr><td>복합 이용권 3회 · A코스</td><td style="text-align:center" class="num">1</td><td style="text-align:right" class="num">₩44,500</td></tr>
-                    <tr><td>체험 이용권 1회</td><td style="text-align:center" class="num">2</td><td style="text-align:right" class="num">₩30,000</td></tr>
-                  </tbody>
-                </table>
-              </div>
-              <div class="line" style="border-top:2px solid var(--border-strong)"><span class="k" style="font-weight:600">현금영수증 금액</span><span class="v num">₩74,500</span></div>
-              <div class="banner info" style="margin-top:12px"><span class="ic">✓</span><span>예약번호 하위 <b>현금 결제 상품 전체</b>가 한 장에 품목으로 발행됨.</span></div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div style="display:flex;flex-direction:column;gap:20px">
-        <div class="card">
-          <div class="hd">발행 규칙</div>
-          <div class="bd">
-            <ul class="spec">
-              <li><b>묶음 단위 = 예약번호</b> — 예약번호 하위 모든 주문(주문번호)을 한 장으로 합산. 주문건별 발행 폐지.</li>
-              <li><b>품목 = 상품명 · 수량 · 금액</b> — 동일 상품은 수량·금액 합산.</li>
-              <li><b>금액 = 현금 결제분만</b> — 분할결제 시 현금 라인 금액만. 비현금 품목·금액은 제외.</li>
-              <li><b>발행 구분</b> — 소비자 / 사업자 / 자진발급. (사업자는 사업자번호 입력)</li>
-            </ul>
-          </div>
-        </div>
-        <div class="card">
-          <div class="hd">품목 집계 소스</div>
-          <div class="bd">
-            <div class="tblwrap">
-              <table>
-                <thead><tr><th>필드</th><th>소스</th></tr></thead>
-                <tbody>
-                  <tr><td>상품명</td><td>예약 하위 주문 라인의 상품</td></tr>
-                  <tr><td>수량</td><td>동일 상품 라인 수량 합</td></tr>
-                  <tr><td>금액</td><td>해당 상품의 <b>현금 결제분</b> 합</td></tr>
-                  <tr><td>합계</td><td>Σ 현금 결제분 = 현금영수증 금액</td></tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="card" style="margin-top:24px">
-      <div class="hd">엣지케이스</div>
-      <div class="bd">
-        <div class="tblwrap">
-          <table>
-            <thead><tr><th>케이스</th><th>처리</th></tr></thead>
-            <tbody>
-              <tr><td>부분환불된 상품/수량</td><td>환불분 차감 후 남은 수량·금액만 품목에 반영</td></tr>
-              <tr><td>비현금(PG/통장입금) 포함</td><td>현금분 품목·금액만 노출, 비현금은 제외</td></tr>
-              <tr><td>이미 발행된 예약</td><td>재발행 시 기존 영수증 취소 후 재발행(이력 남김)</td></tr>
-              <tr><td>결제수단 변경으로 현금분 변동</td><td>변경 반영된 현금분 기준으로 재집계(§02 연계)</td></tr>
-              <tr><td>사업자 구분</td><td>사업자번호 필수 입력, 미입력 시 발행 차단</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- SPEC: states & validation -->
-  <section class="blk" id="spec">
-    <div class="sect-head"><span class="idx">04</span><h2>상태 · 검증 규칙</h2><p>개발 스펙</p></div>
-    <div class="grid2">
-      <div class="card">
-        <div class="hd">변경 가능 조건 (표②)</div>
-        <div class="bd">
-          <div class="tblwrap">
-            <table class="matrix">
-              <thead><tr><th>결제 \ 티켓</th><th>미사용</th><th>사용중</th><th>사용완료</th></tr></thead>
-              <tbody>
-                <tr><td>결제완료</td><td><span class="badge b-ok">변경</span></td><td><span class="badge b-ok">변경</span></td><td><span class="badge b-ok">변경 ★</span></td></tr>
-                <tr><td>부분환불/취소</td><td><span class="badge b-open">규칙 필요</span></td><td><span class="badge b-open">규칙 필요</span></td><td><span class="badge b-open">규칙 필요</span></td></tr>
-              </tbody>
-            </table>
-          </div>
-          <p style="font-size:12.5px;color:var(--muted);margin:12px 0 0">★ 사용완료 × 결제완료 = 오늘 고객 케이스. 기간 제한 없음.</p>
-        </div>
-      </div>
-      <div class="card">
-        <div class="hd">데이터 모델</div>
-        <div class="bd">
-          <ul class="spec">
-            <li><b>주문(Order)</b> 1 : N <b>결제내역(PaymentLine)</b></li>
-            <li class="mono" style="color:var(--ink-2);font-size:12.5px">PaymentLine { 수단, 금액, 상태, PG승인번호, 담당자, 일시, 변경이력[] }</li>
-            <li>분할·변경·부분환불 모두 <b>라인 단위</b>로 표현 → 특정 라인만 변경/환불 가능.</li>
-            <li>모든 변경은 append-only 이력. 중복 변경 허용.</li>
-          </ul>
-        </div>
-      </div>
-    </div>
-    <div class="card" style="margin-top:22px">
-      <div class="hd">검증 규칙</div>
-      <div class="bd">
-        <div class="tblwrap">
-          <table>
-            <thead><tr><th>영역</th><th>규칙</th><th>위반 시</th></tr></thead>
-            <tbody>
-              <tr><td>분할 합계</td><td>Σ라인금액 = 총결제금액</td><td>결제하기 비활성 + 남은금액 주황</td></tr>
-              <tr><td>라인 금액</td><td>&gt; 0, 정수(원)</td><td>해당 라인 인풋 에러 표시</td></tr>
-              <tr><td>수단 선택</td><td>선결제·카드(POS)는 신규 선택 불가</td><td>목록에서 숨김</td></tr>
-              <tr><td>금액 변경</td><td>총결제금액 편집 불가(읽기전용)</td><td>—</td></tr>
-              <tr><td>PG 실행</td><td>승인 성공 후에만 커밋</td><td>실패 배너 · 주문 미완료</td></tr>
-              <tr><td>권한</td><td>데스크·크루 각 권한 보유(동일 흐름)</td><td>버튼 비노출</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- EDGE -->
-  <section class="blk" id="edge">
-    <div class="sect-head"><span class="idx">05</span><h2>엣지케이스 · 오픈 이슈</h2><p>구현 전 확정</p></div>
-    <div class="grid2">
-      <div class="card">
-        <div class="hd">확정된 처리</div>
-        <div class="bd">
-          <div class="tblwrap">
-            <table>
-              <thead><tr><th>케이스</th><th>처리</th></tr></thead>
-              <tbody>
-                <tr><td>PG 승인 실패</td><td>오류 배너 · 주문 미완료 · 승인분 void</td></tr>
-                <tr><td>동일 수단 2줄</td><td>허용, PG는 라인별 개별 승인</td></tr>
-                <tr><td>중복 변경</td><td>허용, 매회 이력</td></tr>
-                <tr><td>마감 후 변경</td><td>월 1회 전체 정산 싱크로 흡수(별도 정정 불필요)</td></tr>
-                <tr><td>영수증/세금계산서</td><td>영수증 제공 · 세금계산서 제외</td></tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-      <div class="card">
-        <div class="hd">남은 확인 (블로커)</div>
-        <div class="bd">
-          <div class="callout open">
-            <b>부분환불/취소 걸린 건의 변경</b> <span class="badge b-open">별도 요건</span><br>
-            표②에서 <b>부분환불/취소 × 모든 티켓상태</b>는 아직 규칙 미정. 이 상태의 주문에는 [결제수단 변경] 버튼을 <b>임시 비활성</b>하고, 별도 요건 확정 후 개방.
-          </div>
-          <ul class="spec" style="margin-top:16px">
-            <li>PG 환불 지연/실패 시(원수단=PG 변경) 재시도·수기 처리 흐름은 <b>분할 실패 처리와 동일 패턴</b> 적용.</li>
-          </ul>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <footer>
-    파크 운영 관리 시스템 · 결제 UI/UX 명세 · 요건서 rev.4 기준 · 미확정: 부분환불/취소 변경 규칙
-  </footer>
+  <footer>SGP OPS · 화면 속 닉네임, 티켓번호, 수치는 모두 예시용 더미 값이에요.</footer>
 </div>
-
-<script>
-(function(){
-  // theme toggle
-  var root=document.documentElement, btn=document.getElementById('themeBtn');
-  btn.addEventListener('click',function(){
-    var cur=root.getAttribute('data-theme');
-    var dark=cur? cur==='dark' : matchMedia('(prefers-color-scheme:dark)').matches;
-    root.setAttribute('data-theme', dark?'light':'dark');
-  });
-  // state tabs
-  document.querySelectorAll('.states').forEach(function(group){
-    var mock=group.parentElement.querySelector('.mock');
-    group.querySelectorAll('[data-t]').forEach(function(tab){
-      tab.addEventListener('click',function(){
-        group.querySelectorAll('[data-t]').forEach(function(t){t.setAttribute('aria-selected','false')});
-        tab.setAttribute('aria-selected','true');
-        var key=tab.getAttribute('data-t');
-        mock.querySelectorAll('.pane').forEach(function(p){
-          p.classList.toggle('on', p.getAttribute('data-p')===key);
-        });
-      });
-    });
-  });
-})();
-</script>

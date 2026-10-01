@@ -1,0 +1,361 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="robots" content="noindex,nofollow">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PSU 관리</title>
+<style>
+  :root{
+    --bg:#fafafa; --surface:#ffffff; --surface-2:#f5f5f5; --field:#fcfcfc;
+    --fg:#212529; --muted:#878a99; --line:#ebebeb; --line-2:#efefef;
+    --accent:#245ec3; --accent-soft:#e9f0fb;
+    --jam:#1f7a5a; --jam-soft:#dcf1e9; --nonjam:#8a5a20; --nonjam-soft:#f6ead6;
+    --on:#1a7f4b; --off:#9aa4b2; --wire:#aeb6c1;
+    --warn:#b4700f; --warn-soft:#f8ecd6;
+    --note:#6a5acd;--note-soft:rgba(106,90,205,.12);
+    --font-display:"Space Grotesk","Pretendard",-apple-system,BlinkMacSystemFont,sans-serif;
+    --font-body:"Pretendard",-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo",sans-serif;
+    --mono:"SF Mono",ui-monospace,"Roboto Mono",Menlo,monospace;
+  }
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+    --bg:#0f1218; --surface:#181c24; --surface-2:#1f242e; --field:#141821;
+    --fg:#e8ebf0; --muted:#98a2b0; --line:#2b313c; --line-2:#242a34;
+    --accent:#5b8cff; --accent-soft:#1b2640;
+    --jam:#4cc585; --jam-soft:#12301f; --nonjam:#d69a52; --nonjam-soft:#2f2410;
+    --on:#4cc585; --off:#5c6675; --wire:#3a414d;
+    --warn:#e0a44a; --warn-soft:#2f2410;
+    --note:#a99cf0;--note-soft:rgba(169,156,240,.16); color-scheme:dark;
+  }}
+  :root[data-theme="dark"]{
+    --bg:#0f1218; --surface:#181c24; --surface-2:#1f242e; --field:#141821;
+    --fg:#e8ebf0; --muted:#98a2b0; --line:#2b313c; --line-2:#242a34;
+    --accent:#5b8cff; --accent-soft:#1b2640;
+    --jam:#4cc585; --jam-soft:#12301f; --nonjam:#d69a52; --nonjam-soft:#2f2410;
+    --on:#4cc585; --off:#5c6675; --wire:#3a414d;
+    --warn:#e0a44a; --warn-soft:#2f2410;
+    --note:#a99cf0;--note-soft:rgba(169,156,240,.16); color-scheme:dark;
+  }
+  *{box-sizing:border-box}
+  body{background:var(--bg);color:var(--fg);font-family:var(--font-body);line-height:1.45;font-size:13.5px;margin:0}
+  .app{max-width:1160px;margin:0 auto;padding:16px 16px 56px}
+  .crumb{font-size:12px;color:var(--muted)}
+  .crumb b{color:var(--fg);font-weight:600}
+  .toolbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:8px 0 12px}
+  .toolbar h1{font-family:var(--font-display);font-size:20px;margin:0}
+  .toolbar .sp{flex:1;min-width:0}
+  .btn{font-family:var(--font-body);font-size:13px;border-radius:8px;padding:8px 14px;border:1px solid var(--line);background:var(--surface);color:var(--fg);cursor:pointer}
+  .btn.pri{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+  .btn.ghost{background:none}
+  .btn.sm{padding:6px 11px;font-size:12.5px}
+  .ex{font-size:10px;font-weight:700;color:var(--note);background:var(--note-soft);border-radius:5px;padding:1px 6px;font-family:var(--font-display)}
+
+  .filters{display:flex;gap:8px;flex-wrap:wrap;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px;margin-bottom:12px}
+  .filters .f{display:flex;flex-direction:column;gap:3px}
+  .filters label{font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;font-family:var(--font-display)}
+  .ipt,.sel{background:var(--field);border:1px solid var(--line);border-radius:7px;padding:7px 9px;font-size:13px;color:var(--fg);font-family:var(--font-body)}
+  .ipt::placeholder{color:var(--wire)}
+  .search{min-width:200px;flex:1}
+
+  .panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+  .panel .ph{display:flex;align-items:center;gap:8px;padding:11px 14px;border-bottom:1px solid var(--line);font-family:var(--font-display);font-weight:600;font-size:13px}
+  .panel .ph .cnt{color:var(--muted);font-weight:400;font-size:12px}
+  .panel .ph .sp{flex:1}
+  .tblwrap{overflow-x:auto}
+  table{border-collapse:collapse;width:100%;font-size:12.5px;min-width:820px}
+  th,td{padding:9px 12px;text-align:left;border-bottom:1px solid var(--line-2);white-space:nowrap}
+  th{background:var(--surface-2);font-family:var(--font-display);font-weight:600;font-size:11px;color:var(--muted)}
+  td.r,th.r{text-align:right;font-variant-numeric:tabular-nums}
+  tr.row{cursor:pointer}
+  tr.row:hover td{background:var(--surface-2)}
+  .code{font-family:var(--mono);font-size:12px}
+  .ver{font-family:var(--mono);font-size:11px;color:var(--muted)}
+  .tag{font-size:10.5px;font-weight:700;border-radius:5px;padding:2px 7px}
+  .t-jam{background:var(--jam-soft);color:var(--jam)}
+  .t-non{background:var(--nonjam-soft);color:var(--nonjam)}
+  .st{display:inline-flex;align-items:center;gap:5px;font-size:12px}
+  .st .d{width:7px;height:7px;border-radius:50%}
+  .st.on .d{background:var(--on)} .st.off .d{background:var(--off)}
+  .st.off{color:var(--muted)}
+  .mini{font-size:11px;border:1px solid var(--line);background:var(--surface);border-radius:6px;padding:3px 8px;cursor:pointer;color:var(--fg)}
+
+  /* 드로어 */
+  .ov{position:fixed;inset:0;background:rgba(10,14,22,.42);opacity:0;pointer-events:none;transition:opacity .18s;z-index:40}
+  .ov.show{opacity:1;pointer-events:auto}
+  .drawer{position:fixed;top:0;right:0;height:100%;width:min(520px,94vw);background:var(--surface);border-left:1px solid var(--line);box-shadow:-16px 0 40px rgba(10,14,22,.18);transform:translateX(100%);transition:transform .22s cubic-bezier(.4,0,.2,1);z-index:41;display:flex;flex-direction:column}
+  .drawer.show{transform:none}
+  .drawer .dh{display:flex;align-items:center;gap:8px;padding:13px 16px;border-bottom:1px solid var(--line)}
+  .drawer .dh h3{font-family:var(--font-display);font-size:15px;margin:0}
+  .drawer .dh .sp{flex:1}
+  .drawer .dh .code{color:var(--muted)}
+  .verbadge{font-family:var(--mono);font-size:11px;font-weight:700;color:var(--accent);background:var(--accent-soft);border:1px solid var(--accent);border-radius:6px;padding:2px 7px}
+  .x{border:1px solid var(--line);background:var(--surface);border-radius:7px;width:30px;height:30px;cursor:pointer;color:var(--fg);font-size:14px}
+  .db{overflow:auto;padding:12px 16px 16px;flex:1}
+  .dfoot{display:flex;gap:8px;align-items:center;padding:12px 16px;border-top:1px solid var(--line);background:var(--surface-2)}
+  .dfoot .sp{flex:1}
+  .vnote{font-size:11.5px;color:var(--muted)}
+
+  .fld{margin:0 0 13px}
+  .fl{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;font-family:var(--font-display);margin:0 0 5px}
+  .fl .req{color:var(--accent)}
+  .fld .ipt,.fld .sel{width:100%}
+  .row3{display:flex;gap:6px}.row3 .ipt{flex:1;min-width:70px}
+  .won{display:flex;align-items:center;gap:6px}.won .ipt{max-width:160px;text-align:right}.won .u{font-size:12px;color:var(--muted)}
+  .seg{display:inline-flex;background:var(--field);border:1px solid var(--line);border-radius:9px;padding:3px;gap:3px}
+  .seg span{padding:7px 14px;font-size:12.5px;border-radius:6px;cursor:pointer;color:var(--muted)}
+  .seg span.on{background:var(--accent);color:#fff;font-weight:600}
+  .toggle{display:inline-flex;align-items:center;gap:7px;font-size:12.5px}
+  .sw{width:34px;height:19px;border-radius:20px;background:var(--on);position:relative}
+  .sw::after{content:"";position:absolute;top:2px;right:2px;width:15px;height:15px;border-radius:50%;background:#fff}
+  .ipt:disabled,.sel:disabled{background:var(--surface-2);color:var(--muted);border-style:dashed;cursor:not-allowed;-webkit-text-fill-color:var(--muted);opacity:1}
+  .lockval{background:var(--surface-2);border:1px dashed var(--line);border-radius:8px;padding:8px 11px;font-size:12.5px;color:var(--muted);font-weight:600}
+  .autoval{background:var(--surface-2);border:1px dashed var(--line);border-radius:8px;padding:8px 11px;font-size:12.5px;color:var(--muted)}
+  .autoval.code{font-family:var(--mono)}
+  .sub.lock{opacity:.85}
+  .sub{background:var(--surface-2);border:1px solid var(--line-2);border-radius:10px;padding:11px 12px;margin-top:8px}
+  .sub .fld:last-child{margin-bottom:0}
+  .two{display:flex;gap:10px}.two .fld{flex:1}
+
+  /* 메타/버전 */
+  .metagrid{display:grid;grid-template-columns:1fr 1fr;gap:8px 14px;background:var(--surface-2);border:1px solid var(--line-2);border-radius:10px;padding:11px 13px}
+  .metagrid>div{display:flex;flex-direction:column;gap:2px}
+  .metagrid .mk{font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.03em;font-family:var(--font-display)}
+  .metagrid .mv{font-size:12.5px;font-weight:600}
+  .metagrid .mv.mono{font-family:var(--mono);font-weight:700}
+  /* 사용 중 상품 */
+  .uselist{border:1px solid var(--line-2);border-radius:10px;overflow:hidden}
+  .urow{display:flex;align-items:center;gap:8px;padding:9px 12px;border-bottom:1px solid var(--line-2);font-size:12.5px}
+  .urow:last-child{border-bottom:none}
+  .urow .un{flex:1}
+  .uv{font-family:var(--mono);font-size:11px;padding:2px 6px;border-radius:5px}
+  .uv.ok{background:var(--jam-soft);color:var(--jam)}
+  .uv.old{background:var(--warn-soft);color:var(--warn)}
+  .uempty{padding:11px 12px;font-size:12px;color:var(--muted)}
+
+  /* 안내(보라 · 구현 시 제외 가능) */
+  .note{display:flex;gap:8px;background:var(--note-soft);border:1px solid var(--note);border-radius:10px;padding:10px 13px;font-size:12px;color:var(--fg);margin:0 0 12px}
+  .note::before{content:"안내";font-family:var(--font-display);font-size:9.5px;font-weight:700;color:#fff;background:var(--note);border-radius:5px;padding:2px 6px;height:fit-content;letter-spacing:.03em}
+  .memo{background:var(--note-soft);border:1px solid var(--note);border-radius:11px;padding:11px 13px;margin-top:16px;font-size:12px}
+  .memo .mh{font-family:var(--font-display);font-weight:700;font-size:11px;color:var(--note);margin:0 0 6px;display:flex;align-items:center;gap:6px}
+  .memo .mh::before{content:"안내";font-size:9px;background:var(--note);color:#fff;border-radius:5px;padding:2px 6px;letter-spacing:.03em}
+  .memo .mh .sub2{font-family:var(--font-body);font-weight:400;color:var(--muted);font-size:10.5px}
+  .memo ul{margin:0;padding-left:16px}.memo li{margin:3px 0}
+  .memo b{color:var(--fg)}
+</style>
+
+<div class="app">
+  <div class="crumb">판매 관리 · <b>PSU 관리</b></div>
+  <div class="toolbar">
+    <h1>PSU 관리</h1>
+    <span class="ex">예시 데이터</span>
+    <span class="sp"></span>
+    <button class="btn ghost sm">가져오기(CSV)</button>
+    <button class="btn pri" onclick="openPsu(null)">+ PSU 등록</button>
+  </div>
+
+  <div class="note"><span>PSU는 <b>상품을 구성하는 최소 단위</b>로, <b>무엇을 얼마나 차감하고 얼마짜리인가</b>만 정의합니다. 자원 연결·원가·자격·사용처리는 각 소관 화면에서 관리하며, 데이터는 예시입니다.</span></div>
+
+  <div class="filters">
+    <div class="f search"><label>검색</label><input class="ipt" placeholder="PSU 코드 · 노출명"></div>
+    <div class="f"><label>종류</label><select class="sel"><option>전체</option><option>JAM PSU</option><option>비JAM PSU</option></select></div>
+    <div class="f"><label>JAM 유형</label><select class="sel"><option>전체</option><option>레이스 JAM</option><option>일반 JAM</option><option>마스터 레이스 JAM</option></select></div>
+    <div class="f"><label>상태</label><select class="sel"><option>전체</option><option>활성</option><option>판매중지</option></select></div>
+  </div>
+
+  <div class="panel">
+    <div class="ph">PSU 목록 <span class="cnt">· 9건</span><span class="sp"></span><span class="cnt">정렬: 종류</span></div>
+    <div class="tblwrap">
+      <table>
+        <thead><tr><th>상태</th><th>PSU 코드</th><th>노출명</th><th>종류</th><th>JAM 유형</th><th>차감</th><th class="r">정가</th><th>버전</th><th>수정일시</th><th class="r">상품</th><th></th></tr></thead>
+        <tbody id="rows">
+          <tr class="row" data-code="RACE-DRV" data-name="레이스 운전" data-kind="jam" data-jt="레이스 JAM" data-per="1" data-cnt="1" data-exch="" data-price="25,000" data-prods="2" data-st="on"></tr>
+          <tr class="row" data-code="RACE-PSG" data-name="레이스 동승" data-kind="jam" data-jt="레이스 JAM" data-per="1" data-cnt="1" data-exch="" data-price="15,000" data-prods="1" data-st="on"></tr>
+          <tr class="row" data-code="RACE-JR" data-name="주니어 운전" data-kind="jam" data-jt="레이스 JAM" data-per="1" data-cnt="1" data-exch="" data-price="18,000" data-prods="1" data-st="on"></tr>
+          <tr class="row" data-code="MST-RACE" data-name="마스터 레이스" data-kind="jam" data-jt="마스터 레이스 JAM" data-per="1" data-cnt="1" data-exch="" data-price="20,000" data-prods="1" data-st="on"></tr>
+          <tr class="row" data-code="ARENA" data-name="아레나" data-kind="jam" data-jt="일반 JAM" data-per="1" data-cnt="1" data-exch="" data-price="12,000" data-prods="2" data-st="on"></tr>
+          <tr class="row" data-code="VECTO" data-name="벡토" data-kind="jam" data-jt="일반 JAM" data-per="1" data-cnt="1" data-exch="" data-price="12,000" data-prods="1" data-st="on"></tr>
+          <tr class="row" data-code="VISION-3" data-name="비전 3회권" data-kind="jam" data-jt="일반 JAM" data-per="2" data-cnt="3" data-exch="" data-price="9,000" data-prods="1" data-st="on"></tr>
+          <tr class="row" data-code="SPORTSLAB" data-name="스포츠랩" data-kind="jam" data-jt="일반 JAM" data-per="2" data-cnt="1" data-exch="" data-price="9,000" data-prods="1" data-st="on"></tr>
+          <tr class="row" data-code="FNB-VCH" data-name="F&amp;B 교환" data-kind="non" data-jt="—" data-per="" data-cnt="" data-exch="1" data-price="8,000" data-prods="1" data-st="off"></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- 편집 드로어 -->
+<div class="ov" id="ov" onclick="closePsu()"></div>
+<aside class="drawer" id="dw">
+  <div class="dh"><h3 id="dwTitle">PSU 편집</h3><span class="code" id="dwCode"></span><span class="verbadge" id="dwVer">v1</span><span class="sp"></span><button class="x" onclick="closePsu()">✕</button></div>
+  <div class="db">
+    <div class="fld"><div class="fl">노출명 <span class="req">*</span></div><div class="row3"><input class="ipt" id="fName" placeholder="KR"><input class="ipt" placeholder="EN"><input class="ipt" placeholder="中"></div></div>
+
+    <div class="fld"><div class="fl">종류 <span class="req">*</span></div>
+      <div class="seg" id="kindSeg"><span data-k="jam" class="on" onclick="setKind('jam')">JAM PSU</span><span data-k="non" onclick="setKind('non')">비JAM PSU</span></div>
+      <div class="lockval" id="kindRO" hidden></div>
+    </div>
+
+    <!-- JAM: 차감 정의 -->
+    <div class="sub" id="jamBlock">
+      <div class="fld"><div class="fl">JAM 유형 <span class="req">*</span></div><select class="sel" id="fJt"><option>레이스 JAM</option><option>일반 JAM</option><option>마스터 레이스 JAM</option></select></div>
+      <div class="two">
+        <div class="fld"><div class="fl">회당 차감량</div><div class="won"><input class="ipt" id="fPer" value="1"><span class="u">개</span></div></div>
+        <div class="fld"><div class="fl">이용 횟수</div><div class="won"><input class="ipt" id="fCnt" value="1"><span class="u">회</span></div></div>
+      </div>
+    </div>
+
+    <!-- 비JAM: 교환 차감 -->
+    <div class="sub" id="nonBlock" hidden>
+      <div class="fld"><div class="fl">교환 차감</div><div class="won"><input class="ipt" id="fExch" value="1"><span class="u">개당 교환</span></div></div>
+    </div>
+
+    <div class="fld" style="margin-top:14px"><div class="fl">정가 <span class="req">*</span></div><div class="won"><input class="ipt" id="fPrice" value="25,000"><span class="u">원</span></div></div>
+
+    <div class="fld"><div class="fl">PSU 코드</div><div class="autoval code" id="fCode">RACE-DRV</div></div>
+
+    <div class="fld"><div class="fl">상태</div><span class="toggle"><span class="sw"></span> 활성</span></div>
+
+    <!-- 버전·등록 정보 -->
+    <div class="fld"><div class="fl">버전 · 등록 정보</div>
+      <div class="metagrid">
+        <div><span class="mk">현재 버전</span><span class="mv mono" id="mVer">v3</span></div>
+        <div><span class="mk">등록자</span><span class="mv" id="mBy">옵집사</span></div>
+        <div><span class="mk">등록일</span><span class="mv" id="mCr">2026-08-12</span></div>
+        <div><span class="mk">최종 수정</span><span class="mv" id="mUp">2026-09-28 14:20</span></div>
+      </div>
+    </div>
+
+    <!-- 사용 중 상품 -->
+    <div class="fld"><div class="fl">사용 중 상품 <span id="useCnt" style="color:var(--muted)"></span></div>
+      <div class="uselist" id="useList"></div>
+    </div>
+
+    <!-- 안내(보라 · 구현 시 제외 가능) -->
+    <div class="memo">
+      <div class="mh">안내 <span class="sub2">— 구현 시 제외 가능</span></div>
+      <ul>
+        <li>노출명: 한국어 필수 · 미입력 언어는 영문 대체</li>
+        <li>종류: <b>JAM</b> = 이용권 차감 / <b>비JAM</b> = 교환(개당 교환 차감)</li>
+        <li>회당 차감량·이용 횟수는 모두 수동 입력 (예: 비전 3회권 = 회당 2 · 3회)</li>
+        <li>정가는 상품 구성·정산 배분 기준 · <b>원가·할인가·판매가는 상품 가격</b></li>
+        <li>PSU 코드는 <b>저장 시 시스템이 자동 생성하는 유니크 키</b>(외부 이용 처리·매핑 기준) · 수기 입력 아님 · 등록 후 변경 불가</li>
+        <li><b>수정 시 종류·JAM유형·차감·코드는 변경 불가</b> · 이름·정가만 수정 (정의를 바꾸려면 신규 PSU로 등록)</li>
+        <li><b>버전</b>: 이름·정가 수정으로 저장 시 버전 +1 · 상품은 특정 PSU 버전을 참조 → <b>상품의 PSU 버전과 일치해야 함</b></li>
+        <li>자원 연결(재고) · 이용 자격(연령·신장, 주니어 등) · 사용 처리(체크인·밸리데이션)는 각 소관 화면</li>
+      </ul>
+    </div>
+  </div>
+  <div class="dfoot"><span class="vnote">저장 시 버전 +1</span><span class="sp"></span><button class="btn ghost sm" onclick="closePsu()">취소</button><button class="btn pri sm" onclick="closePsu()">저장</button></div>
+</aside>
+
+<script>
+// 버전·등록 메타 (예시)
+var META={
+  'RACE-DRV':{ver:3,by:'정산이',cr:'2026-08-12',up:'2026-09-28 14:20'},
+  'RACE-PSG':{ver:2,by:'파수꾼',cr:'2026-08-12',up:'2026-09-20 10:05'},
+  'RACE-JR':{ver:1,by:'옵집사',cr:'2026-09-15',up:'2026-09-15 09:00'},
+  'MST-RACE':{ver:1,by:'정산이',cr:'2026-08-20',up:'2026-08-20 11:30'},
+  'ARENA':{ver:2,by:'파수꾼',cr:'2026-08-14',up:'2026-09-22 16:40'},
+  'VECTO':{ver:1,by:'옵집사',cr:'2026-09-01',up:'2026-09-01 13:10'},
+  'VISION-3':{ver:1,by:'정산이',cr:'2026-09-05',up:'2026-09-05 15:00'},
+  'SPORTSLAB':{ver:1,by:'파수꾼',cr:'2026-09-18',up:'2026-09-18 09:40'},
+  'FNB-VCH':{ver:1,by:'옵집사',cr:'2026-08-12',up:'2026-08-30 17:20'}
+};
+// 사용 중 상품 (상품명 + 참조한 PSU 버전)
+var USAGE={
+  'RACE-DRV':[{n:'레이스 2인 패키지',v:3},{n:'평일 레이스 단품',v:2}],
+  'RACE-PSG':[{n:'레이스 2인 패키지',v:2}],
+  'RACE-JR':[{n:'주니어 레이스 상품',v:1}],
+  'MST-RACE':[{n:'마스터 레이스 단품',v:1}],
+  'ARENA':[{n:'아레나 단품',v:2},{n:'통합 이용권 A',v:1}],
+  'VECTO':[{n:'벡토 단품',v:1}],
+  'VISION-3':[{n:'비전 3회권 상품',v:1}],
+  'SPORTSLAB':[{n:'스포츠랩 단품',v:1}],
+  'FNB-VCH':[]
+};
+
+// 목록 렌더
+var rows=document.getElementById('rows');
+Array.prototype.forEach.call(rows.children,function(tr){
+  var d=tr.dataset, jam=(d.kind==='jam'), m=META[d.code]||{ver:1,up:'—'};
+  var ded= jam ? ('회당 '+d.per+' · '+d.cnt+'회') : ('개당 '+d.exch+' 교환');
+  tr.innerHTML=
+    '<td><span class="st '+(d.st==='on'?'on':'off')+'"><span class="d"></span>'+(d.st==='on'?'활성':'판매중지')+'</span></td>'+
+    '<td class="code">'+d.code+'</td>'+
+    '<td>'+d.name+'</td>'+
+    '<td>'+(jam?'<span class="tag t-jam">JAM</span>':'<span class="tag t-non">비JAM</span>')+'</td>'+
+    '<td>'+d.jt+'</td>'+
+    '<td>'+ded+'</td>'+
+    '<td class="r">'+d.price+'</td>'+
+    '<td class="ver">v'+m.ver+'</td>'+
+    '<td class="ver">'+m.up+'</td>'+
+    '<td class="r">'+d.prods+'</td>'+
+    '<td><button class="mini" onclick="event.stopPropagation();openPsu(this.closest(\'tr\'))">편집</button></td>';
+});
+rows.addEventListener('click',function(e){
+  if(e.target.closest('button')) return;
+  var tr=e.target.closest('tr.row'); if(tr) openPsu(tr);
+});
+
+function setKind(k){
+  document.querySelectorAll('#kindSeg span').forEach(function(s){s.classList.toggle('on',s.dataset.k===k)});
+  document.getElementById('jamBlock').hidden=(k!=='jam');
+  document.getElementById('nonBlock').hidden=(k==='jam');
+}
+// 수정 시 정의값(종류·JAM유형·차감·코드) 잠금 — 이름·정가만 수정 가능
+function lockDef(lock,kind){
+  document.getElementById('kindSeg').hidden=lock;
+  var ro=document.getElementById('kindRO'); ro.hidden=!lock;
+  if(lock) ro.textContent=(kind==='jam'?'JAM PSU':'비JAM PSU')+'  ·  변경 불가';
+  ['fJt','fPer','fCnt','fExch'].forEach(function(id){var el=document.getElementById(id); if(el) el.disabled=lock;});
+  document.getElementById('jamBlock').classList.toggle('lock',lock);
+  document.getElementById('nonBlock').classList.toggle('lock',lock);
+}
+
+function renderUsage(code,curVer){
+  var list=USAGE[code]||[], el=document.getElementById('useList'), cnt=document.getElementById('useCnt');
+  cnt.textContent='· '+list.length+'개';
+  if(!list.length){el.innerHTML='<div class="uempty">사용 중인 상품 없음</div>';return;}
+  el.innerHTML=list.map(function(u){
+    var ok=(u.v===curVer);
+    return '<div class="urow"><span class="un">'+u.n+'</span><span class="uv '+(ok?'ok':'old')+'">v'+u.v+(ok?' · 현재':' · 이전')+'</span></div>';
+  }).join('');
+}
+
+function openPsu(tr){
+  var code = tr ? tr.dataset.code : '';
+  var m = tr ? (META[code]||{ver:1,by:'—',cr:'—',up:'—'}) : {ver:1,by:'정산이',cr:'—',up:'—'};
+  if(tr){
+    var d=tr.dataset;
+    document.getElementById('dwTitle').textContent='PSU 편집';
+    document.getElementById('dwCode').textContent='· '+d.code;
+    document.getElementById('fName').value=d.name;
+    document.getElementById('fCode').textContent=d.code;
+    document.getElementById('fPrice').value=d.price;
+    setKind(d.kind);
+    if(d.kind==='jam'){document.getElementById('fJt').value=d.jt;document.getElementById('fPer').value=d.per;document.getElementById('fCnt').value=d.cnt;}
+    else{document.getElementById('fExch').value=d.exch||'1';}
+    lockDef(true,d.kind);
+    document.getElementById('dwVer').textContent='v'+m.ver;
+    document.getElementById('mVer').textContent='v'+m.ver;
+    document.getElementById('mBy').textContent=m.by;
+    document.getElementById('mCr').textContent=m.cr;
+    document.getElementById('mUp').textContent=m.up;
+    renderUsage(code,m.ver);
+  }else{
+    document.getElementById('dwTitle').textContent='PSU 등록';
+    document.getElementById('dwCode').textContent='· 신규';
+    document.getElementById('fName').value='';
+    document.getElementById('fCode').textContent='저장 시 자동 생성 · 유니크 키';
+    document.getElementById('fPrice').value='';
+    setKind('jam');
+    lockDef(false,'jam');
+    document.getElementById('fJt').value='레이스 JAM';
+    document.getElementById('fPer').value='1';document.getElementById('fCnt').value='1';document.getElementById('fExch').value='1';
+    document.getElementById('dwVer').textContent='신규';
+    document.getElementById('mVer').textContent='—';document.getElementById('mBy').textContent='파수꾼';document.getElementById('mCr').textContent='저장 시 기록';document.getElementById('mUp').textContent='—';
+    renderUsage('',1);
+  }
+  document.getElementById('ov').classList.add('show');
+  document.getElementById('dw').classList.add('show');
+}
+function closePsu(){document.getElementById('ov').classList.remove('show');document.getElementById('dw').classList.remove('show');}
+</script>
