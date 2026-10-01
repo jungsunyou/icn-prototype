@@ -3,7 +3,7 @@
 인천파크(9.81 파크 ICN) 운영시스템의 백오피스·결제 화면 와이어프레임 모음.
 기획 검토용이며, 실제 데이터는 포함하지 않는다.
 
-**바로 보기:** https://jungsunyou.github.io/payment-ui-spec/
+**바로 보기:** https://jungsunyou.github.io/icn-prototype/
 
 ## 구성
 
