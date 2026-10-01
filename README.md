@@ -1,40 +1,47 @@
 # ICN 프로토타입
 
-인천파크(9.81 파크 ICN) 운영시스템의 백오피스·결제 화면 와이어프레임 모음.
-기획 검토용이며, 실제 데이터는 포함하지 않는다.
+인천파크(9.81 파크 ICN) 운영시스템 와이어프레임 모음이에요. 기획 검토용이고 실제 데이터는 들어 있지 않아요.
 
-**바로 보기:** https://jungsunyou.github.io/icn-prototype/
+## 바로 보기
+
+| 화면 | 주소 |
+| --- | --- |
+| 백오피스 · 판매 관리 | https://jungsunyou.github.io/icn-prototype/backoffice/ |
+| 결제 UI/UX 명세 | https://jungsunyou.github.io/icn-prototype/payment-ui-spec.html |
+
+루트 주소(https://jungsunyou.github.io/icn-prototype/)로 들어오면 백오피스로 바로 이동해요.
+
+### 백오피스 화면별 바로가기
+
+| 메뉴 | 주소 |
+| --- | --- |
+| PSU 관리 | https://jungsunyou.github.io/icn-prototype/backoffice/#psu |
+| 상품 관리 | https://jungsunyou.github.io/icn-prototype/backoffice/#product |
+| 가격 정책 관리 | https://jungsunyou.github.io/icn-prototype/backoffice/#pricing |
+| 재고 관리 | https://jungsunyou.github.io/icn-prototype/backoffice/#stock |
+| 프로모션 관리 | https://jungsunyou.github.io/icn-prototype/backoffice/#promo |
 
 ## 구성
 
 ### 백오피스 · 판매 관리 — `backoffice/`
 
-9.81 파크 관리 시스템 (ICN)의 판매 관리 메뉴. `backoffice/index.html`이 사이드바 셸이고, 메뉴를 누르면 각 화면이 열린다.
+`backoffice/index.html`이 사이드바가 있는 셸이고, 메뉴를 누르면 각 화면이 열려요.
 
 | 파일 | 화면 | 주요 내용 |
 | --- | --- | --- |
-| `psu.html` | PSU 관리 | 상품 구성 최소 단위. JAM/비JAM, 정가, 버전 관리, 사용 중 상품 |
-| `product.html` | 상품 관리 | 패키지/단품, PSU 구성, 판매 채널·OTA 연동 코드, 판매 제외 기간 |
-| `stock.html` | 재고 관리 | 레이스·마스터 레이스·아레나·벡토 재고 |
-| `promo.html` | 프로모션 관리 | 프로모션(일반/신분·자격/교환), 쿠폰 발급 배치, 쿠폰 조회 |
+| `psu.html` | PSU 관리 | 상품을 만드는 가장 작은 단위. JAM/비JAM, 정가, 버전, 사용 중 상품 |
+| `product.html` | 상품 관리 | 패키지/추가구매, PSU 구성과 원가 합계, 다국어 노출, 판매 채널, OTA 연동 코드 |
+| `pricing.html` | 가격 정책 관리 | 상품별 기준가, 시즌, 가격 캘린더, 채널, 계산 규칙 |
+| `stock.html` | 재고 관리 | 액티비티별 시간대 재고, 한정 판매 |
+| `promo.html` | 프로모션 관리 | 프로모션(일반/신분/교환), 쿠폰 발급, 쿠폰 조회 |
 
 ### 결제 UI/UX 명세 — `payment-ui-spec.html`
 
-파크 운영 시스템(인포데스크)용 결제 화면의 목업과 개발 스펙. POS 제거 후 운영시스템에서 처리하는 결제 기능을 정의한다.
-
-- **결제수단 변경**: 예약 조회 → 주문 상세에서 결제수단만 변경(금액 불변). 돈 처리 3유형(결제/환불/차감).
-- **분할결제**: 한 주문을 여러 수단으로 나눠 결제(합계 = 총결제금액, 미수 없음).
-- **현금영수증**: 예약번호 단위로 묶어 상품·수량·금액 품목 명세 발행(현금 결제분만).
-- `payment-ui-spec.pdf`: 모든 상태를 펼친 인쇄본.
+파크 운영 시스템(인포데스크) 결제 화면의 목업과 개발 스펙이에요. 결제수단 변경, 분할결제, 현금영수증을 다뤄요. `payment-ui-spec.pdf`는 모든 상태를 펼친 인쇄본이에요.
 
 ## 읽는 법
 
-- **보라색 영역**은 정책 미결정·검토 중(킵)이거나 안내용 문구다. 구현 대상이 아니다.
-- 개인정보 최소화 원칙에 따라 조회는 티켓번호, 표시는 닉네임 기준으로 그렸다.
-- 화면 속 닉네임·티켓번호·수치·담당자는 모두 **예시용 더미 값**이다.
-
-## 보는 방법
-
-- 위 링크로 브라우저에서 바로 연다. 설치는 필요 없다.
-- 로컬에서 볼 때는 레포를 받아 `index.html`을 연다. 백오피스 셸은 `backoffice/` 폴더의 파일이 모두 함께 있어야 메뉴 전환이 동작한다.
-- 검색엔진 노출을 막기 위해 모든 페이지에 `noindex`를 넣었다.
+- **보라색 영역**은 아직 정하는 중이거나 안내용 문구예요. 구현 대상이 아니에요.
+- 개인정보 보호를 위해 조회는 티켓번호, 표시는 닉네임 기준으로 그렸어요.
+- 화면 속 닉네임·티켓번호·수치는 모두 예시예요.
+- 검색엔진에 노출되지 않도록 모든 페이지에 `noindex`를 넣었어요.

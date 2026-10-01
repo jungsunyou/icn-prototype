@@ -1,4 +1,5 @@
 <!doctype html>
+<html lang="ko">
 <meta charset="utf-8">
 <meta name="robots" content="noindex,nofollow">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -74,6 +75,23 @@
   .bar{height:7px;border-radius:4px;background:var(--surface-2);flex:1;max-width:180px;overflow:hidden}
   .bar span{display:block;height:100%}
 
+  .limform{display:flex;flex-wrap:wrap;gap:12px;padding:12px 14px;border-bottom:1px solid var(--line);background:var(--surface-2)}
+  .lf{display:flex;flex-direction:column;gap:4px;font-size:12px}
+  .lf label{color:var(--muted);font-size:11px}
+  .wdays{display:flex;gap:3px}
+  .wdays button{width:28px;height:28px;border-radius:6px;border:1px solid var(--line);background:var(--surface);color:var(--fg);font-size:12px;cursor:pointer}
+  .wdays button.on{background:var(--accent);border-color:var(--accent);color:#fff}
+  .topnav{display:flex;gap:4px;background:var(--surface-2);border:1px solid var(--line);border-radius:9px;padding:3px;width:fit-content;max-width:100%;margin-bottom:12px;flex-wrap:wrap}
+  .topnav button{font-family:var(--font-display);font-size:12.5px;font-weight:600;color:var(--muted);background:none;border:none;border-radius:6px;padding:7px 16px;cursor:pointer}
+  .topnav button.on{background:var(--surface);color:var(--fg);box-shadow:0 1px 2px rgba(0,0,0,.06)}
+  .tabpane{display:none}.tabpane.on{display:block}
+  /* 킵(보라) 패널 */
+  .keptpanel{border-color:var(--note);background:var(--note-soft)}
+  .keptpanel .ph{color:var(--note);border-bottom-color:var(--note)}
+  .keptpanel .oscard{background:var(--surface);border-color:var(--note)}
+  .keptpanel .oscard .l{color:var(--note)}
+  .keptpanel .track{border-top-color:var(--note)}
+  .kchip{font-size:10px;font-weight:700;background:var(--note);color:#fff;border-radius:5px;padding:2px 7px;font-family:var(--font-display)}
   /* 안내(보라) */
   .notep{border-color:var(--note)}
   .notep .ph{background:var(--note-soft);color:var(--note);border-bottom-color:var(--note)}
@@ -94,6 +112,8 @@
     <button class="btn ghost sm">CSV 내보내기</button>
   </div>
 
+  <nav class="topnav" id="topnav"><button class="on" data-t="stock">재고 현황</button><button data-t="limit">한정 판매</button></nav>
+  <section class="tabpane on" data-p="stock">
   <div class="ctrlbar">
     <div class="dsel"><span style="color:var(--muted);font-size:12px">이용일</span><input class="ipt" value="2026-11-15" style="width:130px"><button class="btn ghost sm" style="padding:6px 10px">◀</button><button class="btn ghost sm" style="padding:6px 10px">▶</button></div>
     <span class="sp"></span>
@@ -109,28 +129,52 @@
       </table>
     </div>
   </div>
-
-  <div class="panel">
-    <div class="ph">OS 실시간 (운영) <span class="cnt">· 참고 · 별도 화면</span><span class="sp"></span><span class="cnt" id="osSlot">10:00~11:00 슬롯</span></div>
+  <div class="panel keptpanel">
+    <div class="ph">OS 실시간 (운영) <span class="kchip">킵</span><span class="sp"></span><span class="cnt" id="osSlot" style="color:var(--note)">10:00~11:00 슬롯</span></div>
     <div class="os" id="osCards"></div>
     <div id="osTracks"></div>
   </div>
+
+  </section>
+  <section class="tabpane" data-p="limit">
+  <div class="panel">
+    <div class="ph">한정 판매 설정 <span class="ex">예시 데이터</span><span class="sp"></span><button class="btn ghost sm" onclick="addLimit()">+ 한정 판매 추가</button></div>
+    <div class="limform" id="limForm" hidden>
+      <div class="lf"><label>상품</label><select class="sel" id="lProd"><option>레이스 포함 패키지</option><option>실내 패키지</option><option>레이스 JAM 1개권</option><option>비전 3회권</option></select></div>
+      <div class="lf"><label>적용 기간</label><div class="dsel"><input class="ipt" type="date" id="lFrom" value="2026-12-24"><span class="cnt">~</span><input class="ipt" type="date" id="lTo" value="2026-12-25"></div></div>
+      <div class="lf"><label>시간대 (비우면 종일)</label><div class="dsel"><input class="ipt" type="time" id="lSh" value="14:00" step="3600"><span class="cnt">~</span><input class="ipt" type="time" id="lEh" value="18:00" step="3600"></div></div>
+      <div class="lf"><label>요일 (비우면 매일)</label><div class="wdays" id="lWd"><button type="button" onclick="this.classList.toggle('on')">월</button><button type="button" onclick="this.classList.toggle('on')">화</button><button type="button" onclick="this.classList.toggle('on')">수</button><button type="button" onclick="this.classList.toggle('on')">목</button><button type="button" onclick="this.classList.toggle('on')">금</button><button type="button" onclick="this.classList.toggle('on')">토</button><button type="button" onclick="this.classList.toggle('on')">일</button></div></div>
+      <div class="lf"><label>수량 (날짜·시간마다)</label><input class="capedit" id="lQty" value="50" style="width:90px"></div>
+      <div class="lf" style="align-self:end"><button class="btn sm" onclick="saveLimit()">추가</button></div>
+    </div>
+    <div class="tblwrap">
+      <table>
+        <thead><tr><th>상품</th><th>적용 기간</th><th>시간대</th><th>요일</th><th class="r">수량</th><th class="r">오늘 판매 / 남음</th></tr></thead>
+        <tbody id="limBody"></tbody>
+      </table>
+    </div>
+  </div>
+  </section>
 
   <div class="panel notep">
     <div class="ph">재고 운영 기준</div>
     <div class="guide">
       <ul>
-        <li><b>슬롯 단위</b> — 레이스·마스터·아레나·벡토 모두 1시간</li>
-        <li><b>재고 단위</b> — 트랙(코스) 구분 없이 액티비티 단위로 하나의 재고</li>
-        <li><b>차감</b> — 레이스 1회 = 차량 1대, 탑승 인원 무관(동승 2인도 재고 1)</li>
-        <li><b>수용 인원</b> — 해당 액티비티 전체 처리량의 합</li>
-        <li><b>마스터 레이스</b> — 전용 트랙, 별도 재고 풀</li>
-        <li><b>아레나·벡토</b> — 인원(명) 단위로 수용 인원 설정</li>
-        <li><b>마이너스(초과) 재고</b> — OS 운영자 결제에서만 허용</li>
-        <li><b>대기·혼잡</b> — 트랙별 정확한 대기(분) 미제공, 혼잡 표시로 분산 유도</li>
-        <li>⏳ <b>결정 대기</b> — 재고 생성 방식(ST-006)·1인 슬롯당 구매 범위(ST-007) 확정 후 생성·차감·구매제한 UI 추가</li>
+        <li><b>판매 단위</b> — 레이스·마스터 레이스·아레나·벡토 모두 <b>1시간 단위</b>로 팔아요.</li>
+        <li><b>재고 묶음</b> — 트랙(코스)을 나누지 않고 액티비티마다 재고 하나로 관리해요.</li>
+        <li><b>레이스 재고</b> — 1회에 차량 1대를 써요. 동승자가 있어 2명이 타도 재고는 1대만 줄어요.</li>
+        <li><b>수용 인원</b> — 그 액티비티가 한 시간에 받을 수 있는 전체 수예요.</li>
+        <li><b>마스터 레이스</b> — 전용 트랙이라 재고를 따로 관리해요.</li>
+        <li><b>아레나·벡토</b> — 사람 수(명) 기준으로 수용 인원을 넣어요.</li>
+        <li><b>재고보다 더 팔기</b> — 현장 운영(OS) 결제에서만 할 수 있어요.</li>
+        <li><b>OS 실시간 (보라)</b> — 현장 운영 화면 참고용이에요. 별도 화면으로 뺄지, 여기 둘지 정하는 중이에요.</li>
+        <li><b>대기·혼잡</b> — 트랙별 정확한 대기 시간(분)은 알 수 없어서, 원활·보통·혼잡으로만 보여줘요.</li>
+        <li><b>운영 중단</b> — 별도 운영 중단 화면에서 처리해요.</li>
+        <li><b>판매 마감</b> — 액티비티별 운영 시간 관리에서 정해요. 레이스가 들어간 상품은 레이스 마감 시각에 같이 판매가 닫혀요.</li>
+        <li><b>한정 판매</b> — 상품마다 기간·시간대·요일·수량을 정해요. 시간대를 비우면 종일, 요일을 비우면 매일이에요. 바꿀 때는 기존 설정을 고치지 않고 새 설정을 추가해요. 상품 관리에서는 보기만 해요.</li>
+        <li>⏳ <b>결정 대기</b> — 재고를 만드는 방식(ST-006)과 한 사람이 한 시간대에 살 수 있는 수량(ST-007)이 정해지면 관련 화면을 추가해요.</li>
       </ul>
-      <p class="gnote">조회·수용 인원 수정·판매중지·액티비티별 분리는 확정분, 생성·구매제한 UI는 보류.</p>
+      <p class="gnote">조회, 수용 인원 수정, 판매중지, 액티비티별 탭, 한정 판매는 확정된 내용이에요. 재고 생성·구매 제한 화면은 보류예요.</p>
     </div>
   </div>
 </div>
@@ -191,4 +235,27 @@ function renderOS(){
 }
 function pick(i){cur=i;renderTabs();renderStock();renderOS();}
 renderTabs();renderStock();renderOS();
+var LIMITS=[
+  {p:'레이스 포함 패키지',from:'2026-12-19',to:'2027-01-03',h:'',wd:'',qty:300,sold:212},
+  {p:'실내 패키지',from:'2026-11-01',to:'2026-11-30',h:'10:00 ~ 14:00',wd:'토 · 일',qty:100,sold:64}
+];
+function renderLimits(){
+  document.getElementById('limBody').innerHTML=LIMITS.map(function(l){
+    return '<tr><td><b>'+l.p+'</b></td><td class="slot">'+l.from+' ~ '+l.to+'</td><td>'+(l.h||'종일')+'</td><td>'+(l.wd||'매일')+'</td><td class="r">'+l.qty+'</td><td class="r">'+l.sold+' / '+(l.qty-l.sold)+'</td></tr>';
+  }).join('');
+}
+function addLimit(){var f=document.getElementById('limForm');f.hidden=!f.hidden;}
+function saveLimit(){
+  var wd=[].slice.call(document.querySelectorAll('#lWd button.on')).map(function(b){return b.textContent;}).join(' · ');
+  var sh=document.getElementById('lSh').value, eh=document.getElementById('lEh').value;
+  LIMITS.unshift({p:document.getElementById('lProd').value,from:document.getElementById('lFrom').value,to:document.getElementById('lTo').value,h:(sh&&eh)?sh+' ~ '+eh:'',wd:wd,qty:parseInt(document.getElementById('lQty').value,10)||0,sold:0});
+  document.getElementById('limForm').hidden=true; renderLimits();
+}
+renderLimits();
+document.querySelectorAll('#topnav button').forEach(function(b){
+  b.addEventListener('click',function(){
+    document.querySelectorAll('#topnav button').forEach(function(x){x.classList.toggle('on',x===b);});
+    document.querySelectorAll('.tabpane').forEach(function(p){p.classList.toggle('on',p.dataset.p===b.dataset.t);});
+  });
+});
 </script>
