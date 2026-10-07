@@ -8,6 +8,7 @@
 | --- | --- |
 | 백오피스 · 판매 관리 | https://jungsunyou.github.io/icn-prototype/backoffice/ |
 | 결제 UI/UX 명세 | https://jungsunyou.github.io/icn-prototype/payment-ui-spec.html |
+| 복합결제 코드·영수증 | https://jungsunyou.github.io/icn-prototype/composite-receipt.html |
 
 루트 주소(https://jungsunyou.github.io/icn-prototype/)로 들어오면 백오피스로 바로 이동해요.
 

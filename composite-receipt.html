@@ -1,0 +1,205 @@
+<title>복합결제 코드노출·영수증</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ground:#F4F6F9; --surface:#FFFFFF; --surface-2:#F7F9FB; --head:#FBFCFE;
+  --ink:#1A1E27; --ink-2:#3A4353; --muted:#6A7484; --faint:#9AA3B2;
+  --border:#E5E9EF; --border-strong:#D3D9E2;
+  --primary:#2F6BFF; --primary-ink:#1E4FD6; --primary-wash:#EAF0FF;
+  --ok:#2E7D46; --ok-wash:#E4F2E8; --danger:#D22F2F;
+  --keep:#7C3AED; --keep-ink:#6D28D9; --keep-wash:#F2ECFC; --keep-border:#DAC9F6;
+  --shadow:0 1px 2px rgba(20,30,50,.04),0 6px 22px rgba(20,30,50,.07); --radius:14px;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --ground:#0E1116; --surface:#171B22; --surface-2:#1D222B; --head:#1C222B;
+  --ink:#E7EBF2; --ink-2:#C2C9D6; --muted:#9AA4B4; --faint:#6B7484;
+  --border:#262C36; --border-strong:#343C48;
+  --primary:#5B86FF; --primary-ink:#9CB6FF; --primary-wash:#17233F;
+  --ok:#4FB477; --ok-wash:#14301F; --danger:#F06A6A;
+  --keep:#A78BFA; --keep-ink:#C4B2FB; --keep-wash:#241A3D; --keep-border:#4A3A6B;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 12px 30px rgba(0,0,0,.45);
+}}
+:root[data-theme="dark"]{
+  --ground:#0E1116; --surface:#171B22; --surface-2:#1D222B; --head:#1C222B;
+  --ink:#E7EBF2; --ink-2:#C2C9D6; --muted:#9AA4B4; --faint:#6B7484;
+  --border:#262C36; --border-strong:#343C48;
+  --primary:#5B86FF; --primary-ink:#9CB6FF; --primary-wash:#17233F;
+  --ok:#4FB477; --ok-wash:#14301F; --danger:#F06A6A;
+  --keep:#A78BFA; --keep-ink:#C4B2FB; --keep-wash:#241A3D; --keep-border:#4A3A6B;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 12px 30px rgba(0,0,0,.45);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ground);color:var(--ink);
+  font-family:"IBM Plex Sans KR","Noto Sans KR",system-ui,-apple-system,sans-serif;
+  font-size:14.5px;line-height:1.6;letter-spacing:-.01em;-webkit-font-smoothing:antialiased}
+.wrap{max-width:900px;margin:0 auto;padding:0 22px}
+h1,h2{margin:0;text-wrap:balance;letter-spacing:-.02em}
+.mono{font-family:"IBM Plex Mono",monospace}
+.num{font-variant-numeric:tabular-nums}
+
+.topbar{display:flex;align-items:center;gap:12px;padding:13px 0;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--ground);z-index:10}
+.topbar .tag{font-size:12px;font-weight:600;color:var(--keep-ink);background:var(--keep-wash);border:1px solid var(--keep-border);padding:4px 10px;border-radius:999px}
+.topbar .who{font-size:12.5px;color:var(--muted);margin-left:auto}
+.tbtn{border:1px solid var(--border-strong);background:var(--surface);color:var(--ink);width:32px;height:32px;border-radius:8px;cursor:pointer}
+
+.hero{padding:26px 0 6px}
+.hero h1{font-size:clamp(22px,3.2vw,30px);font-weight:700;margin:0 0 8px}
+.hero p{font-size:14.5px;color:var(--ink-2);margin:0;max-width:62ch}
+
+section.blk{padding:22px 0;border-top:1px solid var(--border);margin-top:14px}
+.shead{display:flex;align-items:center;gap:11px;margin-bottom:6px}
+.shead .b{width:28px;height:28px;border-radius:8px;background:var(--primary);color:#fff;font-weight:700;display:grid;place-items:center;font-family:"IBM Plex Mono",monospace;font-size:13px}
+.shead h2{font-size:19px;font-weight:700}
+.shead .pick{margin-left:auto;font-size:11.5px;font-weight:700;color:var(--ok);background:var(--ok-wash);padding:3px 10px;border-radius:999px}
+.sintro{color:var(--muted);font-size:13px;margin:4px 0 14px}
+
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);margin-bottom:12px}
+.card .hd{padding:11px 15px;border-bottom:1px solid var(--border);font-weight:600;font-size:13px;background:var(--head);border-radius:var(--radius) var(--radius) 0 0;color:var(--muted)}
+.card .bd{padding:15px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:720px){.two{grid-template-columns:1fr}}
+
+/* list cell */
+.listrow{display:grid;grid-template-columns:70px 160px 1fr;gap:12px;align-items:start;font-size:13px}
+.listrow + .listrow{margin-top:10px;padding-top:12px;border-top:1px solid var(--border)}
+.colh{font-size:11px;color:var(--faint);font-weight:600}
+.st{font-size:11px;font-weight:700;color:var(--primary-ink);background:var(--primary-wash);padding:3px 9px;border-radius:999px;justify-self:start}
+.codecell{font-family:"IBM Plex Mono",monospace;font-size:12px;line-height:1.7}
+.codecell .no{color:var(--ink);font-weight:600}
+.codecell .pay{color:var(--ink-2)}
+.codecell .ref{color:var(--danger)}
+details.cmp{margin-top:2px}
+details.cmp>summary{list-style:none;cursor:pointer;display:inline-flex;align-items:center;gap:5px;font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--ink-2)}
+details.cmp>summary::-webkit-details-marker{display:none}
+details.cmp>summary::after{content:"▸";font-size:9px;color:var(--muted)}
+details.cmp[open]>summary::after{content:"▾"}
+details.cmp .codes{font-family:"IBM Plex Mono",monospace;font-size:12px;line-height:1.7;color:var(--ink-2);padding:2px 2px 0}
+.tipi{font-size:11.5px;color:var(--muted);margin-top:2px}
+
+/* modal */
+.modal{max-width:440px;margin:0 auto;background:var(--surface);border:1px solid var(--border-strong);border-radius:18px;box-shadow:var(--shadow);overflow:hidden}
+.modal .mt{text-align:center;font-weight:700;font-size:16px;padding:18px 18px 10px}
+.modal .mb{padding:4px 22px 20px}
+.drow{display:flex;justify-content:space-between;gap:14px;padding:9px 0;font-size:13.5px;border-top:1px solid var(--border)}
+.drow:first-child{border-top:0}
+.drow .k{color:var(--muted)}
+.drow .v{text-align:right;font-weight:600}
+.paysec{margin:8px 0 2px}
+.paysec .lbl{color:var(--muted);font-size:12.5px;margin-bottom:7px}
+.pmrow{display:grid;grid-template-columns:1fr auto auto;gap:10px;align-items:center;padding:10px 0;border-top:1px solid var(--border)}
+.pmrow .nm{font-weight:600;font-size:13.5px}
+.pmrow .nm .ch{font-family:"IBM Plex Mono",monospace;font-size:10.5px;color:var(--faint);margin-left:5px}
+.pmrow .am{font-variant-numeric:tabular-nums;font-size:13px}
+.rbtn{font:inherit;font-size:11.5px;font-weight:700;border:0;border-radius:8px;padding:7px 11px;cursor:pointer;white-space:nowrap}
+.rbtn.cash{background:#2E7D46;color:#fff}.rbtn.card{background:#3B5BA9;color:#fff}.rbtn.keep{background:var(--keep-wash);color:var(--keep-ink);border:1px dashed var(--keep-border)}.rbtn.off{background:var(--surface-2);color:var(--faint)}
+.mtot{display:flex;justify-content:space-between;padding:12px 0 2px;margin-top:6px;border-top:2px solid var(--border-strong);font-weight:700}
+.mtot .v{font-size:17px}
+.okbtn{width:100%;margin-top:14px;background:#3B5BA9;color:#fff;border:0;border-radius:11px;padding:12px;font:inherit;font-weight:700;font-size:14px;cursor:pointer}
+
+.keep{background:var(--keep-wash);border:1px solid var(--keep-border);border-left:4px solid var(--keep);border-radius:0 12px 12px 0;padding:13px 15px;margin-top:12px}
+.keep .kh{display:flex;align-items:center;gap:8px;font-weight:700;color:var(--keep-ink);font-size:13px;margin-bottom:7px}
+.keep .kh .kp{font-size:10px;font-weight:800;letter-spacing:.06em;background:var(--keep);color:#fff;padding:2px 8px;border-radius:999px}
+.keep ul{margin:0;padding-left:18px;color:var(--keep-ink);font-size:12.5px;display:flex;flex-direction:column;gap:6px}
+.keep ul li b{font-weight:700}
+.say{border-left:3px solid var(--primary);background:var(--surface);padding:9px 13px;border-radius:0 10px 10px 0;font-size:12.5px;color:var(--ink-2);margin-top:10px}
+.say b{color:var(--ink)}
+footer{padding:20px 0 60px;color:var(--muted);font-size:12px;border-top:1px solid var(--border);margin-top:16px}
+</style>
+
+<div class="wrap">
+  <div class="topbar">
+    <a href="payment-ui-spec.html" style="font-size:12.5px;color:var(--muted);text-decoration:none">← 결제 UI/UX 명세</a>
+    <span class="tag">복합결제 정리</span>
+    <span class="who">검토용 · 숫자는 예시</span>
+    <button class="tbtn" id="themeBtn" aria-label="테마 전환">◐</button>
+  </div>
+
+  <div class="hero">
+    <h1>복합결제 — 코드 노출 &amp; 영수증 발급 정리</h1>
+    <p>복합결제(입력은 이미 구현됨)에서 정리가 필요한 두 가지. ① 주문정보 칸 코드 노출, ② 결제 상세의 수단별 영수증 발급.</p>
+  </div>
+
+  <!-- 정리 1 -->
+  <section class="blk">
+    <div class="shead"><span class="b">1</span><h2>주문정보 — 복합 라벨 + 펼치기</h2><span class="pick">선택: B안</span></div>
+    <p class="sintro">복합결제면 주문번호 아래를 <b>‘복합결제 (N)’ 라벨로 접어두고</b>, 클릭하면 사용된 결제 코드를 전부 펼쳐 보여줍니다. 단일결제는 코드를 바로 표기합니다. (아래 라벨을 눌러보세요)</p>
+    <div class="card"><div class="bd">
+      <div class="listrow">
+        <span class="colh">상태</span><span class="colh">주문 정보</span><span class="colh">설명</span>
+      </div>
+      <div class="listrow">
+        <span class="st">발권</span>
+        <div class="codecell"><span class="no">125462</span>
+          <details class="cmp"><summary>ONSITE_PAY_DEPOSIT</summary><div class="codes">ONSITE_PAY_CASH<br>NICE_PG</div></details>
+        </div>
+        <span>복합결제 — 맨 위 코드 1개만 보이고, 여러 개면 화살표(▸)가 붙습니다. 클릭하면 나머지 코드가 펼쳐집니다.</span>
+      </div>
+      <div class="listrow">
+        <span class="st">발권</span>
+        <div class="codecell"><span class="no">125460</span>
+          <details class="cmp"><summary>ONSITE_PAY_CASH</summary><div class="codes">NICE_PG</div></details>
+        </div>
+        <span>복합결제 — 코드 2개. 화살표 클릭 시 나머지 1개가 펼쳐집니다.</span>
+      </div>
+      <div class="listrow">
+        <span class="st">발권</span>
+        <div class="codecell"><span class="no">125470</span><br><span class="pay">ONSITE_PAY_CASH</span></div>
+        <span>단일결제 — 코드 1개, 화살표 없음.</span>
+      </div>
+    </div></div>
+  </section>
+
+  <!-- 정리 2 -->
+  <section class="blk">
+    <div class="shead"><span class="b">2</span><h2>결제 상세 — 수단 행마다 발급 버튼</h2><span class="pick">선택: A안</span></div>
+    <p class="sintro">복합결제건은 ‘결제 방식’ 한 줄을 <b>수단별 목록</b>으로 바꾸고, 각 수단 행에서 바로 영수증을 발급합니다. (현금→현금영수증, PG·카드→매출전표)</p>
+    <div class="two">
+      <div>
+        <div class="modal">
+          <div class="mt">결제 상세 정보</div>
+          <div class="mb">
+            <div class="drow"><span class="k">상품명</span><span class="v">아이와함께 981 포켓몬 풀패키지(2인) 외 1건</span></div>
+            <div class="drow"><span class="k">PG</span><span class="v mono" style="font-size:12px">ONSITE · NICE_PG</span></div>
+            <div class="paysec">
+              <div class="lbl">결제 방식 (복합)</div>
+              <div class="pmrow"><span class="nm">통장입금 <span class="ch">ONSITE</span></span><span class="am num">5,000</span><button class="rbtn cash">현금영수증 발행</button></div>
+              <div class="pmrow"><span class="nm">현금 <span class="ch">ONSITE</span></span><span class="am num">5,000</span><button class="rbtn cash">현금영수증 발행</button></div>
+              <div class="pmrow"><span class="nm">PG(카드) <span class="ch">NICE_PG</span></span><span class="am num">169,000</span><button class="rbtn card">매출전표</button></div>
+            </div>
+            <div class="mtot"><span>결제 금액</span><span class="v num">179,000</span></div>
+            <button class="okbtn">확인</button>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="card">
+          <div class="hd">수단 → 발급물</div>
+          <div class="bd" style="padding:0">
+            <div style="padding:0 2px">
+              <table style="width:100%;border-collapse:collapse;font-size:13px">
+                <tbody>
+                  <tr style="border-bottom:1px solid var(--border)"><td style="padding:10px 14px">현금</td><td style="padding:10px 14px;text-align:right;font-weight:600">현금영수증</td></tr>
+                  <tr style="border-bottom:1px solid var(--border)"><td style="padding:10px 14px">통장입금</td><td style="padding:10px 14px;text-align:right;font-weight:600">현금영수증</td></tr>
+                  <tr style="border-bottom:1px solid var(--border)"><td style="padding:10px 14px">PG(카드)·카드(POS)</td><td style="padding:10px 14px;text-align:right;font-weight:600">매출전표(재발행)</td></tr>
+                  <tr style="border-bottom:1px solid var(--border)"><td style="padding:10px 14px">앱결제·키오스크 <span class="mono" style="font-size:11px;color:var(--faint)">TOSS_EASY_PAY · NICE_PG · OFF_PG</span></td><td style="padding:10px 14px;text-align:right;font-weight:600">매출전표</td></tr>
+                  <tr><td style="padding:10px 14px">선결제</td><td style="padding:10px 14px;text-align:right;color:var(--faint)">해당 없음</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <div class="say"><b>안내</b> — 현금·통장입금으로 낸 금액은 현금영수증, 카드·앱결제·키오스크로 낸 금액은 매출전표로 발급합니다.</div>
+      </div>
+    </div>
+  </section>
+
+  <footer>복합결제 코드 노출 &amp; 영수증 발급 정리 · 별도 검토용 · 메인 명세 미반영</footer>
+</div>
+
+<script>
+(function(){var r=document.documentElement,b=document.getElementById('themeBtn');
+b.addEventListener('click',function(){var c=r.getAttribute('data-theme');var d=c?c==='dark':matchMedia('(prefers-color-scheme:dark)').matches;r.setAttribute('data-theme',d?'light':'dark');});})();
+</script>
