@@ -1,0 +1,1103 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="robots" content="noindex,nofollow">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>ICN 단체 예약 관리</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap">
+<style>
+/* 제주 OS(sgp-admin-web) 단체 예약 관리 화면을 코드 기준으로 옮기고 인천 변경분을 반영한 시안. 보라 = 구현 시 제외하는 안내·미정 */
+:root{
+  --page:#f3f5f9; --surface:#ffffff; --surface-2:#f6f7f9; --fg:#1d2330; --muted:#6b7385; --hint:#a3aab8;
+  --line:#e3e7ee; --line-strong:#c7cdd8;
+  --primary:#2f6fed; --primary-tint:#eef3fe; --primary-line:#c9d9fb;
+  --positive:#16a34a; --warning:#d97706; --negative:#dc2626; --disable:#94a3b8; --violet:#8b5cf6;
+  --note:#f1edfd; --note-fg:#5a3fb5; --note-line:#d9cff7;
+  --dim:rgba(17,24,39,.42);
+  --font:"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;
+  --r:8px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --page:#0f1218; --surface:#1a1f29; --surface-2:#222835; --fg:#e7eaf0; --muted:#9aa3b5; --hint:#6c7486;
+  --line:#2e3545; --line-strong:#3c4558; --primary:#6b9bff; --primary-tint:#1d2a45; --primary-line:#2f4677;
+  --positive:#4ade80; --warning:#fbbf24; --negative:#f87171; --disable:#7b8494; --violet:#a78bfa;
+  --note:#2a2342; --note-fg:#c6b6ff; --note-line:#43386b; --dim:rgba(0,0,0,.6); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --page:#0f1218; --surface:#1a1f29; --surface-2:#222835; --fg:#e7eaf0; --muted:#9aa3b5; --hint:#6c7486;
+  --line:#2e3545; --line-strong:#3c4558; --primary:#6b9bff; --primary-tint:#1d2a45; --primary-line:#2f4677;
+  --positive:#4ade80; --warning:#fbbf24; --negative:#f87171; --disable:#7b8494; --violet:#a78bfa;
+  --note:#2a2342; --note-fg:#c6b6ff; --note-line:#43386b; --dim:rgba(0,0,0,.6); color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--page);color:var(--fg);font-family:var(--font);font-size:14px}
+button{font:inherit;color:inherit}
+input,select,textarea{width:100%;font:inherit;color:var(--fg);background:var(--surface);border:1px solid var(--line);border-radius:var(--r);height:38px;padding:0 12px}
+textarea{height:72px;padding:10px 12px;resize:vertical}
+input::placeholder,textarea::placeholder{color:var(--hint)}
+input:focus,select:focus,textarea:focus,button:focus-visible{outline:2px solid var(--primary);outline-offset:1px}
+.num{font-variant-numeric:tabular-nums}
+/* app shell */
+.app{display:flex;min-height:100vh}
+.side{width:216px;flex:none;background:var(--surface);border-right:1px solid var(--line);padding:18px 14px;display:flex;flex-direction:column;gap:14px}
+.logo{font-weight:700;font-size:18px;color:var(--primary);letter-spacing:-.02em}
+.me{font-size:12px;color:var(--muted);line-height:1.5}
+.menu{display:grid;gap:2px}
+.menu a{display:block;padding:9px 10px;border-radius:var(--r);color:var(--muted);text-decoration:none;font-size:14px}
+.menu a.on{background:var(--primary-tint);color:var(--primary);font-weight:500}
+.main{flex:1;min-width:0;display:flex;flex-direction:column}
+.top{height:56px;display:flex;align-items:center;gap:12px;padding:0 24px;border-bottom:1px solid var(--line);background:var(--surface)}
+.top b{font-size:15px}
+.top .srch{max-width:260px;margin-left:24px}
+.content{padding:20px 24px 40px;display:grid;gap:16px;min-width:0}
+.ph{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.ph h1{font-size:20px;margin:0}
+.tabs{display:flex;gap:4px;flex-wrap:wrap;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:4px}
+.tabs button{border:0;background:none;padding:7px 14px;border-radius:7px;cursor:pointer;color:var(--muted)}
+.tabs button.on{background:var(--primary);color:#fff}
+.btn{height:38px;padding:0 16px;border-radius:var(--r);cursor:pointer;border:1px solid var(--line-strong);background:var(--surface)}
+.btn.p{background:var(--primary);border-color:var(--primary);color:#fff}
+.btn.d{color:var(--negative);border-color:var(--negative)}
+.btn.sm{height:30px;padding:0 10px;font-size:13px}
+.ml{margin-left:auto}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.stat small{color:var(--muted);font-size:13px}
+.stat div{font-size:22px;font-weight:700;margin-top:4px}
+.filters{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.filters>*{flex:none}
+.box{background:var(--surface);border:1px solid var(--line);border-radius:12px;min-width:0}
+.boxh{display:flex;align-items:center;gap:8px;padding:14px 16px}
+.boxh b{font-size:15px}
+.boxh small{color:var(--muted)}
+.tw{overflow-x:auto}
+table.list{width:100%;border-collapse:collapse;min-width:1280px;font-size:13px}
+.list th{background:var(--surface-2);color:var(--muted);font-weight:500;text-align:left;padding:10px 8px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);white-space:nowrap}
+.list td{padding:11px 8px;border-bottom:1px solid var(--line);vertical-align:middle}
+.list tr.r{cursor:pointer}
+.list tr.r:hover td{background:var(--surface-2)}
+.list td.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.chip{display:inline-flex;align-items:center;font-size:12px;padding:2px 9px;border-radius:999px;border:1px solid currentColor;white-space:nowrap;line-height:1.6}
+.pag{display:flex;justify-content:center;gap:4px;padding:14px}
+.pag button{width:30px;height:30px;border:1px solid var(--line);background:var(--surface);border-radius:6px;cursor:pointer}
+.pag button.on{background:var(--primary);color:#fff;border-color:var(--primary)}
+.note{background:var(--note);color:var(--note-fg);border:1px solid var(--note-line);border-radius:12px;padding:12px 16px;font-size:13px;line-height:1.65}
+.note b{font-weight:700}
+.note ul{margin:4px 0 0;padding-left:18px}
+.kept{color:var(--note-fg);background:var(--note);border-radius:4px;padding:0 4px}
+.empty{padding:40px;text-align:center;color:var(--muted)}
+/* drawer */
+.ov{position:fixed;inset:0;background:var(--dim);z-index:10}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(520px,100%);background:var(--surface);z-index:11;display:flex;flex-direction:column;border-left:1px solid var(--line)}
+.dh{display:flex;align-items:center;padding:16px 20px;border-bottom:1px solid var(--line)}
+.dh b{font-size:16px}
+.x{margin-left:auto;background:none;border:0;color:var(--muted);font-size:22px;line-height:1;cursor:pointer;padding:4px 6px}
+.db{flex:1;overflow-y:auto;padding:4px 20px 20px}
+.df{display:flex;gap:8px;justify-content:flex-end;padding:14px 20px;border-top:1px solid var(--line)}
+.sec{font-weight:700;font-size:14px;margin:20px 0 8px}
+.ir{display:flex;gap:12px;padding:9px 0;border-bottom:1px solid var(--line);font-size:13px}
+.ir span:first-child{width:110px;flex:none;color:var(--muted)}
+.og{border:1px solid var(--line);border-radius:10px;margin-bottom:10px}
+.ogh{display:flex;align-items:center;gap:8px;padding:10px 12px;background:var(--surface-2);border-radius:10px 10px 0 0;font-size:13px}
+.oi{padding:10px 12px;border-top:1px solid var(--line);font-size:13px;display:flex;gap:12px}
+.oi .l{flex:1;min-width:0}
+.oi .rt{text-align:right;color:var(--muted);font-size:12px;line-height:1.6;white-space:nowrap}
+.sub{font-size:12px;color:var(--muted);margin-top:3px;line-height:1.6}
+.pill{font-size:12px;padding:2px 8px;border-radius:999px;background:var(--surface-2);color:var(--muted);font-variant-numeric:tabular-nums}
+.tot{background:var(--primary-tint);border:1px solid var(--primary-line);border-radius:var(--r);padding:12px 14px;display:grid;gap:6px}
+.tot div{display:flex;justify-content:space-between;font-weight:700;font-variant-numeric:tabular-nums}
+.tot div span:last-child{color:var(--primary)}
+/* modal */
+.mwrap{position:fixed;inset:0;z-index:21;display:flex;align-items:flex-start;justify-content:center;padding:32px 16px;overflow-y:auto}
+.ov.m{z-index:20}
+.modal{width:100%;max-width:600px;background:var(--surface);border-radius:14px;border:1px solid var(--line)}
+.modal.s{max-width:400px}
+.mh{display:flex;align-items:center;padding:18px 22px 6px}
+.mh b{font-size:18px}
+.mb{padding:12px 22px 6px;display:grid;gap:14px}
+.mf{display:flex;gap:8px;justify-content:flex-end;padding:16px 22px 20px}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 14px}
+.lab{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
+.req{color:var(--negative);margin-left:2px}
+.pr{border:1px solid var(--line);border-radius:12px;padding:14px 16px;display:grid;gap:12px}
+.prh{display:flex;align-items:center}
+.del{margin-left:auto;background:none;border:0;color:var(--muted);cursor:pointer;font-size:13px;padding:4px 6px;border-radius:6px}
+.sm{font-size:12px;color:var(--hint);margin-top:4px}
+.cnt{display:grid;gap:10px;grid-template-columns:repeat(3,minmax(0,1fr))}
+.cnt.one{grid-template-columns:minmax(0,1fr) minmax(0,2fr)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.msgs{display:grid;gap:4px}
+.msg{font-size:13px;line-height:1.5}
+.msg.danger{color:var(--negative)} .msg.warn{color:var(--warning)} .msg.info{color:var(--muted)}
+.adj{border-top:1px dashed var(--line);padding-top:10px;display:grid;gap:8px}
+.adjh{display:flex;align-items:center;gap:8px}
+.adjh span{font-size:13px;font-weight:500}
+.adjh small{font-size:12px;color:var(--muted)}
+.tg{margin-left:auto;font-size:12px;background:none;border:1px solid var(--line);border-radius:6px;padding:4px 10px;color:var(--muted);cursor:pointer}
+table.amt{width:100%;border-collapse:collapse;font-size:13px;font-variant-numeric:tabular-nums;min-width:420px}
+.amt th{font-weight:400;color:var(--muted);font-size:12px;text-align:right;padding:6px 4px;border-bottom:1px solid var(--line)}
+.amt td{text-align:right;padding:5px 4px;border-bottom:1px solid var(--line)}
+.amt th:first-child,.amt td:first-child{text-align:left}
+.amt input{height:30px;text-align:right;padding:0 8px;font-size:13px}
+.amt input.on{border-color:var(--primary);color:var(--primary)}
+.rowsum{display:flex;flex-wrap:wrap;gap:4px 14px;justify-content:flex-end;font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+.rowsum b{color:var(--fg);font-weight:500}
+.add{width:100%;font-size:13px;color:var(--primary);background:var(--surface);border:1px dashed var(--primary-line);border-radius:var(--r);height:40px;cursor:pointer;margin-top:12px}
+.toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);z-index:40;background:var(--fg);color:var(--surface);padding:10px 16px;border-radius:var(--r);font-size:13px;max-width:calc(100% - 32px)}
+.ob{border:1px solid var(--line);border-radius:10px;margin-bottom:12px;overflow:hidden}
+.obh{display:flex;align-items:center;flex-wrap:wrap;gap:6px;padding:10px 12px;background:var(--surface-2)}
+.obh b{font-size:13px}
+table.mini{width:100%;border-collapse:collapse;font-size:12.5px;min-width:560px}
+.mini th{font-weight:400;color:var(--muted);text-align:left;padding:7px 8px;border-bottom:1px solid var(--line);white-space:nowrap;background:var(--surface)}
+.mini td{padding:7px 8px;border-bottom:1px solid var(--line);white-space:nowrap}
+.mini td.n,.mini th.n{text-align:right;font-variant-numeric:tabular-nums}
+.mini tr.pair-b td{border-bottom-style:dashed}
+.mini input[type=checkbox],.ob input[type=checkbox]{width:16px;height:16px;padding:0;accent-color:var(--primary)}
+.bar{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:8px 0}
+.kv{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 16px}
+.radio{display:flex;gap:8px;align-items:flex-start;border:1px solid var(--line);border-radius:var(--r);padding:10px 12px;cursor:pointer}
+.radio input{width:16px;height:16px;margin-top:2px;flex:none;accent-color:var(--primary)}
+.radio.on{border-color:var(--primary);background:var(--primary-tint)}
+.paybox{border:1px solid var(--line);border-radius:10px;padding:12px;display:grid;gap:10px}
+@media (max-width:900px){.dgrid{grid-template-columns:minmax(0,1fr)!important}.side{display:none}.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.top .srch{display:none}}
+@media (max-width:520px){.grid2{grid-template-columns:minmax(0,1fr)}.cnt{grid-template-columns:repeat(2,minmax(0,1fr))}.content{padding:16px}.top{padding:0 16px}.mh,.mb,.mf{padding-inline:16px}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<div class="app">
+  <aside class="side">
+    <div class="logo">9.81 PARK</div>
+    <div class="me">운영자 계정<br>예약팀</div>
+    <nav class="menu" aria-label="메뉴">
+      <a href="#">인포데스크</a>
+      <a href="#">레이스</a>
+      <a href="#">액티비티</a>
+      <a href="#" class="on">단체 예약 관리</a>
+      <a href="#">파크 운영 관리</a>
+      <a href="#">재고 관리</a>
+    </nav>
+  </aside>
+  <div class="main">
+    <header class="top"><b>9.81 파크 관리 시스템 (ICN)</b><input class="srch" id="ticketSearch" placeholder="티켓 번호를 입력하세요" aria-label="티켓 번호 검색"></header>
+    <main class="content" id="content"></main>
+  </div>
+</div>
+<div id="layer"></div>
+<div id="modalLayer"></div>
+<div class="toast" id="toast" role="status" hidden></div>
+
+<script>
+const TODAY='2026-10-08';
+const PRODUCTS={race:{name:'[단체] 레이스 포함 패키지',short:'레이스 패키지',base:64000,opt:40000},indoor:{name:'[단체] 실내 패키지',short:'실내 패키지',base:64000}};
+const STOCK={'10:00':[40,6],'11:00':[12,2],'13:00':[55,10],'14:00':[30,4],'15:00':[48,8]};
+const PTYPE={AGENCY:'여행사',AGENCY_PACKAGE:'여행사PKG',GUIDE:'가이드',AFFILIATE:'제휴',PRIVATE_GROUP:'개별모임',OTHER:'기타'};
+const PSTATUS={ACTIVE:['활성','var(--positive)'],CLOSED:['폐업','var(--disable)']};
+const GPRODUCTS=[['race','[단체] 레이스 포함 패키지',64000],['indoor','[단체] 실내 패키지',64000]];
+const mkP=p=>({type:'AGENCY',status:'ACTIVE',region:'인천',representative:'',address:'',method:'PERCENT',value:0,businessNo:'',contacts:[],products:[],files:{reg:false,card:false,bank:false},memo:'',audits:[{type:'CREATED',regNm:'영업팀 담당자',regDt:'2026-08-20 10:00',changes:[]}],regNm:'영업팀 담당자',regDt:'2026-08-20 10:00',modNm:'',modDt:'',...p});
+const AGENCIES=[{id:0,name:'',method:'PERCENT',value:0,status:'ACTIVE',products:[]},
+  mkP({id:1,name:'예시여행사',type:'AGENCY',representative:'이○○',address:'인천 중구 ○○로 12',value:10,businessNo:'123-45-*****',contacts:[{name:'이○○ 과장',phone:'010-****-1102',email:'l***@example.com'}],files:{reg:true,card:true,bank:true},memo:'학단 위주',
+    audits:[{type:'CREATED',regNm:'영업팀 담당자',regDt:'2026-08-20 10:00',changes:[]},{type:'UPDATED',regNm:'영업팀 담당자',regDt:'2026-09-02 14:21',changes:[{field:'수수료',left:'8',right:'10'}]}],modNm:'영업팀 담당자',modDt:'2026-09-02 14:21'}),
+  mkP({id:2,name:'예시투어',type:'AGENCY_PACKAGE',region:'서울',representative:'김○○',address:'서울 중구 ○○길 5',value:15,businessNo:'234-56-*****',contacts:[{name:'김○○ 대리',phone:'010-****-3381',email:'k***@example.com'},{name:'박○○ 사원',phone:'010-****-9920',email:'p***@example.com'}],products:[{prd:'indoor',method:'PERCENT',value:10}],files:{reg:true,card:false,bank:true}}),
+  mkP({id:3,name:'한빛관광',type:'AGENCY',region:'경기',representative:'최○○',value:12,businessNo:'345-67-*****',contacts:[{name:'최○○ 팀장',phone:'010-****-4410',email:'c***@example.com'}],files:{reg:true,card:true,bank:false}}),
+  mkP({id:4,name:'정○○ 가이드',type:'GUIDE',region:'인천',representative:'정○○',method:'FIXED',value:5000,contacts:[{name:'정○○',phone:'010-****-7712',email:''}],files:{reg:false,card:true,bank:true},memo:'프리랜서 가이드, 일본어 가능'}),
+  mkP({id:5,name:'○○카드',type:'AFFILIATE',region:'서울',representative:'한○○',value:0,contacts:[{name:'한○○ 매니저',phone:'010-****-3307',email:'h***@example.com'}]}),
+  mkP({id:6,name:'옛날여행',type:'AGENCY',status:'CLOSED',region:'부산',representative:'오○○',value:10,memo:'2026-07 폐업 신고'})];
+const fmtComm=a=>!a||!a.id?'-':a.method==='FIXED'?won(a.value)+' (1인)':a.value+'%';
+function commUnit(agencyId,key,price){const a=AGENCIES.find(x=>x.id==agencyId);if(!a||!a.id)return 0;const o=a.products.find(x=>x.prd===(key==='opt'?'race':key));const m=o?o.method:a.method,v=o?o.value:a.value;return m==='FIXED'?num(v):price*num(v)/100}
+const STATUS={PENDING:['대기','var(--warning)'],REVIEWING:['리체크','var(--violet)'],CONFIRMED:['확정','var(--positive)'],COMPLETED:['완료','var(--primary)'],CANCELED:['취소','var(--negative)']};
+const GTYPE={SCHOOL:['학단','var(--primary)'],CORPORATE:['기업','#eab308'],PUBLIC:['공공','#20c997'],AGENCY:['여행사','#ef4444'],AGENCY_PACKAGE:['여행사PKG','#ff6b00'],AFFILIATE:['제휴','#008000'],PRIVATE_GROUP:['개별모임','var(--violet)'],OTHER:['기타','var(--disable)']};
+const REGIONS=['서울','부산','대구','인천','광주','대전','울산','세종','경기','충북','충남','전남','경북','경남','제주','강원','전북','국외'];
+const COUNTRIES=['중국','대만','홍콩','싱가포르','일본','유럽','미주','동남아','기타'];
+const won=n=>'₩'+Math.round(n).toLocaleString('ko-KR');
+const num=v=>{const x=parseInt(v,10);return isNaN(x)||x<0?0:x};
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const dow=d=>'일월화수목금토'[new Date(d+'T00:00:00').getDay()];
+const chip=(t,c)=>`<span class="chip" style="color:${c}">${t}</span>`;
+
+let rowSeq=0;
+const mkRow=p=>({id:++rowSeq,prd:p.prd||'',slot:p.slot||'',n1:p.n1??'',n2:p.n2??'',n3:p.n3??'',open:false,cust:{bd:null,bc:null,od:null,oc:null,depAll:null},memo:p.memo||''});
+let bookSeq=1040;
+const mkBook=p=>({id:++bookSeq,date:p.date,time:p.time,groupName:p.groupName,type:p.type,region:p.region||'인천',country:'',status:p.status,reserver:p.reserver,phone:p.phone,leader:p.leader||'',leaderPhone:p.leaderPhone||'',agency:p.agency||0,staff:p.staff||'예약팀 담당자',memo:p.memo||'',rows:p.rows.map(mkRow),regNm:'예약팀 담당자',regDt:p.regDt||'2026-09-24 14:12',modNm:p.modNm||'',modDt:p.modDt||''});
+const S={
+  tab:'calendar',
+  f:{q:'',status:'',agency:'',type:'',region:'',from:'',to:''},
+  page:1,
+  books:[
+    mkBook({date:'2026-10-08',time:'10:00',groupName:'인천 ○○고등학교 2학년',type:'SCHOOL',status:'CONFIRMED',reserver:'김○○',phone:'010-****-2381',agency:1,rows:[{prd:'race',slot:'10:00',n1:34,n2:0,n3:4},{prd:'indoor',slot:'13:00',n1:12}],memo:'인솔 교사 4명 동승'}),
+    mkBook({date:'2026-10-08',time:'14:00',groupName:'○○전자 신입사원 연수',type:'CORPORATE',status:'COMPLETED',reserver:'박○○',phone:'010-****-7720',agency:2,rows:[{prd:'race',slot:'14:00',n1:22,n2:0,n3:0}]}),
+    mkBook({date:'2026-10-10',time:'11:00',groupName:'부평구 청소년수련관',type:'PUBLIC',status:'REVIEWING',reserver:'이○○',phone:'010-****-0915',agency:0,rows:[{prd:'race',slot:'11:00',n1:4,n2:6,n3:6},{prd:'indoor',slot:'13:00',n1:10}],memo:'1~2일 전 인원 재확인'}),
+    mkBook({date:'2026-10-15',time:'10:00',groupName:'○○관광 가을 패키지 1차',type:'AGENCY_PACKAGE',status:'PENDING',reserver:'최○○',phone:'010-****-4410',agency:3,rows:[{prd:'race',slot:'10:00',n1:18,n2:0,n3:6}]}),
+    mkBook({date:'2026-10-22',time:'13:00',groupName:'○○초등학교 6학년',type:'SCHOOL',status:'PENDING',reserver:'정○○',phone:'010-****-6652',agency:1,rows:[{prd:'indoor',slot:'13:00',n1:96}],memo:'점심 후 도착'}),
+    mkBook({date:'2026-10-24',time:'15:00',groupName:'○○카드 우수회원 초청',type:'AFFILIATE',status:'CONFIRMED',reserver:'한○○',phone:'010-****-3307',agency:0,rows:[{prd:'race',slot:'15:00',n1:16,n2:0,n3:8}]}),
+    mkBook({date:'2026-11-05',time:'10:00',groupName:'○○대학교 자동차공학과',type:'SCHOOL',status:'PENDING',reserver:'윤○○',phone:'010-****-8094',agency:2,rows:[{prd:'race',slot:'10:00',n1:40,n2:0,n3:0}]}),
+    mkBook({date:'2026-11-14',time:'11:00',groupName:'송도 ○○교회 청년부',type:'PRIVATE_GROUP',status:'CANCELED',reserver:'강○○',phone:'010-****-1185',agency:0,rows:[{prd:'race',slot:'11:00',n1:7,n2:3,n3:5}],memo:'고객 사정으로 취소'}),
+    mkBook({date:'2026-11-20',time:'13:00',groupName:'TOKYO ○○ HIGH SCHOOL',type:'AGENCY',status:'PENDING',reserver:'오○○',phone:'010-****-5521',agency:3,region:'국외',rows:[{prd:'race',slot:'13:00',n1:24,n2:6,n3:10}]}),
+  ],
+  drawer:null, modal:null, confirm:null
+};
+S.books[8].country='일본';
+S.books[1].modNm='예약팀 담당자';S.books[1].modDt='2026-10-02 09:40';
+S.books.push(mkBook({date:'2026-10-03',time:'10:00',groupName:'○○중학교 3학년',type:'SCHOOL',status:'COMPLETED',reserver:'서○○',phone:'010-****-6610',agency:1,rows:[{prd:'race',slot:'10:00',n1:8,n2:2,n3:4}],regDt:'2026-09-15 10:20'}));
+S.odrawer=null;S.sel=new Set();S.more={};
+
+function calc(r,agencyId){
+  const p=PRODUCTS[r.prd],race=r.prd==='race';
+  const n1=num(r.n1),n2=race?num(r.n2):0,n3=race?num(r.n3):0,drv=n1+n2,pas=n3;
+  if(!p)return{race,drv,pas,n1,n2,n3,lines:[],pay:0,dep:0,com:0};
+  const c=r.cust,bc=c.bc??commUnit(agencyId,r.prd,p.base),bd=c.bd??Math.max(p.base-bc,0);
+  const lines=[{k:'b',name:race?'운전자 (주니어 포함)':'이용자',q:drv,price:p.base,d:bd,c:bc}];
+  if(race){const oc=c.oc??commUnit(agencyId,'opt',p.opt),od=c.od??Math.max(p.opt-oc,0);lines.push({k:'o',name:'동승자 옵션',q:pas,price:p.opt,d:od,c:oc})}
+  let dep=lines.reduce((s,l)=>s+l.d*l.q,0);const com=lines.reduce((s,l)=>s+l.c*l.q,0);
+  if(c.depAll!=null)dep=c.depAll;
+  return{race,drv,pas,n1,n2,n3,lines,dep,com,pay:dep+com};
+}
+function bookCalc(b){return b.rows.reduce((a,r)=>{const k=calc(r,b.agency);return{pay:a.pay+k.pay,dep:a.dep+k.dep,com:a.com+k.com,ppl:a.ppl+k.drv+k.pas,cars:a.cars+(k.race?k.drv:0)}},{pay:0,dep:0,com:0,ppl:0,cars:0})}
+function pairErr(k){if(!k.race)return null;if(k.n3>k.drv)return `동승자는 운전자(주니어 포함) 수 ${k.drv}명까지 넣을 수 있어요. ${k.n3-k.drv}명을 줄여 주세요.`;if(k.n2>k.n3)return `주니어 운전자는 동승자와 함께 타야 해요. 동승자를 ${k.n2-k.n3}명 더 넣거나 주니어 운전자를 줄여 주세요.`;return null}
+const ticketText=b=>b.rows.filter(r=>r.prd).map(r=>{const k=calc(r,b.agency);return k.race?`레이스 패키지 운전 ${k.n1}${k.n2?` · 주니어 ${k.n2}`:''}${k.n3?` · 동승 ${k.n3}`:''}`:`실내 패키지 ${k.drv}명`}).join(', ');
+const agencyName=id=>AGENCIES.find(a=>a.id==id)?.name||'';
+
+/* ---------- 예약 탭 ---------- */
+function weekRange(d){const t=new Date(d+'T00:00:00'),day=(t.getDay()+6)%7,s=new Date(t);s.setDate(t.getDate()-day);const e=new Date(s);e.setDate(s.getDate()+6);const f=x=>`${x.getFullYear()}-${String(x.getMonth()+1).padStart(2,'0')}-${String(x.getDate()).padStart(2,'0')}`;return[f(s),f(e)]}
+function filtered(){
+  const f=S.f;return S.books.filter(b=>{
+    if(f.q&&!(b.groupName.includes(f.q)||b.reserver.includes(f.q)))return false;
+    if(f.status&&b.status!==f.status)return false;
+    if(f.agency!==''&&String(b.agency)!==f.agency)return false;
+    if(f.type&&b.type!==f.type)return false;
+    if(f.region&&b.region!==f.region)return false;
+    if(f.from&&b.date<f.from)return false;
+    if(f.to&&b.date>f.to)return false;
+    return true}).sort((a,b)=>b.id-a.id);
+}
+function bookingTab(){
+  const live=S.books.filter(b=>b.status!=='CANCELED');
+  const [ws,we]=weekRange(TODAY);
+  const today=live.filter(b=>b.date===TODAY).length,week=live.filter(b=>b.date>=ws&&b.date<=we).length;
+  const month=live.filter(b=>b.date.slice(0,7)===TODAY.slice(0,7)).reduce((s,b)=>s+bookCalc(b).pay,0);
+  const list=filtered(),f=S.f;
+  const opt=(o,v)=>Object.entries(o).map(([k,x])=>`<option value="${k}" ${v===k?'selected':''}>${x[0]}</option>`).join('');
+  return `
+  <div class="stats">
+    <div class="stat"><small>오늘 방문</small><div class="num">${today}</div></div>
+    <div class="stat"><small>이번 주 예약</small><div class="num">${week}</div></div>
+    <div class="stat"><small>견적 진행 <span class="kept">정의 필요</span></small><div class="num" style="color:var(--primary)">${S.books.length}</div></div>
+    <div class="stat"><small>이번 달 예상 매출</small><div class="num" style="color:var(--positive)">${won(month)}</div></div>
+  </div>
+  <div class="filters">
+    <input id="f-q" style="width:300px" placeholder="단체명, 단체 담당자(예약자) 검색" value="${esc(f.q)}">
+    <select id="f-status" style="width:120px"><option value="">상태</option>${opt(STATUS,f.status)}</select>
+    <select id="f-agency" style="width:200px"><option value="">거래처 검색</option>${AGENCIES.filter(a=>a.id).map(a=>`<option value="${a.id}" ${f.agency==a.id?'selected':''}>${a.name}</option>`).join('')}</select>
+    <select id="f-type" style="width:120px"><option value="">구분</option>${opt(GTYPE,f.type)}</select>
+    <select id="f-region" style="width:100px"><option value="">지역</option>${REGIONS.map(r=>`<option ${f.region===r?'selected':''}>${r}</option>`).join('')}</select>
+    <input id="f-from" type="date" style="width:150px" value="${f.from}" aria-label="시작일"><span style="color:var(--muted)">~</span><input id="f-to" type="date" style="width:150px" value="${f.to}" aria-label="종료일">
+    <button class="btn" data-act="reset">초기화</button>
+  </div>
+  <section class="box">
+    <div class="boxh"><b>예약 내역</b><small>${list.length}건</small><button class="btn sm ml" data-act="csv">CSV 다운로드</button></div>
+    <div class="tw"><table class="list">
+      <thead><tr><th>관리번호</th><th>이용일</th><th>이용시간</th><th>단체명</th><th>여행사</th><th>예약자</th><th>연락처</th><th>담당자</th><th>이용티켓</th><th>수량</th><th>예상결제가</th><th>예상입금가</th><th>예상수수료</th><th>구분</th><th>상태</th><th>비고</th><th>액션</th></tr></thead>
+      <tbody>${list.length?list.map(b=>{const c=bookCalc(b),g=GTYPE[b.type],s=STATUS[b.status];return `<tr class="r" data-open="${b.id}">
+        <td class="num">${b.id}</td><td class="num" style="white-space:nowrap">${b.date} (${dow(b.date)})</td><td class="num">${b.time}</td>
+        <td style="font-weight:500">${esc(b.groupName)}</td><td>${esc(agencyName(b.agency))||'-'}</td><td>${esc(b.reserver)}</td><td class="num" style="white-space:nowrap">${esc(b.phone)||'-'}</td><td>${esc(b.staff)}</td>
+        <td style="min-width:200px">${esc(ticketText(b))}</td><td class="n">${c.ppl}명<div class="sub">차량 ${c.cars}대</div></td>
+        <td class="n">${won(c.pay)}</td><td class="n">${won(c.dep)}</td><td class="n">${won(c.com)}</td>
+        <td>${chip(g[0],g[1])}</td><td>${chip(s[0],s[1])}</td><td style="color:var(--muted)">${esc(b.memo)||'-'}</td>
+        <td>${['PENDING','CONFIRMED'].includes(b.status)?`<button class="btn sm" data-order="${b.id}">주문생성</button>`:''}</td></tr>`}).join(''):`<tr><td colspan="17" class="empty">조건에 맞는 예약이 없어요.</td></tr>`}</tbody>
+    </table></div>
+    <div class="pag"><button class="on">1</button></div>
+  </section>
+  <div class="note"><b>안내 · 구현 시 제외</b> 예약 탭은 제주 화면과 같아요. 인천에서 바뀐 곳만 적어요.
+    <ul>
+      <li>수량 칸에 인원과 함께 차감될 레이스 차량 대수를 보여줘요.</li>
+      <li>레이스 상품은 운전자, 주니어 운전자, 동승자 수를 나눠 넣어요. 동승자는 운전자(주니어 포함) 수까지만, 주니어 운전자는 동승자가 있어야 넣을 수 있어요.</li>
+      <li>"견적 진행" 카드는 제주에서 실제로는 전체 건수를 보여주고 있어요. 인천에서는 무엇을 셀지 정해야 해요.</li>
+      <li>상품 가격(64,000원, 동승 40,000원)과 거래처, 예약 데이터는 모두 예시예요.</li>
+    </ul></div>`;
+}
+
+/* ---------- 예약 상세 Drawer ---------- */
+function drawerHTML(b){
+  const s=STATUS[b.status],g=GTYPE[b.type],c=bookCalc(b),ag=AGENCIES.find(a=>a.id==b.agency);
+  const ir=(l,v)=>`<div class="ir"><span>${l}</span><span>${v}</span></div>`;
+  const groups={};b.rows.filter(r=>r.prd).forEach(r=>{(groups[r.slot||'시간 미지정']=groups[r.slot||'시간 미지정']||[]).push(r)});
+  const orderHTML=Object.keys(groups).sort().map(t=>{const rs=groups[t];const sum=rs.reduce((a,r)=>{const k=calc(r,b.agency);return{pay:a.pay+k.pay,dep:a.dep+k.dep,com:a.com+k.com}},{pay:0,dep:0,com:0});
+    return `<div class="og"><div class="ogh"><b>탑승 ${t}</b><span style="color:var(--muted)">${rs.length}건</span></div>
+    ${rs.map(r=>{const k=calc(r,b.agency),p=PRODUCTS[r.prd];return `<div class="oi"><div class="l"><div style="font-weight:500">${p.name}</div>
+      <div class="sub">${k.race?`운전자 ${k.n1}명 · 주니어 운전자 ${k.n2}명 · 동승자 ${k.n3}명`:`이용자 ${k.drv}명`}</div>
+      <div class="sub">${k.lines.map(l=>`${l.name} ${won(l.price)} × ${l.q}`).join('<br>')}</div>
+      ${k.race?`<div class="chips" style="margin-top:6px"><span class="pill">차량 ${k.drv}대</span><span class="pill">2인승 ${k.pas}대</span><span class="pill">티켓 ${k.drv+k.pas}장</span></div>`:''}
+      ${r.memo?`<div class="sub">메모: ${esc(r.memo)}</div>`:''}</div>
+      <div class="rt">결제가: ${won(k.pay)}<br>입금가: ${won(k.dep)}<br>수수료: ${won(k.com)}</div></div>`}).join('')}
+    <div class="oi" style="background:var(--surface-2);border-radius:0 0 10px 10px"><div class="l" style="color:var(--muted)">소계</div><div class="rt">결제가: ${won(sum.pay)}<br>입금가: ${won(sum.dep)}<br>수수료: ${won(sum.com)}</div></div></div>`}).join('');
+  const canOrder=['PENDING','CONFIRMED'].includes(b.status),canModify=['PENDING','REVIEWING','CONFIRMED'].includes(b.status);
+  return `<div class="ov" data-close="drawer"></div><aside class="drawer" role="dialog" aria-label="예약 상세">
+    <div class="dh"><b>예약 상세 - ${b.id}</b><button class="x" data-close="drawer" aria-label="닫기">×</button></div>
+    <div class="db">
+      <div class="sec">예약 정보</div>${ir('관리번호',b.id)}${ir('이용일',`${b.date} (${dow(b.date)})`)}${ir('이용 시간',b.time)}${ir('상태',chip(s[0],s[1]))}
+      <div class="sec">단체 정보</div>${ir('단체명',esc(b.groupName))}${ir('구분',chip(g[0],g[1]))}${ir('지역',b.region)}${b.region==='국외'?ir('국가',b.country||'-'):''}${ir('담당자',esc(b.reserver))}${ir('담당자 연락처',esc(b.phone))}${b.leader?ir('인솔자',esc(b.leader)):''}${b.leaderPhone?ir('인솔자 연락처',esc(b.leaderPhone)):''}
+      <div class="sec">담당자 정보</div>${ir('담당자',esc(b.staff))}${ag&&ag.id?ir('여행사',ag.name)+ir('여행사 수수료',fmtComm(ag)):''}
+      <div class="sec">주문 목록 (${b.rows.filter(r=>r.prd).length}건)</div>${orderHTML||'<div class="sub">상품이 없어요.</div>'}
+      <div class="tot"><div><span>총 예상 결제 금액</span><span>${won(c.pay)}</span></div><div><span>총 예상 입금 금액</span><span>${won(c.dep)}</span></div><div><span>총 예상 수수료 금액</span><span>${won(c.com)}</span></div></div>
+      <div class="sec">비고</div><div style="font-size:13px;color:${b.memo?'var(--fg)':'var(--muted)'}">${esc(b.memo)||'-'}</div>
+      <div class="sec">등록/수정 정보</div>${ir('등록자',b.regNm)}${ir('등록일',b.regDt)}${b.modNm?ir('수정자',b.modNm)+ir('수정일',b.modDt):''}
+      <div class="note" style="margin-top:16px">레이스 상품은 저장할 때 패키지 라인과 동승자 옵션 라인으로 나뉘지만, 상세에서는 한 상품으로 묶어서 보여줘요.</div>
+    </div>
+    <div class="df">${canOrder?`<button class="btn p" data-order="${b.id}">주문생성</button>`:''}${canModify?`<button class="btn" data-edit="${b.id}">수정</button><button class="btn d" data-delete="${b.id}">삭제</button>`:''}</div>
+  </aside>`;
+}
+
+/* ---------- 예약 등록/수정 팝업 (A안) ---------- */
+function blankDraft(){return{id:null,date:'',time:'',groupName:'',type:'',region:'',country:'',status:'PENDING',reserver:'',phone:'',leader:'',leaderPhone:'',agency:0,staff:'',memo:'',rows:[mkRow({})]}}
+function cloneBook(b){return JSON.parse(JSON.stringify(b))}
+function rowHTML(d,r,i){
+  const race=r.prd==='race',k=calc(r,d.agency),st=STOCK[r.slot];
+  const prdOpts=['<option value="">상품 선택 *</option>'].concat(Object.entries(PRODUCTS).map(([v,p])=>`<option value="${v}" ${r.prd===v?'selected':''}>${p.name}</option>`)).join('');
+  const slotOpts=!r.prd?'<option value="">상품 선택 후 조회됩니다</option>':!d.date?'<option value="">탑승일 선택 후 조회됩니다</option>':['<option value="">탑승 시간 선택</option>'].concat(Object.keys(STOCK).map(s=>`<option ${r.slot===s?'selected':''}>${s}</option>`)).join('');
+  const stockTxt=!r.slot?'':race?`남은 차량 ${st[0]}대 · 2인승 ${st[1]}대`:'실내는 인원 기준으로 차감해요';
+  const counts=race?`<div><span class="lab">인원 구성<span class="req">*</span></span><div class="cnt">
+    <div><label class="lab" for="n1-${r.id}">운전자</label><input id="n1-${r.id}" data-f="n1" type="number" min="0" step="1" placeholder="0" value="${r.n1}"><div class="sm">티켓 1장 · 차량 1대</div></div>
+    <div><label class="lab" for="n2-${r.id}">주니어 운전자</label><input id="n2-${r.id}" data-f="n2" type="number" min="0" step="1" placeholder="0" value="${r.n2}"><div class="sm">동승자와 함께만 타요</div></div>
+    <div><label class="lab" for="n3-${r.id}">동승자</label><input id="n3-${r.id}" data-f="n3" type="number" min="0" step="1" placeholder="0" value="${r.n3}"><div class="sm">운전자 수까지 · 2인승 차량</div></div></div></div>`
+    :`<div class="cnt one"><div><label class="lab" for="n1-${r.id}">${r.prd?'이용자':'수량'}<span class="req">*</span></label><input id="n1-${r.id}" data-f="n1" type="number" min="0" step="1" placeholder="수량" value="${r.n1}"></div><div></div></div>`;
+  const m=[];
+  if(r.prd&&race){
+    const er=pairErr(k);if(er)m.push(['danger',er]);
+    if(st&&k.drv>st[0])m.push(['warn',`이 시간대 남은 차량은 ${st[0]}대예요. 저장은 되지만 재고보다 많이 팔게 돼요.`]);
+    if(st&&k.pas>st[1])m.push(['warn',`이 시간대 2인승 차량이 ${k.pas-st[1]}대 모자라요. 저장은 되지만 배차를 확인해 주세요.`]);
+  }
+  const cell=(l,f)=>{const key=l.k+(f==='d'?'d':'c');return `<input type="number" step="100" min="0" data-c="${key}" aria-label="${l.name} ${f==='d'?'입금 단가':'수수료 단가'}" class="${r.cust[key]!=null?'on':''}" value="${Math.round(l[f])}">`};
+  const adj=!r.prd?'':`<div class="adj"><div class="adjh"><span>금액 조정</span><small>선택 · 바꾼 칸은 파란색</small><button type="button" class="tg" data-tg="${r.id}" aria-expanded="${r.open}">${r.open?'닫기':'열기'}</button></div>
+    ${r.open?`<div class="tw"><table class="amt"><thead><tr><th>구성</th><th>수량</th><th>결제 단가</th><th>입금 단가</th><th>수수료 단가</th><th>결제가</th></tr></thead><tbody>
+    ${k.lines.map(l=>`<tr><td>${l.name}</td><td>${l.q}</td><td>${won(l.price)}</td><td>${cell(l,'d')}</td><td>${cell(l,'c')}</td><td>${won((l.d+l.c)*l.q)}</td></tr>`).join('')}</tbody></table></div>
+    <div><label class="lab" for="dep-${r.id}">입금 금액 직접 입력</label><input id="dep-${r.id}" data-c="depAll" type="number" min="0" step="1000" placeholder="금액 입력" value="${r.cust.depAll??''}" style="max-width:240px"><div class="sm">넣으면 단가 계산보다 이 금액이 먼저 적용돼요</div></div>`:''}</div>`;
+  return `<div class="pr" data-row="${r.id}"><div class="prh"><b>상품 ${i+1}</b>${d.rows.length>1?`<button type="button" class="del" data-delrow="${r.id}">삭제</button>`:''}</div>
+    <div class="grid2" style="grid-template-columns:minmax(0,1.6fr) minmax(0,1fr)">
+      <div><label class="lab" for="prd-${r.id}">상품<span class="req">*</span></label><select id="prd-${r.id}" data-f="prd">${prdOpts}</select></div>
+      <div><label class="lab" for="slot-${r.id}">탑승 시간<span class="req">*</span></label><select id="slot-${r.id}" data-f="slot" ${r.prd&&d.date?'':'disabled'}>${slotOpts}</select><div class="sm">${stockTxt}</div></div></div>
+    ${counts}${m.length?`<div class="msgs">${m.map(x=>`<div class="msg ${x[0]}">${x[1]}</div>`).join('')}</div>`:''}${adj}
+    <div><label class="lab" for="rm-${r.id}">메모 (선택)</label><input id="rm-${r.id}" data-f="memo" placeholder="메모 입력" value="${esc(r.memo)}"></div>
+    <div class="rowsum"><span>결제가 <b>${won(k.pay)}</b></span><span>입금가 <b>${won(k.dep)}</b></span><span>수수료 <b>${won(k.com)}</b></span></div></div>`;
+}
+function modalHTML(){
+  const M=S.modal;
+  if(M.kind==='refund')return refundModalHTML();
+  if(M.kind==='sform')return sFormHTML();
+  if(M.kind==='pform')return pFormHTML();
+  if(M.kind==='pprod')return pprodHTML();
+  if(M.kind==='goal')return goalHTML();
+  if(M.kind==='rform')return rFormHTML();
+  if(M.kind==='s2r')return s2rHTML();
+  if(M.kind==='r2b')return r2bHTML();
+  if(M.kind==='actual')return actualModalHTML();
+  if(M.kind==='confirm')return `<div class="ov m"></div><div class="mwrap"><div class="modal s" role="alertdialog" aria-label="${M.title}"><div class="mh"><b>${M.title}</b></div><div class="mb" style="white-space:pre-line;color:var(--muted)">${M.text}</div><div class="mf"><button class="btn" data-mclose>취소</button><button class="btn ${M.danger?'d':'p'}" data-mok>${M.ok}</button></div></div></div>`;
+  const d=M.draft,edit=!!d.id;
+  if(M.kind==='addorder')return `<div class="ov m" data-mclose></div><div class="mwrap"><section class="modal" role="dialog" aria-label="주문 추가"><div class="mh"><b>주문 추가</b><button class="x" data-mclose aria-label="닫기">×</button></div><div class="mb"><div class="sub" style="margin:0">같은 예약번호에 주문을 더해요. 동승자만 따로 추가할 수는 없어요.</div><div id="mrows" style="display:grid;gap:12px">${d.rows.map((r,i)=>rowHTML(d,r,i)).join('')}</div></div><div class="mf"><button class="btn" data-mclose>취소</button><button class="btn p" data-addok>추가</button></div></section></div>`;
+  const tot=d.rows.reduce((a,r)=>{const k=calc(r,d.agency);return{pay:a.pay+k.pay,dep:a.dep+k.dep,com:a.com+k.com}},{pay:0,dep:0,com:0});
+  const o=(arr,v)=>arr.map(x=>`<option ${v===x?'selected':''}>${x}</option>`).join('');
+  return `<div class="ov m" data-mclose></div><div class="mwrap"><section class="modal" role="dialog" aria-label="${edit?'예약 수정':'예약 등록'}">
+  <div class="mh"><b>${edit?'예약 수정':'예약 등록'}</b><button class="x" data-mclose aria-label="닫기">×</button></div>
+  <div class="mb" id="mform">
+    <div class="grid2">
+      <div><label class="lab" for="m-date">이용예정일<span class="req">*</span></label><input id="m-date" data-d="date" type="date" value="${d.date}"></div>
+      <div><label class="lab" for="m-time">이용시간<span class="req">*</span></label><select id="m-time" data-d="time"><option value="">시간 선택</option>${o(['09:00','09:30','10:00','10:30','11:00','11:30','13:00','13:30','14:00','14:30','15:00','15:30','16:00','16:30','17:00','17:30','18:00'],d.time)}</select></div>
+      <div><label class="lab" for="m-gname">단체명<span class="req">*</span></label><input id="m-gname" data-d="groupName" placeholder="단체명" value="${esc(d.groupName)}"></div>
+      <div><label class="lab" for="m-type">구분</label><select id="m-type" data-d="type"><option value="">구분 선택</option>${Object.entries(GTYPE).map(([k,x])=>`<option value="${k}" ${d.type===k?'selected':''}>${x[0]}</option>`).join('')}</select></div>
+      <div><label class="lab" for="m-region">지역</label><select id="m-region" data-d="region"><option value="">지역 선택</option>${o(REGIONS,d.region)}</select></div>
+      <div><label class="lab" for="m-country">국가</label><select id="m-country" data-d="country" ${d.region==='국외'?'':'disabled'}><option value="">국가 선택</option>${o(COUNTRIES,d.country)}</select></div>
+      <div><label class="lab" for="m-status">상태</label><select id="m-status" data-d="status">${['PENDING','REVIEWING','CONFIRMED'].map(k=>`<option value="${k}" ${d.status===k?'selected':''}>${STATUS[k][0]}</option>`).join('')}</select></div><div></div>
+      <div><label class="lab" for="m-res">단체 담당자<span class="req">*</span></label><input id="m-res" data-d="reserver" placeholder="담당자명" value="${esc(d.reserver)}"></div>
+      <div><label class="lab" for="m-phone">담당자 연락처</label><input id="m-phone" data-d="phone" placeholder="010-0000-0000" value="${esc(d.phone)}"></div>
+      <div><label class="lab" for="m-leader">인솔자</label><input id="m-leader" data-d="leader" placeholder="인솔자명" value="${esc(d.leader)}"></div>
+      <div><label class="lab" for="m-lphone">인솔자 연락처</label><input id="m-lphone" data-d="leaderPhone" placeholder="010-0000-0000" value="${esc(d.leaderPhone)}"></div>
+      <div><label class="lab" for="m-agency">여행사</label><select id="m-agency" data-d="agency"><option value="0">여행사명으로 검색</option>${AGENCIES.filter(a=>a.id&&a.status==='ACTIVE').map(a=>`<option value="${a.id}" ${d.agency==a.id?'selected':''}>${a.name} · 수수료 ${fmtComm(a)}</option>`).join('')}</select></div>
+      <div><label class="lab" for="m-staff">파크 담당자</label><select id="m-staff" data-d="staff"><option value="">담당자 선택</option>${o(['예약팀 담당자','영업팀 담당자'],d.staff)}</select></div>
+    </div>
+    <div><span class="lab">상품<span class="req">*</span></span><div id="mrows" style="display:grid;gap:12px">${d.rows.map((r,i)=>rowHTML(d,r,i)).join('')}</div><button type="button" class="add" data-addrow>+ 상품 추가</button></div>
+    <div><label class="lab" for="m-memo">메모</label><textarea id="m-memo" data-d="memo" placeholder="메모 입력">${esc(d.memo)}</textarea></div>
+  </div>
+  <div style="padding:4px 22px 0"><div class="tot" id="mtot"><div><span>총 예상 결제 금액</span><span>${won(tot.pay)}</span></div><div><span>총 예상 입금 금액</span><span>${won(tot.dep)}</span></div><div><span>총 예상 수수료 금액</span><span>${won(tot.com)}</span></div></div></div>
+  <div class="mf"><button class="btn" data-mclose>취소</button><button class="btn p" data-msave>${edit?'수정':'등록'}</button></div></section></div>`;
+}
+
+/* ---------- 대시보드 · 목표 설정 (목업) ---------- */
+S.goals={'2026-10':{ppl:900,amt:52000000},'2026-11':{ppl:1100,amt:64000000},'2026-12':{ppl:700,amt:42000000}};S.dtab='domestic';
+function monthAgg(){const m={};S.books.filter(b=>b.status!=='CANCELED'&&b.date.startsWith('2026')).forEach(b=>{const k=b.date.slice(0,7),c=bookCalc(b);m[k]=m[k]||{ppl:0,amt:0,cars:0,com:0,n:0};m[k].ppl+=c.ppl;m[k].amt+=c.pay;m[k].cars+=c.cars;m[k].com+=c.com;m[k].n++});return m}
+const MONTHS=Array.from({length:12},(_,i)=>`2026-${String(i+1).padStart(2,'0')}`);
+const hbar=(rows,fmt)=>{const max=Math.max(1,...rows.map(r=>r.v));return `<div style="display:grid;gap:8px">${rows.map(r=>`<div style="display:grid;grid-template-columns:80px minmax(0,1fr) auto;gap:10px;align-items:center;font-size:13px" title="${r.l}: ${fmt(r.v)}"><span>${r.l}</span><span style="height:14px;background:var(--surface-2);border-radius:0 4px 4px 0"><span style="display:block;height:100%;width:${r.v/max*100}%;background:${r.c||'var(--primary)'};border-radius:0 4px 4px 0;min-width:${r.v?2:0}px"></span></span><span class="num" style="text-align:right;white-space:nowrap">${fmt(r.v)}</span></div>`).join('')}</div>`};
+function dashboardTab(){
+  const agg=monthAgg(),vals=Object.values(agg);
+  const tot=vals.reduce((a,x)=>({ppl:a.ppl+x.ppl,amt:a.amt+x.amt,cars:a.cars+x.cars,com:a.com+x.com}),{ppl:0,amt:0,cars:0,com:0});
+  const gp=Object.values(S.goals).reduce((s,g)=>s+num(g.ppl),0),ga=Object.values(S.goals).reduce((s,g)=>s+num(g.amt),0);
+  const live=S.books.filter(b=>b.status!=='CANCELED'&&b.date.startsWith('2026'));
+  /* 월별 결제금액 vs 목표: 막대 = 실적, 짧은 가로선 = 목표 (한 축) */
+  const W=720,H=240,L=56,B=28,T=16,cw=(W-L-12)/12,maxV=Math.max(1,...MONTHS.map(k=>Math.max(agg[k]?.amt||0,num(S.goals[k]?.amt))))*1.1;
+  const y=v=>T+(H-T-B)*(1-v/maxV);const ticks=[0,.25,.5,.75,1].map(f=>maxV*f);
+  const chart=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="월별 결제금액과 목표" style="width:100%;height:auto;min-width:560px">
+    ${ticks.map(v=>`<line x1="${L}" x2="${W-12}" y1="${y(v)}" y2="${y(v)}" stroke="var(--line)"/><text x="${L-8}" y="${y(v)+4}" text-anchor="end" font-size="11" fill="var(--muted)">${Math.round(v/1e6)}백만</text>`).join('')}
+    ${MONTHS.map((k,i)=>{const a=agg[k]?.amt||0,g=num(S.goals[k]?.amt),x=L+i*cw;return `<g><title>${+k.slice(5)}월 실적 ${won(a)}${g?` · 목표 ${won(g)}`:''}</title><rect x="${x}" y="${T}" width="${cw}" height="${H-T-B}" fill="transparent"/>
+      ${a?`<path d="M${x+cw*.25} ${y(0)}V${y(a)+4}q0 -4 4 -4h${cw*.5-8}q4 0 4 4V${y(0)}z" fill="var(--primary)"/>`:''}
+      ${g?`<line x1="${x+cw*.15}" x2="${x+cw*.85}" y1="${y(g)}" y2="${y(g)}" stroke="var(--fg)" stroke-width="2"/>`:''}
+      <text x="${x+cw/2}" y="${H-8}" text-anchor="middle" font-size="11" fill="var(--muted)">${+k.slice(5)}월</text></g>`}).join('')}
+  </svg>`;
+  const byType=Object.entries(GTYPE).map(([k,g])=>({l:g[0],c:g[1],v:live.filter(b=>b.type===k).reduce((s,b)=>s+bookCalc(b).pay,0)})).filter(r=>r.v).sort((a,b)=>b.v-a.v);
+  const typeSum=byType.reduce((s,r)=>s+r.v,0)||1;
+  const school=REGIONS.map(r=>({l:r,v:live.filter(b=>b.type==='SCHOOL'&&b.region===r).reduce((s,b)=>s+bookCalc(b).pay,0)})).filter(r=>r.v).sort((a,b)=>b.v-a.v);
+  const dom=live.filter(b=>b.region!=='국외'),fr=live.filter(b=>b.region==='국외');
+  const sumPay=a=>a.reduce((s,b)=>s+bookCalc(b).pay,0),sumPpl=a=>a.reduce((s,b)=>s+bookCalc(b).ppl,0);
+  const tabs=[['domestic','내·외국인'],['channel','채널별'],['extra','부가매출'],['yearly','연도별 추이']];
+  const panel=S.dtab==='domestic'?`<div class="grid2"><div class="stat"><small>내국인 단체</small><div class="num">${won(sumPay(dom))}</div><div class="sub">${sumPpl(dom).toLocaleString('ko-KR')}명 · ${dom.length}건</div></div><div class="stat"><small>외국인 단체</small><div class="num">${won(sumPay(fr))}</div><div class="sub">${sumPpl(fr).toLocaleString('ko-KR')}명 · ${fr.length}건</div></div></div><div class="sub">지역이 "국외"인 예약을 외국인 단체로 셌어요.</div>`
+    :S.dtab==='extra'?`<div class="grid2"><div class="stat"><small>단체 수수료 합계</small><div class="num">${won(tot.com)}</div></div><div class="stat" style="background:var(--note);border-color:var(--note-line);color:var(--note-fg)"><small style="color:var(--note-fg)">학식(F&B) · 답사</small><div style="font-size:13px;margin-top:6px">제주는 학식과 답사 매출을 따로 봐요. 인천 단체에 식사·답사 상품이 생길지 정해지면 넣어요.</div></div></div>`
+    :`<div class="note">${S.dtab==='channel'?'제주는 제휴호텔·제휴렌터카 채널로 나눠 봐요. 인천 단체 유입 채널이 정해지면 같은 모양으로 그려요.':'인천은 첫해라 연도별 비교가 없어요. 내년부터 같은 달끼리 비교해요.'}</div>`;
+  return `<div class="note"><b>안내 · 구현 시 제외</b> 대시보드는 제주에서도 아직 목업이에요(개발 화면에서만 보임, 저장 API 없음). 여기서는 시안에 들어 있는 예약 데이터로 계산했고, 인천에서 정해지지 않은 지표는 보라색으로 남겨 두었어요.</div>
+  <div class="stats">
+    <div class="stat"><small>총 이용 인원</small><div class="num">${tot.ppl.toLocaleString('ko-KR')}명</div><div class="sub">목표 ${gp.toLocaleString('ko-KR')}명 대비 ${gp?Math.round(tot.ppl/gp*100):0}%</div></div>
+    <div class="stat"><small>총 결제금액</small><div class="num">${fmtMan(tot.amt)}</div><div class="sub">목표 ${fmtMan(ga)} 대비 ${ga?Math.round(tot.amt/ga*100):0}%</div></div>
+    <div class="stat"><small>객단가</small><div class="num">${won(tot.ppl?tot.amt/tot.ppl:0)}</div><div class="sub">레이스 차량 ${tot.cars.toLocaleString('ko-KR')}대</div></div>
+    <div class="stat" style="background:var(--note);border-color:var(--note-line)"><small style="color:var(--note-fg)">전년 대비</small><div style="font-size:13px;color:var(--note-fg);margin-top:6px">인천은 첫해라 비교할 전년 실적이 없어요.</div></div></div>
+  <div style="display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:16px" class="dgrid">
+    <section class="box" style="padding:14px 16px"><div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:8px"><b>월별 실적 vs 목표 (결제금액)</b><span class="ml sub" style="margin:0;display:flex;gap:12px"><span><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:var(--primary);vertical-align:-1px"></span> 2026 실적</span><span><span style="display:inline-block;width:12px;height:2px;background:var(--fg);vertical-align:3px"></span> 목표</span></span></div><div class="tw">${chart}</div></section>
+    <section class="box" style="padding:14px 16px"><b>속성별 매출 비중</b><div style="margin-top:12px">${hbar(byType.map(r=>({...r})),v=>`${Math.round(v/typeSum*100)}% · ${fmtMan(v)}`)}</div></section></div>
+  <section class="box" style="padding:14px 16px;display:grid;gap:12px"><div class="tabs" style="width:max-content;max-width:100%">${tabs.map(([k,l])=>`<button class="${S.dtab===k?'on':''}" data-dtab="${k}">${l}</button>`).join('')}</div>${panel}</section>
+  <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.6fr);gap:16px" class="dgrid">
+    <section class="box" style="padding:14px 16px"><b>학단 매출 지역별</b><div style="margin-top:12px">${school.length?hbar(school,fmtMan):'<div class="sub">학단 예약이 없어요.</div>'}</div></section>
+    <section class="box"><div class="boxh"><b>월별 상세 실적</b></div><div class="tw"><table class="list" style="min-width:620px"><thead><tr><th>이용월</th><th>이용수량</th><th>결제금액</th><th>목표인원</th><th>목표금액</th><th>목표대비</th></tr></thead><tbody>
+    ${MONTHS.filter(k=>agg[k]||S.goals[k]).map(k=>{const a=agg[k]||{ppl:0,amt:0},g=S.goals[k]||{};const r=num(g.amt)?Math.round(a.amt/num(g.amt)*100):null;return `<tr><td class="num">${+k.slice(5)}월</td><td class="n">${a.ppl.toLocaleString('ko-KR')}명</td><td class="n">${won(a.amt)}</td><td class="n">${g.ppl?num(g.ppl).toLocaleString('ko-KR')+'명':'-'}</td><td class="n">${g.amt?won(g.amt):'-'}</td><td class="n" style="color:${r==null?'var(--muted)':r>=100?'var(--positive)':'var(--warning)'}">${r==null?'-':r+'%'}</td></tr>`}).join('')}
+    </tbody></table></div><div class="sub" style="padding:8px 16px 14px">제주 표에 있는 전년 이용수량·전년 결제금액·전년대비 칸은 인천 첫해라 뺐어요.</div></section></div>`;
+}
+function goalHTML(){
+  const M=S.modal,d=M.draft,agg=monthAgg();
+  const gp=Object.values(d).reduce((s,g)=>s+num(g.ppl),0),ga=Object.values(d).reduce((s,g)=>s+num(g.amt),0);
+  const cur=Object.values(agg).reduce((a,x)=>({ppl:a.ppl+x.ppl,amt:a.amt+x.amt}),{ppl:0,amt:0});
+  return `<div class="ov m" data-mclose></div><div class="mwrap"><section class="modal" style="max-width:760px" role="dialog" aria-label="목표 설정"><div class="mh"><b>2026 목표 설정</b><button class="x" data-mclose aria-label="닫기">×</button></div>
+  <div class="mb">
+    <div class="tabs" style="width:max-content;max-width:100%">${[['direct','직접 입력'],['yoy','전년비 적용'],['weighted','가중 배분']].map(([k,l])=>`<button class="${M.mode===k?'on':''}" data-gmode="${k}">${l}</button>`).join('')}</div>
+    ${M.mode==='yoy'?`<div class="note">전년비 적용은 전년 월별 실적에 비율을 곱해 목표를 만들어요. 인천은 첫해라 전년 실적이 없어서 쓸 수 없어요.</div>`:''}
+    ${M.mode==='weighted'?`<div class="grid2"><div><label class="lab" for="g-tp">총 목표 인원</label><input id="g-tp" type="number" min="0" value="${M.tp}"></div><div><label class="lab" for="g-ta">총 목표 금액</label><input id="g-ta" type="number" min="0" step="1000000" value="${M.ta}"></div></div>
+      <div class="note">제주는 전년 월별 실적 비중으로 나눠요. 인천은 전년 실적이 없어서, 무엇을 기준으로 나눌지(월 균등, 운영일 수 등) 정해야 해요. 시안은 월 균등으로 나누고 남는 값은 마지막 달에 더해요.</div><button class="btn" data-gspread style="justify-self:start">12개월로 나누기</button>`:''}
+    <div class="stats"><div class="stat"><small>목표 인원</small><div class="num">${gp.toLocaleString('ko-KR')}명</div></div><div class="stat"><small>목표 금액</small><div class="num">${fmtMan(ga)}</div></div><div class="stat"><small>현재 실적</small><div class="num">${fmtMan(cur.amt)}</div></div><div class="stat"><small>달성률</small><div class="num" style="color:var(--primary)">${ga?Math.round(cur.amt/ga*100):0}%</div></div></div>
+    <div class="tw"><table class="amt" style="min-width:640px"><thead><tr><th>월</th><th>목표 인원</th><th>목표 금액</th><th>현재 인원</th><th>현재 금액</th><th>달성률</th><th></th></tr></thead><tbody>
+    ${MONTHS.map(k=>{const g=d[k]||{ppl:'',amt:''},a=agg[k]||{ppl:0,amt:0},r=num(g.amt)?Math.round(a.amt/num(g.amt)*100):0;return `<tr><td>${+k.slice(5)}월</td><td><input id="gp-${k}" type="number" min="0" data-goal="${k}.ppl" value="${g.ppl}" aria-label="${+k.slice(5)}월 목표 인원" ${M.mode==='direct'?'':'disabled'}></td><td><input id="ga-${k}" type="number" min="0" step="1000000" data-goal="${k}.amt" value="${g.amt}" aria-label="${+k.slice(5)}월 목표 금액" ${M.mode==='direct'?'':'disabled'}></td><td>${a.ppl.toLocaleString('ko-KR')}</td><td>${won(a.amt)}</td><td>${r}%</td><td style="width:90px"><span style="display:block;height:6px;background:var(--surface-2);border-radius:3px"><span style="display:block;height:100%;width:${Math.min(r,100)}%;background:${r>=100?'var(--positive)':'var(--primary)'};border-radius:3px"></span></span></td></tr>`}).join('')}
+    </tbody></table></div></div>
+  <div class="mf"><button class="btn" data-greset style="margin-right:auto">초기화</button><button class="btn" data-mclose>취소</button><button class="btn p" data-gsave>저장</button></div></section></div>`;
+}
+function dClick(t){
+  const d=t.dataset;
+  if(d.dtab){S.dtab=d.dtab;render();return true}
+  if(d.gmode){S.modal.mode=d.gmode;renderModal();return true}
+  if('gspread' in d){const M=S.modal,tp=num(M.tp),ta=num(M.ta),p=Math.floor(tp/12),a=Math.floor(ta/12/10000)*10000;M.draft={};MONTHS.forEach((k,i)=>M.draft[k]={ppl:i<11?p:tp-p*11,amt:i<11?a:ta-a*11});renderModal();return true}
+  if('greset' in d){S.modal.draft={};renderModal();return true}
+  if('gsave' in d){S.goals=JSON.parse(JSON.stringify(S.modal.draft));S.modal=null;renderModal();render();toast('목표가 저장되었어요. (시안: 이 화면에서만 유지돼요)');return true}
+  return false;
+}
+document.getElementById('modalLayer').addEventListener('input',e=>{
+  if(!S.modal||S.modal.kind!=='goal')return;const t=e.target,M=S.modal;
+  if(t.dataset.goal){const [k,f]=t.dataset.goal.split('.');M.draft[k]=M.draft[k]||{ppl:'',amt:''};M.draft[k][f]=t.value;renderModal(true);return}
+  if(t.id==='g-tp')M.tp=t.value;if(t.id==='g-ta')M.ta=t.value;
+});
+
+/* ---------- 거래처 관리 ---------- */
+S.pf={q:'',type:'',status:''};S.pdrawer=null;
+function partnerTurnover(a,ym){return S.books.filter(b=>b.agency===a.id&&b.status!=='CANCELED'&&b.date.slice(0,7)===ym).reduce((s,b)=>s+bookCalc(b).pay,0)}
+const fmtMan=n=>n>=1e8?(Math.round(n/1e7)/10)+'억':Math.round(n/1e4).toLocaleString('ko-KR')+'만';
+function vendorTab(){
+  const ps=AGENCIES.filter(a=>a.id),f=S.pf,ym=TODAY.slice(0,7);
+  const list=ps.filter(a=>(!f.q||a.name.includes(f.q)||a.contacts.some(c=>c.name.includes(f.q)))&&(!f.type||a.type===f.type)&&(!f.status||a.status===f.status)).sort((a,b)=>b.id-a.id);
+  const turn=ps.reduce((s,a)=>s+partnerTurnover(a,ym),0);
+  return `<div class="stats">
+    <div class="stat"><small>전체 거래처</small><div class="num">${ps.length}</div></div>
+    <div class="stat"><small>여행사</small><div class="num">${ps.filter(a=>a.type==='AGENCY').length}</div></div>
+    <div class="stat"><small>가이드</small><div class="num">${ps.filter(a=>a.type==='GUIDE').length}</div></div>
+    <div class="stat"><small>이번 달 거래액</small><div class="num" style="color:var(--positive)">${fmtMan(turn)}</div></div></div>
+  <div class="filters"><input id="pf-q" style="width:260px" placeholder="거래처명, 담당자 검색" value="${esc(f.q)}">
+    <select id="pf-type" style="width:130px"><option value="">전체 유형</option>${Object.entries(PTYPE).map(([k,v])=>`<option value="${k}" ${f.type===k?'selected':''}>${v}</option>`).join('')}</select>
+    <select id="pf-status" style="width:120px"><option value="">전체 상태</option>${Object.entries(PSTATUS).map(([k,v])=>`<option value="${k}" ${f.status===k?'selected':''}>${v[0]}</option>`).join('')}</select></div>
+  <section class="box"><div class="boxh"><b>거래처 내역</b><small>${list.length}건</small><button class="btn sm ml" data-act="csv">CSV 다운로드</button></div>
+  <div class="tw"><table class="list" style="min-width:1000px"><thead><tr><th>관리번호</th><th>업체명</th><th>유형</th><th>상태</th><th>지역</th><th>대표자</th><th>직원 성함</th><th>연락처</th><th>이메일주소</th></tr></thead>
+  <tbody>${list.length?list.map(a=>{const c=a.contacts[0]||{};return `<tr class="r" data-popen="${a.id}"><td class="num">${a.id}</td>
+    <td><span style="display:inline-flex;align-items:center;gap:8px;font-weight:500"><span style="width:26px;height:26px;border-radius:50%;background:var(--primary-tint);color:var(--primary);display:inline-flex;align-items:center;justify-content:center;font-size:12px">${esc(a.name[0])}</span>${esc(a.name)}</span></td>
+    <td>${PTYPE[a.type]}</td><td>${chip(...PSTATUS[a.status])}</td><td>${a.region||'-'}</td><td>${esc(a.representative)||'-'}</td><td>${esc(c.name)||'-'}${a.contacts.length>1?` <span class="sub" style="display:inline">외 ${a.contacts.length-1}명</span>`:''}</td><td class="num">${esc(c.phone)||'-'}</td><td>${esc(c.email)||'-'}</td></tr>`}).join(''):`<tr><td colspan="9" class="empty">검색된 거래처가 없습니다.</td></tr>`}</tbody></table></div>
+  <div class="pag"><button class="on">1</button></div></section>
+  <div class="note"><b>안내 · 구현 시 제외</b> 거래처 탭은 제주 화면과 같아요.
+    <ul><li>상품별 수수료는 제주와 같은 방식이에요. 거래처 기본 수수료를 두고, 단체 상품마다 개별 수수료를 따로 정할 수 있어요.</li><li>목록에는 인천 단체 전용 상품만 나와요. 단체 상품 구성이 정해지면 목록이 늘어나요. 동승자는 따로 설정하지 않고 레이스 포함 패키지의 수수료를 그대로 따라요.</li>
+    <li>"이번 달 거래액"은 제주에서 아직 0으로 고정돼 있어요. 여기서는 이번 달 예약 금액 합계로 그렸어요.</li>
+    <li>단체 상품 가격과 거래처 수수료는 아직 정해지지 않아 예시 값이에요.</li></ul></div>`;
+}
+function prodComm(a,key,price){const o=a.products.find(x=>x.prd===key);const m=o?o.method:a.method,v=o?o.value:a.value;const c=m==='FIXED'?num(v):price*num(v)/100;return{src:o?'개별':'기본',m,v,c,dep:Math.max(price-c,0)}}
+function pDrawerHTML(a){
+  const ir=(l,v)=>`<div class="ir"><span>${l}</span><span>${v}</span></div>`;
+  const prodRows=a.products.map(o=>{const g=GPRODUCTS.find(x=>x[0]===o.prd);if(!g)return '';const x=prodComm(a,o.prd,g[2]);return `<tr><td>${g[1]}</td><td>${chip('개별','var(--warning)')} ${x.m==='FIXED'?won(x.v):x.v+'%'}</td><td class="n">${won(g[2])}</td><td class="n">${won(x.dep)}</td><td class="n">${won(x.c)}</td></tr>`}).join('');
+  const file=(k,l)=>`<div class="ir"><span>${l}</span><span>${a.files[k]?`<button class="btn sm" data-dl="${l}">다운로드</button>`:'<span style="color:var(--muted)">없음</span>'}</span></div>`;
+  return `<div class="ov" data-close="pdrawer"></div><aside class="drawer" style="width:min(600px,100%)" role="dialog" aria-label="거래처 상세"><div class="dh"><b>${esc(a.name)}</b><button class="x" data-close="pdrawer" aria-label="닫기">×</button></div>
+  <div class="db"><div class="sec">기본 정보</div>${ir('상태',chip(...PSTATUS[a.status]))}${ir('유형',PTYPE[a.type])}${ir('대표자',esc(a.representative)||'-')}${ir('지역',a.region||'-')}${ir('주소',esc(a.address)||'-')}${ir('수수료',fmtComm(a))}
+  <div class="sec">담당자</div>${a.contacts.length?a.contacts.map(c=>`<div class="ir"><span>${esc(c.name)}</span><span class="num">${esc(c.phone)||'-'} · ${esc(c.email)||'-'}</span></div>`).join(''):'<div class="sub">등록된 담당자가 없어요.</div>'}
+  <div class="sec">상품별 수수료</div>${a.products.length?`<div class="tw" style="border:1px solid var(--line);border-radius:10px"><table class="mini" style="min-width:480px"><thead><tr><th>상품</th><th>수수료 설정</th><th class="n">정상가</th><th class="n">입금가</th><th class="n">수수료</th></tr></thead><tbody>${prodRows}</tbody></table></div>`:`<div class="sub">개별로 정한 상품이 없어요. 모든 단체 상품에 기본 수수료(${fmtComm(a)})가 적용돼요.</div>`}
+  <div class="sec">사업자 정보</div>${ir('사업자번호',esc(a.businessNo)||'-')}
+  <div class="sec">첨부파일</div>${file('reg','사업자등록증')}${file('card','명함')}${file('bank','통장사본')}
+  <div class="sec">메모</div><div style="font-size:13px">${esc(a.memo)||'-'}</div>
+  <div class="sec">등록/수정 정보</div>${ir('등록자',a.regNm)}${ir('등록일',a.regDt)}${a.modNm?ir('수정자',a.modNm)+ir('수정일',a.modDt):''}
+  <div class="sec">변경 이력</div>${a.audits.slice().reverse().map(h=>`<div class="ir" style="display:block"><div style="display:flex;gap:8px;align-items:center">${chip({CREATED:'등록',UPDATED:'수정',DELETED:'삭제'}[h.type],h.type==='UPDATED'?'var(--primary)':'var(--positive)')}<span class="sub" style="margin:0">${h.regNm} · ${h.regDt}</span></div>${h.changes.map(c=>`<div class="sub">${c.field}: ${esc(c.left)||'(없음)'} → ${esc(c.right)||'(없음)'}</div>`).join('')}</div>`).join('')}</div>
+  <div class="df"><button class="btn" data-pedit="${a.id}">수정</button><button class="btn d" data-pdel="${a.id}">삭제</button></div></aside>`;
+}
+function pFormHTML(){const d=S.modal.draft,edit=!!d.id;
+  return simpleModal(edit?'거래처 수정':'거래처 등록',`<div class="grid2">
+    ${fld('p-n','거래처명',inp('p-n','name',d.name,'거래처명을 입력하세요'),1)}${fld('p-t','유형',sel('p-t','type',Object.entries(PTYPE),d.type,'유형을 선택하세요'),1)}
+    ${fld('p-s','상태',sel('p-s','status',Object.entries(PSTATUS).map(([k,v])=>[k,v[0]]),d.status,null))}${fld('p-r','지역',sel('p-r','region',REGIONS,d.region,'지역을 선택하세요'))}</div>
+    ${fld('p-a','주소',inp('p-a','address',d.address,'주소를 입력하세요'))}
+    <div class="grid2">${fld('p-m','수수료 유형',sel('p-m','method',[['PERCENT','%(퍼센트)'],['FIXED','₩(금액)']],d.method,null))}${fld('p-v',d.method==='FIXED'?'수수료 (원)':'수수료율 (%)',inp('p-v','value',d.value,'0','number'),1)}
+    ${fld('p-b','사업자등록번호',inp('p-b','businessNo',d.businessNo,'000-00-00000'))}${fld('p-re','대표자',inp('p-re','representative',d.representative,'대표자명을 입력하세요'))}</div>
+    <div><span class="lab">담당자</span><div style="display:grid;gap:8px">${d.contacts.map((c,i)=>`<div style="display:grid;grid-template-columns:1fr 1fr 1.3fr auto;gap:6px"><input id="pc-n-${i}" data-pc="${i}.name" placeholder="이름" value="${esc(c.name)}"><input id="pc-p-${i}" data-pc="${i}.phone" placeholder="연락처" value="${esc(c.phone)}"><input id="pc-e-${i}" data-pc="${i}.email" placeholder="이메일" value="${esc(c.email)}"><button class="btn sm" data-pcdel="${i}" aria-label="담당자 ${i+1} 삭제">삭제</button></div>`).join('')}</div><button class="add" data-pcadd>+ 담당자 추가</button></div>
+    <div><span class="lab">상품별 수수료</span><div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center">${d.products.length?d.products.map(o=>{const g=GPRODUCTS.find(x=>x[0]===o.prd);return g?chip(`${g[1]} · ${o.method==='FIXED'?won(o.value):o.value+'%'}`,'var(--warning)'):''}).join(''):'<span class="sub" style="margin:0">개별 설정 없음 · 모든 상품에 기본 수수료 적용</span>'}<button type="button" class="btn sm ml" data-pprod>상품별 수수료 상세</button></div></div>
+    <div><span class="lab">첨부파일</span><div class="grid2" style="grid-template-columns:repeat(3,minmax(0,1fr))">${[['reg','사업자등록증'],['card','명함'],['bank','통장사본']].map(([k,l])=>`<label class="radio ${d.files[k]?'on':''}" style="display:block"><b style="font-size:13px">${l}</b><div class="sub">${d.files[k]?'첨부됨':'파일 선택'}</div><input type="file" data-file="${k}" style="height:auto;border:0;padding:4px 0;font-size:12px" aria-label="${l} 파일"></label>`).join('')}</div></div>
+    ${fld('p-memo','비고',`<textarea id="p-memo" data-d="memo" placeholder="비고를 입력하세요">${esc(d.memo)}</textarea>`)}`,edit?'수정':'등록','data-psave')}
+function pprodHTML(){const d=S.modal.view;
+  const pr=GPRODUCTS.map(([k,n,price])=>{const o=d.products.find(x=>x.prd===k);const x=prodComm(d,k,price);
+    return `<tr><td>${n}</td><td><select data-pp="${k}" data-pf="src" aria-label="${n} 수수료 출처" style="height:30px;width:80px"><option value="base" ${!o?'selected':''}>기본</option><option value="own" ${o?'selected':''}>개별</option></select></td>
+    <td>${o?`<div style="display:flex;gap:4px"><select data-pp="${k}" data-pf="method" style="height:30px;width:64px" aria-label="${n} 방식"><option value="PERCENT" ${o.method==='PERCENT'?'selected':''}>%</option><option value="FIXED" ${o.method==='FIXED'?'selected':''}>₩</option></select><input id="pp-${k}" type="number" min="0" data-pp="${k}" data-pf="value" value="${o.value}" style="height:30px;width:90px" aria-label="${n} 수수료 값"></div>`:`<span class="sub" style="margin:0">${x.m==='FIXED'?won(x.v):x.v+'%'}</span>`}</td>
+    <td class="n">${won(price)}</td><td class="n">${won(x.dep)}</td><td class="n">${won(x.c)}</td></tr>`}).join('');
+  return `<div class="ov m"></div><div class="mwrap"><section class="modal" style="max-width:680px" role="dialog" aria-label="상품별 수수료 상세"><div class="mh"><b>상품별 수수료 상세</b></div>
+  <div class="mb"><div class="sub" style="margin:0">거래처 기본 수수료 ${d.method==='FIXED'?won(d.value):(d.value||0)+'%'} · "개별"로 바꾼 상품만 따로 정한 수수료를 써요.</div>
+  <div class="tw" style="border:1px solid var(--line);border-radius:10px"><table class="mini" style="min-width:560px"><thead><tr><th>상품</th><th>수수료 설정</th><th></th><th class="n">정상가</th><th class="n">입금가</th><th class="n">수수료</th></tr></thead><tbody>${pr}</tbody></table></div></div>
+  <div class="mf"><button class="btn" data-pprodcancel>취소</button><button class="btn p" data-pprodok>확인</button></div></section></div>`}
+const AUDIT_LABEL={name:'거래처명',type:'유형',status:'상태',region:'지역',representative:'대표자',address:'주소',method:'수수료 방식',value:'수수료',businessNo:'사업자등록번호',memo:'메모'};
+function pClick(t){
+  const d=t.dataset;
+  if(d.popen&&t.tagName!=='BUTTON'){S.pdrawer=+d.popen;renderLayer();return true}
+  if(d.close==='pdrawer'){S.pdrawer=null;renderLayer();return true}
+  if(d.dl){toast(`${d.dl} 다운로드는 시안에서 동작하지 않아요.`);return true}
+  if(d.pedit){S.modal={kind:'pform',draft:JSON.parse(JSON.stringify(AGENCIES.find(a=>a.id==d.pedit)))};renderModal();return true}
+  if(d.pdel){const a=AGENCIES.find(x=>x.id==d.pdel);ask('거래처 삭제',`${a.name} 거래처를 삭제하시겠습니까?\n삭제 후 복구할 수 없습니다.`,'삭제',()=>{AGENCIES.splice(AGENCIES.indexOf(a),1);S.pdrawer=null;toast('거래처가 삭제되었습니다.')},true);return true}
+  if('pprod' in d){const P=S.modal;S.modal={kind:'pprod',parent:P,view:{products:JSON.parse(JSON.stringify(P.draft.products)),method:P.draft.method,value:P.draft.value}};renderModal();return true}
+  if('pprodcancel' in d){S.modal=S.modal.parent;renderModal();return true}
+  if('pprodok' in d){const M=S.modal;if(M.view.products.some(o=>o.value===''||o.value==null))return toast('개별 상품 수수료를 입력해 주세요.'),true;M.parent.draft.products=M.view.products;S.modal=M.parent;renderModal();return true}
+  if('pcadd' in d){S.modal.draft.contacts.push({name:'',phone:'',email:''});renderModal();return true}
+  if(d.pcdel){S.modal.draft.contacts.splice(+d.pcdel,1);renderModal();return true}
+  if('psave' in d){const x=S.modal.draft;if(!x.name.trim())return toast('거래처명을 입력해 주세요.'),true;if(!x.type)return toast('유형을 선택해 주세요.'),true;if(x.value===''||x.value==null)return toast('수수료 값을 입력해 주세요.'),true;if(x.products.some(o=>o.value===''||o.value==null))return toast('개별 상품 수수료를 입력해 주세요.'),true;
+    x.contacts=x.contacts.filter(c=>c.name.trim());
+    if(x.id){const a=AGENCIES.find(v=>v.id===x.id);const ch=Object.keys(AUDIT_LABEL).filter(k=>String(a[k]??'')!==String(x[k]??'')).map(k=>({field:AUDIT_LABEL[k],left:k==='type'?PTYPE[a[k]]:k==='status'?PSTATUS[a[k]][0]:String(a[k]??''),right:k==='type'?PTYPE[x[k]]:k==='status'?PSTATUS[x[k]][0]:String(x[k]??'')}));
+      if(JSON.stringify(a.contacts)!==JSON.stringify(x.contacts))ch.push({field:'담당자',left:a.contacts.map(c=>c.name).join(', '),right:x.contacts.map(c=>c.name).join(', ')});
+      if(JSON.stringify(a.products)!==JSON.stringify(x.products))ch.push({field:'상품별 수수료',left:a.products.length+'개 개별 설정',right:x.products.length+'개 개별 설정'});
+      Object.assign(a,x,{modNm:'영업팀 담당자',modDt:TODAY+' 15:30'});a.audits.push({type:'UPDATED',regNm:'영업팀 담당자',regDt:TODAY+' 15:30',changes:ch});toast('거래처가 수정되었습니다.')}
+    else{const id=Math.max(...AGENCIES.map(a=>a.id))+1;AGENCIES.push(mkP({...x,id,regDt:TODAY+' 15:30',audits:[{type:'CREATED',regNm:'영업팀 담당자',regDt:TODAY+' 15:30',changes:[]}]}));toast('거래처가 등록되었습니다.')}
+    S.modal=null;renderModal();render();return true}
+  return false;
+}
+document.getElementById('modalLayer').addEventListener('input',e=>{
+  if(!S.modal||!['pform','pprod'].includes(S.modal.kind))return;const t=e.target,d=S.modal.kind==='pprod'?S.modal.view:S.modal.draft;
+  if(t.dataset.pc){const [i,k]=t.dataset.pc.split('.');d.contacts[+i][k]=t.value;return}
+  if(t.dataset.pp){const k=t.dataset.pp,f=t.dataset.pf;let o=d.products.find(x=>x.prd===k);
+    if(f==='src'){if(t.value==='own'&&!o)d.products.push({prd:k,method:d.method,value:d.value});if(t.value==='base')d.products=d.products.filter(x=>x.prd!==k);renderModal();return}
+    if(f==='method'){o.method=t.value;renderModal();return}
+    if(f==='value'){o.value=t.value;renderModal(true);return}}
+  if(t.dataset.file){d.files[t.dataset.file]=!!t.files.length;renderModal();return}
+  if(t.dataset.d){d[t.dataset.d]=t.value;if(['method','value','region'].includes(t.dataset.d))renderModal(true)}
+});
+
+/* ---------- 캘린더 ---------- */
+S.cm=TODAY.slice(0,7);S.cf={type:'',os:''};S.cday=null;
+const bookOS=b=>b.ord?ordState(b).os:null;
+function calBooks(){const f=S.cf;return S.books.filter(b=>b.status!=='CANCELED'&&(!f.type||b.type===f.type)&&(!f.os||bookOS(b)===f.os))}
+function calendarTab(){
+  const [y,m]=S.cm.split('-').map(Number),first=new Date(y,m-1,1),start=new Date(first);start.setDate(1-first.getDay());
+  const bs=calBooks(),inMonth=bs.filter(b=>b.date.slice(0,7)===S.cm);
+  const sum=inMonth.reduce((a,b)=>{const c=bookCalc(b);return{n:a.n+1,ppl:a.ppl+c.ppl,cars:a.cars+c.cars,amt:a.amt+c.pay}},{n:0,ppl:0,cars:0,amt:0});
+  const fd=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+  const cells=[];for(let i=0;i<42;i++){const d=new Date(start);d.setDate(start.getDate()+i);cells.push(d)}
+  const opt=(o,v)=>Object.entries(o).map(([k,x])=>`<option value="${k}" ${v===k?'selected':''}>${x[0]}</option>`).join('');
+  return `<section class="box" style="padding:14px 16px;display:grid;gap:12px">
+    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+      <button class="btn sm" data-cmove="-1" aria-label="이전 달">‹</button><b style="font-size:17px">${y}년 ${m}월</b><button class="btn sm" data-cmove="1" aria-label="다음 달">›</button>
+      <span class="sub" style="margin:0">예약/주문 <b style="color:var(--fg)">${sum.n}건</b> · 인원 <b style="color:var(--primary)">${sum.ppl.toLocaleString('ko-KR')}명</b> · 차량 <b style="color:var(--fg)">${sum.cars.toLocaleString('ko-KR')}대</b> · 금액 <b style="color:var(--positive)">${Math.round(sum.amt/1e4).toLocaleString('ko-KR')}만</b></span>
+      <span class="ml"></span><select id="cf-type" style="width:120px"><option value="">전체 유형</option>${opt(GTYPE,S.cf.type)}</select><select id="cf-os" style="width:120px"><option value="">전체 상태</option>${opt(OSTAT,S.cf.os)}</select></div>
+    <div style="display:flex;flex-wrap:wrap;gap:10px;font-size:12px;color:var(--muted)">${Object.values(GTYPE).map(g=>`<span style="display:inline-flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:50%;background:${g[1]}"></span>${g[0]}</span>`).join('')}</div>
+    <div class="tw"><div style="display:grid;grid-template-columns:repeat(7,minmax(110px,1fr));border:1px solid var(--line);border-radius:10px;overflow:hidden;min-width:770px">
+      ${['일','월','화','수','목','금','토'].map((w,i)=>`<div style="padding:8px;text-align:center;font-size:12px;background:var(--surface-2);color:${i===0?'var(--negative)':i===6?'var(--primary)':'var(--muted)'};border-bottom:1px solid var(--line)">${w}</div>`).join('')}
+      ${cells.map((d,i)=>{const ds=fd(d),out=ds.slice(0,7)!==S.cm,day=bs.filter(b=>b.date===ds).sort((a,b)=>a.time.localeCompare(b.time));const c=day.reduce((a,b)=>{const k=bookCalc(b);return{ppl:a.ppl+k.ppl,cars:a.cars+k.cars}},{ppl:0,cars:0});
+        const tot=day.reduce((s,b)=>s+bookCalc(b).ppl,0)||1;
+        return `<div ${day.length?`data-cday="${ds}" role="button" tabindex="0" aria-label="${ds} 예약 ${day.length}건"`:''} style="min-height:108px;padding:8px;border-top:${i<7?0:1}px solid var(--line);border-left:${i%7?1:0}px solid var(--line);background:${out?'var(--surface-2)':'var(--surface)'};opacity:${out?.55:1};cursor:${day.length?'pointer':'default'};display:grid;align-content:start;gap:4px">
+          <div style="display:flex;align-items:center;gap:6px"><span style="font-size:13px;${ds===TODAY?'background:var(--primary);color:#fff;border-radius:50%;width:22px;height:22px;display:inline-flex;align-items:center;justify-content:center':''};color:${ds===TODAY?'#fff':i%7===0?'var(--negative)':i%7===6?'var(--primary)':'var(--fg)'}">${d.getDate()}</span>${day.length?`<span class="ml pill" style="padding:0 6px">${day.length}건</span>`:''}</div>
+          ${day.length?`<div class="num" style="font-size:13px;font-weight:700">${c.ppl.toLocaleString('ko-KR')}명 <span style="font-weight:400;color:var(--muted);font-size:12px">· ${c.cars}대</span></div>
+          <div style="display:flex;height:4px;border-radius:2px;overflow:hidden">${day.map(b=>`<span style="flex:${bookCalc(b).ppl/tot};background:${GTYPE[b.type][1]}"></span>`).join('')}</div>
+          ${day.slice(0,2).map(b=>`<div style="font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"><span style="color:${GTYPE[b.type][1]}">●</span> ${esc(b.groupName)}</div>`).join('')}${day.length>2?`<div class="sub" style="margin:0">+${day.length-2}건</div>`:''}`:''}
+        </div>`}).join('')}
+    </div></div></section>
+  <div class="note"><b>안내 · 구현 시 제외</b> 캘린더는 제주 화면과 같아요. 인천에서는 날짜 칸과 월 요약에 인원과 함께 레이스 차량 대수를 보여줘요. 날짜를 누르면 그날 예약 목록이 열려요.</div>`;
+}
+function cDrawerHTML(ds){
+  const day=calBooks().filter(b=>b.date===ds).sort((a,b)=>a.time.localeCompare(b.time));
+  const sum=day.reduce((a,b)=>{const c=bookCalc(b);return{ppl:a.ppl+c.ppl,cars:a.cars+c.cars,amt:a.amt+c.pay}},{ppl:0,cars:0,amt:0});
+  const [y,m,d]=ds.split('-').map(Number);
+  return `<div class="ov" data-close="cday"></div><aside class="drawer" role="dialog" aria-label="${ds} 예약"><div class="dh"><b>${y}년 ${m}월 ${d}일 (${dow(ds)})</b><button class="x" data-close="cday" aria-label="닫기">×</button></div>
+  <div class="db"><div class="sub" style="margin:12px 0">${day.length}건 · ${sum.ppl.toLocaleString('ko-KR')}명 · 차량 ${sum.cars}대 · ${Math.round(sum.amt/1e4).toLocaleString('ko-KR')}만</div>
+  ${day.map(b=>{const c=bookCalc(b),os=bookOS(b),g=GTYPE[b.type];return `<div class="og" data-cbook="${b.id}" role="button" tabindex="0" style="cursor:pointer"><div class="ogh">${os?chip(...OSTAT[os]):chip('예약','var(--muted)')}<b>${esc(b.groupName)}</b></div>
+    <div style="padding:10px 12px;display:grid;gap:4px;font-size:13px"><div class="ir" style="border:0;padding:2px 0"><span>이용 일시</span><span>${b.date} ${b.time}</span></div><div class="ir" style="border:0;padding:2px 0"><span>인원</span><span>${c.ppl}명 · 차량 ${c.cars}대</span></div><div class="ir" style="border:0;padding:2px 0"><span>금액</span><span>${Math.round(c.pay/1e4).toLocaleString('ko-KR')}만</span></div><div class="ir" style="border:0;padding:2px 0"><span>유형</span><span>${chip(g[0],g[1])}</span></div><div class="ir" style="border:0;padding:2px 0"><span>지역</span><span>${b.region}${b.country?' · '+b.country:''}</span></div></div></div>`}).join('')}</div></aside>`;
+}
+
+/* ---------- 답사 · 접수 ---------- */
+const SVSTAT={PENDING:['대기','var(--warning)'],COMPLETED:['완료','var(--positive)']};
+const RCSTAT={PENDING:['대기','var(--warning)'],ESTIMATED:['견적','var(--primary)'],COMPLETED:['완료','var(--positive)']};
+const PROC={PENDING:'미처리',BY_CALL:'통화완료',BY_EMAIL:'메일안내',BY_SMS:'문자발송'};
+const STAFFS=['예약팀 담당자','영업팀 담당자','인포 담당자'];
+const times=(a,b)=>{const o=[];for(let h=a;h<=b;h++){o.push(String(h).padStart(2,'0')+':00');if(h<b)o.push(String(h).padStart(2,'0')+':30')}return o};
+const weekNo=d=>{const t=new Date(d+'T00:00:00');return Math.ceil((t.getDate()+new Date(t.getFullYear(),t.getMonth(),1).getDay())/7)};
+let svSeq=310,rcSeq=720;
+const mkSv=p=>({status:'PENDING',country:'',agency:0,staff:'영업팀 담당자',processed:'',memo:'',regNm:'영업팀 담당자',regDt:'2026-09-20 11:05',modNm:'',modDt:'',...p,id:++svSeq});
+const mkRc=p=>({status:'PENDING',country:'',agency:0,staff:'예약팀 담당자',confirmStaff:'',processStatus:'PENDING',processDate:'',headcount:'',inquiry:'',memo:'',surveyId:null,bookingId:null,regNm:'예약팀 담당자',regDt:'2026-09-25 10:12',modNm:'',modDt:'',...p,id:++rcSeq});
+S.surveys=[
+  mkSv({date:'2026-09-18',time:'14:00',groupName:'인천 ○○고등학교 2학년',type:'SCHOOL',region:'인천',visitor:'김○○',phone:'010-****-2381',agency:1,status:'COMPLETED',processed:'O',memo:'수학여행 사전답사'}),
+  mkSv({date:'2026-09-22',time:'10:30',groupName:'○○전자 신입사원 연수',type:'CORPORATE',region:'경기',visitor:'박○○',phone:'010-****-7720',agency:2,status:'COMPLETED',processed:'O'}),
+  mkSv({date:'2026-10-02',time:'15:00',groupName:'○○대학교 자동차공학과',type:'SCHOOL',region:'서울',visitor:'윤○○',phone:'010-****-8094',status:'COMPLETED',processed:'O',memo:'학과 MT 겸 견학'}),
+  mkSv({date:'2026-10-08',time:'11:00',groupName:'연수구 ○○복지관',type:'PUBLIC',region:'인천',visitor:'장○○',phone:'010-****-4471',status:'PENDING',processed:'O',regDt:'2026-10-06 16:40'}),
+  mkSv({date:'2026-10-14',time:'13:30',groupName:'○○여행 일본 학생단 1차',type:'AGENCY',region:'국외',country:'일본',visitor:'오○○',phone:'010-****-5521',agency:3,status:'PENDING',processed:'',memo:'가이드 동행'}),
+  mkSv({date:'2026-10-21',time:'10:00',groupName:'○○카드 VIP 행사',type:'AFFILIATE',region:'서울',visitor:'한○○',phone:'010-****-3307',status:'PENDING',processed:''}),
+];
+S.receipts=[
+  mkRc({surveyId:311,date:'2026-10-08',time:'10:00',groupName:'인천 ○○고등학교 2학년',type:'SCHOOL',region:'인천',contact:'김○○',phone:'010-****-2381',agency:1,headcount:42,inquiry:'2학년 전체 레이스 체험, 교사 동승 가능 여부',processStatus:'BY_CALL',processDate:'2026-09-19',confirmStaff:'예약팀 담당자',status:'COMPLETED',bookingId:1041,regDt:'2026-09-19 09:30'}),
+  mkRc({surveyId:312,date:'2026-10-08',time:'14:00',groupName:'○○전자 신입사원 연수',type:'CORPORATE',region:'경기',contact:'박○○',phone:'010-****-7720',agency:2,headcount:22,inquiry:'오후 연수 프로그램, 팀별 기록 출력 가능 여부',processStatus:'BY_EMAIL',processDate:'2026-09-23',status:'COMPLETED',bookingId:1042,regDt:'2026-09-23 13:02'}),
+  mkRc({surveyId:313,date:'2026-11-05',time:'10:00',groupName:'○○대학교 자동차공학과',type:'SCHOOL',region:'서울',contact:'윤○○',phone:'010-****-8094',agency:2,headcount:40,inquiry:'학생 40명 전원 운전 희망',processStatus:'BY_CALL',processDate:'2026-10-03',status:'COMPLETED',bookingId:1047,regDt:'2026-10-03 11:20'}),
+  mkRc({date:'2026-10-29',time:'13:00',groupName:'부천 ○○중학교 1학년',type:'SCHOOL',region:'경기',contact:'임○○',phone:'010-****-2290',headcount:120,inquiry:'1학년 전체 실내 패키지 견적 요청, 점심 장소 문의',processStatus:'BY_EMAIL',processDate:'2026-10-07',status:'ESTIMATED',confirmStaff:'예약팀 담당자',regDt:'2026-10-07 10:05'}),
+  mkRc({date:'2026-11-12',time:'11:00',groupName:'○○건설 안전교육 후 레크리에이션',type:'CORPORATE',region:'인천',contact:'조○○',phone:'010-****-9033',headcount:35,inquiry:'운전 30명, 동승 5명 정도 예상',processStatus:'PENDING',status:'PENDING',regDt:'2026-10-08 09:14'}),
+  mkRc({date:'2026-11-18',time:'14:30',groupName:'○○관광 가을 패키지 2차',type:'AGENCY_PACKAGE',region:'인천',contact:'최○○',phone:'010-****-4410',agency:3,headcount:30,inquiry:'1차와 같은 구성으로 진행',processStatus:'BY_SMS',processDate:'2026-10-06',status:'PENDING',regDt:'2026-10-06 17:22'}),
+  mkRc({date:'2026-12-03',time:'10:00',groupName:'○○초등학교 6학년',type:'SCHOOL',region:'인천',contact:'정○○',phone:'010-****-6652',headcount:96,inquiry:'겨울 체험학습',processStatus:'PENDING',status:'PENDING',regDt:'2026-10-08 11:48'}),
+];
+S.surveys[0].receiptId=721;S.surveys[1].receiptId=722;S.surveys[2].receiptId=723;
+S.sdrawer=null;S.rdrawer=null;S.sf={q:'',status:'',type:'',from:'',to:''};S.rf={q:'',status:'',from:'',to:''};
+
+function surveyTab(){
+  const sv=S.surveys,f=S.sf;
+  const conv=sv.filter(s=>s.status==='COMPLETED').length;
+  const toBook=sv.filter(s=>{const r=S.receipts.find(x=>x.id===s.receiptId);return r&&r.bookingId}).length;
+  const list=sv.filter(s=>(!f.q||s.groupName.includes(f.q)||s.visitor.includes(f.q))&&(!f.status||s.status===f.status)&&(!f.type||s.type===f.type)&&(!f.from||s.date>=f.from)&&(!f.to||s.date<=f.to)).sort((a,b)=>b.id-a.id);
+  const opt=(o,v)=>Object.entries(o).map(([k,x])=>`<option value="${k}" ${v===k?'selected':''}>${x[0]}</option>`).join('');
+  return `<div class="stats">
+    <div class="stat"><small>전체 답사</small><div class="num">${sv.length}</div></div>
+    <div class="stat"><small>이번 달 답사</small><div class="num">${sv.filter(s=>s.date.slice(0,7)===TODAY.slice(0,7)).length}</div></div>
+    <div class="stat"><small>접수 전환</small><div class="num" style="color:var(--primary)">${conv}</div></div>
+    <div class="stat"><small>예약 전환율</small><div class="num" style="color:var(--positive)">${sv.length?Math.round(toBook/sv.length*1000)/10:0}%</div></div></div>
+  <div class="filters"><input id="sf-q" style="width:260px" placeholder="단체명, 방문자 검색" value="${esc(f.q)}">
+    <select id="sf-status" style="width:120px"><option value="">전체 상태</option>${opt(SVSTAT,f.status)}</select>
+    <select id="sf-type" style="width:120px"><option value="">전체 구분</option>${opt(GTYPE,f.type)}</select>
+    <input id="sf-from" type="date" style="width:150px" value="${f.from}" aria-label="시작일"><span style="color:var(--muted)">~</span><input id="sf-to" type="date" style="width:150px" value="${f.to}" aria-label="종료일"></div>
+  <section class="box"><div class="boxh"><b>답사 내역</b><small>${list.length}건</small><button class="btn sm ml" data-act="csv">CSV 다운로드</button></div>
+  <div class="tw"><table class="list"><thead><tr><th>관리번호</th><th>답사일</th><th>요일</th><th>예약주</th><th>상태</th><th>방문시</th><th>단체명·차수 (피켓)</th><th>같이 온 여행사</th><th>요청/방문자 성명 (연락처)</th><th>예약받은 파크 담당자</th><th>답사 진행</th><th>구분</th><th>지역</th><th>비고</th><th>액션</th></tr></thead>
+  <tbody>${list.length?list.map(s=>`<tr class="r" data-sopen="${s.id}"><td class="num">${s.id}</td><td class="num">${s.date.slice(5)}</td><td>${dow(s.date)}</td><td>${weekNo(s.date)}주</td><td>${chip(...SVSTAT[s.status])}</td><td class="num">${s.time}</td>
+    <td style="font-weight:500">${esc(s.groupName)}</td><td>${esc(agencyName(s.agency))||'-'}</td><td>${esc(s.visitor)} <span class="sub num" style="display:inline">(${esc(s.phone)})</span></td><td>${esc(s.staff)}</td><td>${s.processed||'-'}</td>
+    <td>${s.type?chip(...GTYPE[s.type]):'-'}</td><td>${s.region||'-'}</td><td style="color:var(--muted)">${esc(s.memo)||''}</td><td>${s.status==='PENDING'?`<button class="btn sm" data-s2r="${s.id}">접수전환</button>`:''}</td></tr>`).join(''):`<tr><td colspan="15" class="empty">검색된 답사 내역이 없습니다.</td></tr>`}</tbody></table></div>
+  <div class="pag"><button class="on">1</button></div></section>
+  <div class="note"><b>안내 · 구현 시 제외</b> 답사 탭은 제주 화면과 같아요. 방문시간(09:00~17:00)은 제주 운영시간 기준이라 인천 운영시간이 정해지면 맞춰요. 제주에서 숨겨 둔 "답사티켓 제공(예약번호)" 칸은 넣지 않았어요.</div>`;
+}
+function receiptTab(){
+  const rc=S.receipts,f=S.rf;const [ws,we]=weekRange(TODAY);
+  const conv=rc.filter(r=>r.bookingId).length;
+  const list=rc.filter(r=>(!f.q||r.groupName.includes(f.q)||r.contact.includes(f.q))&&(!f.status||r.status===f.status)&&(!f.from||r.date>=f.from)&&(!f.to||r.date<=f.to)).sort((a,b)=>b.id-a.id);
+  const opt=(o,v)=>Object.entries(o).map(([k,x])=>`<option value="${k}" ${v===k?'selected':''}>${x[0]}</option>`).join('');
+  return `<div class="stats">
+    <div class="stat"><small>오늘 접수</small><div class="num">${rc.filter(r=>r.regDt.slice(0,10)===TODAY).length}</div></div>
+    <div class="stat"><small>처리 대기</small><div class="num" style="color:var(--warning)">${rc.filter(r=>r.processStatus==='PENDING').length}</div></div>
+    <div class="stat"><small>예약 전환</small><div class="num" style="color:var(--positive)">${conv} <span style="font-size:14px;color:var(--muted);font-weight:400">(${rc.length?Math.round(conv/rc.length*1000)/10:0}%)</span></div></div>
+    <div class="stat"><small>이번 주 접수</small><div class="num">${rc.filter(r=>r.regDt.slice(0,10)>=ws&&r.regDt.slice(0,10)<=we).length}</div></div></div>
+  <div class="filters"><input id="rf-q" style="width:260px" placeholder="단체명, 담당자 검색" value="${esc(f.q)}">
+    <select id="rf-status" style="width:120px"><option value="">전체 상태</option>${opt(RCSTAT,f.status)}</select>
+    <input id="rf-from" type="date" style="width:150px" value="${f.from}" aria-label="시작일"><span style="color:var(--muted)">~</span><input id="rf-to" type="date" style="width:150px" value="${f.to}" aria-label="종료일"></div>
+  <section class="box"><div class="boxh"><b>접수 내역</b><small>${list.length}건</small><button class="btn sm ml" data-act="csv">CSV 다운로드</button></div>
+  <div class="tw"><table class="list"><thead><tr><th>관리번호</th><th>이용예정일</th><th>이용예정시</th><th>예상인원</th><th>단체명</th><th>구분</th><th>담당자</th><th>연락처</th><th>문의내용</th><th>접수자</th><th>확인 담당자</th><th>처리일자</th><th>처리상태</th><th>상태</th><th>비고</th><th>액션</th></tr></thead>
+  <tbody>${list.length?list.map(r=>`<tr class="r" data-ropen="${r.id}"><td class="num">${r.id}</td><td class="num">${r.date}</td><td class="num">${r.time}</td><td class="n">${r.headcount?r.headcount+'명':'-'}</td>
+    <td style="font-weight:500">${esc(r.groupName)}</td><td>${r.type?chip(...GTYPE[r.type]):'-'}</td><td>${esc(r.contact)}</td><td class="num" style="white-space:nowrap">${esc(r.phone)||'-'}</td>
+    <td style="max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${esc(r.inquiry)}">${esc(r.inquiry)}</td><td>${esc(r.staff)}</td><td>${esc(r.confirmStaff)||'-'}</td><td class="num">${r.processDate||'-'}</td>
+    <td>${chip(PROC[r.processStatus],r.processStatus==='PENDING'?'var(--warning)':'var(--muted)')}</td><td>${chip(...RCSTAT[r.status])}</td><td style="color:var(--muted)">${esc(r.memo)||''}</td>
+    <td>${['PENDING','ESTIMATED'].includes(r.status)?`<button class="btn sm" data-r2b="${r.id}">예약전환</button>`:''}</td></tr>`).join(''):`<tr><td colspan="16" class="empty">검색된 접수 내역이 없습니다.</td></tr>`}</tbody></table></div>
+  <div class="pag"><button class="on">1</button></div></section>
+  <div class="note"><b>안내 · 구현 시 제외</b> 접수 탭은 제주 화면과 같아요. 인천에서 바뀐 곳은 "예약전환" 팝업이에요. 상품을 넣을 때 운전자, 주니어 운전자, 동승자 수를 나눠 넣어요.
+    <ul><li>처리상태의 "문자발송", "메일안내"는 표시용이에요. 실제 문자·메일 발송 기능은 제주에도 없어요.</li><li>이용시간(09:00~18:00)은 제주 기준이라 인천 운영시간이 정해지면 맞춰요.</li></ul></div>`;
+}
+function sDrawerHTML(s){
+  const ir=(l,v)=>`<div class="ir"><span>${l}</span><span>${v}</span></div>`,ag=AGENCIES.find(a=>a.id==s.agency);
+  return `<div class="ov" data-close="sdrawer"></div><aside class="drawer" role="dialog" aria-label="답사 상세"><div class="dh"><b>답사 상세 - ${s.id}</b><button class="x" data-close="sdrawer" aria-label="닫기">×</button></div>
+  <div class="db"><div class="sec">답사 정보</div>${ir('답사번호',s.id)}${ir('답사일시',`${s.date} (${dow(s.date)}) ${s.time}`)}${ir('상태',chip(...SVSTAT[s.status]))}${ir('답사 진행',s.processed||'-')}
+  <div class="sec">단체 정보</div>${ir('단체명',esc(s.groupName))}${ir('구분',s.type?chip(...GTYPE[s.type]):'-')}${ir('지역',s.region||'-')}${s.region==='국외'?ir('국가',s.country||'-'):''}
+  <div class="sec">방문자 정보</div>${ir('방문자',esc(s.visitor))}${ir('연락처',esc(s.phone)||'-')}${ir('담당자',esc(s.staff))}
+  <div class="sec">거래처 정보</div>${ag&&ag.id?ir('거래처명',ag.name)+ir('유형',PTYPE[ag.type]):'<div class="sub">연결된 거래처가 없어요.</div>'}
+  <div class="sec">비고</div><div style="font-size:13px">${esc(s.memo)||'-'}</div>
+  <div class="sec">등록/수정 정보</div>${ir('등록자',s.regNm)}${ir('등록일',s.regDt)}${s.modNm?ir('수정자',s.modNm)+ir('수정일',s.modDt):''}</div>
+  <div class="df">${s.status==='PENDING'?`<button class="btn p" data-s2r="${s.id}">접수전환</button>`:''}<button class="btn" data-sedit="${s.id}">수정</button><button class="btn d" data-sdel="${s.id}">삭제</button></div></aside>`;
+}
+function rDrawerHTML(r){
+  const ir=(l,v)=>`<div class="ir"><span>${l}</span><span>${v}</span></div>`,ag=AGENCIES.find(a=>a.id==r.agency);
+  return `<div class="ov" data-close="rdrawer"></div><aside class="drawer" role="dialog" aria-label="접수 상세"><div class="dh"><b>접수 상세 - ${r.id}</b><button class="x" data-close="rdrawer" aria-label="닫기">×</button></div>
+  <div class="db"><div class="sec">문의 내용</div><div style="font-size:13px;line-height:1.7;background:var(--surface-2);border-radius:var(--r);padding:12px">${esc(r.inquiry)||'-'}</div>
+  <div class="sec">비고</div><div style="font-size:13px">${esc(r.memo)||'-'}</div>
+  <div class="sec">접수 정보</div>${ir('관리번호',r.id)}${ir('상태',chip(...RCSTAT[r.status]))}${ir('이용 예정일',`${r.date} (${dow(r.date)})`)}${ir('이용 시간',r.time)}${ir('단체명',esc(r.groupName))}${ir('구분',r.type?chip(...GTYPE[r.type]):'-')}${ir('지역',r.region||'-')}${r.region==='국외'?ir('국가',r.country||'-'):''}${ir('예상 인원',r.headcount?r.headcount+'명':'-')}${ir('파트너',ag&&ag.id?ag.name:'-')}${r.surveyId?ir('답사',`답사 ${r.surveyId}에서 전환`):''}${r.bookingId?ir('예약',`예약 ${r.bookingId}로 전환`):''}
+  <div class="sec">담당자 정보</div>${ir('담당자',esc(r.contact))}${ir('연락처',esc(r.phone)||'-')}${ir('접수자',esc(r.staff))}${ir('확인 담당자',esc(r.confirmStaff)||'-')}
+  <div class="sec">처리 정보</div>${ir('처리일자',r.processDate||'-')}${ir('처리상태',PROC[r.processStatus])}
+  <div class="sec">등록/수정 정보</div>${ir('등록자',r.regNm)}${ir('등록일',r.regDt)}${r.modNm?ir('수정자',r.modNm)+ir('수정일',r.modDt):''}</div>
+  <div class="df">${['PENDING','ESTIMATED'].includes(r.status)?`<button class="btn p" data-r2b="${r.id}">예약전환</button>`:''}<button class="btn" data-redit="${r.id}">수정</button><button class="btn d" data-rdel="${r.id}">삭제</button></div></aside>`;
+}
+const fld=(id,label,inner,req)=>`<div><label class="lab" for="${id}">${label}${req?'<span class="req">*</span>':''}</label>${inner}</div>`;
+const sel=(id,key,opts,v,ph,dis)=>`<select id="${id}" data-d="${key}" ${dis?'disabled':''}>${ph!=null?`<option value="">${ph}</option>`:''}${opts.map(o=>Array.isArray(o)?`<option value="${o[0]}" ${String(v)===String(o[0])?'selected':''}>${o[1]}</option>`:`<option ${v===o?'selected':''}>${o}</option>`).join('')}</select>`;
+const inp=(id,key,v,ph,type)=>`<input id="${id}" data-d="${key}" ${type?`type="${type}"`:''} placeholder="${ph||''}" value="${esc(v)}">`;
+const gtypeOpts=()=>Object.entries(GTYPE).map(([k,x])=>[k,x[0]]);
+const agOpts=()=>AGENCIES.filter(a=>a.id&&a.status==='ACTIVE').map(a=>[a.id,a.name]);
+function simpleModal(title,body,okText,okAttr){return `<div class="ov m" data-mclose></div><div class="mwrap"><section class="modal" role="dialog" aria-label="${title}"><div class="mh"><b>${title}</b><button class="x" data-mclose aria-label="닫기">×</button></div><div class="mb">${body}</div><div class="mf"><button class="btn" data-mclose>취소</button><button class="btn p" ${okAttr}>${okText}</button></div></section></div>`}
+function sFormHTML(){const d=S.modal.draft,edit=!!d.id;
+  return simpleModal(edit?'답사 수정':'답사 등록',`<div class="grid2">
+    ${fld('s-date','답사일',inp('s-date','date',d.date,'','date'),1)}${fld('s-time','방문시간',sel('s-time','time',times(9,17),d.time,'시간 선택'))}
+    ${fld('s-g','단체명',inp('s-g','groupName',d.groupName,'단체명을 입력하세요'),1)}${fld('s-t','구분',sel('s-t','type',gtypeOpts(),d.type,'구분 선택'))}
+    ${fld('s-v','방문자명',inp('s-v','visitor',d.visitor,'방문자명을 입력하세요'),1)}${fld('s-p','연락처',inp('s-p','phone',d.phone,'010-0000-0000'))}
+    ${fld('s-r','지역',sel('s-r','region',REGIONS,d.region,'지역 선택'))}${fld('s-c','국가',sel('s-c','country',COUNTRIES,d.country,'국가 선택',d.region!=='국외'))}
+    ${fld('s-a','거래처',sel('s-a','agency',agOpts(),d.agency||'','거래처 검색'))}${fld('s-st','담당자',sel('s-st','staff',STAFFS,d.staff,'담당자 검색'))}
+    ${fld('s-pr','답사 진행',sel('s-pr','processed',['O','X'],d.processed,'선택'))}<div></div></div>
+    ${fld('s-m','비고',`<textarea id="s-m" data-d="memo" placeholder="메모 입력">${esc(d.memo)}</textarea>`)}`,edit?'수정':'등록','data-ssave')}
+function rFormHTML(){const d=S.modal.draft,edit=!!d.id;
+  return simpleModal(edit?'접수 수정':'접수 등록',`<div class="grid2">
+    ${fld('r-date','이용예정일',inp('r-date','date',d.date,'','date'),1)}${fld('r-time','이용시간',sel('r-time','time',times(9,18),d.time,'시간 선택'),1)}
+    ${fld('r-g','단체명',inp('r-g','groupName',d.groupName,'단체명 입력'),1)}${fld('r-t','구분',sel('r-t','type',gtypeOpts(),d.type,'구분 선택'))}
+    ${fld('r-c','담당자',inp('r-c','contact',d.contact,'담당자명'),1)}${fld('r-p','연락처',inp('r-p','phone',d.phone,'010-0000-0000'))}
+    ${fld('r-r','지역',sel('r-r','region',REGIONS,d.region,'지역 선택'))}${fld('r-co','국가',sel('r-co','country',COUNTRIES,d.country,'국가 선택',d.region!=='국외'))}
+    ${fld('r-s','상태',sel('r-s','status',[['PENDING','대기'],['ESTIMATED','견적']],d.status,null))}${fld('r-h','예상 인원',inp('r-h','headcount',d.headcount,'0','number'))}
+    ${fld('r-a','거래처',sel('r-a','agency',agOpts(),d.agency||'','거래처 검색'))}${fld('r-st','접수자',sel('r-st','staff',STAFFS,d.staff,'접수자명 검색'))}
+    ${fld('r-cs','확인 담당자',sel('r-cs','confirmStaff',STAFFS,d.confirmStaff,'확인 담당자명 검색'))}${fld('r-pd','처리일자',inp('r-pd','processDate',d.processDate,'','date'))}
+    ${fld('r-ps','처리상태',sel('r-ps','processStatus',Object.entries(PROC),d.processStatus,'처리상태 선택'))}<div></div></div>
+    ${fld('r-i','문의내용',`<textarea id="r-i" data-d="inquiry" placeholder="문의 내용 상세 입력">${esc(d.inquiry)}</textarea>`,1)}
+    ${fld('r-m','비고',`<textarea id="r-m" data-d="memo" placeholder="메모 입력">${esc(d.memo)}</textarea>`)}`,edit?'수정':'등록','data-rsave')}
+function s2rHTML(){const d=S.modal.draft,s=S.surveys.find(x=>x.id===S.modal.sid);
+  return simpleModal(`${esc(s.groupName)} - 접수전환`,`<div class="grid2">${fld('t-d','탑승 날짜',inp('t-d','date',d.date,'','date'),1)}${fld('t-t','탑승 시각',sel('t-t','time',times(9,18),d.time,'시간 선택'),1)}${fld('t-h','인원수',inp('t-h','headcount',d.headcount,'인원수 입력','number'))}<div></div></div>${fld('t-m','메모',`<textarea id="t-m" data-d="memo" placeholder="메모 입력">${esc(d.memo)}</textarea>`)}
+  <div class="sub" style="margin:0">단체명, 구분, 지역, 방문자, 거래처는 답사 정보를 그대로 가져와요.</div>`,'접수전환','data-s2rok')}
+function r2bHTML(){const d=S.modal.draft,r=S.receipts.find(x=>x.id===S.modal.rid);
+  const tot=d.rows.reduce((a,x)=>{const k=calc(x,d.agency);return{pay:a.pay+k.pay,dep:a.dep+k.dep,com:a.com+k.com}},{pay:0,dep:0,com:0});
+  return simpleModal(`${esc(r.groupName)} - 예약전환`,`<div class="sub" style="margin:0">이용 ${r.date} ${r.time} · 예상 ${r.headcount||'-'}명 · ${esc(agencyName(r.agency))||'거래처 없음'}</div>
+  <div class="grid2">${fld('b-l','인솔자명',inp('b-l','leader',d.leader,'인솔자명'))}${fld('b-lp','연락처',inp('b-lp','leaderPhone',d.leaderPhone,'010-0000-0000'))}</div>
+  <div><span class="lab">상품<span class="req">*</span></span><div id="mrows" style="display:grid;gap:12px">${d.rows.map((x,i)=>rowHTML(d,x,i)).join('')}</div><button type="button" class="add" data-addrow>+ 상품 추가</button></div>
+  ${fld('b-m','메모',`<textarea id="b-m" data-d="memo" placeholder="메모 입력">${esc(d.memo)}</textarea>`)}
+  <div class="tot"><div><span>총 예상 결제 금액</span><span>${won(tot.pay)}</span></div><div><span>총 예상 입금 금액</span><span>${won(tot.dep)}</span></div><div><span>총 예상 수수료 금액</span><span>${won(tot.com)}</span></div></div>`,'예약전환','data-r2bok')}
+function svClick(t){
+  const d=t.dataset;
+  if(d.sopen&&!t.closest('button')&&t.tagName!=='BUTTON'){S.sdrawer=+d.sopen;renderLayer();return true}
+  if(d.ropen&&t.tagName!=='BUTTON'){S.rdrawer=+d.ropen;renderLayer();return true}
+  if(d.close==='sdrawer'){S.sdrawer=null;renderLayer();return true}
+  if(d.close==='rdrawer'){S.rdrawer=null;renderLayer();return true}
+  if(d.s2r){const s=S.surveys.find(x=>x.id==d.s2r);S.modal={kind:'s2r',sid:s.id,draft:{date:'',time:'',headcount:'',memo:''}};renderModal();return true}
+  if(d.r2b){const r=S.receipts.find(x=>x.id==d.r2b);S.modal={kind:'r2b',rid:r.id,draft:{agency:r.agency,date:r.date,leader:'',leaderPhone:'',memo:'',rows:[mkRow({slot:''})]}};renderModal();return true}
+  if(d.sedit){S.modal={kind:'sform',draft:{...S.surveys.find(x=>x.id==d.sedit)}};renderModal();return true}
+  if(d.redit){S.modal={kind:'rform',draft:{...S.receipts.find(x=>x.id==d.redit)}};renderModal();return true}
+  if(d.sdel){const s=S.surveys.find(x=>x.id==d.sdel);ask('답사 삭제',`${s.groupName} 답사를 삭제하시겠습니까?\n삭제 후 복구할 수 없습니다.`,'삭제',()=>{S.surveys=S.surveys.filter(x=>x!==s);S.sdrawer=null;toast('답사가 삭제되었습니다.')},true);return true}
+  if(d.rdel){const r=S.receipts.find(x=>x.id==d.rdel);ask('접수 삭제',`${r.groupName} 접수를 삭제하시겠습니까?\n삭제 후 복구할 수 없습니다.`,'삭제',()=>{S.receipts=S.receipts.filter(x=>x!==r);S.rdrawer=null;toast('접수가 삭제되었습니다.')},true);return true}
+  const M=S.modal;
+  if('ssave' in d){const x=M.draft;if(!x.date)return toast('답사일을 선택해 주세요.'),true;if(!x.groupName.trim())return toast('단체명을 입력해 주세요.'),true;if(!x.visitor.trim())return toast('방문자명을 입력해 주세요.'),true;if(x.region==='국외'&&!x.country)return toast('국가를 선택해 주세요.'),true;
+    if(x.id){Object.assign(S.surveys.find(s=>s.id===x.id),x,{modNm:'영업팀 담당자',modDt:TODAY+' 15:30'});toast('답사가 수정되었습니다.')}else{S.surveys.push(mkSv({...x,regDt:TODAY+' 15:30'}));toast('답사가 등록되었습니다.')}
+    S.modal=null;renderModal();render();return true}
+  if('rsave' in d){const x=M.draft;if(!x.date)return toast('이용예정일을 선택해 주세요.'),true;if(!x.time)return toast('이용시간을 선택해 주세요.'),true;if(!x.groupName.trim())return toast('단체명을 입력해 주세요.'),true;if(!x.contact.trim())return toast('담당자명을 입력해 주세요.'),true;if(x.region==='국외'&&!x.country)return toast('국가를 선택해 주세요.'),true;if(!x.inquiry.trim())return toast('문의내용을 입력해 주세요.'),true;
+    if(x.id){Object.assign(S.receipts.find(r=>r.id===x.id),x,{modNm:'예약팀 담당자',modDt:TODAY+' 15:30'});toast('접수가 수정되었습니다.')}else{S.receipts.push(mkRc({...x,regDt:TODAY+' 15:30'}));toast('접수가 등록되었습니다.')}
+    S.modal=null;renderModal();render();return true}
+  if('s2rok' in d){const x=M.draft,s=S.surveys.find(v=>v.id===M.sid);if(!x.date)return toast('탑승 날짜를 선택해 주세요.'),true;if(!x.time)return toast('탑승 시각을 선택해 주세요.'),true;
+    const r=mkRc({surveyId:s.id,date:x.date,time:x.time,headcount:x.headcount,memo:x.memo,groupName:s.groupName,type:s.type,region:s.region,country:s.country,contact:s.visitor,phone:s.phone,agency:s.agency,inquiry:`답사(${s.id})에서 전환`,regDt:TODAY+' 15:30'});
+    S.receipts.push(r);s.status='COMPLETED';s.receiptId=r.id;S.modal=null;S.sdrawer=null;renderModal();render();toast('접수전환이 완료되었습니다.');return true}
+  if('r2bok' in d){const x=M.draft,r=S.receipts.find(v=>v.id===M.rid);if(!x.rows.some(v=>v.prd))return toast('상품을 1개 이상 선택해 주세요.'),true;if(x.rows.some(v=>v.prd&&!v.slot))return toast('모든 상품의 탑승 시간을 선택해 주세요.'),true;if(x.rows.some(v=>v.prd&&calc(v,x.agency).drv===0))return toast('모든 상품의 인원을 넣어 주세요.'),true;{const i=x.rows.findIndex(v=>v.prd&&pairErr(calc(v,x.agency)));if(i>=0)return toast(`상품 ${i+1}: ${pairErr(calc(x.rows[i],x.agency))}`),true}
+    const nb=mkBook({date:r.date,time:r.time,groupName:r.groupName,type:r.type||'OTHER',region:r.region||'인천',status:'PENDING',reserver:r.contact,phone:r.phone,leader:x.leader,leaderPhone:x.leaderPhone,agency:r.agency,memo:x.memo,rows:[],regDt:TODAY+' 15:30'});
+    nb.rows=x.rows.filter(v=>v.prd);nb.country=r.country;S.books.push(nb);r.status='COMPLETED';r.bookingId=nb.id;S.modal=null;S.rdrawer=null;renderModal();render();toast('예약전환이 완료되었습니다.');return true}
+  return false;
+}
+
+/* ---------- 주문/결제/정산 ---------- */
+const OSTAT={PENDING:['주문대기','var(--warning)'],TICKET_PENDING:['발권대기','var(--primary)'],TICKET_PRINTED:['발권완료','var(--positive)'],USE_COMPLETED:['이용완료','var(--disable)'],CANCELED:['취소','var(--negative)']};
+const PSTAT={UNPAID:['미결제','var(--negative)'],TEMP_PAID:['가결제','var(--warning)'],ACTUAL_PAID:['결제완료','var(--positive)']};
+const SSTAT={PENDING:['정산대상','var(--warning)'],DEFERRED:['정산보류','var(--violet)'],COMPLETED:['정산완료','var(--positive)']};
+const METHOD={CARD:'카드',CASH:'현금',DEPOSIT:'계좌이체'};
+/* JAM 구성은 ICN Payments 상품 정책 기준, 원가는 재산정 전이라 예시 값 */
+const JAM={race:{label:'레이스 패키지',race:2,gen:20},opt:{label:'동승자 옵션',race:2,gen:20},indoor:{label:'실내 패키지',race:0,gen:40}};
+const JAM_COST={race:15000,gen:900};
+let orderSeq=50120,opSeq=880400,tkSeq=104200;
+function initOrd(b,dt){b.ord={rows:{},settle:'PENDING',tax:false,canceled:false,orderDt:dt||TODAY}}
+function payRow(b,r,{actual,method,withCom,at}){
+  const k=calc(r,b.agency),race=k.race,base=k.lines[0],opt=k.lines[1];
+  const unit=l=>withCom?l.d+l.c:l.d;
+  const tickets=[];const mk=(role,pair,line,kind)=>tickets.push({no:'T'+(++tkSeq),op:++opSeq,role,pair,kind,paid:Math.round(unit(line)),refund:0,printed:false,printedAt:''});
+  if(race){let p=0,left=k.n3;
+    for(let i=0;i<k.n2;i++){p++;mk('주니어 운전자',p,base,'race');mk('동승자',p,opt,'opt');left--}
+    for(let i=0;i<k.n1;i++){if(left>0){p++;mk('운전자',p,base,'race');mk('동승자',p,opt,'opt');left--}else mk('운전자',null,base,'race')}}
+  else for(let i=0;i<k.drv;i++)mk('이용자',null,base,'indoor');
+  b.ord.rows[r.id]={orderId:++orderSeq,pay:actual?'ACTUAL_PAID':'TEMP_PAID',method:actual?method:'',withCom,paidAt:at||TODAY,tickets};
+}
+function ordState(b){
+  const o=b.ord,rs=b.rows.filter(r=>r.prd);let paid=0,refund=0,temp=0,tks=[];
+  rs.forEach(r=>{const x=o.rows[r.id];if(!x)return;x.tickets.forEach(t=>{paid+=t.paid;refund+=t.refund;tks.push(t)});if(x.pay==='TEMP_PAID')temp+=x.tickets.reduce((s,t)=>s+t.paid-t.refund,0)});
+  const unpaid=rs.some(r=>!o.rows[r.id]);
+  const pay=unpaid?'UNPAID':rs.some(r=>o.rows[r.id].pay==='TEMP_PAID')?'TEMP_PAID':'ACTUAL_PAID';
+  const live=tks.filter(t=>t.refund<t.paid);
+  let os=o.canceled?'CANCELED':unpaid||!tks.length?'PENDING':live.every(t=>t.printed)?(b.date<TODAY?'USE_COMPLETED':'TICKET_PRINTED'):'TICKET_PENDING';
+  return{os,pay,paid,refund,temp,tks,unpaid};
+}
+const ticketsOf=b=>b.rows.filter(r=>r.prd&&b.ord.rows[r.id]).flatMap(r=>b.ord.rows[r.id].tickets.map(t=>({...t,_r:r})));
+function findTicket(b,no){for(const r of b.rows){const x=b.ord.rows[r.id];if(!x)continue;const t=x.tickets.find(t=>t.no===no);if(t)return{t,x,r}}return null}
+function withPartners(b,nos){const out=new Set(nos);nos.forEach(no=>{const f=findTicket(b,no);if(f&&f.t.pair)f.x.tickets.filter(t=>t.pair===f.t.pair).forEach(t=>out.add(t.no))});return[...out]}
+
+function orderTab(){
+  const books=S.books.filter(b=>b.ord);
+  const st=books.map(b=>({b,s:ordState(b)}));
+  const todayOrders=books.filter(b=>b.ord.orderDt===TODAY).length;
+  const tp=st.filter(x=>x.s.os==='TICKET_PENDING').length;
+  const todayPay=books.reduce((s,b)=>s+Object.values(b.ord.rows).filter(x=>x.paidAt===TODAY).reduce((a,x)=>a+x.tickets.reduce((c,t)=>c+t.paid,0),0),0);
+  const settleWait=st.filter(x=>x.b.ord.settle!=='COMPLETED'&&!x.s.unpaid&&x.s.os!=='CANCELED').reduce((s,x)=>s+x.s.paid-x.s.refund,0);
+  const recv=st.reduce((s,x)=>s+x.s.temp,0);
+  const f=S.of||(S.of={q:'',os:'',ps:'',ss:'',agency:''});
+  const list=st.filter(({b,s})=>{
+    if(f.q&&!(b.groupName.includes(f.q)||String(b.id).includes(f.q)||ticketsOf(b).some(t=>t.no.includes(f.q))||Object.values(b.ord.rows).some(x=>String(x.orderId).includes(f.q))))return false;
+    if(f.os&&s.os!==f.os)return false;if(f.ps&&s.pay!==f.ps)return false;if(f.ss&&b.ord.settle!==f.ss)return false;if(f.agency&&String(b.agency)!==f.agency)return false;return true}).sort((a,b)=>b.b.date.localeCompare(a.b.date));
+  const opt=(o,v)=>Object.entries(o).map(([k,x])=>`<option value="${k}" ${v===k?'selected':''}>${x[0]}</option>`).join('');
+  return `<div class="stats" style="grid-template-columns:repeat(5,minmax(0,1fr))">
+    <div class="stat"><small>오늘 주문</small><div class="num">${todayOrders}</div></div>
+    <div class="stat"><small>발권 대기</small><div class="num" style="color:var(--primary)">${tp}</div></div>
+    <div class="stat"><small>오늘 결제액</small><div class="num">${won(todayPay)}</div></div>
+    <div class="stat"><small>정산 대기</small><div class="num" style="color:var(--warning)">${won(settleWait)}</div></div>
+    <div class="stat"><small>미수금</small><div class="num" style="color:var(--negative)">${won(recv)}</div></div></div>
+  <div class="filters">
+    <input id="of-q" style="width:280px" placeholder="예약번호, 주문번호, 티켓번호, 단체명 검색" value="${esc(f.q)}">
+    <select id="of-os" style="width:120px"><option value="">전체 상태</option>${opt(OSTAT,f.os)}</select>
+    <select id="of-ps" style="width:120px"><option value="">결제 상태</option>${opt(PSTAT,f.ps)}</select>
+    <select id="of-ss" style="width:120px"><option value="">정산 상태</option>${opt(SSTAT,f.ss)}</select>
+    <select id="of-agency" style="width:180px"><option value="">거래처 검색</option>${AGENCIES.filter(a=>a.id).map(a=>`<option value="${a.id}" ${f.agency==a.id?'selected':''}>${a.name}</option>`).join('')}</select>
+  </div>
+  <section class="box"><div class="boxh"><b>주문/결제 내역</b><small>${list.length}건</small><button class="btn sm ml" data-act="csv">CSV 다운로드</button></div>
+  <div class="tw"><table class="list"><thead><tr><th>관리번호</th><th>단체명</th><th>거래처</th><th>이용일시</th><th>상품</th><th>수량</th><th>예상결제가</th><th>예상입금가</th><th>예상수수료</th><th>결제완료금액</th><th>상태</th><th>결제상태</th><th>정산상태</th><th>세금계산서</th></tr></thead>
+  <tbody>${list.length?list.map(({b,s})=>{const c=bookCalc(b);return `<tr class="r" data-oopen="${b.id}"><td class="num">${b.id}</td><td style="font-weight:500">${esc(b.groupName)}</td><td>${esc(agencyName(b.agency))||'-'}</td>
+    <td class="num" style="white-space:nowrap">${b.date} ${b.time}</td><td style="min-width:200px">${esc(ticketText(b))}</td><td class="n">${c.ppl}명<div class="sub">티켓 ${c.ppl}장</div></td>
+    <td class="n">${won(c.pay)}</td><td class="n">${won(c.dep)}</td><td class="n">${won(c.com)}</td><td class="n">${won(s.paid-s.refund)}</td>
+    <td>${chip(...OSTAT[s.os])}</td><td>${chip(...PSTAT[s.pay])}</td><td>${chip(...SSTAT[b.ord.settle])}</td><td>${b.ord.tax?chip('발행요청','var(--primary)'):'<span style="color:var(--muted)">미발행</span>'}</td></tr>`}).join(''):`<tr><td colspan="14" class="empty">조건에 맞는 주문이 없어요.</td></tr>`}</tbody></table></div>
+  <div class="pag"><button class="on">1</button></div></section>
+  <div class="note"><b>안내 · 구현 시 제외</b> 목록은 제주 화면과 같아요.
+    <ul><li>"정산 대기" 카드는 제주에서 0원으로 고정돼 있어요. 여기서는 정산 완료 전인 결제 금액 합계로 그렸어요.</li>
+    <li>행을 누르면 주문/결제 상세가 열려요. 인천에서 바뀐 곳(발권, 환불)은 상세 안에 표시했어요.</li></ul></div>`;
+}
+
+function oDrawerHTML(b){
+  const s=ordState(b),ag=AGENCIES.find(a=>a.id==b.agency),g=GTYPE[b.type];
+  const anyUsed=b.date<TODAY||(b.date===TODAY&&b.time<='15:30');
+  const ir=(l,v)=>`<div class="ir"><span>${l}</span><span>${v}</span></div>`;
+  const rs=b.rows.filter(r=>r.prd);
+  const groups=rs.map((r,i)=>{const x=b.ord.rows[r.id],k=calc(r,b.agency);
+    const comp=k.race?`운전자 ${k.n1} · 주니어 운전자 ${k.n2} · 동승자 ${k.n3}`:`이용자 ${k.drv}명`;
+    const head=`<div class="obh">${x?`<input type="checkbox" data-selrow="${r.id}" aria-label="주문 전체 선택" ${x.tickets.every(t=>S.sel.has(t.no))?'checked':''}>`:''}<b>${PRODUCTS[r.prd].short} · 탑승 ${r.slot}</b><span class="sub" style="margin:0">${comp}</span>
+      ${x?chip('주문번호 '+x.orderId,'var(--primary)'):chip('결제대기','var(--warning)')}${r.memo?chip('메모: '+esc(r.memo),'var(--muted)'):''}
+      <span class="ml"></span>${x?`<button class="btn sm" data-rowrefund="${r.id}">전체 환불</button>`:`<button class="btn sm d" data-delorder="${r.id}">삭제</button>`}</div>`;
+    if(!x)return `<div class="ob">${head}<div class="sub" style="padding:10px 12px;margin:0">결제하면 주문번호와 티켓이 만들어져요. 티켓 ${k.drv+k.pas}장, 결제 예정 ${won(k.pay)}</div></div>`;
+    return `<div class="ob">${head}<div class="tw"><table class="mini"><thead><tr><th></th><th>상태</th><th>티켓 번호</th><th>구분</th><th>짝</th><th class="n">결제 금액</th><th class="n">환불 금액</th><th class="n">매출 금액</th></tr></thead><tbody>
+      ${x.tickets.slice(0,S.more[r.id]||10).map((t,j)=>{const rf=t.refund>=t.paid?chip('환불','var(--negative)'):t.refund>0?chip('부분환불','var(--warning)'):t.printed?chip('발권','var(--positive)'):chip('결제완료','var(--primary)');
+        const nx=x.tickets[j+1];return `<tr class="${t.pair&&nx&&nx.pair===t.pair?'pair-b':''}"><td><input type="checkbox" data-sel="${t.no}" aria-label="${t.no} 선택" ${S.sel.has(t.no)?'checked':''}></td><td>${rf}</td><td class="num">${t.no}</td><td>${t.role}</td><td>${t.pair?'짝 '+t.pair:'-'}</td><td class="n">${won(t.paid)}</td><td class="n">${t.refund?won(t.refund):'-'}</td><td class="n">${won(t.paid-t.refund)}</td></tr>`}).join('')}
+      </tbody></table></div>${x.tickets.length>(S.more[r.id]||10)?`<button class="btn sm" style="margin:8px 12px" data-more="${r.id}">더 보기 (${x.tickets.length-(S.more[r.id]||10)}건 더)</button>`:''}</div>`}).join('');
+  const tks=ticketsOf(b);
+  const printSec=!tks.length?'':`<div class="sec">발권 처리</div>
+    <div class="bar"><button class="btn sm p" data-tk="print">발권하기</button><button class="btn sm" data-tk="reprint">재발권하기</button><button class="btn sm" data-tk="cancel">발권 취소</button><span class="sub ml" style="margin:0">선택 ${S.sel.size}장</span></div>
+    <div class="tw" style="border:1px solid var(--line);border-radius:10px"><table class="mini"><thead><tr><th></th><th>티켓 번호</th><th>상품 주문 번호</th><th>구분</th><th>짝</th><th>상품</th><th>발권 상태</th><th>발권 일시</th></tr></thead><tbody>
+    ${tks.filter(t=>t.refund<t.paid).slice(0,S.more.print||12).map((t,j,arr)=>{const nx=arr[j+1];return `<tr class="${t.pair&&nx&&nx.pair===t.pair&&nx._r===t._r?'pair-b':''}"><td><input type="checkbox" data-sel="${t.no}" aria-label="${t.no} 선택" ${S.sel.has(t.no)?'checked':''}></td><td class="num">${t.no}</td><td class="num">${t.op}</td><td>${t.role}</td><td>${t.pair?'짝 '+t.pair:'-'}</td><td>${PRODUCTS[t._r.prd].short} ${t._r.slot}</td><td>${t.printed?chip('발권완료','var(--positive)'):chip('미발권','var(--warning)')}</td><td class="num">${t.printedAt||'-'}</td></tr>`}).join('')}
+    </tbody></table>${tks.filter(t=>t.refund<t.paid).length>(S.more.print||12)?`<button class="btn sm" style="margin:8px 12px" data-more="print">더 보기 (${tks.filter(t=>t.refund<t.paid).length-(S.more.print||12)}건 더)</button>`:''}</div>
+    <div class="note" style="margin-top:8px">· 인천은 로봉(NFC) 1인 1티켓이에요. 짝으로 들어온 운전자와 동승자는 함께 발권하고 함께 취소돼요. 한 명만 골라도 짝이 같이 선택돼요.<br>· 제주의 레이서 분리·병합, 스포츠랩 번호는 없어요. 인천은 1인 1티켓이고 추가구매도 기존 티켓에 붙어서, 한 사람에게 티켓이 여러 장 묶이지 않아요.<br>· NFC 발권이 곧 이용 시작이에요. 단체를 미리 발권할지, 현장에 온 인원만 발권할지는 정하는 중이에요.</div>`;
+  const pending=rs.filter(r=>!b.ord.rows[r.id]);
+  const pend=pending.reduce((a,r)=>{const k=calc(r,b.agency);return{dep:a.dep+k.dep,com:a.com+k.com}},{dep:0,com:0});
+  const P=S.pay||(S.pay={actual:true,method:'',withCom:true});
+  const c=bookCalc(b),rate=c.pay?Math.round(c.com/c.pay*1000)/10:0;
+  const temps=rs.filter(r=>b.ord.rows[r.id]?.pay==='TEMP_PAID');
+  const paySec=b.ord.canceled?'':`<div class="sec">결제 및 정산 정보</div>
+    <div class="paybox"><div style="display:flex;align-items:center"><b style="font-size:13px">결제 금액 상세</b>${temps.length?`<button class="btn sm ml" data-actual>실결제</button>`:''}</div>
+    <div class="tw"><table class="mini"><thead><tr><th>상품</th><th class="n">수량</th><th class="n">예상 결제가</th><th class="n">예상 입금가</th><th class="n">예상 수수료</th><th>상태</th></tr></thead><tbody>
+    ${rs.map(r=>{const k=calc(r,b.agency),x=b.ord.rows[r.id];return `<tr><td>${PRODUCTS[r.prd].short} ${r.slot}</td><td class="n">${k.drv+k.pas}</td><td class="n">${won(k.pay)}</td><td class="n">${won(k.dep)}</td><td class="n">${won(k.com)}</td><td>${x?chip(...PSTAT[x.pay])+(x.method?` <span class="sub">${METHOD[x.method]}</span>`:''):chip('결제대기','var(--warning)')}</td></tr>`}).join('')}
+    <tr><td style="font-weight:500">소계</td><td></td><td class="n" style="font-weight:500">${won(c.pay)}</td><td class="n">${won(c.dep)}</td><td class="n">${won(c.com)}</td><td></td></tr></tbody></table></div>
+    <div class="kv">${ir('수수료율',rate+'%')}${ir('수수료 금액',won(c.com))}</div>
+    ${pending.length?`<div style="border-top:1px solid var(--line);padding-top:10px;display:grid;gap:10px"><b style="font-size:13px">결제 진행</b>
+      <label style="display:flex;gap:8px;align-items:center;font-size:13px"><input type="checkbox" id="p-actual" ${P.actual?'checked':''} style="width:16px;height:16px">실결제 (끄면 가결제로 처리하고 나중에 실결제해요)</label>
+      ${P.actual?`<div><label class="lab" for="p-method">결제 수단</label><select id="p-method"><option value="">결제 수단 선택</option>${Object.entries(METHOD).map(([k,v])=>`<option value="${k}" ${P.method===k?'selected':''}>${v}</option>`).join('')}</select></div>`:''}
+      <div class="grid2"><label class="radio ${!P.withCom?'on':''}"><input type="radio" name="wc" value="0" ${!P.withCom?'checked':''}><span><b style="font-size:13px">입금 금액만</b><div class="sub">수수료 별도 정산 · ${won(pend.dep)}</div></span></label>
+      <label class="radio ${P.withCom?'on':''}"><input type="radio" name="wc" value="1" ${P.withCom?'checked':''}><span><b style="font-size:13px">수수료 포함</b><div class="sub">수수료 함께 결제 · ${won(pend.dep+pend.com)}</div></span></label></div>
+      <button class="btn p" data-paynow>결제하기 · ${won(P.withCom?pend.dep+pend.com:pend.dep)}</button></div>`:''}
+    </div>
+    <div class="sec">정산 정보</div>${ir('결제완료금액',won(s.paid))}${ir('환불금액',won(s.refund))}${ir('정산 상태',chip(...SSTAT[b.ord.settle]))}${ir('세금계산서',b.ord.tax?'발행요청완료':'미발행')}
+    <div class="bar" style="justify-content:flex-end">${b.ord.settle==='PENDING'?'<button class="btn sm" data-settle="DEFERRED">정산 보류</button>':''}${b.ord.settle!=='COMPLETED'?'<button class="btn sm" data-settle="COMPLETED">정산 완료</button>':''}<button class="btn sm p" data-tax ${b.ord.tax?'disabled':''}>${b.ord.tax?'세금계산서 발행요청완료':'세금계산서 발행'}</button></div>`;
+  return `<div class="ov" data-close="odrawer"></div><aside class="drawer" style="width:min(820px,100%)" role="dialog" aria-label="주문/결제 상세 정보">
+    <div class="dh"><b>주문/결제 상세 정보</b><button class="x" data-close="odrawer" aria-label="닫기">×</button></div>
+    <div class="db">
+      <div class="bar" style="margin-top:14px">${chip(...OSTAT[s.os])}${chip(...PSTAT[s.pay])}<span style="font-size:13px">${ag&&ag.id?`${ag.name} (수수료: ${fmtComm(ag)})`:'거래처 없음'}</span><span class="ml"></span><button class="btn sm" data-act="history">처리 이력</button>${b.ord.canceled?'':anyUsed?'<button class="btn sm d" data-cancelall>전체 환불</button>':'<button class="btn sm d" data-cancelall>예약 취소</button>'}</div>
+      <div class="sec">예약자 정보</div><div class="kv">${ir('단체명',esc(b.groupName))}${ir('단체 유형',chip(g[0],g[1]))}${ir('연락처',esc(b.phone))}${ir('담당자',esc(b.reserver))}${ir('지역',b.region)}${ir('국가',b.country||'-')}</div>${ir('메모',esc(b.memo)||'-')}
+      <div class="sec" style="display:flex;align-items:center">주문 내역 및 이용 현황<span class="ml"></span>${b.ord.canceled?'':'<button class="btn sm" data-addorder>주문 추가</button>'}</div>
+      ${groups}
+      ${tks.length?`<div class="bar"><button class="btn sm" data-bulkrefund>일괄 부분 환불</button><span class="sub" style="margin:0">티켓을 고르고 누르면 이용한 JAM만큼 빼고 환불해요</span></div>`:''}
+      ${printSec}${paySec}
+    </div></aside>`;
+}
+function refundModalHTML(){
+  const M=S.modal,b=S.books.find(x=>x.id===M.bid);
+  const items=M.nos.map(no=>findTicket(b,no)).filter(Boolean);
+  const kinds=[...new Set(items.map(f=>f.t.kind))];
+  const used=M.used;
+  const calcOne=f=>{const u=used[f.t.kind]||{race:0,gen:0};const ded=num(u.race)*JAM_COST.race+num(u.gen)*JAM_COST.gen;return Math.max(0,f.t.paid-f.t.refund-ded)};
+  const total=items.reduce((s,f)=>s+calcOne(f),0);
+  return `<div class="ov m" data-mclose></div><div class="mwrap"><section class="modal" role="dialog" aria-label="일괄 부분 환불"><div class="mh"><b>일괄 부분 환불</b><button class="x" data-mclose aria-label="닫기">×</button></div>
+  <div class="mb"><div class="sub" style="margin:0">선택한 티켓 ${items.length}장 · 같은 상품은 같은 사용량으로 계산해요</div>
+  <div class="tw"><table class="amt"><thead><tr><th>상품</th><th>JAM</th><th>제공</th><th>원가 단가</th><th>사용</th><th>공제</th></tr></thead><tbody>
+  ${kinds.map(kd=>{const j=JAM[kd],u=used[kd]||(used[kd]={race:0,gen:0});const rowsj=[];if(j.race)rowsj.push(['race','레이스 JAM',j.race]);rowsj.push(['gen','일반 JAM',j.gen]);
+    return rowsj.map(([jk,jl,qty],i)=>`<tr><td>${i?'':j.label}</td><td>${jl}</td><td>${qty}개</td><td>${won(JAM_COST[jk])}</td><td style="width:90px"><input type="number" min="0" max="${qty}" step="1" id="u-${kd}-${jk}" data-used="${kd}.${jk}" value="${u[jk]}" aria-label="${j.label} ${jl} 사용"></td><td>${won(num(u[jk])*JAM_COST[jk])}</td></tr>`).join('')}).join('')}
+  </tbody></table></div>
+  <div class="tot"><div><span>환불 금액 합계</span><span>${won(total)}</span></div></div>
+  <div class="note">인천은 "결제 금액 − 이용한 JAM 원가"만큼 환불해요. JAM 원가는 다시 정하는 중이라 화면 값은 예시예요.</div></div>
+  <div class="mf"><button class="btn" data-mclose>취소</button><button class="btn p" data-refundok>확인</button></div></section></div>`;
+}
+function actualModalHTML(){
+  const M=S.modal,b=S.books.find(x=>x.id===M.bid);const temps=b.rows.filter(r=>b.ord.rows[r.id]?.pay==='TEMP_PAID');
+  return `<div class="ov m" data-mclose></div><div class="mwrap"><section class="modal s" role="dialog" aria-label="실결제"><div class="mh"><b>실결제</b><button class="x" data-mclose aria-label="닫기">×</button></div>
+  <div class="mb"><span class="lab" style="margin:0">가결제 주문 선택</span>${temps.map(r=>{const x=b.ord.rows[r.id];return `<label class="radio ${M.pick.has(r.id)?'on':''}"><input type="checkbox" data-pick="${r.id}" ${M.pick.has(r.id)?'checked':''}><span>주문번호 ${x.orderId} · ${PRODUCTS[r.prd].short} ${r.slot}<div class="sub">${won(x.tickets.reduce((s,t)=>s+t.paid,0))}</div></span></label>`}).join('')}
+  <div><label class="lab" for="am">결제 수단</label><select id="am"><option value="">결제 수단 선택</option>${Object.entries(METHOD).map(([k,v])=>`<option value="${k}" ${M.method===k?'selected':''}>${v}</option>`).join('')}</select></div></div>
+  <div class="mf"><button class="btn" data-mclose>취소</button><button class="btn p" data-actualok>확인</button></div></section></div>`;
+}
+/* 예시 주문 데이터 */
+(function seedOrders(){
+  const b1=S.books[1];initOrd(b1,'2026-10-06');b1.rows.forEach(r=>payRow(b1,r,{actual:true,method:'CARD',withCom:true,at:'2026-10-06'}));
+  const b0=S.books[0];b0.status='COMPLETED';initOrd(b0);payRow(b0,b0.rows[0],{actual:false,withCom:false});
+  b0.ord.rows[b0.rows[0].id].tickets.slice(0,10).forEach(t=>{t.printed=true;t.printedAt='10-08 09:41'});
+  const b9=S.books[9];initOrd(b9,'2026-10-01');b9.rows.forEach(r=>payRow(b9,r,{actual:true,method:'DEPOSIT',withCom:false,at:'2026-10-01'}));
+  ticketsOf(b9).forEach(t=>{const f=findTicket(b9,t.no);f.t.printed=true;f.t.printedAt='10-03 09:52'});
+  const last=findTicket(b9,ticketsOf(b9)[0].no);last.t.refund=last.t.paid-JAM_COST.race*1-JAM_COST.gen*8;
+  b9.ord.settle='COMPLETED';b9.ord.tax=true;
+})();
+
+/* ---------- 렌더링 ---------- */
+const TABS=[['dashboard','대시보드'],['calendar','캘린더'],['vendor','거래처 관리'],['survey','답사'],['receipt','접수'],['booking','예약'],['order','주문/결제/정산']];
+const ACTION={dashboard:'목표 설정',calendar:'신규 예약',survey:'답사 등록',receipt:'신규 접수',booking:'신규 예약',vendor:'거래처 등록'};
+function render(){
+  const ph=`<div class="ph"><h1>단체 예약 관리</h1></div>
+  <div class="ph"><div class="tabs" role="tablist">${TABS.map(([k,t])=>`<button role="tab" aria-selected="${S.tab===k}" class="${S.tab===k?'on':''}" data-tab="${k}">${t}</button>`).join('')}</div>
+  ${ACTION[S.tab]?`<button class="btn p ml" data-new>+ ${ACTION[S.tab]}</button>`:''}</div>`;
+  const body=S.tab==='booking'?bookingTab():S.tab==='order'?orderTab():S.tab==='survey'?surveyTab():S.tab==='receipt'?receiptTab():S.tab==='vendor'?vendorTab():S.tab==='dashboard'?dashboardTab():S.tab==='calendar'?calendarTab():`<div class="note"><b>다음 단계에서 만들어요</b><br>${TABS.find(t=>t[0]===S.tab)[1]} 탭은 아직 옮기지 않았어요. 지금은 예약 탭만 동작해요.</div>`;
+  const c=document.getElementById('content');const act=document.activeElement,aid=act&&act.id;
+  c.innerHTML=ph+body;
+  const el=aid&&c.querySelector('#'+aid);
+  if(el){el.focus();if(el.type==='text'||el.type==='search'){const n=el.value.length;el.setSelectionRange(n,n)}}
+  renderLayer();
+}
+function renderLayer(){const L=document.getElementById('layer');const db=L.querySelector('.db'),sc=db?db.scrollTop:0;const b=S.books.find(x=>x.id===S.drawer),ob=S.books.find(x=>x.id===S.odrawer),sv=S.surveys.find(x=>x.id===S.sdrawer),rc=S.receipts.find(x=>x.id===S.rdrawer),pa=AGENCIES.find(x=>x.id&&x.id===S.pdrawer);
+  L.innerHTML=ob?oDrawerHTML(ob):b?drawerHTML(b):sv?sDrawerHTML(sv):rc?rDrawerHTML(rc):pa?pDrawerHTML(pa):S.cday?cDrawerHTML(S.cday):'';const nd=L.querySelector('.db');if(nd)nd.scrollTop=sc}
+function renderModal(keepFocus){
+  const L=document.getElementById('modalLayer');
+  if(!S.modal){L.innerHTML='';return}
+  const act=document.activeElement,aid=keepFocus&&act&&act.id;
+  const scroll=L.querySelector('.mwrap')?.scrollTop||0;
+  L.innerHTML=modalHTML();
+  const w=L.querySelector('.mwrap');if(w)w.scrollTop=scroll;
+  if(aid){const el=document.getElementById(aid);if(el)el.focus()}
+}
+const toast=msg=>{const t=document.getElementById('toast');t.textContent=msg;t.hidden=false;clearTimeout(toast.h);toast.h=setTimeout(()=>t.hidden=true,2800)};
+
+/* ---------- 주문 상세 동작 ---------- */
+const NOW='10-08 15:30';
+const ask=(title,text,ok,run,danger)=>{S.modal={kind:'confirm',title,text,ok,run,danger};renderModal()};
+function orderClick(t){
+  const d=t.dataset,b=S.books.find(x=>x.id===(S.modal&&S.modal.bid||S.odrawer));if(!b)return false;
+  if(d.more){S.more[d.more]=(S.more[d.more]||(d.more==='print'?12:10))+20;renderLayer();return true}
+  if(d.act==='history'){toast('처리 이력 기능은 준비 중입니다.');return true}
+  if('cancelall' in d){const used=t.textContent.includes('환불');
+    ask(used?'전체 환불':'예약 취소',used?'전체 환불을 진행하시겠습니까?':'예약을 취소하시겠습니까?',used?'환불':'확인',()=>{ticketsOf(b).forEach(x=>{findTicket(b,x.no).t.refund=x.paid});b.ord.canceled=true;toast(used?'환불 되었습니다.':'예약이 취소되었습니다.')},true);return true}
+  if(d.rowrefund){const x=b.ord.rows[d.rowrefund];ask('전체 환불',`주문번호: ${x.orderId}\n전체 환불을 진행하시겠습니까?`,'환불',()=>{x.tickets.forEach(tk=>tk.refund=tk.paid);toast('환불 되었습니다.')},true);return true}
+  if(d.delorder){if(b.rows.filter(r=>r.prd).length<2){toast('마지막 주문은 삭제할 수 없어요.');return true}
+    ask('주문 삭제','주문을 삭제하시겠습니까?','삭제',()=>{b.rows=b.rows.filter(r=>r.id!=d.delorder);toast('주문이 삭제되었습니다.')},true);return true}
+  if('addorder' in d){S.modal={kind:'addorder',bid:b.id,draft:{agency:b.agency,date:b.date,rows:[mkRow({})]}};renderModal();return true}
+  if('addok' in d){const r=S.modal.draft.rows[0];if(!r.prd){toast('상품을 선택해 주세요.');return true}if(!r.slot){toast('탑승 시간을 선택해 주세요.');return true}if(calc(r,b.agency).drv===0){toast('인원을 넣어 주세요.');return true}{const er=pairErr(calc(r,b.agency));if(er){toast(er);return true}}
+    b.rows.push(r);S.modal=null;renderModal();renderLayer();render();toast('주문이 추가되었습니다.');return true}
+  if('bulkrefund' in d){const nos=[...S.sel].filter(no=>{const f=findTicket(b,no);return f&&f.t.refund<f.t.paid});if(!nos.length){toast('환불 대상을 선택해주세요.');return true}
+    S.modal={kind:'refund',bid:b.id,nos,used:{}};renderModal();return true}
+  if('refundok' in d){const M=S.modal;let total=0;M.nos.forEach(no=>{const f=findTicket(b,no),u=M.used[f.t.kind]||{race:0,gen:0};const amt=Math.max(0,f.t.paid-f.t.refund-num(u.race)*JAM_COST.race-num(u.gen)*JAM_COST.gen);f.t.refund+=amt;total+=amt});
+    if(total<=0){toast('환불 금액을 정확히 입력해주세요.');return true}S.modal=null;S.sel=new Set();renderModal();render();toast('일괄 부분 환불 처리되었습니다.');return true}
+  if(d.tk){if(!S.sel.size){toast('티켓을 선택해 주세요.');return true}
+    const nos=withPartners(b,[...S.sel]).filter(no=>{const f=findTicket(b,no);return f.t.refund<f.t.paid});const fs=nos.map(no=>findTicket(b,no).t);
+    const extra=nos.length-S.sel.size,ex=extra>0?`\n짝 ${extra}장이 함께 처리돼요.`:'';
+    if(d.tk==='print'){const tg=fs.filter(x=>!x.printed);if(!tg.length){toast('이미 발권된 티켓이에요.');return true}
+      ask('발권 처리',`선택된 티켓 ${tg.length}장을 발권 처리하시겠습니까?${ex}`,'발권',()=>{tg.forEach(x=>{x.printed=true;x.printedAt=NOW});S.sel=new Set();toast('발권 처리되었습니다.')})}
+    if(d.tk==='reprint'){const tg=fs.filter(x=>x.printed);if(!tg.length){toast('발권된 티켓만 재발권할 수 있어요.');return true}
+      ask('재발권 처리',`선택된 티켓 ${tg.length}장을 재발권 처리하시겠습니까?\n기존 로봉을 회수하셨습니까?${ex}`,'재발권',()=>{tg.forEach(x=>x.printedAt=NOW);S.sel=new Set();toast('재발권 처리되었습니다.')})}
+    if(d.tk==='cancel'){const tg=fs.filter(x=>x.printed);if(!tg.length){toast('발권된 티켓이 없어요.');return true}
+      ask('발권 취소',`선택된 티켓 ${tg.length}장을 발권 취소하시겠습니까?${ex}`,'발권 취소',()=>{tg.forEach(x=>{x.printed=false;x.printedAt=''});S.sel=new Set();toast('발권 취소 처리 되었습니다.')},true)}
+    return true}
+  if('actual' in d){S.modal={kind:'actual',bid:b.id,pick:new Set(),method:''};renderModal();return true}
+  if('actualok' in d){const M=S.modal;if(!M.pick.size){toast('가결제 주문을 선택해 주세요.');return true}if(!M.method){toast('결제 수단을 선택해 주세요.');return true}
+    M.pick.forEach(id=>{const x=b.ord.rows[id];x.pay='ACTUAL_PAID';x.method=M.method});S.modal=null;renderModal();render();toast('실결제 처리되었습니다.');return true}
+  if('paynow' in d){const P=S.pay;if(P.actual&&!P.method){toast('결제 수단을 선택해 주세요.');return true}
+    const pending=b.rows.filter(r=>r.prd&&!b.ord.rows[r.id]);const before=new Set(ticketsOf(b).map(x=>x.no));
+    pending.forEach(r=>payRow(b,r,{actual:P.actual,method:P.method,withCom:P.withCom}));
+    const fresh=ticketsOf(b).filter(x=>!before.has(x.no));render();
+    ask('결제 완료',`${P.actual?'결제':'가결제'}되었습니다.\n로봉 티켓 ${fresh.length}장을 지금 발권할까요?`,'발권',()=>{fresh.forEach(x=>{const f=findTicket(b,x.no);f.t.printed=true;f.t.printedAt=NOW});toast('발권 처리되었습니다.')});return true}
+  if(d.settle){const to=d.settle;ask(to==='DEFERRED'?'정산 보류':'정산 완료',to==='DEFERRED'?'정산을 보류하시겠습니까?':'정산을 완료하시겠습니까?','확인',()=>{b.ord.settle=to;toast(to==='DEFERRED'?'정산이 보류되었습니다.':'정산이 완료되었습니다.')});return true}
+  if('tax' in d){const s=ordState(b);if(s.unpaid||s.temp>0||!['TICKET_PENDING','TICKET_PRINTED','USE_COMPLETED'].includes(s.os)){toast('결제가 모두 끝난 뒤에 발행을 요청할 수 있어요.');return true}
+    ask('세금계산서 발행','세금계산서 발행을 요청하시겠습니까?','발행 요청',()=>{b.ord.tax=true;toast('세금계산서 발행이 요청되었습니다.')});return true}
+  return false;
+}
+document.getElementById('layer').addEventListener('change',e=>{
+  const t=e.target,b=S.books.find(x=>x.id===S.odrawer);if(!b)return;
+  if(t.dataset.sel){const nos=withPartners(b,[t.dataset.sel]);nos.forEach(no=>t.checked?S.sel.add(no):S.sel.delete(no))}
+  else if(t.dataset.selrow){b.ord.rows[t.dataset.selrow].tickets.forEach(x=>t.checked?S.sel.add(x.no):S.sel.delete(x.no))}
+  else if(t.id==='p-actual')S.pay.actual=t.checked;
+  else if(t.id==='p-method')S.pay.method=t.value;
+  else if(t.name==='wc')S.pay.withCom=t.value==='1';
+  else return;
+  renderLayer();
+});
+
+/* ---------- 이벤트 ---------- */
+document.getElementById('content').addEventListener('input',e=>{
+  const id=e.target.id;if(id&&id.startsWith('of-')){S.of[id.slice(3)]=e.target.value;render();return}if(id&&id.startsWith('sf-')){S.sf[id.slice(3)]=e.target.value;render();return}if(id&&id.startsWith('rf-')){S.rf[id.slice(3)]=e.target.value;render();return}if(id&&id.startsWith('pf-')){S.pf[id.slice(3)]=e.target.value;render();return}if(id&&id.startsWith('cf-')){S.cf[id.slice(3)]=e.target.value;render();return}if(!id||!id.startsWith('f-'))return;S.f[id.slice(2)]=e.target.value;render();
+});
+document.addEventListener('click',e=>{
+  const t=e.target.closest('button,[data-close],[data-open],[data-oopen],[data-sopen],[data-ropen],[data-popen],[data-cday],[data-cbook],[data-mclose]');if(!t)return;
+  if(t.dataset.tab){S.tab=t.dataset.tab;render();return}
+  if(t.dataset.act==='reset'){S.f={q:'',status:'',agency:'',type:'',region:'',from:'',to:''};render();return}
+  if(t.dataset.act==='csv'){toast('CSV 다운로드는 시안에서 동작하지 않아요. 날짜를 선택해야 내려받을 수 있어요.');return}
+  if('new' in t.dataset){if(S.tab==='dashboard'){S.modal={kind:'goal',mode:'direct',tp:'',ta:'',draft:JSON.parse(JSON.stringify(S.goals))};renderModal()}else if(S.tab==='vendor'){S.modal={kind:'pform',draft:{id:null,name:'',type:'',status:'ACTIVE',region:'',address:'',method:'PERCENT',value:'',businessNo:'',representative:'',contacts:[{name:'',phone:'',email:''}],products:[],files:{reg:false,card:false,bank:false},memo:''}};renderModal()}else if(S.tab==='booking'||S.tab==='calendar'){S.modal={kind:'form',draft:blankDraft()};renderModal()}else if(S.tab==='survey'){S.modal={kind:'sform',draft:{id:null,date:'',time:'',groupName:'',type:'',visitor:'',phone:'',region:'',country:'',agency:0,staff:'',processed:'',memo:''}};renderModal()}else if(S.tab==='receipt'){S.modal={kind:'rform',draft:{id:null,date:'',time:'',groupName:'',type:'',contact:'',phone:'',region:'',country:'',status:'PENDING',headcount:'',agency:0,staff:'예약팀 담당자',confirmStaff:'',processDate:'',processStatus:'PENDING',inquiry:'',memo:''}};renderModal()}else toast('이 탭은 다음 단계에서 만들어요.');return}
+  if(t.dataset.order){e.stopPropagation();const b=S.books.find(x=>x.id==t.dataset.order);
+    S.modal={kind:'confirm',title:'주문생성',text:`${b.groupName} 예약에 대한 주문을 생성하시겠습니까?`,ok:'생성',run:()=>{b.status='COMPLETED';initOrd(b);toast('주문이 생성되었습니다.')}};renderModal();return}
+  if(t.dataset.edit){const b=S.books.find(x=>x.id==t.dataset.edit);S.modal={kind:'form',draft:cloneBook(b)};renderModal();return}
+  if(t.dataset.delete){const b=S.books.find(x=>x.id==t.dataset.delete);
+    S.modal={kind:'confirm',danger:true,title:'예약 삭제',text:`${b.groupName} 예약을 삭제하시겠습니까?\n삭제 후 복구할 수 없습니다.`,ok:'삭제',run:()=>{S.books=S.books.filter(x=>x!==b);S.drawer=null;toast('예약이 삭제되었습니다.')}};renderModal();return}
+  if(t.dataset.close==='drawer'){S.drawer=null;renderLayer();return}
+  if(t.dataset.close==='odrawer'){S.odrawer=null;renderLayer();return}
+  if(t.dataset.oopen){S.odrawer=+t.dataset.oopen;S.sel=new Set();S.more={};S.pay={actual:true,method:'',withCom:true};renderLayer();return}
+  if(t.dataset.cmove){const [y,m]=S.cm.split('-').map(Number);const d=new Date(y,m-1+(+t.dataset.cmove),1);S.cm=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;render();return}
+  if(t.dataset.cday){S.cday=t.dataset.cday;renderLayer();return}
+  if(t.dataset.close==='cday'){S.cday=null;renderLayer();return}
+  if(t.dataset.cbook){const b=S.books.find(x=>x.id==t.dataset.cbook);S.cday=null;if(b.ord){S.odrawer=b.id;S.sel=new Set();S.more={};S.pay={actual:true,method:'',withCom:true}}else S.drawer=b.id;renderLayer();return}
+  if(dClick(t))return;
+  if(pClick(t))return;
+  if(svClick(t))return;
+  if(orderClick(t))return;
+  if(t.dataset.open&&!e.target.closest('button')){S.drawer=+t.dataset.open;renderLayer();return}
+  if('mclose' in t.dataset){S.modal=null;renderModal();return}
+  if('mok' in t.dataset){const run=S.modal.run;S.modal=null;run();renderModal();render();return}
+  if('addrow' in t.dataset){S.modal.draft.rows.push(mkRow({}));renderModal();document.getElementById('prd-'+rowSeq)?.focus();return}
+  if(t.dataset.delrow){const d=S.modal.draft;d.rows=d.rows.filter(r=>r.id!=t.dataset.delrow);renderModal();return}
+  if(t.dataset.tg){const r=S.modal.draft.rows.find(x=>x.id==t.dataset.tg);r.open=!r.open;renderModal();return}
+  if('msave' in t.dataset){save();return}
+});
+document.getElementById('modalLayer').addEventListener('input',e=>{
+  const t0=e.target;
+  if(S.modal&&S.modal.kind==='refund'&&t0.dataset.used){const [kd,jk]=t0.dataset.used.split('.');S.modal.used[kd][jk]=t0.value;renderModal(true);return}
+  if(S.modal&&S.modal.kind==='actual'){if(t0.id==='am')S.modal.method=t0.value;if(t0.dataset.pick){const id=+t0.dataset.pick;S.modal.pick.has(id)?S.modal.pick.delete(id):S.modal.pick.add(id);renderModal()}return}
+  if(!S.modal||!['form','addorder','r2b','sform','rform','s2r'].includes(S.modal.kind))return;const d=S.modal.draft,t=e.target;
+  if(t.dataset.d){d[t.dataset.d]=t.dataset.d==='agency'?+t.value:t.value;if(t.dataset.d==='region'&&t.value!=='국외')d.country='';
+    if(['date','agency','region'].includes(t.dataset.d))renderModal(true);return}
+  const rowEl=t.closest('[data-row]');if(!rowEl)return;const r=d.rows.find(x=>x.id==rowEl.dataset.row);
+  if(t.dataset.f){r[t.dataset.f]=t.value;if(t.dataset.f==='prd'){r.slot='';r.n2='';r.n3='';r.cust={bd:null,bc:null,od:null,oc:null,depAll:null}}
+    if(t.dataset.f!=='memo')renderModal(true);return}
+  if(t.dataset.c){const x=parseFloat(t.value);r.cust[t.dataset.c]=t.value===''||isNaN(x)?null:Math.max(0,x);if(t.dataset.c==='depAll')renderModal(true)}
+});
+document.getElementById('modalLayer').addEventListener('change',e=>{if(e.target.dataset.c&&e.target.dataset.c!=='depAll')renderModal()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){if(S.modal){S.modal=S.modal.kind==='pprod'?S.modal.parent:null;renderModal()}else if(S.drawer||S.odrawer||S.sdrawer||S.rdrawer||S.pdrawer||S.cday){S.drawer=S.odrawer=S.sdrawer=S.rdrawer=S.pdrawer=S.cday=null;renderLayer()}}});
+function save(){
+  const d=S.modal.draft;
+  if(!d.date)return toast('이용예정일을 선택해 주세요.');
+  if(!d.time)return toast('이용시간을 선택해 주세요.');
+  if(!d.groupName.trim())return toast('단체명을 입력해 주세요.');
+  if(d.region==='국외'&&!d.country)return toast('국가를 선택해 주세요.');
+  if(!d.reserver.trim())return toast('단체 담당자명을 입력해 주세요.');
+  if(!d.rows.some(r=>r.prd))return toast('상품을 1개 이상 선택해 주세요.');
+  if(d.rows.some(r=>r.prd&&calc(r,d.agency).drv===0))return toast('모든 상품의 인원을 넣어 주세요.');
+  {const i=d.rows.findIndex(r=>r.prd&&pairErr(calc(r,d.agency)));if(i>=0)return toast(`상품 ${i+1}: ${pairErr(calc(d.rows[i],d.agency))}`)}
+  if(d.rows.some(r=>r.prd&&!r.slot))return toast('모든 상품의 탑승 시간을 선택해 주세요.');
+  d.rows=d.rows.filter(r=>r.prd);
+  if(d.id){const i=S.books.findIndex(x=>x.id===d.id);d.modNm='예약팀 담당자';d.modDt=TODAY+' 15:30';S.books[i]=d;toast('예약이 수정되었습니다.')}
+  else{const nb=mkBook({...d,rows:[]});nb.rows=d.rows;nb.regDt=TODAY+' 15:30';S.books.push(nb);toast('예약이 등록되었습니다.')}
+  S.modal=null;renderModal();render();
+}
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.getAttribute&&e.target.getAttribute('role')==='button')e.target.click()});
+render();
+</script>

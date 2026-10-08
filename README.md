@@ -9,6 +9,7 @@
 | 백오피스 · 판매 관리 | https://jungsunyou.github.io/icn-prototype/backoffice/ |
 | 결제 UI/UX 명세 | https://jungsunyou.github.io/icn-prototype/payment-ui-spec.html |
 | 복합결제 코드·영수증 | https://jungsunyou.github.io/icn-prototype/composite-receipt.html |
+| 단체 예약 관리 | https://jungsunyou.github.io/icn-prototype/group/ |
 
 루트 주소(https://jungsunyou.github.io/icn-prototype/)로 들어오면 백오피스로 바로 이동해요.
 
@@ -35,6 +36,18 @@
 | `pricing.html` | 가격 정책 관리 | 상품별 기준가, 시즌, 가격 캘린더, 채널, 계산 규칙 |
 | `stock.html` | 재고 관리 | 액티비티별 시간대 재고, 한정 판매 |
 | `promo.html` | 프로모션 관리 | 프로모션(일반/신분/교환), 쿠폰 발급, 쿠폰 조회 |
+
+### 단체 예약 관리 — `group/`
+
+제주 운영시스템(OS)에 구현된 단체 예약 관리 화면을 실제 코드 기준으로 옮기고, 인천에서 달라지는 부분을 반영한 시안이에요. 탭 7개(대시보드, 캘린더, 거래처 관리, 답사, 접수, 예약, 주문/결제/정산)가 모두 동작해요.
+
+| 인천에서 바뀐 곳 | 내용 |
+| --- | --- |
+| 레이스 인원 입력 | 운전자, 주니어 운전자, 동승자 수를 나눠 넣어요. 동승자는 운전자 수까지, 주니어 운전자는 동승자와 함께만 넣을 수 있어요. |
+| 발권 | 로봉(NFC) 1인 1티켓이에요. 운전자와 동승자는 짝으로 함께 발권·취소돼요. 레이서 분리·병합은 없어요. |
+| 부분 환불 | 결제 금액에서 이용한 JAM 원가를 빼고 환불해요. |
+| 거래처 수수료 | 제주와 같이 기본 수수료와 단체 상품별 개별 수수료를 둬요. 동승자는 레이스 포함 패키지 수수료를 따라요. |
+| 대시보드 | 인천은 첫해라 전년 비교가 없어요. 정해지지 않은 지표는 보라색으로 남겨 두었어요. |
 
 ### 결제 UI/UX 명세 — `payment-ui-spec.html`
 
