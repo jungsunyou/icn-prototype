@@ -214,7 +214,7 @@ const dow=d=>'일월화수목금토'[new Date(d+'T00:00:00').getDay()];
 const chip=(t,c)=>`<span class="chip" style="color:${c}">${t}</span>`;
 
 let rowSeq=0;
-const mkRow=p=>({id:++rowSeq,prd:p.prd||'',slot:p.slot||'',n1:p.n1??'',n2:p.n2??'',n3:p.n3??'',open:false,cust:{bd:null,bc:null,od:null,oc:null,depAll:null},memo:p.memo||''});
+const mkRow=p=>({id:++rowSeq,prd:p.prd||'',slot:p.slot||'',n1:p.n1??'',n2:p.n2??'',n3:p.n3??'',cust:{depAll:null,depUnit:null,comUnit:null},memo:p.memo||''});
 let bookSeq=1040;
 const mkBook=p=>({id:++bookSeq,date:p.date,time:p.time,groupName:p.groupName,type:p.type,region:p.region||'인천',country:'',status:p.status,reserver:p.reserver,phone:p.phone,leader:p.leader||'',leaderPhone:p.leaderPhone||'',agency:p.agency||0,staff:p.staff||'예약팀 담당자',memo:p.memo||'',rows:p.rows.map(mkRow),regNm:'예약팀 담당자',regDt:p.regDt||'2026-09-24 14:12',modNm:p.modNm||'',modDt:p.modDt||''});
 const S={
@@ -243,9 +243,10 @@ function calc(r,agencyId){
   const p=PRODUCTS[r.prd],race=r.prd==='race';
   const n1=num(r.n1),n2=race?num(r.n2):0,n3=race?num(r.n3):0,drv=n1+n2,pas=n3;
   if(!p)return{race,drv,pas,n1,n2,n3,lines:[],pay:0,dep:0,com:0};
-  const c=r.cust,bc=c.bc??commUnit(agencyId,r.prd,p.base),bd=c.bd??Math.max(p.base-bc,0);
-  const lines=[{k:'b',name:race?'운전자 (주니어 포함)':'이용자',q:drv,price:p.base,d:bd,c:bc}];
-  if(race){const oc=c.oc??commUnit(agencyId,'opt',p.opt),od=c.od??Math.max(p.opt-oc,0);lines.push({k:'o',name:'동승자 옵션',q:pas,price:p.opt,d:od,c:oc})}
+  /* 제주와 같은 우선순위: 입금 = 커스텀 입금 금액 > 커스텀 입금 단가×수량 > (단가-수수료 단가)×수량, 수수료 = 커스텀 수수료 단가×수량 > 거래처 수수료×수량 */
+  const c=r.cust||{},mk=(k,name,q,price,key)=>{const dc=commUnit(agencyId,key,price),cc=c.comUnit??dc,dd=c.depUnit??Math.max(price-cc,0);return{k,name,q,price,dc,d:dd,c:cc}};
+  const lines=[mk('b',race?'운전자 (주니어 포함)':'이용자',drv,p.base,r.prd)];
+  if(race)lines.push(mk('o','동승자 옵션',pas,p.opt,'opt'));
   let dep=lines.reduce((s,l)=>s+l.d*l.q,0);const com=lines.reduce((s,l)=>s+l.c*l.q,0);
   if(c.depAll!=null)dep=c.depAll;
   return{race,drv,pas,n1,n2,n3,lines,dep,com,pay:dep+com};
@@ -310,6 +311,7 @@ function bookingTab(){
       <li>수량 칸에 인원과 함께 차감될 레이스 차량 대수를 보여줘요.</li>
       <li>레이스 상품은 운전자, 주니어 운전자, 동승자 수를 나눠 넣어요. 동승자는 운전자(주니어 포함) 수까지만, 주니어 운전자는 동승자가 있어야 넣을 수 있어요.</li>
       <li>"견적 진행" 카드는 제주에서 실제로는 전체 건수를 보여주고 있어요. 인천에서는 무엇을 셀지 정해야 해요.</li>
+      <li>커스텀 입금 금액·입금 단가·수수료 단가는 제주와 같아요. 단가는 한 상품 행의 모든 인원(운전자, 주니어 운전자, 동승자)에 똑같이 적용돼요.</li>
       <li>상품 가격(64,000원, 동승 40,000원)과 거래처, 예약 데이터는 모두 예시예요.</li>
     </ul></div>`;
 }
@@ -364,18 +366,16 @@ function rowHTML(d,r,i){
     if(st&&k.drv>st[0])m.push(['warn',`이 시간대 남은 차량은 ${st[0]}대예요. 저장은 되지만 재고보다 많이 팔게 돼요.`]);
     if(st&&k.pas>st[1])m.push(['warn',`이 시간대 2인승 차량이 ${k.pas-st[1]}대 모자라요. 저장은 되지만 배차를 확인해 주세요.`]);
   }
-  const cell=(l,f)=>{const key=l.k+(f==='d'?'d':'c');return `<input type="number" step="100" min="0" data-c="${key}" aria-label="${l.name} ${f==='d'?'입금 단가':'수수료 단가'}" class="${r.cust[key]!=null?'on':''}" value="${Math.round(l[f])}">`};
-  const adj=!r.prd?'':`<div class="adj"><div class="adjh"><span>금액 조정</span><small>선택 · 바꾼 칸은 파란색</small><button type="button" class="tg" data-tg="${r.id}" aria-expanded="${r.open}">${r.open?'닫기':'열기'}</button></div>
-    ${r.open?`<div class="tw"><table class="amt"><thead><tr><th>구성</th><th>수량</th><th>결제 단가</th><th>입금 단가</th><th>수수료 단가</th><th>결제가</th></tr></thead><tbody>
-    ${k.lines.map(l=>`<tr><td>${l.name}</td><td>${l.q}</td><td>${won(l.price)}</td><td>${cell(l,'d')}</td><td>${cell(l,'c')}</td><td>${won((l.d+l.c)*l.q)}</td></tr>`).join('')}</tbody></table></div>
-    <div><label class="lab" for="dep-${r.id}">입금 금액 직접 입력</label><input id="dep-${r.id}" data-c="depAll" type="number" min="0" step="1000" placeholder="금액 입력" value="${r.cust.depAll??''}" style="max-width:240px"><div class="sm">넣으면 단가 계산보다 이 금액이 먼저 적용돼요</div></div>`:''}</div>`;
+  const dflt=!r.prd||!d.agency?'-':k.race?`운전자 ${won(k.lines[0].dc)} · 동승 ${won(k.lines[1].dc)}`:won(k.lines[0].dc);
+  const cf=(key,label,ph)=>`<div><label class="lab" for="${key}-${r.id}">${label}</label><input id="${key}-${r.id}" data-c="${key}" type="number" min="0" step="100" placeholder="${ph}" value="${r.cust[key]??''}"></div>`;
+  const adj=!r.prd?'':`<div class="cnt">${cf('depAll','커스텀 입금 금액 (선택)','금액 입력')}${cf('depUnit','커스텀 입금 단가 X 수량 (선택)','단가 입력')}${cf('comUnit','커스텀 수수료 단가 X 수량 (선택)','단가 입력')}</div>`;
   return `<div class="pr" data-row="${r.id}"><div class="prh"><b>상품 ${i+1}</b>${d.rows.length>1?`<button type="button" class="del" data-delrow="${r.id}">삭제</button>`:''}</div>
-    <div class="grid2" style="grid-template-columns:minmax(0,1.6fr) minmax(0,1fr)">
-      <div><label class="lab" for="prd-${r.id}">상품<span class="req">*</span></label><select id="prd-${r.id}" data-f="prd">${prdOpts}</select></div>
-      <div><label class="lab" for="slot-${r.id}">탑승 시간<span class="req">*</span></label><select id="slot-${r.id}" data-f="slot" ${r.prd&&d.date?'':'disabled'}>${slotOpts}</select><div class="sm">${stockTxt}</div></div></div>
+    <div><label class="lab" for="prd-${r.id}">상품<span class="req">*</span></label><select id="prd-${r.id}" data-f="prd">${prdOpts}</select></div>
+    <div class="cnt"><div><label class="lab" for="slot-${r.id}">탑승 시간<span class="req">*</span></label><select id="slot-${r.id}" data-f="slot" ${r.prd&&d.date?'':'disabled'}>${slotOpts}</select><div class="sm">${stockTxt}</div></div>
+      <div style="grid-column:span 2"><span class="lab">기본 수수료 단가</span><div style="height:38px;display:flex;align-items:center;font-size:13px" class="num">${dflt}</div></div></div>
     ${counts}${m.length?`<div class="msgs">${m.map(x=>`<div class="msg ${x[0]}">${x[1]}</div>`).join('')}</div>`:''}${adj}
     <div><label class="lab" for="rm-${r.id}">메모 (선택)</label><input id="rm-${r.id}" data-f="memo" placeholder="메모 입력" value="${esc(r.memo)}"></div>
-    <div class="rowsum"><span>결제가 <b>${won(k.pay)}</b></span><span>입금가 <b>${won(k.dep)}</b></span><span>수수료 <b>${won(k.com)}</b></span></div></div>`;
+    <div class="rowsum" style="background:var(--surface-2);border-radius:var(--r);padding:8px 12px"><span>결제가: <b style="color:var(--primary)">${won(k.pay)}</b></span><span>입금가: <b style="color:var(--primary)">${won(k.dep)}</b></span><span>수수료: <b style="color:var(--primary)">${won(k.com)}</b></span></div></div>`;
 }
 function modalHTML(){
   const M=S.modal;
@@ -1065,7 +1065,6 @@ document.addEventListener('click',e=>{
   if('mok' in t.dataset){const run=S.modal.run;S.modal=null;run();renderModal();render();return}
   if('addrow' in t.dataset){S.modal.draft.rows.push(mkRow({}));renderModal();document.getElementById('prd-'+rowSeq)?.focus();return}
   if(t.dataset.delrow){const d=S.modal.draft;d.rows=d.rows.filter(r=>r.id!=t.dataset.delrow);renderModal();return}
-  if(t.dataset.tg){const r=S.modal.draft.rows.find(x=>x.id==t.dataset.tg);r.open=!r.open;renderModal();return}
   if('msave' in t.dataset){save();return}
 });
 document.getElementById('modalLayer').addEventListener('input',e=>{
@@ -1076,9 +1075,9 @@ document.getElementById('modalLayer').addEventListener('input',e=>{
   if(t.dataset.d){d[t.dataset.d]=t.dataset.d==='agency'?+t.value:t.value;if(t.dataset.d==='region'&&t.value!=='국외')d.country='';
     if(['date','agency','region'].includes(t.dataset.d))renderModal(true);return}
   const rowEl=t.closest('[data-row]');if(!rowEl)return;const r=d.rows.find(x=>x.id==rowEl.dataset.row);
-  if(t.dataset.f){r[t.dataset.f]=t.value;if(t.dataset.f==='prd'){r.slot='';r.n2='';r.n3='';r.cust={bd:null,bc:null,od:null,oc:null,depAll:null}}
+  if(t.dataset.f){r[t.dataset.f]=t.value;if(t.dataset.f==='prd'){r.slot='';r.n2='';r.n3='';r.cust={depAll:null,depUnit:null,comUnit:null}}
     if(t.dataset.f!=='memo')renderModal(true);return}
-  if(t.dataset.c){const x=parseFloat(t.value);r.cust[t.dataset.c]=t.value===''||isNaN(x)?null:Math.max(0,x);if(t.dataset.c==='depAll')renderModal(true)}
+  if(t.dataset.c){const x=parseFloat(t.value);r.cust[t.dataset.c]=t.value===''||isNaN(x)?null:Math.max(0,x);renderModal(true)}
 });
 document.getElementById('modalLayer').addEventListener('change',e=>{if(e.target.dataset.c&&e.target.dataset.c!=='depAll')renderModal()});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){if(S.modal){S.modal=S.modal.kind==='pprod'?S.modal.parent:null;renderModal()}else if(S.drawer||S.odrawer||S.sdrawer||S.rdrawer||S.pdrawer||S.cday){S.drawer=S.odrawer=S.sdrawer=S.rdrawer=S.pdrawer=S.cday=null;renderLayer()}}});
