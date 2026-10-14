@@ -245,13 +245,14 @@
       <p class="sl">판매 조건</p>
       <div class="fld"><div class="fl">노출 기간</div><div class="dtrow"><input class="ipt" type="date" value="2026-11-01"><input class="ipt" type="time" value="00:00" style="max-width:110px"><span class="t">~</span><input class="ipt" type="date" value="2027-10-31"><input class="ipt" type="time" value="23:59" style="max-width:110px"></div></div>
       <div class="fld"><div class="fl">판매 기간 (이용일)</div><div class="dtrow"><input class="ipt" type="date" value="2026-11-01"><span class="t">~</span><input class="ipt" type="date" value="2027-10-31"></div></div>
-      <div class="fld"><div class="fl">판매 채널</div><div class="chlist"><div class="chrow"><span>앱</span><button type="button" class="chsw on" onclick="this.classList.toggle('on');this.nextElementSibling.textContent=this.classList.contains('on')?'활성':'비활성'" aria-label="앱 활성"></button><span class="chst">활성</span></div><div class="chrow"><span>키오스크</span><button type="button" class="chsw on" onclick="this.classList.toggle('on');this.nextElementSibling.textContent=this.classList.contains('on')?'활성':'비활성'" aria-label="키오스크 활성"></button><span class="chst">활성</span></div><div class="chrow"><span>마이리얼트립</span><button type="button" class="chsw on" onclick="this.classList.toggle('on');this.nextElementSibling.textContent=this.classList.contains('on')?'활성':'비활성'" aria-label="마이리얼트립 활성"></button><span class="chst">활성</span></div><div class="chrow"><span>클룩</span><button type="button" class="chsw" onclick="this.classList.toggle('on');this.nextElementSibling.textContent=this.classList.contains('on')?'활성':'비활성'" aria-label="클룩 활성"></button><span class="chst">비활성</span></div></div></div>
+      <div class="fld"><div class="fl">판매 채널</div><div class="chlist"><div class="chrow"><span>앱</span><button type="button" class="chsw on" onclick="this.classList.toggle('on');this.nextElementSibling.textContent=this.classList.contains('on')?'활성':'비활성'" aria-label="앱 활성"></button><span class="chst">활성</span></div><div class="chrow"><span>키오스크</span><button type="button" class="chsw on" onclick="this.classList.toggle('on');this.nextElementSibling.textContent=this.classList.contains('on')?'활성':'비활성'" aria-label="키오스크 활성"></button><span class="chst">활성</span></div><div class="chrow"><span>마이리얼트립</span><button type="button" class="chsw on" onclick="this.classList.toggle('on');this.nextElementSibling.textContent=this.classList.contains('on')?'활성':'비활성'" aria-label="마이리얼트립 활성"></button><span class="chst">활성</span></div><div class="chrow"><span>클룩</span><button type="button" class="chsw" onclick="this.classList.toggle('on');this.nextElementSibling.textContent=this.classList.contains('on')?'활성':'비활성'" aria-label="클룩 활성"></button><span class="chst">비활성</span></div><div class="chrow"><span>네이버</span><button type="button" class="chsw on" onclick="this.classList.toggle('on');this.nextElementSibling.textContent=this.classList.contains('on')?'활성':'비활성'" aria-label="네이버 활성"></button><span class="chst">활성</span></div></div></div>
       <div class="fld"><div class="fl">OTA 연동 코드 <span class="ver">외부 매핑</span></div>
         <div class="tblwrap"><table class="subtbl">
           <thead><tr><th>외부 채널</th><th>외부 채널 코드</th><th>외부 상품 ID</th><th></th></tr></thead>
           <tbody id="otaBody">
             <tr><td>마이리얼트립</td><td class="code">MRT</td><td class="code">race_full_01</td><td><button class="mini" onclick="this.closest('tr').remove()">제거</button></td></tr>
             <tr><td>클룩</td><td class="code">KLK</td><td class="code">981-RACE-01</td><td><button class="mini" onclick="this.closest('tr').remove()">제거</button></td></tr>
+            <tr><td>네이버</td><td class="code">NAVER</td><td class="code">981-icn-race</td><td><button class="mini" onclick="this.closest('tr').remove()">제거</button></td></tr>
           </tbody>
         </table></div>
         <div class="rowbtns"><button class="btn ghost sm" onclick="addOta()">+ 외부 상품 매핑</button><span class="ver" style="margin-left:8px">같은 외부 상품을 여러 ICN 상품에 중복 연결 금지</span></div>
@@ -292,7 +293,7 @@
         <li><b>판매 기간</b>은 고객이 고를 수 있는 <b>이용일 범위(날짜)</b>예요. 판매를 여는 시각은 노출 기간으로 정해요.</li>
         <li><b>판매 채널</b>은 채널마다 활성/비활성으로 켜고 꺼요. 저장하면 바로 판매에 반영돼요. 채널마다 따로 팔고 싶으면 상품을 나누지 말고 채널별로 켜고 꺼요. 구성이 다를 때만 상품을 따로 만들어요.</li>
         <li style="color:var(--note)"><b>정하는 중</b> · 보여주기만 하고 판매는 막는 경우가 필요하면 채널마다 노출·판매를 따로 나눠요</li>
-        <li>OTA(마이리얼트립·클룩) 전용 노출 정보는 이번 범위에서 빠졌어요. 노출·이미지는 앱과 키오스크가 함께 써요.</li>
+        <li>네이버는 제주와 같은 방식으로 운영해요. 외부 채널(마이리얼트립·클룩·네이버) 전용 노출 정보는 이번 범위에서 빠졌어요. 노출·이미지는 앱과 키오스크가 함께 써요.</li>
         <li>노출명·설명·이미지는 <b>한국어 / 영어 / 중국어</b>를 각각 넣어요. 언어 탭 옆 점이 파란색이면 그 언어 노출명을 입력한 거예요.</li>
         <li>한 상품을 <b>여러 카테고리</b>에 넣을 수 있어요. 이미지는 종류(아이콘·뱃지 등)마다 여러 장 올릴 수 있어요.</li>
         <li style="color:var(--note)"><b>정하는 중</b> · 영어·중국어를 꼭 넣어야 하는지, 비어 있으면 한국어로 대신 보여줄지 · 이미지를 언어마다 따로 받을지, 공통 이미지에 언어별 예외만 둘지</li>
@@ -324,7 +325,7 @@ var CATS=['레이스','실내 액티비티','이용권'];
 var IMG_TYPES=['아이콘','뱃지','썸네일','태그','콘텐츠'];
 var PSU_LIB=[
   {code:'RACE-DRV',name:'레이스 운전',jt:'레이스 JAM',ver:3,cost:25000},
-  {code:'RACE-JR',name:'주니어 운전',jt:'레이스 JAM',ver:1,cost:18000},
+  {code:'RACE-JR',name:'주니어 운전',jt:'레이스 JAM',ver:1,cost:25000},
   {code:'MST-RACE',name:'마스터 레이스',jt:'마스터 레이스 JAM',ver:1,cost:20000},
   {code:'ARENA',name:'아레나',jt:'일반 JAM',ver:2,cost:12000},
   {code:'VECTO',name:'벡토',jt:'일반 JAM',ver:1,cost:12000},
@@ -339,7 +340,7 @@ var PRODUCTS=[
    psus:[{code:'ARENA',qty:1},{code:'VECTO',qty:1}]},
   {code:'ICN-ADD-RACE1',name:'레이스 JAM 1개권',type:'추가구매',cats:['레이스'],price:'25,000',ver:1,by:'옵집사',cr:'2026-10-08',up:'2026-10-08 09:30',st:'on',
    psus:[{code:'RACE-DRV',qty:1}]},
-  {code:'ICN-ADD-JR',name:'주니어 레이스',type:'추가구매',cats:['레이스'],price:'18,000',ver:1,by:'정산이',cr:'2026-10-10',up:'2026-10-10 10:00',st:'on',
+  {code:'ICN-ADD-JR',name:'주니어 레이스',type:'추가구매',cats:['레이스'],price:'25,000',ver:1,by:'정산이',cr:'2026-10-10',up:'2026-10-10 10:00',st:'on',
    psus:[{code:'RACE-JR',qty:1}]},
   {code:'ICN-ADD-VISION3',name:'비전 3회권',type:'추가구매',cats:['이용권'],price:'9,000',ver:1,by:'파수꾼',cr:'2026-10-12',up:'2026-10-12 15:40',st:'on',
    psus:[{code:'VISION-3',qty:1}]},
@@ -465,7 +466,7 @@ function addPicked(){
 /* ===== OTA 연동 코드 ===== */
 function addOta(){
   var b=document.getElementById('otaBody'), tr=document.createElement('tr');
-  tr.innerHTML='<td><select class="sel" style="width:auto"><option>마이리얼트립</option><option>클룩</option></select></td>'+
+  tr.innerHTML='<td><select class="sel" style="width:auto"><option>마이리얼트립</option><option>클룩</option><option>네이버</option></select></td>'+
     '<td><input class="ipt code" placeholder="채널 코드" style="max-width:120px"></td>'+
     '<td><input class="ipt code" placeholder="외부 상품 ID" style="max-width:160px"></td>'+
     '<td><button class="mini" onclick="this.closest(\'tr\').remove()">제거</button></td>';
