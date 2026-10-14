@@ -73,7 +73,7 @@
 
   .mtabs{display:none}
   @media(max-width:860px){
-    .layout{grid-template-columns:1fr;grid-template-rows:auto auto 1fr}
+    .layout{grid-template-columns:1fr;grid-template-rows:auto minmax(0,1fr)}
     .side{display:none}
     .topbar .sys{font-size:13.5px}.topbar .tsearch{display:none}
     .mtabs{display:flex;gap:6px;overflow:auto;padding:9px 12px;background:var(--surface);border-bottom:1px solid var(--line)}
@@ -141,5 +141,6 @@
   document.querySelectorAll('#nav a, #mtabs a').forEach(function(a){a.addEventListener('click',function(e){e.preventDefault();select(a.dataset.id);});});
   var start=(location.hash||'').replace('#','');
   select(items.some(function(x){return x.id===start})?start:'psu');
+  window.addEventListener('hashchange',function(){var h=location.hash.replace('#','');if(items.some(function(x){return x.id===h}))select(h);});
 })();
 </script>
