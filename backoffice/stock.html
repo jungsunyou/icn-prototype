@@ -103,9 +103,118 @@
   .guide li b{font-family:var(--font-display);color:var(--note)}
   .guide .gnote{margin:12px 0 0;padding-top:10px;border-top:1px dashed var(--note);font-size:12px;color:var(--muted)}
 </style>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,400,0..1,0&display=swap">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<style id="ds">
+/* ===== 9.81 PARK Admin 디자인 시스템(DESIGN.md) 적용 레이어 · 라이트 모드 전용 ===== */
+:root,:root[data-theme]{
+  --bg:#FAFAFA !important; --surface:#FFFFFF !important; --surface-2:#FAFAFA !important; --field:#FFFFFF !important;
+  --fg:#212529 !important; --muted:#878A99 !important; --line:#EBEBEB !important; --line-2:#EFEFEF !important;
+  --accent:#245EC3 !important; --accent-soft:rgba(36,94,195,.10) !important;
+  --on:#008000 !important; --off:#C8C8C8 !important; --wire:#C8C8C8 !important;
+  --font-display:"Pretendard",-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Noto Sans KR",sans-serif !important;
+  --font-body:"Pretendard",-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Noto Sans KR",sans-serif !important;
+  --mono:"JetBrains Mono","Pretendard",ui-monospace,monospace !important;
+  color-scheme:light !important;
+}
+body{background:#FAFAFA !important;color:#212529;font-size:13.5px}
+.material-symbols-outlined{font-family:"Material Symbols Outlined";font-weight:400;font-style:normal;font-size:18px;line-height:1;display:inline-block;vertical-align:-4px;font-variation-settings:"FILL" 0,"wght" 400;color:#878A99}
+
+/* 페이지 헤더 */
+.app{max-width:none !important;padding:18px 24px 48px !important}
+.crumb{font-size:10.5px !important;color:#878A99 !important}
+.crumb b{color:#878A99 !important;font-weight:400 !important}
+.toolbar h1{font-size:16.5px !important;font-weight:600 !important;letter-spacing:0}
+
+/* 버튼 */
+.btn{height:34px;padding:0 18px !important;border-radius:8px !important;font-size:13.5px !important;font-weight:500 !important;border:.7px solid #878A99 !important;color:#878A99 !important;background:transparent !important;box-shadow:none !important}
+.btn.pri{background:#245EC3 !important;border-color:#245EC3 !important;color:#FFFFFF !important}
+.btn.sm{height:28px;padding:0 12px !important;border-radius:6px !important;font-size:12px !important}
+.btn.keptbtn{border-color:var(--note) !important;color:var(--note) !important}
+.mini{font-family:var(--font-body)}
+
+/* 입력 */
+.ipt,.sel,.capedit{min-height:34px;border:1px solid #EBEBEB !important;border-radius:8px !important;background:#FFFFFF !important;font-size:13.5px !important;padding:0 8px !important}
+textarea.ipt{padding:8px !important}
+.ipt:focus,.sel:focus,.capedit:focus{outline:none;border-color:#245EC3 !important}
+.ipt::placeholder{color:#C8C8C8 !important}
+.filters label,.fl,.lf label,.sl{text-transform:none !important;letter-spacing:0 !important;font-family:var(--font-body) !important}
+.fl{font-size:13.5px !important;color:#485056 !important}
+.fl .req{color:#DA222B !important}
+.filters label{font-size:12px !important;color:#485056 !important}
+
+/* 섹션 카드 */
+.panel,.filters,.ctrlbar{background:#FFFFFF !important;border:1px solid #EFEFEF !important;border-radius:16px !important;box-shadow:none !important}
+.panel .ph{font-size:15px !important;font-weight:600 !important;padding:12px 18px !important;border-bottom:1px solid #EFEFEF !important}
+.filters,.ctrlbar{padding:12px 18px !important}
+
+/* 테이블: 헤더 12/600 가운데, 셀 13.5 가운데, 행 36 */
+table:not(.subtbl) th,table:not(.subtbl) td{text-align:center !important}
+th{font-size:12px !important;font-weight:600 !important;color:#212529 !important;background:#FFFFFF !important;text-transform:none !important;letter-spacing:0 !important;height:36px;padding:0 12px !important;font-family:var(--font-body) !important}
+td{font-size:13.5px !important;height:36px;padding:6px 12px !important;border-bottom:1px solid #EFEFEF !important}
+.subtbl th,.subtbl td{text-align:center !important}
+tr.row:hover td,tr.click:hover td{background:rgba(33,37,41,.05) !important}
+.code,.num,.slot,.ver,.verbadge,td.r{font-family:var(--mono) !important;letter-spacing:-.25px}
+
+/* 상태 칩: 10% 틴트 알약 */
+.st,.pill,.tag,.chip{display:inline-flex;align-items:center;gap:6px;height:22px;padding:0 10px !important;border-radius:9999px !important;font-size:12px !important;font-weight:400 !important;font-family:var(--font-body) !important}
+.st{background:rgba(0,128,0,.10);color:#008000 !important}
+.st .d{width:6px !important;height:6px !important;background:#008000 !important}
+.st.off{background:rgba(183,183,183,.18);color:#878A99 !important}
+.st.off .d{background:#B7B7B7 !important}
+.p-ok,.s-on{background:rgba(0,128,0,.10) !important;color:#008000 !important}
+.p-near,.s-hi{background:rgba(255,152,0,.10) !important;color:#E08600 !important}
+.p-out,.s-stop,.s-cancel,.unset{background:rgba(218,34,43,.10) !important;color:#DA222B !important}
+.p-stop,.s-mid,.s-used{background:rgba(183,183,183,.18) !important;color:#878A99 !important}
+.s-lo,.s-type,.t-pkg,.t-jam{background:rgba(36,94,195,.10) !important;color:#245EC3 !important}
+.t-single,.t-non{background:rgba(183,183,183,.18) !important;color:#485056 !important}
+.chip.k{background:var(--note) !important;color:#fff !important}
+
+/* 알약형 탭 (선택 = primary 채움) */
+.nav,.tabs,.topnav{background:transparent !important;border:none !important;padding:0 !important;gap:4px !important;margin-bottom:12px}
+.nav button,.tabs .tab,.topnav button{height:30px;padding:0 12px !important;border-radius:16px !important;font-size:15px !important;font-weight:400 !important;color:#878A99 !important;background:transparent !important;box-shadow:none !important;font-family:var(--font-body) !important;display:inline-flex;align-items:center;gap:6px}
+.nav button.on,.tabs .tab.on,.topnav button.on{background:#245EC3 !important;color:#FFFFFF !important;font-weight:600 !important}
+.nav button .sub{display:none !important}
+.nav button.keptnav{color:var(--note) !important}
+.nav button.keptnav.on{background:var(--note) !important;color:#fff !important}
+.tabs .tab{font-size:12px !important;height:24px}
+/* 섹션 안 작은 탭 · 세그먼트 */
+.langseg,.seg{background:#FFFFFF !important;border:1px solid #EBEBEB !important;border-radius:8px !important;padding:2px !important;gap:2px !important}
+.langseg button,.seg button,.seg span{border-radius:6px !important;background:#FCFCFC !important;color:#878A99 !important;font-weight:500 !important;font-size:13.5px !important;box-shadow:none !important}
+.langseg button.on,.seg button.on,.seg span.on{background:#245EC3 !important;color:#FFFFFF !important;font-weight:600 !important}
+.langseg .dot.ok{background:#FFFFFF !important}
+
+/* 드로어: 오른쪽, #FAFAFA, 폭 = 화면 − 200 */
+.ov{background:rgba(33,37,41,.30) !important}
+.drawer:not(.two){width:max(min(560px,100vw),calc(100vw - 200px)) !important;max-width:100vw !important;background:#FAFAFA !important;border-left:none !important;box-shadow:-5px 5px 4px rgba(0,0,0,.10) !important}
+.drawer.two{width:min(500px,100vw) !important;background:#FAFAFA !important}
+.dh{background:#FAFAFA !important;border-bottom:1px solid #EFEFEF !important;padding:16px 24px !important}
+.dh h3{font-size:16.5px !important;font-weight:600 !important;font-family:var(--font-body) !important}
+.db{padding:6px 24px 24px !important}
+.dfoot{background:#FFFFFF !important;border-top:1px solid #EFEFEF !important;padding:12px 24px !important}
+.drawer .sec{background:#FFFFFF;border:1px solid #EFEFEF !important;border-radius:16px;padding:18px !important;margin:18px 0 0}
+.drawer .sl{font-size:15px !important;font-weight:600 !important;color:#212529 !important}
+.x{border:none !important;background:transparent !important;color:#878A99 !important}
+
+/* 페이저 */
+.pager{gap:24px;font-size:13.5px !important;color:#212529 !important}
+.pager .pg,.pg{min-width:26px;height:26px;padding:0 6px !important;border-radius:4px !important;border:none !important;background:transparent !important;font-family:var(--mono)}
+.pager .pg.on,.pg.on{background:#245EC3 !important;color:#FFFFFF !important}
+.dspager{display:flex;align-items:center;gap:24px;padding:10px 18px;border-top:1px solid #EFEFEF;font-size:13.5px;color:#212529;flex-wrap:wrap}
+.dspager .sp{flex:1}
+.dspager .pgs{display:flex;gap:2px}
+.dspager .pgs span{min-width:26px;height:26px;display:inline-flex;align-items:center;justify-content:center;border-radius:4px;font-family:var(--mono);font-size:13px;color:#878A99}
+.dspager .pgs span.on{background:#245EC3;color:#FFFFFF;font-weight:500}
+
+/* 빈 상태 */
+.dsempty{height:120px;display:flex;align-items:center;justify-content:center;border:1px dashed rgba(200,200,200,.7);border-radius:8px;color:rgba(200,200,200,.9);font-size:15px;font-weight:500;margin:12px 18px}
+</style>
+<script>document.documentElement.setAttribute("data-theme","light")</script>
+
 
 <div class="app">
-  <div class="crumb">운영 · <b>재고 관리</b></div>
+  <div class="crumb">판매 관리 &gt; <b>재고 관리</b></div>
   <div class="toolbar">
     <h1>재고 관리</h1><span class="ex">예시 데이터</span>
     <span class="sp"></span>
@@ -174,7 +283,7 @@
         <li><b>운영 중단</b> — 별도 운영 중단 화면에서 처리해요.</li>
         <li><b>판매 마감</b> — 액티비티별 운영 시간 관리에서 정해요. 레이스가 들어간 상품은 레이스 마감 시각에 같이 판매가 닫혀요.</li>
         <li><b>한정 판매</b> — 상품마다 기간·시간대·요일·수량을 정해요. 시간대를 비우면 종일, 요일을 비우면 매일이에요. 바꿀 때는 기존 설정을 고치지 않고 새 설정을 추가해요. 상품 관리에서는 보기만 해요.</li>
-        <li>⏳ <b>결정 대기</b> — 재고를 만드는 방식(ST-006)과 한 사람이 한 시간대에 살 수 있는 수량(ST-007)이 정해지면 관련 화면을 추가해요.</li>
+        <li><span class="material-symbols-outlined">schedule</span> <b>결정 대기</b> — 재고를 만드는 방식(ST-006)과 한 사람이 한 시간대에 살 수 있는 수량(ST-007)이 정해지면 관련 화면을 추가해요.</li>
       </ul>
       <p class="gnote">조회, 수용 인원 수정, 판매중지, 액티비티별 탭, 한정 판매는 확정된 내용이에요. 재고 생성·구매 제한 화면은 보류예요.</p>
     </div>

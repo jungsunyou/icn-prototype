@@ -81,6 +81,31 @@
     .mtabs a.on{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
   }
 </style>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<style id="ds">
+/* 9.81 PARK Admin 디자인 시스템(DESIGN.md) · PM 어드민 셸 · 라이트 모드 전용 */
+:root,:root[data-theme]{--bg:#FAFAFA !important;--surface:#FCFCFC !important;--surface-2:#FAFAFA !important;--fg:#212529 !important;--muted:#878A99 !important;--line:#EFEFEF !important;--line-2:#EFEFEF !important;--accent:#245EC3 !important;--accent-soft:rgba(36,94,195,.10) !important;--ok:#008000 !important;--font-display:"Pretendard",-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo",sans-serif !important;--font-body:"Pretendard",-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo",sans-serif !important;color-scheme:light !important}
+.layout{grid-template-columns:250px 1fr}
+.side{background:#FCFCFC !important;border-right:1px solid #EFEFEF !important}
+.logo .mark{font-family:var(--font-body) !important;color:#007AFF !important;font-size:18px}
+.logo .mark b{color:#007AFF !important}
+.prof .nm{font-size:15px;font-weight:500}
+.prof .role{background:transparent !important;color:#878A99 !important;font-weight:500;font-size:12px;padding:0}
+.prof .em{font-size:13.5px;color:#485056 !important}
+.msearch .box{background:#FFFFFF !important;border:1px solid #EFEFEF !important;border-radius:20px !important;height:40px;padding:0 14px !important}
+.navwrap{padding:2px 0 12px !important}
+.grphead{height:48px;padding:0 24px !important;border-radius:0 !important}
+.grphead .gt{font-size:15px !important;font-weight:600 !important;color:#245EC3}
+.nav a{height:28px;display:flex !important;align-items:center;padding:0 24px 0 58px !important;border-radius:0 !important;font-size:13.5px !important;color:#212529 !important;margin:0 !important}
+.nav a.on{background:rgba(33,37,41,.05) !important;color:#245EC3 !important;font-weight:600 !important}
+.topbar{height:64px !important;background:#FCFCFC !important;border-bottom:1px solid #EFEFEF !important;padding:0 16px !important}
+.topbar .sys{font-size:16.5px !important;font-weight:600 !important;flex:1}
+.ustat{background:#FFFFFF;border:1px solid #EFEFEF !important;border-radius:20px !important;font-weight:500 !important}
+.frame{background:#FAFAFA !important}
+@media(max-width:860px){.mtabs a.on{background:#245EC3 !important;border-color:#245EC3 !important}}
+</style>
+<script>document.documentElement.setAttribute("data-theme","light")</script>
+
 
 <div class="layout">
   <!-- 사이드바 -->
@@ -108,12 +133,8 @@
 
   <div class="main">
     <div class="topbar">
-      <span class="sys">9.81 파크 관리 시스템 <span style="color:var(--muted)">(ICN)</span></span>
-      <div class="tsearch"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg><input placeholder="티켓 번호를 입력하세요"></div>
+      <span class="sys">9.81 파크 관리 시스템</span>
       <div class="icons">
-        <button class="iconbtn" title="최근"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></button>
-        <button class="iconbtn" title="티켓"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-2a2 2 0 0 0 0-4V8z"/></svg></button>
-        <button class="iconbtn" title="새로고침"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg></button>
         <span class="ustat"><span class="dot"></span>옵집사</span>
       </div>
     </div>
