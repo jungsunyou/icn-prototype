@@ -435,26 +435,21 @@ tr.row:hover td,tr.click:hover td{background:rgba(33,37,41,.05) !important}
 var CATS=['레이스','실내 액티비티','이용권'];
 var IMG_TYPES=['아이콘','뱃지','썸네일','태그','콘텐츠'];
 var PSU_LIB=[
-  {code:'RACE-DRV',name:'레이스 운전',jt:'레이스 JAM',ver:3,cost:25000},
-  {code:'RACE-JR',name:'주니어 운전',jt:'레이스 JAM',ver:1,cost:25000},
-  {code:'MST-RACE',name:'마스터 레이스',jt:'마스터 레이스 JAM',ver:1,cost:20000},
-  {code:'ARENA',name:'아레나',jt:'일반 JAM',ver:2,cost:12000},
-  {code:'VECTO',name:'벡토',jt:'일반 JAM',ver:1,cost:12000},
-  {code:'VISION-3',name:'비전 3회권',jt:'일반 JAM',ver:1,cost:9000},
-  {code:'SPORTSLAB',name:'스포츠랩',jt:'일반 JAM',ver:1,cost:9000},
-  {code:'FNB-VCH',name:'F&B 교환',jt:'—',ver:1,cost:8000}
+  {code:'RACE',name:'레이스 JAM PSU',jt:'레이스 JAM',ver:3,cost:25000},
+  {code:'MST-RACE',name:'마스터 레이스 JAM PSU',jt:'마스터 레이스 JAM',ver:1,cost:null},
+  {code:'GENERAL',name:'일반 JAM PSU',jt:'일반 JAM',ver:2,cost:2375}
 ];
 var PRODUCTS=[
-  {code:'ICN-PKG-RACE',name:'레이스 포함 패키지',type:'패키지',cats:['레이스','실내 액티비티'],price:'64,000',disp:{ko:{name:'981 레이스 풀패키지',desc:'레이스 2회 + 실내 액티비티를 한 번에'},en:{name:'981 Race Full Package',desc:'2 races + indoor activities in one pass'}},ver:3,by:'정산이',cr:'2026-10-02',up:'2026-10-20 14:10',st:'on',
-   psus:[{code:'RACE-DRV',qty:2},{code:'ARENA',qty:1}]},
-  {code:'ICN-PKG-INDOOR',name:'실내 패키지',type:'패키지',cats:['실내 액티비티'],price:'44,000',ver:2,by:'파수꾼',cr:'2026-10-05',up:'2026-10-18 11:20',st:'on',
-   psus:[{code:'ARENA',qty:1},{code:'VECTO',qty:1}]},
+  {code:'ICN-PKG-RACE',name:'레이스 포함 패키지',type:'패키지',cats:['레이스','실내 액티비티'],price:'97,500',disp:{ko:{name:'981 레이스 풀패키지',desc:'레이스 2회 + 실내 액티비티를 한 번에'},en:{name:'981 Race Full Package',desc:'2 races + indoor activities in one pass'}},ver:3,by:'정산이',cr:'2026-10-02',up:'2026-10-20 14:10',st:'on',
+   psus:[{code:'RACE',qty:2},{code:'GENERAL',qty:20}]},
+  {code:'ICN-PKG-INDOOR',name:'실내 패키지',type:'패키지',cats:['실내 액티비티'],price:'95,000',ver:2,by:'파수꾼',cr:'2026-10-05',up:'2026-10-18 11:20',st:'on',
+   psus:[{code:'GENERAL',qty:40}]},
   {code:'ICN-ADD-RACE1',name:'레이스 JAM 1개권',type:'추가구매',cats:['레이스'],price:'25,000',ver:1,by:'옵집사',cr:'2026-10-08',up:'2026-10-08 09:30',st:'on',
-   psus:[{code:'RACE-DRV',qty:1}]},
+   psus:[{code:'RACE',qty:1}]},
   {code:'ICN-ADD-JR',name:'주니어 레이스',type:'추가구매',cats:['레이스'],price:'25,000',ver:1,by:'정산이',cr:'2026-10-10',up:'2026-10-10 10:00',st:'on',
-   psus:[{code:'RACE-JR',qty:1}]},
-  {code:'ICN-ADD-VISION3',name:'비전 3회권',type:'추가구매',cats:['이용권'],price:'9,000',ver:1,by:'파수꾼',cr:'2026-10-12',up:'2026-10-12 15:40',st:'on',
-   psus:[{code:'VISION-3',qty:1}]},
+   psus:[{code:'RACE',qty:1}]},
+  {code:'ICN-ADD-GEN6',name:'일반 6 JAM',type:'추가구매',cats:['이용권'],price:'14,250',ver:1,by:'파수꾼',cr:'2026-10-12',up:'2026-10-12 15:40',st:'on',
+   psus:[{code:'GENERAL',qty:6}]},
   {code:'ICN-PKG-MASTER',name:'포뮬러 G (마스터)',type:'패키지',cats:['레이스'],price:'미정',ver:1,by:'옵집사',cr:'2026-10-22',up:'2026-10-22 17:00',st:'off',
    psus:[{code:'MST-RACE',qty:1}]}
 ];
@@ -534,9 +529,9 @@ function renderImgTypes(wrap){
 /* ===== 구성 PSU 테이블 ===== */
 function won(n){return n.toLocaleString('ko-KR');}
 function psuRow(p,qty,locked){
-  var tr=document.createElement('tr'); tr.dataset.cost=p.cost||0; tr.dataset.qty=qty;
+  var tr=document.createElement('tr'); tr.dataset.cost=p.cost||0; tr.dataset.qty=qty; tr.dataset.tbd=(p.cost==null)?'1':'';
   tr.innerHTML='<td class="code">'+p.code+'</td><td>'+p.name+'</td><td>'+p.jt+'</td>'+
-    '<td class="r code">'+won(p.cost||0)+'</td>'+
+    '<td class="r code">'+(p.cost==null?'<span style="color:var(--note);font-weight:600">미정</span>':won(p.cost))+'</td>'+
     '<td class="r">'+(locked?qty:'<input class="ipt qty" value="'+qty+'" oninput="this.closest(\'tr\').dataset.qty=parseInt(this.value,10)||0;updSum()">')+'</td>'+
     '<td class="r code sub"></td><td class="ver">v'+p.ver+'</td>'+
     '<td>'+(locked?'<span class="ver">잠금</span>':'<button class="mini" onclick="this.closest(\'tr\').remove();updSum()">제거</button>')+'</td>';
@@ -549,10 +544,11 @@ function renderPsuRows(psus,locked){
 }
 function updSum(){
   var rows=document.getElementById('psuBody').children, n=rows.length, sum=0;
-  for(var i=0;i<n;i++){var r=rows[i], v=(+r.dataset.cost)*(+r.dataset.qty); sum+=v; r.querySelector('.sub').textContent=won(v);}
+  var tbd=false;for(var i=0;i<n;i++){var r=rows[i], v=(+r.dataset.cost)*(+r.dataset.qty); sum+=v; if(r.dataset.tbd){tbd=true;r.querySelector('.sub').innerHTML='<span style="color:var(--note);font-weight:600">미정</span>';}else r.querySelector('.sub').textContent=won(v);}
   document.getElementById('psuSum').textContent='구성 PSU '+n+'개';
-  document.getElementById('costSum').textContent=won(sum);
-  document.getElementById('costRef').textContent=won(sum);
+  var st=tbd?'미정':won(sum);
+  document.getElementById('costSum').textContent=st;
+  document.getElementById('costRef').textContent=st;
 }
 
 /* ===== PSU 추가 피커 ===== */

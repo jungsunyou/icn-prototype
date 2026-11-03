@@ -271,24 +271,18 @@ tr.row:hover td,tr.click:hover td{background:rgba(33,37,41,.05) !important}
   </div>
 
   <div class="panel">
-    <div class="ph">PSU 목록 <span class="cnt">· 9건</span><span class="sp"></span><span class="cnt">정렬: 종류</span></div>
+    <div class="ph">PSU 목록 <span class="cnt">· 3건</span><span class="sp"></span><span class="cnt">정렬: 종류</span></div>
     <div class="tblwrap">
       <table>
         <thead><tr><th>상태</th><th>PSU 코드</th><th>노출명</th><th>종류</th><th>JAM 유형</th><th>차감</th><th class="r">정가</th><th>버전</th><th>수정일시</th><th class="r">상품</th><th></th></tr></thead>
         <tbody id="rows">
-          <tr class="row" data-code="RACE-DRV" data-name="레이스 운전" data-kind="jam" data-jt="레이스 JAM" data-per="1" data-cnt="1" data-exch="" data-price="25,000" data-prods="2" data-st="on"></tr>
-          <tr class="row" data-code="RACE-PSG" data-name="레이스 동승" data-kind="jam" data-jt="레이스 JAM" data-per="1" data-cnt="1" data-exch="" data-price="15,000" data-prods="1" data-st="on"></tr>
-          <tr class="row" data-code="RACE-JR" data-name="주니어 운전" data-kind="jam" data-jt="레이스 JAM" data-per="1" data-cnt="1" data-exch="" data-price="25,000" data-prods="1" data-st="on"></tr>
-          <tr class="row" data-code="MST-RACE" data-name="마스터 레이스" data-kind="jam" data-jt="마스터 레이스 JAM" data-per="1" data-cnt="1" data-exch="" data-price="20,000" data-prods="1" data-st="on"></tr>
-          <tr class="row" data-code="ARENA" data-name="아레나" data-kind="jam" data-jt="일반 JAM" data-per="1" data-cnt="1" data-exch="" data-price="12,000" data-prods="2" data-st="on"></tr>
-          <tr class="row" data-code="VECTO" data-name="벡토" data-kind="jam" data-jt="일반 JAM" data-per="1" data-cnt="1" data-exch="" data-price="12,000" data-prods="1" data-st="on"></tr>
-          <tr class="row" data-code="VISION-3" data-name="비전 3회권" data-kind="jam" data-jt="일반 JAM" data-per="2" data-cnt="3" data-exch="" data-price="9,000" data-prods="1" data-st="on"></tr>
-          <tr class="row" data-code="SPORTSLAB" data-name="스포츠랩" data-kind="jam" data-jt="일반 JAM" data-per="2" data-cnt="1" data-exch="" data-price="9,000" data-prods="1" data-st="on"></tr>
-          <tr class="row" data-code="FNB-VCH" data-name="F&amp;B 교환" data-kind="non" data-jt="—" data-per="" data-cnt="" data-exch="1" data-price="8,000" data-prods="1" data-st="off"></tr>
+          <tr class="row" data-code="RACE" data-name="레이스 JAM PSU" data-kind="jam" data-jt="레이스 JAM" data-per="1" data-cnt="1" data-exch="" data-price="25,000" data-prods="3" data-st="on"></tr>
+          <tr class="row" data-code="MST-RACE" data-name="마스터 레이스 JAM PSU" data-kind="jam" data-jt="마스터 레이스 JAM" data-per="1" data-cnt="1" data-exch="" data-price="<span style=&quot;color:var(--note);font-weight:600&quot;>미정</span>" data-prods="1" data-st="on"></tr>
+          <tr class="row" data-code="GENERAL" data-name="일반 JAM PSU" data-kind="jam" data-jt="일반 JAM" data-per="1" data-cnt="1" data-exch="" data-price="2,375" data-prods="3" data-st="on"></tr>
         </tbody>
       </table>
     </div>
-    <div class="dspager"><span>총 9개 항목</span><span>1 페이지 중 1 페이지</span><span>페이지당 행 수 : 20</span><span class="sp"></span><div class="pgs"><span>«</span><span>‹</span><span class="on">1</span><span>›</span><span>»</span></div></div>
+    <div class="dspager"><span>총 3개 항목</span><span>1 페이지 중 1 페이지</span><span>페이지당 행 수 : 20</span><span class="sp"></span><div class="pgs"><span>«</span><span>‹</span><span class="on">1</span><span>›</span><span>»</span></div></div>
   </div>
 </div>
 
@@ -320,7 +314,7 @@ tr.row:hover td,tr.click:hover td{background:rgba(33,37,41,.05) !important}
 
     <div class="fld" style="margin-top:14px"><div class="fl">정가 <span class="req">*</span></div><div class="won"><input class="ipt" id="fPrice" value="25,000"><span class="u">원</span></div></div>
 
-    <div class="fld"><div class="fl">PSU 코드</div><div class="autoval code" id="fCode">RACE-DRV</div></div>
+    <div class="fld"><div class="fl">PSU 코드</div><div class="autoval code" id="fCode">RACE</div></div>
 
     <div class="fld"><div class="fl">상태</div><span class="toggle"><span class="sw"></span> 활성</span></div>
 
@@ -345,7 +339,7 @@ tr.row:hover td,tr.click:hover td{background:rgba(33,37,41,.05) !important}
       <ul>
         <li>노출명은 <b>한국어가 꼭</b> 있어야 해요. 다른 언어를 비워 두면 영어로 대신 보여줘요.</li>
         <li>종류는 두 가지예요. <b>JAM</b>은 이용할 때마다 이용권을 쓰는 방식, <b>비JAM</b>은 1개당 1번 교환하는 방식이에요.</li>
-        <li>1번 이용할 때 쓰는 JAM 수와 이용 횟수는 <b>직접 입력</b>해요. 예) 비전 3회권 = 1회에 2개씩, 3번</li>
+        <li>1번 이용할 때 쓰는 JAM 수와 이용 횟수는 <b>직접 입력</b>해요. 예) 1회에 2개씩, 3번 이용</li>
         <li>여기 정가는 상품을 구성하고 정산을 나누는 기준이에요. 고객이 실제로 내는 판매가는 <b>상품 관리·가격 정책 관리</b>에서 정해요.</li>
         <li>PSU 코드는 저장하면 시스템이 <b>겹치지 않게 자동으로</b> 만들어요. 직접 입력하지 않고, 만든 뒤에는 바뀌지 않아요.</li>
         <li>수정할 때는 <b>이름과 정가만</b> 바꿀 수 있어요. 종류·JAM 유형·차감·코드를 바꾸려면 새 PSU로 등록해 주세요.</li>
@@ -360,27 +354,15 @@ tr.row:hover td,tr.click:hover td{background:rgba(33,37,41,.05) !important}
 <script>
 // 버전·등록 메타 (예시)
 var META={
-  'RACE-DRV':{ver:3,by:'정산이',cr:'2026-08-12',up:'2026-09-28 14:20'},
-  'RACE-PSG':{ver:2,by:'파수꾼',cr:'2026-08-12',up:'2026-09-20 10:05'},
-  'RACE-JR':{ver:1,by:'옵집사',cr:'2026-09-15',up:'2026-09-15 09:00'},
+  'RACE':{ver:3,by:'정산이',cr:'2026-08-12',up:'2026-09-28 14:20'},
   'MST-RACE':{ver:1,by:'정산이',cr:'2026-08-20',up:'2026-08-20 11:30'},
-  'ARENA':{ver:2,by:'파수꾼',cr:'2026-08-14',up:'2026-09-22 16:40'},
-  'VECTO':{ver:1,by:'옵집사',cr:'2026-09-01',up:'2026-09-01 13:10'},
-  'VISION-3':{ver:1,by:'정산이',cr:'2026-09-05',up:'2026-09-05 15:00'},
-  'SPORTSLAB':{ver:1,by:'파수꾼',cr:'2026-09-18',up:'2026-09-18 09:40'},
-  'FNB-VCH':{ver:1,by:'옵집사',cr:'2026-08-12',up:'2026-08-30 17:20'}
+  'GENERAL':{ver:2,by:'파수꾼',cr:'2026-08-14',up:'2026-09-22 16:40'}
 };
 // 사용 중 상품 (상품명 + 참조한 PSU 버전)
 var USAGE={
-  'RACE-DRV':[{n:'레이스 2인 패키지',v:3},{n:'레이스 JAM 1개권',v:2}],
-  'RACE-PSG':[{n:'레이스 2인 패키지',v:2}],
-  'RACE-JR':[{n:'주니어 레이스 상품',v:1}],
+  'RACE':[{n:'레이스 포함 패키지',v:3},{n:'레이스 JAM 1개권',v:3},{n:'주니어 레이스',v:2}],
   'MST-RACE':[{n:'포뮬러 G (마스터)',v:1}],
-  'ARENA':[{n:'일반 5 JAM',v:2},{n:'통합 이용권 A',v:1}],
-  'VECTO':[{n:'일반 10 JAM',v:1}],
-  'VISION-3':[{n:'비전 3회권 상품',v:1}],
-  'SPORTSLAB':[{n:'일반 5 JAM',v:1}],
-  'FNB-VCH':[]
+  'GENERAL':[{n:'레이스 포함 패키지',v:2},{n:'실내 패키지',v:2},{n:'일반 6 JAM',v:1}]
 };
 
 // 목록 렌더
@@ -440,7 +422,7 @@ function openPsu(tr){
     document.getElementById('dwCode').textContent='· '+d.code;
     document.getElementById('fName').value=d.name;
     document.getElementById('fCode').textContent=d.code;
-    document.getElementById('fPrice').value=d.price;
+    document.getElementById('fPrice').value=/</.test(d.price)?'':d.price;
     setKind(d.kind);
     if(d.kind==='jam'){document.getElementById('fJt').value=d.jt;document.getElementById('fPer').value=d.per;document.getElementById('fCnt').value=d.cnt;}
     else{document.getElementById('fExch').value=d.exch||'1';}
