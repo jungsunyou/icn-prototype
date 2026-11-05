@@ -280,20 +280,19 @@ tr.row:hover td,tr.click:hover td{background:rgba(33,37,41,.05) !important}
     <button class="btn pri" onclick="openProd(null)">+ 상품 등록</button>
   </div>
 
-  <div class="note"><span>상품은 <b>PSU 여러 개를 묶어서 파는 단위</b>예요. 여기서 구성, 정가, 노출 정보, 판매 조건을 정해요. 실제 판매가는 <b>가격 정책 관리</b>, 재고·한정 판매는 <b>재고 관리</b>, 할인은 <b>프로모션 관리</b>에서 다뤄요. 화면의 값은 예시예요.</span></div>
+  <div class="note"><span>상품은 <b>PSU 여러 개를 묶어서 파는 단위</b>예요. 여기서 구성, 노출 정보, 판매 조건을 정해요. 정가는 구성한 PSU로 자동 계산돼요. 실제 판매가는 <b>가격 정책 관리</b>, 재고·한정 판매·판매 제외는 <b>재고 관리</b>, 할인은 <b>프로모션 관리</b>에서 다뤄요. 화면의 값은 예시예요.</span></div>
 
   <div class="filters">
     <div class="f search"><label>검색</label><input class="ipt" placeholder="상품명 또는 상품 코드를 입력하세요"></div>
     <div class="f" style="justify-content:flex-end"><button class="btn pri sm" style="height:34px">검색</button></div>
     <div class="f"><label>유형</label><select class="sel"><option>전체</option><option>패키지</option><option>추가구매</option></select></div>
-    <div class="f"><label>카테고리</label><select class="sel"><option>전체</option><option>레이스</option><option>실내 액티비티</option><option>이용권</option></select></div>
     <div class="f"><label>상태</label><select class="sel"><option>전체</option><option>활성</option><option>판매중지</option></select></div>
   </div>
 
   <div class="panel">
     <div class="ph">상품 목록 <span class="cnt">· 6건</span><span class="sp"></span><span class="cnt">정렬: 수정일</span></div>
     <div class="tblwrap"><table>
-      <thead><tr><th>상태</th><th>상품 코드</th><th>상품명</th><th>유형</th><th>카테고리</th><th class="r">구성</th><th class="r">정가</th><th>버전</th><th>수정일시</th><th></th></tr></thead>
+      <thead><tr><th>상태</th><th>상품 코드</th><th>상품명</th><th>유형</th><th class="r">정가</th><th>버전</th><th>수정일시</th><th></th></tr></thead>
       <tbody id="rows"></tbody>
     </table></div>
     <div class="dspager"><span>총 6개 항목</span><span>1 페이지 중 1 페이지</span><span>페이지당 행 수 : 20</span><span class="sp"></span><div class="pgs"><span>«</span><span>‹</span><span class="on">1</span><span>›</span><span>»</span></div></div>
@@ -313,10 +312,6 @@ tr.row:hover td,tr.click:hover td{background:rgba(33,37,41,.05) !important}
         <select class="sel" id="fType"><option value="패키지">패키지</option><option value="추가구매">추가구매</option></select>
         <div class="lockval" id="typeRO" hidden></div>
       </div>
-      <div class="fld"><div class="fl">카테고리 <span class="ver">복수 선택</span></div>
-        <div class="cats" id="catChips"></div>
-        <div class="inline" style="margin-top:8px"><select class="sel" id="fCat" style="flex:1" onchange="pickCat(this.value)"></select><button class="btn ghost sm" onclick="addCat()">+ 새 카테고리</button></div>
-      </div>
       <div class="fld"><div class="fl">상품 코드</div><div class="autoval code" id="fCode">ICN-PKG-RACE</div></div>
       <div class="fld"><div class="fl">상태</div><span class="toggle"><span class="sw"></span> 활성</span></div>
     </div>
@@ -324,19 +319,19 @@ tr.row:hover td,tr.click:hover td{background:rgba(33,37,41,.05) !important}
     <div class="sec">
       <p class="sl">상품 구성 (PSU)</p>
       <div class="tblwrap"><table class="subtbl">
-        <thead><tr><th>PSU 코드</th><th>노출명</th><th>JAM 유형</th><th class="r">원가</th><th class="r">제공 수량</th><th class="r">원가 소계</th><th>버전</th><th></th></tr></thead>
+        <thead><tr><th>PSU 코드</th><th>노출명</th><th class="r">원가</th><th class="r">제공 수량</th><th class="r">원가 소계</th><th>버전</th><th></th></tr></thead>
         <tbody id="psuBody"></tbody>
-        <tfoot><tr class="sumrow"><td colspan="5">원가 합계</td><td class="r" id="costSum">0</td><td colspan="2"></td></tr></tfoot>
+        <tfoot><tr class="sumrow"><td colspan="4">원가 합계</td><td class="r" id="costSum">0</td><td colspan="2"></td></tr></tfoot>
       </table></div>
       <div class="rowbtns"><button class="btn ghost sm" id="addPsuBtn" onclick="openPick()">+ PSU 추가</button><span style="flex:1"></span><span class="ver" id="psuSum"></span></div>
     </div>
 
     <div class="sec">
       <p class="sl">가격</p>
-      <div class="fld"><div class="fl">정가 (기준가) <span class="req">*</span></div><div class="won"><input class="ipt" id="fPrice" value="64,000"><span class="u">원</span></div><div class="costref">구성 원가 합계 <b id="costRef">0</b> 원</div></div>
+      <div class="fld"><div class="fl">정가 (기준가) <span class="ver">자동 계산 · 읽기 전용</span></div><div class="autoval code"><b id="costRef" style="color:var(--fg)">0</b> 원</div></div>
       <div class="kept">
         <div class="kh">시즌 판매가 — 가격 정책 관리 연동 표시 영역 (킵)</div>
-        <div class="inline" style="gap:14px;color:var(--muted)">평시 <b style="color:var(--fg)">64,000</b> · 성수 <b style="color:var(--fg)">73,600</b> · 비수 <b style="color:var(--fg)">54,400</b></div>
+        <div class="inline" style="gap:14px;color:var(--muted)">평시 <b style="color:var(--fg)" id="sMid">—</b> · 성수 <b style="color:var(--fg)" id="sHi">—</b> · 비수 <b style="color:var(--fg)" id="sLo">—</b></div>
       </div>
     </div>
 
@@ -368,15 +363,8 @@ tr.row:hover td,tr.click:hover td{background:rgba(33,37,41,.05) !important}
         </table></div>
         <div class="rowbtns"><button class="btn ghost sm" onclick="addOta()">+ 외부 상품 매핑</button><span class="ver" style="margin-left:8px">같은 외부 상품을 여러 ICN 상품에 중복 연결 금지</span></div>
       </div>
-      <div class="fld"><div class="fl">판매 제외 기간</div>
-        <div class="tblwrap"><table class="subtbl">
-          <thead><tr><th>구분</th><th>기간</th><th></th></tr></thead>
-          <tbody id="excBody">
-            <tr><td>날짜별</td><td>2026-12-25 (종일)</td><td><button class="mini" onclick="this.closest('tr').remove()">제거</button></td></tr>
-            <tr><td>시간별</td><td>2026-11-15 14:00 ~ 16:00</td><td><button class="mini" onclick="this.closest('tr').remove()">제거</button></td></tr>
-          </tbody>
-        </table></div>
-        <div class="rowbtns"><button class="btn ghost sm" onclick="addExc()">+ 판매 제외 추가</button><span class="ver" style="margin-left:8px">날짜별 · 시간별 지정 가능</span></div>
+      <div class="fld"><div class="fl">판매 제외 <span class="ver">재고 관리에서 설정</span></div>
+        <div class="roinfo">2026-12-25 종일 · 2026-11-15 14:00 ~ 16:00 <span class="ver">읽기 전용</span></div>
       </div>
       <div class="fld"><div class="fl">한정 판매 <span class="ver">재고 관리에서 설정</span></div>
         <div class="roinfo">하루 300개 · 2026-12-19 ~ 2027-01-03 · 전 시간대 <span class="ver">읽기 전용</span></div>
@@ -398,19 +386,20 @@ tr.row:hover td,tr.click:hover td{background:rgba(33,37,41,.05) !important}
       <div class="mh">안내 <span class="s">— 구현 시 제외 가능</span></div>
       <ul>
         <li>상품명은 관리자끼리 구분하는 이름이에요. 고객에게 보이는 이름은 '노출 · 이미지'에서 따로 넣어요.</li>
-        <li>여기서는 <b>정가만</b> 넣어요. 고객이 실제로 내는 판매가는 <b>가격 정책 관리</b>의 기준가·시즌 설정으로 정해져요. 아래 판매가 칸은 연동 예정이라 보라색이에요.</li>
+        <li>여기서는 판매가를 정하지 않아요. 고객이 실제로 내는 판매가는 <b>가격 정책 관리</b>의 기준가·시즌 설정으로 정해져요. 아래 판매가 칸은 연동 예정이라 보라색이에요.</li>
         <li>할인(프로모션)은 <b>프로모션 관리</b>에서 연결해요. 여기서는 어떤 할인이 걸려 있는지만 보여줘요.</li>
-        <li>재고 연결과 <b>한정 판매</b>는 <b>재고 관리</b>에서 설정해요. 여기서는 설정된 내용을 보기만 해요.</li>
+        <li>재고 연결, <b>한정 판매</b>, <b>판매 제외</b>는 <b>재고 관리</b>에서 설정해요. 여기서는 설정된 내용을 보기만 해요.</li>
         <li><b>판매 기간</b>은 고객이 고를 수 있는 <b>이용일 범위(날짜)</b>예요. 판매를 여는 시각은 노출 기간으로 정해요.</li>
         <li><b>판매 채널</b>은 채널마다 활성/비활성으로 켜고 꺼요. 저장하면 바로 판매에 반영돼요. 채널마다 따로 팔고 싶으면 상품을 나누지 말고 채널별로 켜고 꺼요. 구성이 다를 때만 상품을 따로 만들어요.</li>
         <li style="color:var(--note)"><b>정하는 중</b> · 보여주기만 하고 판매는 막는 경우가 필요하면 채널마다 노출·판매를 따로 나눠요</li>
         <li>네이버는 제주와 같은 방식으로 운영해요. 외부 채널(마이리얼트립·클룩·네이버) 전용 노출 정보는 이번 범위에서 빠졌어요. 노출·이미지는 앱과 키오스크가 함께 써요.</li>
         <li>노출명·설명·이미지는 <b>한국어 / 영어 / 중국어</b>를 각각 넣어요. 언어 탭 옆 점이 파란색이면 그 언어 노출명을 입력한 거예요.</li>
-        <li>한 상품을 <b>여러 카테고리</b>에 넣을 수 있어요. 이미지는 종류(아이콘·뱃지 등)마다 여러 장 올릴 수 있어요.</li>
+        <li>이미지는 종류(아이콘·뱃지 등)마다 여러 장 올릴 수 있어요.</li>
         <li style="color:var(--note)"><b>정하는 중</b> · 영어·중국어를 꼭 넣어야 하는지, 비어 있으면 한국어로 대신 보여줄지 · 이미지를 언어마다 따로 받을지, 공통 이미지에 언어별 예외만 둘지</li>
-        <li style="color:var(--note)"><b>정하는 중</b> · 카테고리가 여러 개일 때 대표 카테고리를 둘지, 카테고리 안에서 노출 순서를 관리할지</li>
-        <li>원가는 구성한 PSU의 정가를 가져와요. <b>원가 × 수량</b>을 더한 원가 합계를 정가 칸 아래에도 보여줘서, 정가를 정할 때 참고할 수 있어요.</li>
-        <li style="color:var(--note)"><b>정하는 중</b> · 정가가 원가 합계보다 낮으면 저장을 막을지 · 이 합계를 가격 정책의 원가 하한으로 볼지</li>
+        <li>원가는 구성한 PSU의 정가를 가져와요. <b>원가 × 수량</b>을 모두 더한 값이 이 상품의 <b>정가</b>가 되고, 직접 고칠 수 없어요.</li>
+        <li>패키지를 더 싸게 팔거나 금액을 딱 떨어지게 맞추고 싶으면 <b>가격 정책 관리</b>에서 판매가를 정해요. 정가는 그대로 두어서 환불·정산할 때 PSU별로 금액을 나누는 기준이 돼요.</li>
+        <li>원가가 아직 정해지지 않은 PSU가 들어 있으면 정가도 "미정"으로 보여요. 원가가 들어오면 바로 계산돼요.</li>
+        <li style="color:var(--note)"><b>정하는 중</b> · PSU 정가가 바뀌면 이 상품의 정가도 바로 따라 바뀔지, 상품을 다시 저장해서 버전을 올려야 바뀔지</li>
         <li>상품 코드는 저장하면 시스템이 <b>겹치지 않게 자동으로</b> 만들어요. 직접 입력하지 않아요.</li>
         <li>수정할 때 <b>코드·유형·구성(PSU)은 바꿀 수 없어요</b>. 이름·가격·기간만 바꿀 수 있고, 저장하면 버전 번호가 하나 올라가요.</li>
       </ul>
@@ -432,27 +421,27 @@ tr.row:hover td,tr.click:hover td{background:rgba(33,37,41,.05) !important}
 
 <script>
 /* ===== 데이터 ===== */
-var CATS=['레이스','실내 액티비티','이용권'];
 var IMG_TYPES=['아이콘','뱃지','썸네일','태그','콘텐츠'];
 var PSU_LIB=[
-  {code:'RACE',name:'레이스 JAM PSU',jt:'레이스 JAM',ver:3,cost:25000},
-  {code:'MST-RACE',name:'마스터 레이스 JAM PSU',jt:'마스터 레이스 JAM',ver:1,cost:null},
-  {code:'GENERAL',name:'일반 JAM PSU',jt:'일반 JAM',ver:2,cost:2375}
+  {code:'RACE',name:'레이스 JAM',jt:'레이스 JAM',ver:3,cost:25000},
+  {code:'MST-RACE',name:'마스터 레이스 JAM',jt:'마스터 레이스 JAM',ver:1,cost:null},
+  {code:'GENERAL',name:'일반 JAM',jt:'일반 JAM',ver:2,cost:2375}
 ];
 var PRODUCTS=[
-  {code:'ICN-PKG-RACE',name:'레이스 포함 패키지',type:'패키지',cats:['레이스','실내 액티비티'],price:'97,500',disp:{ko:{name:'981 레이스 풀패키지',desc:'레이스 2회 + 실내 액티비티를 한 번에'},en:{name:'981 Race Full Package',desc:'2 races + indoor activities in one pass'}},ver:3,by:'정산이',cr:'2026-10-02',up:'2026-10-20 14:10',st:'on',
+  {code:'ICN-PKG-RACE',name:'레이스 포함 패키지',type:'패키지',cats:['레이스','실내 액티비티'],disp:{ko:{name:'981 레이스 풀패키지',desc:'레이스 2회 + 실내 액티비티를 한 번에'},en:{name:'981 Race Full Package',desc:'2 races + indoor activities in one pass'}},ver:3,by:'정산이',cr:'2026-10-02',up:'2026-10-20 14:10',st:'on',
    psus:[{code:'RACE',qty:2},{code:'GENERAL',qty:20}]},
-  {code:'ICN-PKG-INDOOR',name:'실내 패키지',type:'패키지',cats:['실내 액티비티'],price:'95,000',ver:2,by:'파수꾼',cr:'2026-10-05',up:'2026-10-18 11:20',st:'on',
+  {code:'ICN-PKG-INDOOR',name:'실내 패키지',type:'패키지',cats:['실내 액티비티'],ver:2,by:'파수꾼',cr:'2026-10-05',up:'2026-10-18 11:20',st:'on',
    psus:[{code:'GENERAL',qty:40}]},
-  {code:'ICN-ADD-RACE1',name:'레이스 JAM 1개권',type:'추가구매',cats:['레이스'],price:'25,000',ver:1,by:'옵집사',cr:'2026-10-08',up:'2026-10-08 09:30',st:'on',
+  {code:'ICN-ADD-RACE1',name:'레이스 JAM 1개권',type:'추가구매',cats:['레이스'],ver:1,by:'옵집사',cr:'2026-10-08',up:'2026-10-08 09:30',st:'on',
    psus:[{code:'RACE',qty:1}]},
-  {code:'ICN-ADD-JR',name:'주니어 레이스',type:'추가구매',cats:['레이스'],price:'25,000',ver:1,by:'정산이',cr:'2026-10-10',up:'2026-10-10 10:00',st:'on',
+  {code:'ICN-ADD-JR',name:'주니어 레이스',type:'추가구매',cats:['레이스'],ver:1,by:'정산이',cr:'2026-10-10',up:'2026-10-10 10:00',st:'on',
    psus:[{code:'RACE',qty:1}]},
-  {code:'ICN-ADD-GEN6',name:'일반 6 JAM',type:'추가구매',cats:['이용권'],price:'14,250',ver:1,by:'파수꾼',cr:'2026-10-12',up:'2026-10-12 15:40',st:'on',
+  {code:'ICN-ADD-GEN6',name:'일반 6 JAM',type:'추가구매',cats:['이용권'],ver:1,by:'파수꾼',cr:'2026-10-12',up:'2026-10-12 15:40',st:'on',
    psus:[{code:'GENERAL',qty:6}]},
-  {code:'ICN-PKG-MASTER',name:'포뮬러 G (마스터)',type:'패키지',cats:['레이스'],price:'미정',ver:1,by:'옵집사',cr:'2026-10-22',up:'2026-10-22 17:00',st:'off',
+  {code:'ICN-PKG-MASTER',name:'포뮬러 G (마스터)',type:'패키지',cats:['레이스'],ver:1,by:'옵집사',cr:'2026-10-22',up:'2026-10-22 17:00',st:'off',
    psus:[{code:'MST-RACE',qty:1}]}
 ];
+function prodPrice(p){var sum=0;for(var i=0;i<p.psus.length;i++){var u=psuOf(p.psus[i].code);if(u.cost==null)return '<span style="color:var(--note);font-weight:600">미정</span>';sum+=u.cost*p.psus[i].qty;}return sum.toLocaleString('ko-KR');}
 function psuOf(code){for(var i=0;i<PSU_LIB.length;i++)if(PSU_LIB[i].code===code)return PSU_LIB[i];return{code:code,name:code,jt:'—',ver:1};}
 
 /* ===== 목록 렌더 ===== */
@@ -464,31 +453,13 @@ PRODUCTS.forEach(function(p){
     '<td class="code">'+p.code+'</td>'+
     '<td>'+p.name+'</td>'+
     '<td>'+(p.type==='패키지'?'<span class="tag t-pkg">패키지</span>':'<span class="tag t-single">추가구매</span>')+'</td>'+
-    '<td><div class="catcell">'+p.cats.map(function(c){return '<span>'+c+'</span>';}).join('')+'</div></td>'+
-    '<td class="r">'+p.psus.length+'</td>'+
-    '<td class="r">'+p.price+'</td>'+
+    '<td class="r code">'+prodPrice(p)+'</td>'+
     '<td class="ver">v'+p.ver+'</td>'+
     '<td class="ver">'+p.up+'</td>'+
     '<td><button class="mini">편집</button></td>';
   tr.addEventListener('click',function(e){openProd(p)});
   rows.appendChild(tr);
 });
-
-/* ===== 카테고리 ===== */
-var curCats=[];
-function renderCats(sel){
-  if(sel) curCats=sel.slice();
-  document.getElementById('catChips').innerHTML=curCats.length?curCats.map(function(c,i){return '<span class="catchip">'+c+'<button class="cx" onclick="dropCat('+i+')">✕</button></span>';}).join(''):'<span class="ver">선택된 카테고리 없음</span>';
-  var s=document.getElementById('fCat');
-  s.innerHTML='<option value="">+ 카테고리 선택</option>'+CATS.filter(function(c){return curCats.indexOf(c)<0;}).map(function(c){return '<option>'+c+'</option>';}).join('');
-}
-function pickCat(v){if(v&&curCats.indexOf(v)<0)curCats.push(v);renderCats();}
-function dropCat(i){curCats.splice(i,1);renderCats();}
-function addCat(){
-  var n=prompt('추가할 카테고리 이름'); if(!n) return; n=n.trim(); if(!n) return;
-  if(CATS.indexOf(n)<0) CATS.push(n);
-  pickCat(n);
-}
 
 /* ===== 이미지(구성별 다중) ===== */
 var LANGS=[{k:'ko',l:'KO',req:true},{k:'en',l:'EN'},{k:'zh',l:'中文'}];
@@ -530,7 +501,7 @@ function renderImgTypes(wrap){
 function won(n){return n.toLocaleString('ko-KR');}
 function psuRow(p,qty,locked){
   var tr=document.createElement('tr'); tr.dataset.cost=p.cost||0; tr.dataset.qty=qty; tr.dataset.tbd=(p.cost==null)?'1':'';
-  tr.innerHTML='<td class="code">'+p.code+'</td><td>'+p.name+'</td><td>'+p.jt+'</td>'+
+  tr.innerHTML='<td class="code">'+p.code+'</td><td>'+p.name+'</td>'+
     '<td class="r code">'+(p.cost==null?'<span style="color:var(--note);font-weight:600">미정</span>':won(p.cost))+'</td>'+
     '<td class="r">'+(locked?qty:'<input class="ipt qty" value="'+qty+'" oninput="this.closest(\'tr\').dataset.qty=parseInt(this.value,10)||0;updSum()">')+'</td>'+
     '<td class="r code sub"></td><td class="ver">v'+p.ver+'</td>'+
@@ -548,7 +519,11 @@ function updSum(){
   document.getElementById('psuSum').textContent='구성 PSU '+n+'개';
   var st=tbd?'미정':won(sum);
   document.getElementById('costSum').textContent=st;
-  document.getElementById('costRef').textContent=st;
+  document.getElementById('costRef').innerHTML=tbd?'<span style="color:var(--note)">미정</span>':st;
+  var r100=function(x){return won(Math.round(x/100)*100);};
+  document.getElementById('sMid').textContent=tbd?'미정':won(sum);
+  document.getElementById('sHi').textContent=tbd?'미정':r100(sum*1.15);
+  document.getElementById('sLo').textContent=tbd?'미정':r100(sum*0.85);
 }
 
 /* ===== PSU 추가 피커 ===== */
@@ -557,7 +532,7 @@ function closePick(){document.getElementById('ov2').classList.remove('show');doc
 function renderPick(){
   var q=(document.getElementById('pickSearch').value||'').toLowerCase(), el=document.getElementById('pickList');
   el.innerHTML=PSU_LIB.filter(function(p){return (p.code+p.name).toLowerCase().indexOf(q)>=0;}).map(function(p){
-    return '<label class="prow" style="cursor:pointer"><input type="checkbox" value="'+p.code+'" onchange="pickCnt()"> <b style="margin-left:4px">'+p.name+'</b> <span class="code" style="color:var(--muted)">'+p.code+'</span><span class="sp"></span><span class="amt">'+p.jt+' · v'+p.ver+'</span></label>';
+    return '<label class="prow" style="cursor:pointer"><input type="checkbox" value="'+p.code+'" onchange="pickCnt()"> <b style="margin-left:4px">'+p.name+'</b> <span class="code" style="color:var(--muted)">'+p.code+'</span><span class="sp"></span><span class="amt">v'+p.ver+'</span></label>';
   }).join('');
   pickCnt();
 }
@@ -580,15 +555,6 @@ function addOta(){
   b.appendChild(tr);
 }
 
-/* ===== 판매 제외 기간 ===== */
-function addExc(){
-  var b=document.getElementById('excBody'), tr=document.createElement('tr');
-  tr.innerHTML='<td><select class="sel" style="width:auto"><option>날짜별</option><option>시간별</option></select></td>'+
-    '<td><input class="ipt" placeholder="예: 2026-12-25 (종일) / 14:00~16:00" style="min-width:220px"></td>'+
-    '<td><button class="mini" onclick="this.closest(\'tr\').remove()">제거</button></td>';
-  b.appendChild(tr);
-}
-
 /* ===== 수정 잠금 ===== */
 function lockDef(lock,type){
   document.getElementById('fType').hidden=lock;
@@ -605,8 +571,6 @@ function openProd(p){
     document.getElementById('fName').value=p.name;
     document.getElementById('fType').value=p.type;
     document.getElementById('fCode').textContent=p.code;
-    document.getElementById('fPrice').value=p.price;
-    renderCats(p.cats);
     renderLangs(p.disp||{ko:{name:p.name}});
     renderPsuRows(p.psus,true);
     lockDef(true,p.type);
@@ -622,8 +586,6 @@ function openProd(p){
     document.getElementById('fName').value='';
     document.getElementById('fType').value='패키지';
     document.getElementById('fCode').textContent='저장 시 자동 생성 · 유니크 키';
-    document.getElementById('fPrice').value='';
-    renderCats([]);
     renderLangs({});
     renderPsuRows([],false);
     lockDef(false,'패키지');

@@ -1,0 +1,421 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<style>[hidden]{display:none!important}</style>
+<title>JAM 차감 관리</title>
+</head><body>
+<style>
+  :root{
+    --bg:#fafafa; --surface:#ffffff; --surface-2:#f5f5f5; --field:#fcfcfc;
+    --fg:#212529; --muted:#878a99; --line:#ebebeb; --line-2:#efefef;
+    --accent:#245ec3; --accent-soft:#e9f0fb;
+    --jam:#1f7a5a; --jam-soft:#dcf1e9; --nonjam:#8a5a20; --nonjam-soft:#f6ead6;
+    --on:#1a7f4b; --off:#9aa4b2; --wire:#aeb6c1;
+    --warn:#b4700f; --warn-soft:#f8ecd6;
+    --note:#6a5acd;--note-soft:rgba(106,90,205,.12);
+    --font-display:"Space Grotesk","Pretendard",-apple-system,BlinkMacSystemFont,sans-serif;
+    --font-body:"Pretendard",-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo",sans-serif;
+    --mono:"SF Mono",ui-monospace,"Roboto Mono",Menlo,monospace;
+  }
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+    --bg:#0f1218; --surface:#181c24; --surface-2:#1f242e; --field:#141821;
+    --fg:#e8ebf0; --muted:#98a2b0; --line:#2b313c; --line-2:#242a34;
+    --accent:#5b8cff; --accent-soft:#1b2640;
+    --jam:#4cc585; --jam-soft:#12301f; --nonjam:#d69a52; --nonjam-soft:#2f2410;
+    --on:#4cc585; --off:#5c6675; --wire:#3a414d;
+    --warn:#e0a44a; --warn-soft:#2f2410;
+    --note:#a99cf0;--note-soft:rgba(169,156,240,.16); color-scheme:dark;
+  }}
+  :root[data-theme="dark"]{
+    --bg:#0f1218; --surface:#181c24; --surface-2:#1f242e; --field:#141821;
+    --fg:#e8ebf0; --muted:#98a2b0; --line:#2b313c; --line-2:#242a34;
+    --accent:#5b8cff; --accent-soft:#1b2640;
+    --jam:#4cc585; --jam-soft:#12301f; --nonjam:#d69a52; --nonjam-soft:#2f2410;
+    --on:#4cc585; --off:#5c6675; --wire:#3a414d;
+    --warn:#e0a44a; --warn-soft:#2f2410;
+    --note:#a99cf0;--note-soft:rgba(169,156,240,.16); color-scheme:dark;
+  }
+  *{box-sizing:border-box}
+  body{background:var(--bg);color:var(--fg);font-family:var(--font-body);line-height:1.45;font-size:13.5px;margin:0}
+  .app{max-width:1160px;margin:0 auto;padding:16px 16px 56px}
+  .crumb{font-size:12px;color:var(--muted)}
+  .crumb b{color:var(--fg);font-weight:600}
+  .toolbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:8px 0 12px}
+  .toolbar h1{font-family:var(--font-display);font-size:20px;margin:0}
+  .toolbar .sp{flex:1;min-width:0}
+  .btn{font-family:var(--font-body);font-size:13px;border-radius:8px;padding:8px 14px;border:1px solid var(--line);background:var(--surface);color:var(--fg);cursor:pointer}
+  .btn.pri{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+  .btn.ghost{background:none}
+  .btn.sm{padding:6px 11px;font-size:12.5px}
+  .ex{font-size:10px;font-weight:700;color:var(--note);background:var(--note-soft);border-radius:5px;padding:1px 6px;font-family:var(--font-display)}
+
+  .filters{display:flex;gap:8px;flex-wrap:wrap;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px;margin-bottom:12px}
+  .filters .f{display:flex;flex-direction:column;gap:3px}
+  .filters label{font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;font-family:var(--font-display)}
+  .ipt,.sel{background:var(--field);border:1px solid var(--line);border-radius:7px;padding:7px 9px;font-size:13px;color:var(--fg);font-family:var(--font-body)}
+  .ipt::placeholder{color:var(--wire)}
+  .search{min-width:200px;flex:1}
+
+  .panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+  .panel .ph{display:flex;align-items:center;gap:8px;padding:11px 14px;border-bottom:1px solid var(--line);font-family:var(--font-display);font-weight:600;font-size:13px}
+  .panel .ph .cnt{color:var(--muted);font-weight:400;font-size:12px}
+  .panel .ph .sp{flex:1}
+  .tblwrap{overflow-x:auto}
+  table{border-collapse:collapse;width:100%;font-size:12.5px;min-width:820px}
+  th,td{padding:9px 12px;text-align:left;border-bottom:1px solid var(--line-2);white-space:nowrap}
+  th{background:var(--surface-2);font-family:var(--font-display);font-weight:600;font-size:11px;color:var(--muted)}
+  td.r,th.r{text-align:right;font-variant-numeric:tabular-nums}
+  tr.row{cursor:pointer}
+  tr.row:hover td{background:var(--surface-2)}
+  .code{font-family:var(--mono);font-size:12px}
+  .ver{font-family:var(--mono);font-size:11px;color:var(--muted)}
+  .tag{font-size:10.5px;font-weight:700;border-radius:5px;padding:2px 7px}
+  .t-jam{background:var(--jam-soft);color:var(--jam)}
+  .t-non{background:var(--nonjam-soft);color:var(--nonjam)}
+  .st{display:inline-flex;align-items:center;gap:5px;font-size:12px}
+  .st .d{width:7px;height:7px;border-radius:50%}
+  .st.on .d{background:var(--on)} .st.off .d{background:var(--off)}
+  .st.off{color:var(--muted)}
+  .mini{font-size:11px;border:1px solid var(--line);background:var(--surface);border-radius:6px;padding:3px 8px;cursor:pointer;color:var(--fg)}
+
+  /* 드로어 */
+  .ov{position:fixed;inset:0;background:rgba(10,14,22,.42);opacity:0;pointer-events:none;transition:opacity .18s;z-index:40}
+  .ov.show{opacity:1;pointer-events:auto}
+  .drawer{position:fixed;top:0;right:0;height:100%;width:min(520px,94vw);background:var(--surface);border-left:1px solid var(--line);box-shadow:-16px 0 40px rgba(10,14,22,.18);transform:translateX(100%);transition:transform .22s cubic-bezier(.4,0,.2,1);z-index:41;display:flex;flex-direction:column}
+  .drawer.show{transform:none}
+  .drawer .dh{display:flex;align-items:center;gap:8px;padding:13px 16px;border-bottom:1px solid var(--line)}
+  .drawer .dh h3{font-family:var(--font-display);font-size:15px;margin:0}
+  .drawer .dh .sp{flex:1}
+  .drawer .dh .code{color:var(--muted)}
+  .verbadge{font-family:var(--mono);font-size:11px;font-weight:700;color:var(--accent);background:var(--accent-soft);border:1px solid var(--accent);border-radius:6px;padding:2px 7px}
+  .x{border:1px solid var(--line);background:var(--surface);border-radius:7px;width:30px;height:30px;cursor:pointer;color:var(--fg);font-size:14px}
+  .db{overflow:auto;padding:12px 16px 16px;flex:1}
+  .dfoot{display:flex;gap:8px;align-items:center;padding:12px 16px;border-top:1px solid var(--line);background:var(--surface-2)}
+  .dfoot .sp{flex:1}
+  .vnote{font-size:11.5px;color:var(--muted)}
+
+  .fld{margin:0 0 13px}
+  .fl{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;font-family:var(--font-display);margin:0 0 5px}
+  .fl .req{color:var(--accent)}
+  .fld .ipt,.fld .sel{width:100%}
+  .row3{display:flex;gap:6px}.row3 .ipt{flex:1;min-width:70px}
+  .won{display:flex;align-items:center;gap:6px}.won .ipt{max-width:160px;text-align:right}.won .u{font-size:12px;color:var(--muted)}
+  .seg{display:inline-flex;background:var(--field);border:1px solid var(--line);border-radius:9px;padding:3px;gap:3px}
+  .seg span{padding:7px 14px;font-size:12.5px;border-radius:6px;cursor:pointer;color:var(--muted)}
+  .seg span.on{background:var(--accent);color:#fff;font-weight:600}
+  .toggle{display:inline-flex;align-items:center;gap:7px;font-size:12.5px}
+  .sw{width:34px;height:19px;border-radius:20px;background:var(--on);position:relative}
+  .sw::after{content:"";position:absolute;top:2px;right:2px;width:15px;height:15px;border-radius:50%;background:#fff}
+  .ipt:disabled,.sel:disabled{background:var(--surface-2);color:var(--muted);border-style:dashed;cursor:not-allowed;-webkit-text-fill-color:var(--muted);opacity:1}
+  .lockval{background:var(--surface-2);border:1px dashed var(--line);border-radius:8px;padding:8px 11px;font-size:12.5px;color:var(--muted);font-weight:600}
+  .autoval{background:var(--surface-2);border:1px dashed var(--line);border-radius:8px;padding:8px 11px;font-size:12.5px;color:var(--muted)}
+  .autoval.code{font-family:var(--mono)}
+  .sub.lock{opacity:.85}
+  .sub{background:var(--surface-2);border:1px solid var(--line-2);border-radius:10px;padding:11px 12px;margin-top:8px}
+  .sub .fld:last-child{margin-bottom:0}
+  .two{display:flex;gap:10px}.two .fld{flex:1}
+
+  /* 메타/버전 */
+  .metagrid{display:grid;grid-template-columns:1fr 1fr;gap:8px 14px;background:var(--surface-2);border:1px solid var(--line-2);border-radius:10px;padding:11px 13px}
+  .metagrid>div{display:flex;flex-direction:column;gap:2px}
+  .metagrid .mk{font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.03em;font-family:var(--font-display)}
+  .metagrid .mv{font-size:12.5px;font-weight:600}
+  .metagrid .mv.mono{font-family:var(--mono);font-weight:700}
+  /* 사용 중 상품 */
+  .uselist{border:1px solid var(--line-2);border-radius:10px;overflow:hidden}
+  .urow{display:flex;align-items:center;gap:8px;padding:9px 12px;border-bottom:1px solid var(--line-2);font-size:12.5px}
+  .urow:last-child{border-bottom:none}
+  .urow .un{flex:1}
+  .uv{font-family:var(--mono);font-size:11px;padding:2px 6px;border-radius:5px}
+  .uv.ok{background:var(--jam-soft);color:var(--jam)}
+  .uv.old{background:var(--warn-soft);color:var(--warn)}
+  .uempty{padding:11px 12px;font-size:12px;color:var(--muted)}
+
+  /* 안내(보라 · 구현 시 제외 가능) */
+  .note{display:flex;gap:8px;background:var(--note-soft);border:1px solid var(--note);border-radius:10px;padding:10px 13px;font-size:12px;color:var(--fg);margin:0 0 12px}
+  .note::before{content:"안내";font-family:var(--font-display);font-size:9.5px;font-weight:700;color:#fff;background:var(--note);border-radius:5px;padding:2px 6px;height:fit-content;letter-spacing:.03em}
+  .memo{background:var(--note-soft);border:1px solid var(--note);border-radius:11px;padding:11px 13px;margin-top:16px;font-size:12px}
+  .memo .mh{font-family:var(--font-display);font-weight:700;font-size:11px;color:var(--note);margin:0 0 6px;display:flex;align-items:center;gap:6px}
+  .memo .mh::before{content:"안내";font-size:9px;background:var(--note);color:#fff;border-radius:5px;padding:2px 6px;letter-spacing:.03em}
+  .memo .mh .sub2{font-family:var(--font-body);font-weight:400;color:var(--muted);font-size:10.5px}
+  .memo ul{margin:0;padding-left:16px}.memo li{margin:3px 0}
+  .memo b{color:var(--fg)}
+</style>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,400,0..1,0&display=swap">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<style id="ds">
+/* ===== 9.81 PARK Admin 디자인 시스템(DESIGN.md) 적용 레이어 · 라이트 모드 전용 ===== */
+:root,:root[data-theme]{
+  --bg:#FAFAFA !important; --surface:#FFFFFF !important; --surface-2:#FAFAFA !important; --field:#FFFFFF !important;
+  --fg:#212529 !important; --muted:#878A99 !important; --line:#EBEBEB !important; --line-2:#EFEFEF !important;
+  --accent:#245EC3 !important; --accent-soft:rgba(36,94,195,.10) !important;
+  --on:#008000 !important; --off:#C8C8C8 !important; --wire:#C8C8C8 !important;
+  --font-display:"Pretendard",-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Noto Sans KR",sans-serif !important;
+  --font-body:"Pretendard",-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Noto Sans KR",sans-serif !important;
+  --mono:"JetBrains Mono","Pretendard",ui-monospace,monospace !important;
+  color-scheme:light !important;
+}
+body{background:#FAFAFA !important;color:#212529;font-size:13.5px}
+.material-symbols-outlined{font-family:"Material Symbols Outlined";font-weight:400;font-style:normal;font-size:18px;line-height:1;display:inline-block;vertical-align:-4px;font-variation-settings:"FILL" 0,"wght" 400;color:#878A99}
+
+/* 페이지 헤더 */
+.app{max-width:none !important;padding:18px 24px 48px !important}
+.crumb{font-size:10.5px !important;color:#878A99 !important}
+.crumb b{color:#878A99 !important;font-weight:400 !important}
+.toolbar h1{font-size:16.5px !important;font-weight:600 !important;letter-spacing:0}
+
+/* 버튼 */
+.btn{height:34px;padding:0 18px !important;border-radius:8px !important;font-size:13.5px !important;font-weight:500 !important;border:.7px solid #878A99 !important;color:#878A99 !important;background:transparent !important;box-shadow:none !important}
+.btn.pri{background:#245EC3 !important;border-color:#245EC3 !important;color:#FFFFFF !important}
+.btn.sm{height:28px;padding:0 12px !important;border-radius:6px !important;font-size:12px !important}
+.btn.keptbtn{border-color:var(--note) !important;color:var(--note) !important}
+.mini{font-family:var(--font-body)}
+
+/* 입력 */
+.ipt,.sel,.capedit{min-height:34px;border:1px solid #EBEBEB !important;border-radius:8px !important;background:#FFFFFF !important;font-size:13.5px !important;padding:0 8px !important}
+textarea.ipt{padding:8px !important}
+.ipt:focus,.sel:focus,.capedit:focus{outline:none;border-color:#245EC3 !important}
+.ipt::placeholder{color:#C8C8C8 !important}
+.filters label,.fl,.lf label,.sl{text-transform:none !important;letter-spacing:0 !important;font-family:var(--font-body) !important}
+.fl{font-size:13.5px !important;color:#485056 !important}
+.fl .req{color:#DA222B !important}
+.filters label{font-size:12px !important;color:#485056 !important}
+
+/* 섹션 카드 */
+.panel,.filters,.ctrlbar{background:#FFFFFF !important;border:1px solid #EFEFEF !important;border-radius:16px !important;box-shadow:none !important}
+.panel .ph{font-size:15px !important;font-weight:600 !important;padding:12px 18px !important;border-bottom:1px solid #EFEFEF !important}
+.filters,.ctrlbar{padding:12px 18px !important}
+
+/* 테이블: 헤더 12/600 가운데, 셀 13.5 가운데, 행 36 */
+table:not(.subtbl) th,table:not(.subtbl) td{text-align:center !important}
+th{font-size:12px !important;font-weight:600 !important;color:#212529 !important;background:#FFFFFF !important;text-transform:none !important;letter-spacing:0 !important;height:36px;padding:0 12px !important;font-family:var(--font-body) !important}
+td{font-size:13.5px !important;height:36px;padding:6px 12px !important;border-bottom:1px solid #EFEFEF !important}
+.subtbl th,.subtbl td{text-align:center !important}
+tr.row:hover td,tr.click:hover td{background:rgba(33,37,41,.05) !important}
+.code,.num,.slot,.ver,.verbadge,td.r{font-family:var(--mono) !important;letter-spacing:-.25px}
+
+/* 상태 칩: 10% 틴트 알약 */
+.st,.pill,.tag,.chip{display:inline-flex;align-items:center;gap:6px;height:22px;padding:0 10px !important;border-radius:9999px !important;font-size:12px !important;font-weight:400 !important;font-family:var(--font-body) !important}
+.st{background:rgba(0,128,0,.10);color:#008000 !important}
+.st .d{width:6px !important;height:6px !important;background:#008000 !important}
+.st.off{background:rgba(183,183,183,.18);color:#878A99 !important}
+.st.off .d{background:#B7B7B7 !important}
+.p-ok,.s-on{background:rgba(0,128,0,.10) !important;color:#008000 !important}
+.p-near,.s-hi{background:rgba(255,152,0,.10) !important;color:#E08600 !important}
+.p-out,.s-stop,.s-cancel,.unset{background:rgba(218,34,43,.10) !important;color:#DA222B !important}
+.p-stop,.s-mid,.s-used{background:rgba(183,183,183,.18) !important;color:#878A99 !important}
+.s-lo,.s-type,.t-pkg,.t-jam{background:rgba(36,94,195,.10) !important;color:#245EC3 !important}
+.t-single,.t-non{background:rgba(183,183,183,.18) !important;color:#485056 !important}
+.chip.k{background:var(--note) !important;color:#fff !important}
+
+/* 알약형 탭 (선택 = primary 채움) */
+.nav,.tabs,.topnav{background:transparent !important;border:none !important;padding:0 !important;gap:4px !important;margin-bottom:12px}
+.nav button,.tabs .tab,.topnav button{height:30px;padding:0 12px !important;border-radius:16px !important;font-size:15px !important;font-weight:400 !important;color:#878A99 !important;background:transparent !important;box-shadow:none !important;font-family:var(--font-body) !important;display:inline-flex;align-items:center;gap:6px}
+.nav button.on,.tabs .tab.on,.topnav button.on{background:#245EC3 !important;color:#FFFFFF !important;font-weight:600 !important}
+.nav button .sub{display:none !important}
+.nav button.keptnav{color:var(--note) !important}
+.nav button.keptnav.on{background:var(--note) !important;color:#fff !important}
+.tabs .tab{font-size:12px !important;height:24px}
+/* 섹션 안 작은 탭 · 세그먼트 */
+.langseg,.seg{background:#FFFFFF !important;border:1px solid #EBEBEB !important;border-radius:8px !important;padding:2px !important;gap:2px !important}
+.langseg button,.seg button,.seg span{border-radius:6px !important;background:#FCFCFC !important;color:#878A99 !important;font-weight:500 !important;font-size:13.5px !important;box-shadow:none !important}
+.langseg button.on,.seg button.on,.seg span.on{background:#245EC3 !important;color:#FFFFFF !important;font-weight:600 !important}
+.langseg .dot.ok{background:#FFFFFF !important}
+
+/* 드로어: 오른쪽, #FAFAFA, 폭 = 화면 − 200 */
+.ov{background:rgba(33,37,41,.30) !important}
+.drawer:not(.two){width:max(min(560px,100vw),calc(100vw - 200px)) !important;max-width:100vw !important;background:#FAFAFA !important;border-left:none !important;box-shadow:-5px 5px 4px rgba(0,0,0,.10) !important}
+.drawer.two{width:min(500px,100vw) !important;background:#FAFAFA !important}
+.dh{background:#FAFAFA !important;border-bottom:1px solid #EFEFEF !important;padding:16px 24px !important}
+.dh h3{font-size:16.5px !important;font-weight:600 !important;font-family:var(--font-body) !important}
+.db{padding:6px 24px 24px !important}
+.dfoot{background:#FFFFFF !important;border-top:1px solid #EFEFEF !important;padding:12px 24px !important}
+.drawer .sec{background:#FFFFFF;border:1px solid #EFEFEF !important;border-radius:16px;padding:18px !important;margin:18px 0 0}
+.drawer .sl{font-size:15px !important;font-weight:600 !important;color:#212529 !important}
+.x{border:none !important;background:transparent !important;color:#878A99 !important}
+
+/* 페이저 */
+.pager{gap:24px;font-size:13.5px !important;color:#212529 !important}
+.pager .pg,.pg{min-width:26px;height:26px;padding:0 6px !important;border-radius:4px !important;border:none !important;background:transparent !important;font-family:var(--mono)}
+.pager .pg.on,.pg.on{background:#245EC3 !important;color:#FFFFFF !important}
+.dspager{display:flex;align-items:center;gap:24px;padding:10px 18px;border-top:1px solid #EFEFEF;font-size:13.5px;color:#212529;flex-wrap:wrap}
+.dspager .sp{flex:1}
+.dspager .pgs{display:flex;gap:2px}
+.dspager .pgs span{min-width:26px;height:26px;display:inline-flex;align-items:center;justify-content:center;border-radius:4px;font-family:var(--mono);font-size:13px;color:#878A99}
+.dspager .pgs span.on{background:#245EC3;color:#FFFFFF;font-weight:500}
+
+/* 빈 상태 */
+.dsempty{height:120px;display:flex;align-items:center;justify-content:center;border:1px dashed rgba(200,200,200,.7);border-radius:8px;color:rgba(200,200,200,.9);font-size:15px;font-weight:500;margin:12px 18px}
+</style>
+<script>document.documentElement.setAttribute("data-theme","light")</script>
+<style>
+  .keep{background:var(--note-soft);border:1px dashed var(--note);border-radius:12px;padding:12px 14px;margin-top:16px;font-size:12.5px}
+  .keep .kh{display:flex;align-items:center;gap:6px;font-weight:700;font-size:12px;color:var(--note);margin:0 0 6px}
+  .keep .kh::before{content:"정하는 중";font-size:9.5px;background:var(--note);color:#fff;border-radius:5px;padding:2px 6px}
+  .keep p{margin:3px 0;color:var(--fg)}
+  .tbd{color:var(--note);font-weight:600}
+</style>
+
+<style>
+  .keeprow td{background:var(--note-soft) !important}
+  .pnote{color:var(--note);font-weight:600}
+  .st.plan{background:rgba(36,94,195,.10) !important;color:#245EC3 !important}
+  .st.plan .d{background:#245EC3 !important}
+  .st.past{background:rgba(183,183,183,.18) !important;color:#878A99 !important}
+  .st.past .d{background:#B7B7B7 !important}
+  .exrow{font-size:10px;font-weight:700;color:var(--note);background:var(--note-soft);border-radius:5px;padding:1px 6px;margin-left:6px}
+  .lockmsg{background:var(--surface-2);border:1px dashed var(--line);border-radius:10px;padding:10px 12px;font-size:12.5px;color:var(--muted);margin:14px 0 12px}
+  .togs{display:inline-flex;gap:6px}
+</style>
+<div class="app">
+  <div class="crumb">판매 관리 &gt; <b>JAM 차감 관리</b></div>
+  <div class="toolbar">
+    <h1>JAM 차감 관리</h1>
+    <span class="ex">예시 데이터</span>
+    <span class="sp"></span>
+    <button class="btn pri" onclick="openRule(null)">+ 차감 규칙 등록</button>
+  </div>
+
+  <div class="note"><span>액티비티를 <b>1번 이용할 때 어떤 JAM을 몇 개 쓰는지</b> 정하는 화면이에요. 고객이 티켓을 살 때 그 시점에 적용 중인 규칙이 티켓에 기록되고, 이용할 때는 <b>산 날의 규칙대로</b> JAM이 줄어요. 규칙을 바꾸려면 적용 시작일시를 넣어 새 규칙을 등록해 주세요.</span></div>
+
+  <div class="filters">
+    <div class="f search"><label>검색</label><input class="ipt" placeholder="액티비티 이름을 입력해 주세요"></div>
+    <div class="f" style="justify-content:flex-end"><button class="btn pri sm" style="height:34px">검색</button></div>
+    <div class="f"><label>차감 JAM</label><select class="sel"><option>전체</option><option>레이스 JAM</option><option>일반 JAM</option><option>마스터 레이스 JAM</option></select></div>
+    <div class="f"><label>상태</label><select class="sel"><option>전체</option><option>적용 예정</option><option>적용 중</option><option>만료</option></select></div>
+  </div>
+
+  <div class="panel">
+    <div class="ph">차감 규칙 목록 <span class="cnt" id="cnt"></span></div>
+    <div class="tblwrap">
+      <table>
+        <thead><tr><th>상태</th><th>액티비티</th><th>차감 JAM</th><th class="r">1회 차감</th><th>적용 시작일시</th><th>수정일시</th><th></th></tr></thead>
+        <tbody id="rows"></tbody>
+      </table>
+    </div>
+    <div class="dspager"><span id="tot"></span><span>1 페이지 중 1 페이지</span><span>페이지당 행 수 : 20</span><span class="sp"></span><div class="pgs"><span>«</span><span>‹</span><span class="on">1</span><span>›</span><span>»</span></div></div>
+  </div>
+
+  <div class="keep">
+    <div class="kh">아직 정하지 않은 것</div>
+    <p><b>마스터 레이스:</b> 1번 이용할 때 마스터 레이스 JAM을 몇 개 쓰는지 정해야 해요.</p>
+    <p><b>예시 행 2개:</b> "적용 예정"(아레나 4개)과 "만료"(디지털 레이스 3개) 상태를 보여 주려고 넣은 예시예요. 실제로 정해진 변경이나 예전 값이 아니에요.</p>
+  </div>
+</div>
+
+<!-- 등록·보기 드로어 -->
+<div class="ov" id="ov" onclick="closeRule()"></div>
+<aside class="drawer" id="dw">
+  <div class="dh"><h3 id="dwTitle">차감 규칙</h3><span class="code" id="dwCode"></span><span class="sp"></span><button class="x" onclick="closeRule()">✕</button></div>
+  <div class="db">
+    <div class="lockmsg" id="lockMsg" hidden></div>
+    <div class="fld"><div class="fl">액티비티 <span class="req">*</span></div><select class="sel" id="fAct"></select></div>
+    <div class="fld"><div class="fl">차감 JAM <span class="req">*</span></div><select class="sel" id="fJam"><option>레이스 JAM</option><option>일반 JAM</option><option>마스터 레이스 JAM</option></select></div>
+    <div class="fld"><div class="fl">1회 차감 <span class="req">*</span></div><div class="won"><input class="ipt" id="fQty"><span class="u">개</span></div></div>
+    <div class="fld"><div class="fl">적용 시작일시 <span class="req">*</span></div><input class="ipt" id="fFrom" type="datetime-local" style="max-width:240px"></div>
+
+    <div class="fld"><div class="fl">등록 정보</div>
+      <div class="metagrid">
+        <div><span class="mk">등록자</span><span class="mv" id="mBy">정산이</span></div>
+        <div><span class="mk">최종 수정</span><span class="mv" id="mUp">—</span></div>
+      </div>
+    </div>
+
+    <div class="memo">
+      <div class="mh">안내 <span class="sub2">— 구현 시 제외 가능</span></div>
+      <ul>
+        <li>고객이 티켓을 <b>살 때</b> 적용 중인 규칙이 티켓에 기록돼요. 나중에 규칙이 바뀌어도 그 티켓은 <b>기록된 규칙대로</b> 차감해요. 환불할 때 이용한 JAM 원가도 같은 기록으로 계산해요.</li>
+        <li>규칙을 바꾸려면 기존 규칙을 고치지 않고 <b>적용 시작일시를 넣어 새 규칙을 등록</b>해요. 그 시각이 되면 새 규칙이 "적용 중"이 되고, 이전 규칙은 "만료"가 돼요.</li>
+        <li>이미 시작된 규칙(적용 중, 만료)은 고칠 수 없어요. <b>적용 예정</b> 규칙만 고치거나 지울 수 있어요.</li>
+        <li>한 액티비티에 같은 적용 시작일시로 규칙을 두 개 등록할 수 없어요. 적용 시작일시는 지금보다 뒤로만 넣을 수 있어요.</li>
+        <li>상태(적용 예정, 적용 중, 만료)는 <b>적용 시작일시에 따라 자동으로</b> 정해져요. 직접 고르지 않아요. 액티비티를 멈추는 일은 액티비티 운영 상태에서 다뤄요.</li>
+        <li>차감 JAM은 <b>PSU 관리</b>에 등록된 PSU 중에서 골라요. 1회 차감은 <b>1 이상의 정수</b>로 넣어요.</li>
+        <li>JAM은 고객이 <b>이용을 시작할 때</b> 줄어요. 아레나·벡토는 장비 체크인, 레이스는 차량 탑승, 비전·스포츠랩은 이용 처리 때예요.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="dfoot"><span class="vnote" id="vnote"></span><span class="sp"></span><span id="footBtns"></span></div>
+</aside>
+
+<script>
+// 차감 규칙 (예시). st: plan=적용 예정, now=적용 중, past=만료 / qty가 null이면 정하는 중
+var RULES=[
+  {act:'레이스',jam:'레이스 JAM',qty:1,from:'2026-09-21T00:00',st:'now',up:'2026-09-21 10:00'},
+  {act:'마스터 트레이니',jam:'마스터 레이스 JAM',qty:null,from:'',st:'now',up:'—'},
+  {act:'마스터 레이스',jam:'마스터 레이스 JAM',qty:null,from:'',st:'now',up:'—'},
+  {act:'아레나',jam:'일반 JAM',qty:4,from:'2026-12-01T00:00',st:'plan',up:'2026-11-05 09:30',ex:true},
+  {act:'아레나',jam:'일반 JAM',qty:5,from:'2026-09-21T00:00',st:'now',up:'2026-09-21 10:00'},
+  {act:'벡토',jam:'일반 JAM',qty:5,from:'2026-09-21T00:00',st:'now',up:'2026-09-21 10:00'},
+  {act:'디지털 레이스',jam:'일반 JAM',qty:4,from:'2026-09-21T00:00',st:'now',up:'2026-09-21 10:00'},
+  {act:'디지털 레이스',jam:'일반 JAM',qty:3,from:'2026-08-01T00:00',st:'past',up:'2026-07-25 15:10',ex:true},
+  {act:'비전',jam:'일반 JAM',qty:2,from:'2026-09-21T00:00',st:'now',up:'2026-09-21 10:00'},
+  {act:'스포츠랩',jam:'일반 JAM',qty:2,from:'2026-09-21T00:00',st:'now',up:'2026-09-21 10:00'}
+];
+var ST={plan:'적용 예정',now:'적용 중',past:'만료'};
+var CLS={plan:'plan',now:'on',past:'past'};
+var TBD='<span class="pnote">정하는 중</span>';
+var ACTS=['레이스','마스터 트레이니','마스터 레이스','아레나','벡토','디지털 레이스','비전','스포츠랩'];
+function $(id){return document.getElementById(id);}
+function fmt(d){return d?d.replace('T',' '):TBD;}
+
+$('rows').innerHTML=RULES.map(function(r,i){
+  return '<tr class="row'+(r.qty==null||r.ex?' keeprow':'')+'" data-i="'+i+'">'+
+    '<td><span class="st '+CLS[r.st]+'"><span class="d"></span>'+ST[r.st]+'</span></td>'+
+    '<td>'+r.act+(r.ex?'<span class="exrow">예시 행</span>':'')+'</td>'+
+    '<td>'+r.jam+'</td>'+
+    '<td class="r">'+(r.qty==null?TBD:r.qty+'개')+'</td>'+
+    '<td class="ver">'+fmt(r.from)+'</td>'+
+    '<td class="ver">'+r.up+'</td>'+
+    '<td><button class="mini">'+(r.st==='plan'?'편집':'보기')+'</button></td></tr>';
+}).join('');
+$('cnt').textContent='· '+RULES.length+'건';
+$('tot').textContent='총 '+RULES.length+'개 항목';
+$('fAct').innerHTML=ACTS.map(function(a){return '<option>'+a+'</option>';}).join('');
+$('rows').addEventListener('click',function(e){
+  var tr=e.target.closest('tr.row'); if(tr) openRule(RULES[+tr.dataset.i]);
+});
+
+function lock(on){['fAct','fJam','fQty','fFrom'].forEach(function(id){$(id).disabled=on;});}
+var cur=null;
+function openRule(r){
+  cur=r;
+  if(r){
+    var edit=(r.st==='plan');
+    $('dwTitle').textContent=edit?'차감 규칙 편집':'차감 규칙 보기';
+    $('dwCode').textContent='· '+r.act+' · '+ST[r.st];
+    $('fAct').value=r.act; $('fJam').value=r.jam;
+    $('fQty').value=(r.qty==null?'':r.qty); $('fQty').placeholder=(r.qty==null?'정하는 중':'');
+    $('fFrom').value=r.from;
+    $('mUp').textContent=r.up;
+    lock(!edit); $('fAct').disabled=true;
+    $('lockMsg').hidden=edit;
+    $('lockMsg').textContent='이미 시작된 규칙이라 고칠 수 없어요. 차감 개수를 바꾸려면 "새 규칙으로 등록"을 눌러 적용 시작일시를 넣어 주세요.';
+    $('vnote').textContent=edit?'시작 전이라 고치거나 지울 수 있어요':'';
+    $('footBtns').innerHTML=edit
+      ?'<button class="btn ghost sm" onclick="closeRule()">삭제</button> <button class="btn ghost sm" onclick="closeRule()">취소</button> <button class="btn pri sm" onclick="closeRule()">저장</button>'
+      :'<button class="btn ghost sm" onclick="closeRule()">닫기</button> <button class="btn pri sm" onclick="openRule(null,cur)">새 규칙으로 등록</button>';
+  }
+  $('ov').classList.add('show'); $('dw').classList.add('show');
+}
+// 새 규칙 등록 (base가 있으면 그 규칙 값을 미리 채움)
+var _open=openRule;
+openRule=function(r,base){
+  if(r) return _open(r);
+  cur=null;
+  $('dwTitle').textContent='차감 규칙 등록';
+  $('dwCode').textContent='· 신규';
+  lock(false);
+  $('lockMsg').hidden=true;
+  $('fAct').value=base?base.act:ACTS[0];
+  $('fJam').value=base?base.jam:'일반 JAM';
+  $('fQty').value=base&&base.qty!=null?base.qty:''; $('fQty').placeholder='';
+  $('fFrom').value='';
+  $('mUp').textContent='저장할 때 기록돼요';
+  $('vnote').textContent='적용 시작일시부터 새로 산 티켓에 적용돼요';
+  $('footBtns').innerHTML='<button class="btn ghost sm" onclick="closeRule()">취소</button> <button class="btn pri sm" onclick="closeRule()">저장</button>';
+  $('ov').classList.add('show'); $('dw').classList.add('show');
+};
+function closeRule(){$('ov').classList.remove('show');$('dw').classList.remove('show');}
+</script>
+
+</body></html>

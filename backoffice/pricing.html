@@ -301,7 +301,7 @@ tr.row:hover td,tr.click:hover td{background:rgba(33,37,41,.05) !important}
     <button data-t="season">시즌</button>
     <button data-t="cal">가격 캘린더</button>
     <button data-t="channel">채널</button>
-    <button data-t="rule">계산 규칙</button>
+    <button data-t="rule" class="keptnav">계산 규칙</button>
   </nav>
 
   <!-- 상품 가격 -->
@@ -365,7 +365,7 @@ tr.row:hover td,tr.click:hover td{background:rgba(33,37,41,.05) !important}
           <button class="btn ghost sm" onclick="calMove(-1)">‹</button>
           <span class="ttl" id="calTtl"></span>
           <button class="btn ghost sm" onclick="calMove(1)">›</button>
-          <div class="legend"><span class="chip s-hi">성수</span><span class="chip s-mid">평시</span><span class="chip s-lo">비수</span><span class="chip s-stop">판매중지</span></div>
+          <div class="legend"><span class="chip s-hi">성수</span><span class="chip s-mid">평시</span><span class="chip s-lo">비수</span></div>
         </div>
         <div class="cal" id="cal"></div>
       </div>
@@ -395,11 +395,12 @@ tr.row:hover td,tr.click:hover td{background:rgba(33,37,41,.05) !important}
 
   <!-- 계산 규칙 -->
   <section class="tabpane" data-p="rule">
-    <div class="panel">
+    <div class="keptbanner">계산 규칙은 아직 정하는 중이에요. 이 탭 전체가 킵 영역이라 구현 범위가 정해지면 다시 볼게요.</div>
+    <div class="panel keptpanel">
       <div class="ph">공통 규칙</div>
       <div class="fieldrow kept"><span class="fl">할인 상한</span><input class="ipt pct" placeholder="—" disabled><span class="u">%</span><span class="chip k">킵</span></div>
       <div class="fieldrow kept"><span class="fl">원가 하한</span><input class="ipt n" placeholder="—" disabled><span class="u">원</span><span class="chip k">킵</span></div>
-      <div class="fieldrow"><span class="fl">끝자리 처리</span><select class="sel" disabled><option>100원 단위 사사오입</option></select></div>
+      <div class="fieldrow kept"><span class="fl">끝자리 처리</span><select class="sel" disabled><option>100원 단위 사사오입</option></select><span class="chip k">킵</span></div>
     </div>
   </section>
 
@@ -414,13 +415,11 @@ tr.row:hover td,tr.click:hover td{background:rgba(33,37,41,.05) !important}
         <li><b>시즌</b> — 평시를 기준으로 성수 +15%, 비수 −15% 세 구간으로 시작해요. 모든 상품에 똑같이 적용돼요.</li>
         <li><b>가격 적용 방식</b> — 레이스 포함 패키지는 날짜와 시간대, 실내 패키지는 날짜, 추가구매는 항상 같은 가격(고정가)이에요. 고정가 상품은 시즌 영향을 받지 않아요. (PD-003)</li>
         <li><b>채널</b> — 현장(키오스크·인포데스크)이 기준이에요. 앱은 10% 할인, OTA(마이리얼트립·클룩)는 현장과 같은 가격이에요.</li>
-        <li><b>끝자리</b> — 최종 금액은 100원 단위에서 반올림해요.</li>
         <li><b>바로 적용</b> — 저장하면 바로 반영돼요. 이미 결제된 주문의 금액은 바뀌지 않아요. (PD-004)</li>
         <li><b>버전</b> — 가격을 바꾸면 상품 버전 번호가 하나 올라가요. 가격만 따로 버전을 두지 않아요. (PD-006)</li>
         <li><b>공휴일</b> — 공휴일이라고 가격을 따로 정하지 않아요. 캘린더에 표시만 해요. (PD-022)</li>
         <li><b>날짜별 가격 고정</b> — 특정 날짜만 가격을 고정하는 기능은 쓰지 않아요. (PD-036)</li>
         <li><b>할인</b> — 신분·지역·크루 할인은 프로모션 관리에서 정해요. 여기서는 설정하지 않아요.</li>
-        <li><b>가격이 정해지는 순서</b> — ① 기준가 → 시즌 → (시간대·요일, 킵) ② 채널(앱 −10%) → 옵션 ③ 프로모션 → (얼리버드, 킵) → 신분·지역 할인 ④ 할인 상한 → 원가 하한 → 100원 반올림</li>
       </ul>
       <p class="gh">화면 사용법</p>
       <ul>
@@ -436,8 +435,8 @@ tr.row:hover td,tr.click:hover td{background:rgba(33,37,41,.05) !important}
         <li><b>포뮬러 G</b> — 상품 구성과 횟수권·시간권 여부가 정해지지 않았어요.</li>
         <li><b>기준가를 안 넣은 상품</b> — 판매를 막을지 확인이 필요해요.</li>
         <li><b>시즌 기간이 겹칠 때</b> — 어떤 시즌을 적용할지 정해야 해요. 기간을 지정하지 않은 날을 평시로 볼지도요.</li>
-        <li><b>날짜별 판매중지</b> — 가격 캘린더와 상품 관리(판매 제외 기간) 중 어디서 할지, 전체 상품을 멈출지 상품별로 멈출지, 이미 팔린 주문은 어떻게 할지 정해야 해요.</li>
-        <li><b>할인 상한·원가 하한</b> — 값은 운영하면서 설정해요.</li>
+        <li><b>계산 규칙 전체</b> — 할인 상한, 원가 하한, 끝자리 처리(100원 단위 반올림 가안)를 쓸지와 값을 정해야 해요.</li>
+        <li><b>가격이 정해지는 순서</b> — 가안: ① 기준가 → 시즌 ② 채널(앱 −10%) → 옵션 ③ 프로모션 → 신분·지역 할인 ④ 할인 상한 → 원가 하한 → 100원 반올림</li>
         <li><b>시즌 가격과 할인을 같이 적용할 때</b> — 계산 규칙이 아직 없어요.</li>
         <li><b>채널 구조</b> — 현장 채널을 나눌지, 채널을 어떻게 추가할지, OTA 수수료를 반영할지(PD-035) 정해야 해요.</li>
         <li><b>동승자 추가 금액</b> — 가격 정책에서 정할 예정이에요. 주문 DDL이 나온 뒤 함께 정해요.</li>
@@ -493,7 +492,6 @@ var PERIODS=[
   {from:'2027-01-04',to:'2027-02-28',s:'lo'}
 ];
 var HOLI={'2026-12-25':'성탄절','2027-01-01':'신정'};
-var STOP={'2026-12-08':true};
 var PER=6, pg=1, cur=-1;
 var calY=2026, calM=11, selDate=null;
 
@@ -604,28 +602,25 @@ function renderCal(){
   var h=['일','월','화','수','목','금','토'].map(function(d,i){return '<div class="dow'+(i===0?' sun':'')+'">'+d+'</div>';}).join('');
   for(var b=0;b<first;b++) h+='<div class="day blank"></div>';
   for(var d=1;d<=days;d++){
-    var key=iso(calY,calM,d), s=fixed(p)?'mid':seasonOf(key), dow=(first+d-1)%7, stop=STOP[key];
-    var cls='day'+(stop?' stop':(s!=='mid'?' '+s:''))+(selDate===key?' sel':'');
+    var key=iso(calY,calM,d), s=fixed(p)?'mid':seasonOf(key), dow=(first+d-1)%7;
+    var cls='day'+(s!=='mid'?' '+s:'')+(selDate===key?' sel':'');
     h+='<div class="'+cls+'" onclick="pickDate(\''+key+'\')">'+
       '<span class="dn'+(dow===0||HOLI[key]?' sun':'')+'">'+d+'</span>'+
       (HOLI[key]?'<span class="hol">'+HOLI[key]+'</span>':'')+
-      '<span class="pr">'+(stop?'판매중지':pre+fmt(priced(p,s)))+'</span></div>';
+      '<span class="pr">'+pre+fmt(priced(p,s))+'</span></div>';
   }
   document.getElementById('cal').innerHTML=h;
 }
 function calMove(n){calM+=n;if(calM<0){calM=11;calY--;}if(calM>11){calM=0;calY++;}renderCal();}
 function pickDate(k){selDate=k;renderCal();renderDetail();}
-function toggleStop(){STOP[selDate]=!STOP[selDate];renderCal();renderDetail();}
 function renderDetail(){
   if(!selDate) return;
-  var p=calProd(), s=fixed(p)?'mid':seasonOf(selDate), stop=STOP[selDate], v=priced(p,s), pre=p.opt?'+':'';
+  var p=calProd(), s=fixed(p)?'mid':seasonOf(selDate), v=priced(p,s), pre=p.opt?'+':'';
   document.getElementById('dTtl').innerHTML=selDate+' '+(fixed(p)?'<span class="chip s-type">고정가</span>':'<span class="chip '+SEASONS[s].cls+'">'+SEASONS[s].label+'</span>')+(HOLI[selDate]?' <span class="chip s-stop">'+HOLI[selDate]+'</span>':'');
-  var line=function(l,x){return '<div class="dl"><span>'+l+'</span><span class="num">'+(stop?'<span style="color:var(--red)">판매중지</span>':(x==null?'—':pre+fmt(x)))+'</span></div>';};
+  var line=function(l,x){return '<div class="dl"><span>'+l+'</span><span class="num">'+(x==null?'—':pre+fmt(x))+'</span></div>';};
   document.getElementById('dBody').innerHTML=
     '<div class="dl"><span class="muted">상품</span><span><b>'+p.name+'</b></span></div>'+
-    line('현장',v)+line('앱',app(v))+line('OTA',v)+
-    '<div class="keptline" style="margin-top:12px"><div class="toggle" style="padding:0 0 6px"><button class="sw'+(stop?' on':'')+'" onclick="toggleStop()" aria-label="판매중지"></button><span><b>이 날 판매중지</b></span><span class="chip k">킵</span></div>'+
-    '</div>';
+    line('현장',v)+line('앱',app(v))+line('OTA',v);
 }
 
 function renderAll(){

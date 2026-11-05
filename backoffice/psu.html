@@ -1,8 +1,8 @@
 <!doctype html>
-<meta charset="utf-8">
-<meta name="robots" content="noindex,nofollow">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<style>[hidden]{display:none!important}</style>
 <title>PSU 관리</title>
+</head><body>
 <style>
   :root{
     --bg:#fafafa; --surface:#ffffff; --surface-2:#f5f5f5; --field:#fcfcfc;
@@ -248,7 +248,13 @@ tr.row:hover td,tr.click:hover td{background:rgba(33,37,41,.05) !important}
 .dsempty{height:120px;display:flex;align-items:center;justify-content:center;border:1px dashed rgba(200,200,200,.7);border-radius:8px;color:rgba(200,200,200,.9);font-size:15px;font-weight:500;margin:12px 18px}
 </style>
 <script>document.documentElement.setAttribute("data-theme","light")</script>
-
+<style>
+  .keep{background:var(--note-soft);border:1px dashed var(--note);border-radius:12px;padding:12px 14px;margin-top:16px;font-size:12.5px}
+  .keep .kh{display:flex;align-items:center;gap:6px;font-weight:700;font-size:12px;color:var(--note);margin:0 0 6px}
+  .keep .kh::before{content:"정하는 중";font-size:9.5px;background:var(--note);color:#fff;border-radius:5px;padding:2px 6px}
+  .keep p{margin:3px 0;color:var(--fg)}
+  .tbd{color:var(--note);font-weight:600}
+</style>
 
 <div class="app">
   <div class="crumb">판매 관리 &gt; <b>PSU 관리</b></div>
@@ -256,29 +262,26 @@ tr.row:hover td,tr.click:hover td{background:rgba(33,37,41,.05) !important}
     <h1>PSU 관리</h1>
     <span class="ex">예시 데이터</span>
     <span class="sp"></span>
-    <button class="btn ghost sm">CSV 다운로드</button>
     <button class="btn pri" onclick="openPsu(null)">+ PSU 등록</button>
   </div>
 
-  <div class="note"><span>PSU는 상품을 만들 때 쓰는 <b>가장 작은 단위</b>예요. 여기서는 <b>이름, 이용권(JAM)을 얼마나 쓰는지, 가격</b>만 정해요. 재고·원가·이용 자격·사용 처리는 각 담당 화면에서 다뤄요. 화면의 값은 모두 예시예요.</span></div>
+  <div class="note"><span>PSU는 상품을 만들 때 쓰는 가장 작은 단위예요. 레이스 JAM, 일반 JAM처럼 하나하나가 모두 PSU예요. 여기서는 <b>이름과 정가</b>만 정해요. 액티비티를 1번 이용할 때 JAM을 몇 개 쓰는지는 <b>JAM 차감 관리</b> 화면에서 정해요. 화면의 값은 모두 예시예요.</span></div>
 
   <div class="filters">
-    <div class="f search"><label>검색</label><input class="ipt" placeholder="PSU 코드 또는 노출명을 입력하세요"></div>
+    <div class="f search"><label>검색</label><input class="ipt" placeholder="PSU 코드나 노출명을 입력해 주세요"></div>
     <div class="f" style="justify-content:flex-end"><button class="btn pri sm" style="height:34px">검색</button></div>
-    <div class="f"><label>종류</label><select class="sel"><option>전체</option><option>JAM PSU</option><option>비JAM PSU</option></select></div>
-    <div class="f"><label>JAM 유형</label><select class="sel"><option>전체</option><option>레이스 JAM</option><option>일반 JAM</option><option>마스터 레이스 JAM</option></select></div>
     <div class="f"><label>상태</label><select class="sel"><option>전체</option><option>활성</option><option>판매중지</option></select></div>
   </div>
 
   <div class="panel">
-    <div class="ph">PSU 목록 <span class="cnt">· 3건</span><span class="sp"></span><span class="cnt">정렬: 종류</span></div>
+    <div class="ph">PSU 목록 <span class="cnt">· 3건</span></div>
     <div class="tblwrap">
       <table>
-        <thead><tr><th>상태</th><th>PSU 코드</th><th>노출명</th><th>종류</th><th>JAM 유형</th><th>차감</th><th class="r">정가</th><th>버전</th><th>수정일시</th><th class="r">상품</th><th></th></tr></thead>
+        <thead><tr><th>상태</th><th>PSU 코드</th><th>노출명</th><th class="r">정가</th><th>버전</th><th>수정일시</th><th></th></tr></thead>
         <tbody id="rows">
-          <tr class="row" data-code="RACE" data-name="레이스 JAM PSU" data-kind="jam" data-jt="레이스 JAM" data-per="1" data-cnt="1" data-exch="" data-price="25,000" data-prods="3" data-st="on"></tr>
-          <tr class="row" data-code="MST-RACE" data-name="마스터 레이스 JAM PSU" data-kind="jam" data-jt="마스터 레이스 JAM" data-per="1" data-cnt="1" data-exch="" data-price="<span style=&quot;color:var(--note);font-weight:600&quot;>미정</span>" data-prods="1" data-st="on"></tr>
-          <tr class="row" data-code="GENERAL" data-name="일반 JAM PSU" data-kind="jam" data-jt="일반 JAM" data-per="1" data-cnt="1" data-exch="" data-price="2,375" data-prods="3" data-st="on"></tr>
+          <tr class="row" data-code="RACE" data-name="레이스 JAM" data-price="25,000" data-st="on"></tr>
+          <tr class="row" data-code="GENERAL" data-name="일반 JAM" data-price="2,375" data-st="on"></tr>
+          <tr class="row" data-code="MST-RACE" data-name="마스터 레이스 JAM" data-price="" data-st="on"></tr>
         </tbody>
       </table>
     </div>
@@ -286,39 +289,19 @@ tr.row:hover td,tr.click:hover td{background:rgba(33,37,41,.05) !important}
   </div>
 </div>
 
-<!-- 편집 드로어 -->
+<!-- 등록·편집 드로어 -->
 <div class="ov" id="ov" onclick="closePsu()"></div>
 <aside class="drawer" id="dw">
   <div class="dh"><h3 id="dwTitle">PSU 편집</h3><span class="code" id="dwCode"></span><span class="verbadge" id="dwVer">v1</span><span class="sp"></span><button class="x" onclick="closePsu()">✕</button></div>
   <div class="db">
-    <div class="fld"><div class="fl">노출명 <span class="req">*</span></div><div class="row3"><input class="ipt" id="fName" placeholder="KR"><input class="ipt" placeholder="EN"><input class="ipt" placeholder="中"></div></div>
+    <div class="fld"><div class="fl">노출명 <span class="req">*</span></div><div class="row3"><input class="ipt" id="fName" placeholder="KR 예) 레이스 JAM"><input class="ipt" placeholder="EN"><input class="ipt" placeholder="中"></div></div>
 
-    <div class="fld"><div class="fl">종류 <span class="req">*</span></div>
-      <div class="seg" id="kindSeg"><span data-k="jam" class="on" onclick="setKind('jam')">JAM PSU</span><span data-k="non" onclick="setKind('non')">비JAM PSU</span></div>
-      <div class="lockval" id="kindRO" hidden></div>
-    </div>
-
-    <!-- JAM: 차감 정의 -->
-    <div class="sub" id="jamBlock">
-      <div class="fld"><div class="fl">JAM 유형 <span class="req">*</span></div><select class="sel" id="fJt"><option>레이스 JAM</option><option>일반 JAM</option><option>마스터 레이스 JAM</option></select></div>
-      <div class="two">
-        <div class="fld"><div class="fl">회당 차감량</div><div class="won"><input class="ipt" id="fPer" value="1"><span class="u">개</span></div></div>
-        <div class="fld"><div class="fl">이용 횟수</div><div class="won"><input class="ipt" id="fCnt" value="1"><span class="u">회</span></div></div>
-      </div>
-    </div>
-
-    <!-- 비JAM: 교환 차감 -->
-    <div class="sub" id="nonBlock" hidden>
-      <div class="fld"><div class="fl">교환 차감</div><div class="won"><input class="ipt" id="fExch" value="1"><span class="u">개당 교환</span></div></div>
-    </div>
-
-    <div class="fld" style="margin-top:14px"><div class="fl">정가 <span class="req">*</span></div><div class="won"><input class="ipt" id="fPrice" value="25,000"><span class="u">원</span></div></div>
+    <div class="fld"><div class="fl">정가 <span class="req">*</span></div><div class="won"><input class="ipt" id="fPrice"><span class="u">원 / 1개</span></div></div>
 
     <div class="fld"><div class="fl">PSU 코드</div><div class="autoval code" id="fCode">RACE</div></div>
 
     <div class="fld"><div class="fl">상태</div><span class="toggle"><span class="sw"></span> 활성</span></div>
 
-    <!-- 버전·등록 정보 -->
     <div class="fld"><div class="fl">버전 · 등록 정보</div>
       <div class="metagrid">
         <div><span class="mk">현재 버전</span><span class="mv mono" id="mVer">v3</span></div>
@@ -328,59 +311,40 @@ tr.row:hover td,tr.click:hover td{background:rgba(33,37,41,.05) !important}
       </div>
     </div>
 
-    <!-- 사용 중 상품 -->
-    <div class="fld"><div class="fl">사용 중 상품 <span id="useCnt" style="color:var(--muted)"></span></div>
-      <div class="uselist" id="useList"></div>
-    </div>
-
-    <!-- 안내(보라 · 구현 시 제외 가능) -->
     <div class="memo">
       <div class="mh">안내 <span class="sub2">— 구현 시 제외 가능</span></div>
       <ul>
+        <li>PSU는 <b>유형을 고르지 않아요</b>. 어떤 PSU든 이름과 정가만 넣어 똑같이 등록해요.</li>
         <li>노출명은 <b>한국어가 꼭</b> 있어야 해요. 다른 언어를 비워 두면 영어로 대신 보여줘요.</li>
-        <li>종류는 두 가지예요. <b>JAM</b>은 이용할 때마다 이용권을 쓰는 방식, <b>비JAM</b>은 1개당 1번 교환하는 방식이에요.</li>
-        <li>1번 이용할 때 쓰는 JAM 수와 이용 횟수는 <b>직접 입력</b>해요. 예) 1회에 2개씩, 3번 이용</li>
-        <li>여기 정가는 상품을 구성하고 정산을 나누는 기준이에요. 고객이 실제로 내는 판매가는 <b>상품 관리·가격 정책 관리</b>에서 정해요.</li>
-        <li>PSU 코드는 저장하면 시스템이 <b>겹치지 않게 자동으로</b> 만들어요. 직접 입력하지 않고, 만든 뒤에는 바뀌지 않아요.</li>
-        <li>수정할 때는 <b>이름과 정가만</b> 바꿀 수 있어요. 종류·JAM 유형·차감·코드를 바꾸려면 새 PSU로 등록해 주세요.</li>
-        <li>이름이나 정가를 바꿔 저장하면 <b>버전 번호가 하나 올라가요</b>. 상품은 특정 버전의 PSU를 쓰기 때문에, 상품 쪽 버전과 맞는지 함께 보여줘요.</li>
-        <li>재고 연결, 이용 자격(나이·키·주니어 등), 사용 처리(체크인·티켓 확인)는 각 담당 화면에서 다뤄요.</li>
+        <li>정가는 <b>1개 기준</b>이에요. 상품을 구성하고 정산을 나누는 기준이 되고, 고객이 실제로 내는 판매가는 <b>상품 관리·가격 정책 관리</b>에서 정해요.</li>
+        <li>액티비티를 1번 이용할 때 JAM을 몇 개 쓰는지는 여기서 정하지 않아요. <b>JAM 차감 관리</b> 화면에서 액티비티별로 정해요.</li>
+        <li>PSU 코드는 저장하면 시스템이 <b>겹치지 않게 자동으로</b> 만들어요. 만든 뒤에는 바뀌지 않아요.</li>
+        <li>수정할 때는 <b>이름과 정가만</b> 바꿀 수 있어요. 저장하면 <b>버전 번호가 하나 올라가요</b>.</li>
       </ul>
     </div>
   </div>
-  <div class="dfoot"><span class="vnote">저장 시 버전 +1</span><span class="sp"></span><button class="btn ghost sm" onclick="closePsu()">취소</button><button class="btn pri sm" onclick="closePsu()">저장</button></div>
+  <div class="dfoot"><span class="vnote" id="vnote">저장하면 버전이 하나 올라가요</span><span class="sp"></span><button class="btn ghost sm" onclick="closePsu()">취소</button><button class="btn pri sm" onclick="closePsu()">저장</button></div>
 </aside>
 
 <script>
-// 버전·등록 메타 (예시)
+// 버전·등록 정보 (예시)
 var META={
   'RACE':{ver:3,by:'정산이',cr:'2026-08-12',up:'2026-09-28 14:20'},
-  'MST-RACE':{ver:1,by:'정산이',cr:'2026-08-20',up:'2026-08-20 11:30'},
-  'GENERAL':{ver:2,by:'파수꾼',cr:'2026-08-14',up:'2026-09-22 16:40'}
+  'GENERAL':{ver:2,by:'파수꾼',cr:'2026-08-14',up:'2026-09-22 16:40'},
+  'MST-RACE':{ver:1,by:'정산이',cr:'2026-08-20',up:'2026-08-20 11:30'}
 };
-// 사용 중 상품 (상품명 + 참조한 PSU 버전)
-var USAGE={
-  'RACE':[{n:'레이스 포함 패키지',v:3},{n:'레이스 JAM 1개권',v:3},{n:'주니어 레이스',v:2}],
-  'MST-RACE':[{n:'포뮬러 G (마스터)',v:1}],
-  'GENERAL':[{n:'레이스 포함 패키지',v:2},{n:'실내 패키지',v:2},{n:'일반 6 JAM',v:1}]
-};
+var TBD='<span class="tbd">미정</span>';
 
-// 목록 렌더
 var rows=document.getElementById('rows');
 Array.prototype.forEach.call(rows.children,function(tr){
-  var d=tr.dataset, jam=(d.kind==='jam'), m=META[d.code]||{ver:1,up:'—'};
-  var ded= jam ? ('회당 '+d.per+' · '+d.cnt+'회') : ('개당 '+d.exch+' 교환');
+  var d=tr.dataset, m=META[d.code]||{ver:1,up:'—'};
   tr.innerHTML=
     '<td><span class="st '+(d.st==='on'?'on':'off')+'"><span class="d"></span>'+(d.st==='on'?'활성':'판매중지')+'</span></td>'+
     '<td class="code">'+d.code+'</td>'+
     '<td>'+d.name+'</td>'+
-    '<td>'+(jam?'<span class="tag t-jam">JAM</span>':'<span class="tag t-non">비JAM</span>')+'</td>'+
-    '<td>'+d.jt+'</td>'+
-    '<td>'+ded+'</td>'+
-    '<td class="r">'+d.price+'</td>'+
+    '<td class="r">'+(d.price||TBD)+'</td>'+
     '<td class="ver">v'+m.ver+'</td>'+
     '<td class="ver">'+m.up+'</td>'+
-    '<td class="r">'+d.prods+'</td>'+
     '<td><button class="mini" onclick="event.stopPropagation();openPsu(this.closest(\'tr\'))">편집</button></td>';
 });
 rows.addEventListener('click',function(e){
@@ -388,67 +352,31 @@ rows.addEventListener('click',function(e){
   var tr=e.target.closest('tr.row'); if(tr) openPsu(tr);
 });
 
-function setKind(k){
-  document.querySelectorAll('#kindSeg span').forEach(function(s){s.classList.toggle('on',s.dataset.k===k)});
-  document.getElementById('jamBlock').hidden=(k!=='jam');
-  document.getElementById('nonBlock').hidden=(k==='jam');
-}
-// 수정 시 정의값(종류·JAM유형·차감·코드) 잠금 — 이름·정가만 수정 가능
-function lockDef(lock,kind){
-  document.getElementById('kindSeg').hidden=lock;
-  var ro=document.getElementById('kindRO'); ro.hidden=!lock;
-  if(lock) ro.textContent=(kind==='jam'?'JAM PSU':'비JAM PSU')+'  ·  변경 불가';
-  ['fJt','fPer','fCnt','fExch'].forEach(function(id){var el=document.getElementById(id); if(el) el.disabled=lock;});
-  document.getElementById('jamBlock').classList.toggle('lock',lock);
-  document.getElementById('nonBlock').classList.toggle('lock',lock);
-}
-
-function renderUsage(code,curVer){
-  var list=USAGE[code]||[], el=document.getElementById('useList'), cnt=document.getElementById('useCnt');
-  cnt.textContent='· '+list.length+'개';
-  if(!list.length){el.innerHTML='<div class="uempty">사용 중인 상품 없음</div>';return;}
-  el.innerHTML=list.map(function(u){
-    var ok=(u.v===curVer);
-    return '<div class="urow"><span class="un">'+u.n+'</span><span class="uv '+(ok?'ok':'old')+'">v'+u.v+(ok?' · 현재':' · 이전')+'</span></div>';
-  }).join('');
-}
-
+function $(id){return document.getElementById(id);}
 function openPsu(tr){
-  var code = tr ? tr.dataset.code : '';
-  var m = tr ? (META[code]||{ver:1,by:'—',cr:'—',up:'—'}) : {ver:1,by:'정산이',cr:'—',up:'—'};
   if(tr){
-    var d=tr.dataset;
-    document.getElementById('dwTitle').textContent='PSU 편집';
-    document.getElementById('dwCode').textContent='· '+d.code;
-    document.getElementById('fName').value=d.name;
-    document.getElementById('fCode').textContent=d.code;
-    document.getElementById('fPrice').value=/</.test(d.price)?'':d.price;
-    setKind(d.kind);
-    if(d.kind==='jam'){document.getElementById('fJt').value=d.jt;document.getElementById('fPer').value=d.per;document.getElementById('fCnt').value=d.cnt;}
-    else{document.getElementById('fExch').value=d.exch||'1';}
-    lockDef(true,d.kind);
-    document.getElementById('dwVer').textContent='v'+m.ver;
-    document.getElementById('mVer').textContent='v'+m.ver;
-    document.getElementById('mBy').textContent=m.by;
-    document.getElementById('mCr').textContent=m.cr;
-    document.getElementById('mUp').textContent=m.up;
-    renderUsage(code,m.ver);
+    var d=tr.dataset, m=META[d.code]||{ver:1,by:'—',cr:'—',up:'—'};
+    $('dwTitle').textContent='PSU 편집';
+    $('dwCode').textContent='· '+d.code;
+    $('fName').value=d.name;
+    $('fPrice').value=d.price;
+    $('fPrice').placeholder=d.price?'':'미정';
+    $('fCode').textContent=d.code;
+    $('dwVer').textContent='v'+m.ver;
+    $('mVer').textContent='v'+m.ver; $('mBy').textContent=m.by; $('mCr').textContent=m.cr; $('mUp').textContent=m.up;
+    $('vnote').textContent='저장하면 버전이 하나 올라가요';
   }else{
-    document.getElementById('dwTitle').textContent='PSU 등록';
-    document.getElementById('dwCode').textContent='· 신규';
-    document.getElementById('fName').value='';
-    document.getElementById('fCode').textContent='저장 시 자동 생성 · 유니크 키';
-    document.getElementById('fPrice').value='';
-    setKind('jam');
-    lockDef(false,'jam');
-    document.getElementById('fJt').value='레이스 JAM';
-    document.getElementById('fPer').value='1';document.getElementById('fCnt').value='1';document.getElementById('fExch').value='1';
-    document.getElementById('dwVer').textContent='신규';
-    document.getElementById('mVer').textContent='—';document.getElementById('mBy').textContent='파수꾼';document.getElementById('mCr').textContent='저장 시 기록';document.getElementById('mUp').textContent='—';
-    renderUsage('',1);
+    $('dwTitle').textContent='PSU 등록';
+    $('dwCode').textContent='· 신규';
+    $('fName').value=''; $('fPrice').value=''; $('fPrice').placeholder='';
+    $('fCode').textContent='저장하면 자동으로 만들어져요';
+    $('dwVer').textContent='신규';
+    $('mVer').textContent='—'; $('mBy').textContent='파수꾼'; $('mCr').textContent='저장할 때 기록돼요'; $('mUp').textContent='—';
+    $('vnote').textContent='저장하면 v1로 등록돼요';
   }
-  document.getElementById('ov').classList.add('show');
-  document.getElementById('dw').classList.add('show');
+  $('ov').classList.add('show'); $('dw').classList.add('show');
 }
-function closePsu(){document.getElementById('ov').classList.remove('show');document.getElementById('dw').classList.remove('show');}
+function closePsu(){$('ov').classList.remove('show');$('dw').classList.remove('show');}
 </script>
+
+</body></html>

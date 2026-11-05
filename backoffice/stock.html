@@ -75,6 +75,7 @@
   .bar{height:7px;border-radius:4px;background:var(--surface-2);flex:1;max-width:180px;overflow:hidden}
   .bar span{display:block;height:100%}
 
+  .limform[hidden]{display:none !important}
   .limform{display:flex;flex-wrap:wrap;gap:12px;padding:12px 14px;border-bottom:1px solid var(--line);background:var(--surface-2)}
   .lf{display:flex;flex-direction:column;gap:4px;font-size:12px}
   .lf label{color:var(--muted);font-size:11px}
@@ -263,6 +264,22 @@ tr.row:hover td,tr.click:hover td{background:rgba(33,37,41,.05) !important}
       </table>
     </div>
   </div>
+
+  <div class="panel" style="margin-top:14px">
+    <div class="ph">판매 제외 설정 <span class="ex">예시 데이터</span><span class="sp"></span><button class="btn ghost sm" onclick="addExc()">+ 판매 제외 추가</button></div>
+    <div class="limform" id="excForm" hidden>
+      <div class="lf"><label>상품</label><select class="sel" id="eProd"><option>레이스 포함 패키지</option><option>실내 패키지</option><option>레이스 JAM 1개권</option><option>일반 6 JAM</option></select></div>
+      <div class="lf"><label>제외 기간</label><div class="dsel"><input class="ipt" type="date" id="eFrom" value="2026-12-31"><span class="cnt">~</span><input class="ipt" type="date" id="eTo" value="2026-12-31"></div></div>
+      <div class="lf"><label>시간대 (비우면 종일)</label><div class="dsel"><input class="ipt" type="time" id="eSh" step="3600"><span class="cnt">~</span><input class="ipt" type="time" id="eEh" step="3600"></div></div>
+      <div class="lf" style="align-self:end"><button class="btn sm" onclick="saveExc()">추가</button></div>
+    </div>
+    <div class="tblwrap">
+      <table>
+        <thead><tr><th>상품</th><th>제외 기간</th><th>시간대</th><th></th></tr></thead>
+        <tbody id="excBody"></tbody>
+      </table>
+    </div>
+  </div>
   </section>
 
   <div class="panel notep">
@@ -283,6 +300,7 @@ tr.row:hover td,tr.click:hover td{background:rgba(33,37,41,.05) !important}
         <li><b>운영 중단</b> — 별도 운영 중단 화면에서 처리해요.</li>
         <li><b>판매 마감</b> — 액티비티별 운영 시간 관리에서 정해요. 레이스가 들어간 상품은 레이스 마감 시각에 같이 판매가 닫혀요.</li>
         <li><b>한정 판매</b> — 상품마다 기간·시간대·요일·수량을 정해요. 시간대를 비우면 종일, 요일을 비우면 매일이에요. 바꿀 때는 기존 설정을 고치지 않고 새 설정을 추가해요. 상품 관리에서는 보기만 해요.</li>
+        <li><b>판매 제외</b> — 상품마다 팔지 않을 날짜와 시간대를 정해요. 시간대를 비우면 그날 종일 팔지 않아요. 상품 관리에서는 보기만 해요.</li>
         <li><span class="material-symbols-outlined">schedule</span> <b>결정 대기</b> — 재고를 만드는 방식(ST-006)과 한 사람이 한 시간대에 살 수 있는 수량(ST-007)이 정해지면 관련 화면을 추가해요.</li>
       </ul>
       <p class="gnote">조회, 수용 인원 수정, 판매중지, 액티비티별 탭, 한정 판매는 확정된 내용이에요. 재고 생성·구매 제한 화면은 보류예요.</p>
@@ -363,6 +381,22 @@ function saveLimit(){
   document.getElementById('limForm').hidden=true; renderLimits();
 }
 renderLimits();
+var EXCL=[
+  {p:'레이스 포함 패키지',from:'2026-12-25',to:'2026-12-25',h:''},
+  {p:'레이스 포함 패키지',from:'2026-11-15',to:'2026-11-15',h:'14:00 ~ 16:00'}
+];
+function renderExc(){
+  document.getElementById('excBody').innerHTML=EXCL.map(function(x,i){
+    return '<tr><td><b>'+x.p+'</b></td><td class="slot">'+(x.from===x.to?x.from:x.from+' ~ '+x.to)+'</td><td>'+(x.h||'종일')+'</td><td><button class="mini" onclick="EXCL.splice('+i+',1);renderExc()">제거</button></td></tr>';
+  }).join('');
+}
+function addExc(){var f=document.getElementById('excForm');f.hidden=!f.hidden;}
+function saveExc(){
+  var sh=document.getElementById('eSh').value, eh=document.getElementById('eEh').value;
+  EXCL.unshift({p:document.getElementById('eProd').value,from:document.getElementById('eFrom').value,to:document.getElementById('eTo').value,h:(sh&&eh)?sh+' ~ '+eh:''});
+  document.getElementById('excForm').hidden=true; renderExc();
+}
+renderExc();
 document.querySelectorAll('#topnav button').forEach(function(b){
   b.addEventListener('click',function(){
     document.querySelectorAll('#topnav button').forEach(function(x){x.classList.toggle('on',x===b);});
