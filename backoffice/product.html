@@ -37,6 +37,8 @@
   .toolbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:8px 0 12px}
   .toolbar h1{font-family:var(--font-display);font-size:20px;margin:0}
   .toolbar .sp{flex:1;min-width:0}
+  tr.exrow td{background:var(--note-soft)}
+  tr.exrow td:first-child{box-shadow:inset 3px 0 0 var(--note)}
   .ex{font-size:10px;font-weight:700;color:var(--note);background:var(--note-soft);border-radius:5px;padding:1px 6px;font-family:var(--font-display)}
   .btn{font-size:13px;border-radius:8px;padding:8px 13px;border:1px solid var(--line);background:var(--surface);color:var(--fg);cursor:pointer;font-family:var(--font-body)}
   .btn.pri{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
@@ -391,6 +393,8 @@ tr.row:hover td,tr.click:hover td{background:rgba(33,37,41,.05) !important}
         <li>재고 연결, <b>한정 판매</b>, <b>판매 제외</b>는 <b>재고 관리</b>에서 설정해요. 여기서는 설정된 내용을 보기만 해요.</li>
         <li><b>판매 기간</b>은 고객이 고를 수 있는 <b>이용일 범위(날짜)</b>예요. 판매를 여는 시각은 노출 기간으로 정해요.</li>
         <li><b>판매 채널</b>은 채널마다 활성/비활성으로 켜고 꺼요. 저장하면 바로 판매에 반영돼요. 채널마다 따로 팔고 싶으면 상품을 나누지 말고 채널별로 켜고 꺼요. 구성이 다를 때만 상품을 따로 만들어요.</li>
+        <li><b>추가구매</b>는 패키지와 함께 오픈 때부터 팔아요. <b>패키지를 산 사용자만</b> 추가로 사서 쓸 수 있어요.</li>
+        <li style="color:var(--note)"><b>정하는 중</b> · 추가구매 상품의 구성과 가격이 아직 정해지지 않았어요. 목록의 추가구매 3개(레이스와 일반 JAM을 합친 상품 포함)는 화면 설명용 예시예요.</li>
         <li style="color:var(--note)"><b>정하는 중</b> · 보여주기만 하고 판매는 막는 경우가 필요하면 채널마다 노출·판매를 따로 나눠요</li>
         <li>네이버는 제주와 같은 방식으로 운영해요. 외부 채널(마이리얼트립·클룩·네이버) 전용 노출 정보는 이번 범위에서 빠졌어요. 노출·이미지는 앱과 키오스크가 함께 써요.</li>
         <li>노출명·설명·이미지는 <b>한국어 / 영어 / 중국어</b>를 각각 넣어요. 언어 탭 옆 점이 파란색이면 그 언어 노출명을 입력한 거예요.</li>
@@ -432,26 +436,26 @@ var PRODUCTS=[
    psus:[{code:'RACE',qty:2},{code:'GENERAL',qty:20}]},
   {code:'ICN-PKG-INDOOR',name:'실내 패키지',type:'패키지',cats:['실내 액티비티'],ver:2,by:'파수꾼',cr:'2026-10-05',up:'2026-10-18 11:20',st:'on',
    psus:[{code:'GENERAL',qty:40}]},
-  {code:'ICN-ADD-RACE1',name:'레이스 JAM 1개권',type:'추가구매',cats:['레이스'],ver:1,by:'옵집사',cr:'2026-10-08',up:'2026-10-08 09:30',st:'on',
+  {code:'ICN-ADD-RACE1',name:'레이스 JAM 1개권',type:'추가구매',ex:true,ver:1,by:'옵집사',cr:'2026-10-08',up:'2026-10-08 09:30',st:'on',
    psus:[{code:'RACE',qty:1}]},
-  {code:'ICN-ADD-JR',name:'주니어 레이스',type:'추가구매',cats:['레이스'],ver:1,by:'정산이',cr:'2026-10-10',up:'2026-10-10 10:00',st:'on',
-   psus:[{code:'RACE',qty:1}]},
-  {code:'ICN-ADD-GEN6',name:'일반 6 JAM',type:'추가구매',cats:['이용권'],ver:1,by:'파수꾼',cr:'2026-10-12',up:'2026-10-12 15:40',st:'on',
-   psus:[{code:'GENERAL',qty:6}]},
+  {code:'ICN-ADD-GEN10',name:'일반 10 JAM',type:'추가구매',ex:true,ver:1,by:'파수꾼',cr:'2026-10-12',up:'2026-10-12 15:40',st:'on',
+   psus:[{code:'GENERAL',qty:10}]},
+  {code:'ICN-ADD-MIX',name:'레이스 1 + 일반 10 JAM',type:'추가구매',ex:true,ver:1,by:'정산이',cr:'2026-11-05',up:'2026-11-05 10:00',st:'on',
+   psus:[{code:'RACE',qty:1},{code:'GENERAL',qty:10}]},
   {code:'ICN-PKG-MASTER',name:'포뮬러 G (마스터)',type:'패키지',cats:['레이스'],ver:1,by:'옵집사',cr:'2026-10-22',up:'2026-10-22 17:00',st:'off',
    psus:[{code:'MST-RACE',qty:1}]}
 ];
-function prodPrice(p){var sum=0;for(var i=0;i<p.psus.length;i++){var u=psuOf(p.psus[i].code);if(u.cost==null)return '<span style="color:var(--note);font-weight:600">미정</span>';sum+=u.cost*p.psus[i].qty;}return sum.toLocaleString('ko-KR');}
+function prodPrice(p){if(p.ex)return '<span style="color:var(--note);font-weight:600">미정</span>';var sum=0;for(var i=0;i<p.psus.length;i++){var u=psuOf(p.psus[i].code);if(u.cost==null)return '<span style="color:var(--note);font-weight:600">미정</span>';sum+=u.cost*p.psus[i].qty;}return sum.toLocaleString('ko-KR');}
 function psuOf(code){for(var i=0;i<PSU_LIB.length;i++)if(PSU_LIB[i].code===code)return PSU_LIB[i];return{code:code,name:code,jt:'—',ver:1};}
 
 /* ===== 목록 렌더 ===== */
 var rows=document.getElementById('rows');
 PRODUCTS.forEach(function(p){
-  var tr=document.createElement('tr'); tr.className='row'; tr._p=p;
+  var tr=document.createElement('tr'); tr.className='row'+(p.ex?' exrow':''); tr._p=p;
   tr.innerHTML=
     '<td><span class="st '+(p.st==='on'?'on':'off')+'"><span class="d"></span>'+(p.st==='on'?'활성':'판매중지')+'</span></td>'+
     '<td class="code">'+p.code+'</td>'+
-    '<td>'+p.name+'</td>'+
+    '<td>'+p.name+(p.ex?' <span class="ex">예시 · 구성 미정</span>':'')+'</td>'+
     '<td>'+(p.type==='패키지'?'<span class="tag t-pkg">패키지</span>':'<span class="tag t-single">추가구매</span>')+'</td>'+
     '<td class="r code">'+prodPrice(p)+'</td>'+
     '<td class="ver">v'+p.ver+'</td>'+
@@ -513,10 +517,12 @@ function renderPsuRows(psus,locked){
   psus.forEach(function(x){b.appendChild(psuRow(psuOf(x.code),x.qty,locked));});
   updSum();
 }
+var curEx=false;
 function updSum(){
   var rows=document.getElementById('psuBody').children, n=rows.length, sum=0;
   var tbd=false;for(var i=0;i<n;i++){var r=rows[i], v=(+r.dataset.cost)*(+r.dataset.qty); sum+=v; if(r.dataset.tbd){tbd=true;r.querySelector('.sub').innerHTML='<span style="color:var(--note);font-weight:600">미정</span>';}else r.querySelector('.sub').textContent=won(v);}
   document.getElementById('psuSum').textContent='구성 PSU '+n+'개';
+  if(curEx)tbd=true;
   var st=tbd?'미정':won(sum);
   document.getElementById('costSum').textContent=st;
   document.getElementById('costRef').innerHTML=tbd?'<span style="color:var(--note)">미정</span>':st;
@@ -564,6 +570,7 @@ function lockDef(lock,type){
 
 /* ===== 열기/닫기 ===== */
 function openProd(p){
+  curEx=!!(p&&p.ex);
   if(p){
     document.getElementById('dwTitle').textContent='상품 편집';
     document.getElementById('dwCode').textContent='· '+p.code;
