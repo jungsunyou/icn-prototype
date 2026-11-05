@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <style>[hidden]{display:none!important}</style>
-<title>JAM 차감 관리</title>
+<title>액티비티 차감 관리</title>
 </head><body>
 <style>
   :root{
@@ -268,9 +268,9 @@ tr.row:hover td,tr.click:hover td{background:rgba(33,37,41,.05) !important}
   .togs{display:inline-flex;gap:6px}
 </style>
 <div class="app">
-  <div class="crumb">판매 관리 &gt; <b>JAM 차감 관리</b></div>
+  <div class="crumb">판매 관리 &gt; <b>액티비티 차감 관리</b></div>
   <div class="toolbar">
-    <h1>JAM 차감 관리</h1>
+    <h1>액티비티 차감 관리</h1>
     <span class="ex">예시 데이터</span>
     <span class="sp"></span>
     <button class="btn pri" onclick="openRule(null)">+ 차감 규칙 등록</button>
@@ -281,7 +281,7 @@ tr.row:hover td,tr.click:hover td{background:rgba(33,37,41,.05) !important}
   <div class="filters">
     <div class="f search"><label>검색</label><input class="ipt" placeholder="액티비티 이름을 입력해 주세요"></div>
     <div class="f" style="justify-content:flex-end"><button class="btn pri sm" style="height:34px">검색</button></div>
-    <div class="f"><label>차감 JAM</label><select class="sel"><option>전체</option><option>레이스 JAM</option><option>일반 JAM</option><option>마스터 레이스 JAM</option></select></div>
+    <div class="f"><label>PSU 코드</label><select class="sel"><option>전체</option><option>RACE</option><option>GENERAL</option><option>MST-RACE</option></select></div>
     <div class="f"><label>상태</label><select class="sel"><option>전체</option><option>적용 예정</option><option>적용 중</option><option>만료</option></select></div>
   </div>
 
@@ -289,7 +289,7 @@ tr.row:hover td,tr.click:hover td{background:rgba(33,37,41,.05) !important}
     <div class="ph">차감 규칙 목록 <span class="cnt" id="cnt"></span></div>
     <div class="tblwrap">
       <table>
-        <thead><tr><th>상태</th><th>액티비티</th><th>차감 JAM</th><th class="r">1회 차감</th><th>적용 시작일시</th><th>수정일시</th><th></th></tr></thead>
+        <thead><tr><th>상태</th><th>액티비티</th><th>PSU 코드</th><th class="r">1회 차감</th><th>적용 시작일시</th><th>수정일시</th><th></th></tr></thead>
         <tbody id="rows"></tbody>
       </table>
     </div>
@@ -310,7 +310,7 @@ tr.row:hover td,tr.click:hover td{background:rgba(33,37,41,.05) !important}
   <div class="db">
     <div class="lockmsg" id="lockMsg" hidden></div>
     <div class="fld"><div class="fl">액티비티 <span class="req">*</span></div><select class="sel" id="fAct"></select></div>
-    <div class="fld"><div class="fl">차감 JAM <span class="req">*</span></div><select class="sel" id="fJam"><option>레이스 JAM</option><option>일반 JAM</option><option>마스터 레이스 JAM</option></select></div>
+    <div class="fld"><div class="fl">PSU 코드 <span class="req">*</span></div><select class="sel" id="fJam"><option value="RACE">RACE · 레이스 JAM</option><option value="GENERAL">GENERAL · 일반 JAM</option><option value="MST-RACE">MST-RACE · 마스터 레이스 JAM</option></select></div>
     <div class="fld"><div class="fl">1회 차감 <span class="req">*</span></div><div class="won"><input class="ipt" id="fQty"><span class="u">개</span></div></div>
     <div class="fld"><div class="fl">적용 시작일시 <span class="req">*</span></div><input class="ipt" id="fFrom" type="datetime-local" style="max-width:240px"></div>
 
@@ -329,7 +329,7 @@ tr.row:hover td,tr.click:hover td{background:rgba(33,37,41,.05) !important}
         <li>이미 시작된 규칙(적용 중, 만료)은 고칠 수 없어요. <b>적용 예정</b> 규칙만 고치거나 지울 수 있어요.</li>
         <li>한 액티비티에 같은 적용 시작일시로 규칙을 두 개 등록할 수 없어요. 적용 시작일시는 지금보다 뒤로만 넣을 수 있어요.</li>
         <li>상태(적용 예정, 적용 중, 만료)는 <b>적용 시작일시에 따라 자동으로</b> 정해져요. 직접 고르지 않아요. 액티비티를 멈추는 일은 액티비티 운영 상태에서 다뤄요.</li>
-        <li>차감 JAM은 <b>PSU 관리</b>에 등록된 PSU 중에서 골라요. 1회 차감은 <b>1 이상의 정수</b>로 넣어요.</li>
+        <li>PSU 코드는 <b>PSU 관리</b>에 등록된 PSU 중에서 골라요. 고를 때는 코드 옆에 PSU 이름도 함께 보여요. 1회 차감은 <b>1 이상의 정수</b>로 넣어요.</li>
         <li>JAM은 고객이 <b>이용을 시작할 때</b> 줄어요. 아레나·벡토는 장비 체크인, 레이스는 차량 탑승, 비전·스포츠랩은 이용 처리 때예요.</li>
       </ul>
     </div>
@@ -340,16 +340,16 @@ tr.row:hover td,tr.click:hover td{background:rgba(33,37,41,.05) !important}
 <script>
 // 차감 규칙 (예시). st: plan=적용 예정, now=적용 중, past=만료 / qty가 null이면 정하는 중
 var RULES=[
-  {act:'레이스',jam:'레이스 JAM',qty:1,from:'2026-09-21T00:00',st:'now',up:'2026-09-21 10:00'},
-  {act:'마스터 트레이니',jam:'마스터 레이스 JAM',qty:null,from:'',st:'now',up:'—'},
-  {act:'마스터 레이스',jam:'마스터 레이스 JAM',qty:null,from:'',st:'now',up:'—'},
-  {act:'아레나',jam:'일반 JAM',qty:4,from:'2026-12-01T00:00',st:'plan',up:'2026-11-05 09:30',ex:true},
-  {act:'아레나',jam:'일반 JAM',qty:5,from:'2026-09-21T00:00',st:'now',up:'2026-09-21 10:00'},
-  {act:'벡토',jam:'일반 JAM',qty:5,from:'2026-09-21T00:00',st:'now',up:'2026-09-21 10:00'},
-  {act:'디지털 레이스',jam:'일반 JAM',qty:4,from:'2026-09-21T00:00',st:'now',up:'2026-09-21 10:00'},
-  {act:'디지털 레이스',jam:'일반 JAM',qty:3,from:'2026-08-01T00:00',st:'past',up:'2026-07-25 15:10',ex:true},
-  {act:'비전',jam:'일반 JAM',qty:2,from:'2026-09-21T00:00',st:'now',up:'2026-09-21 10:00'},
-  {act:'스포츠랩',jam:'일반 JAM',qty:2,from:'2026-09-21T00:00',st:'now',up:'2026-09-21 10:00'}
+  {act:'레이스',jam:'RACE',qty:1,from:'2026-09-21T00:00',st:'now',up:'2026-09-21 10:00'},
+  {act:'마스터 트레이니',jam:'MST-RACE',qty:null,from:'',st:'now',up:'—'},
+  {act:'마스터 레이스',jam:'MST-RACE',qty:null,from:'',st:'now',up:'—'},
+  {act:'아레나',jam:'GENERAL',qty:4,from:'2026-12-01T00:00',st:'plan',up:'2026-11-05 09:30',ex:true},
+  {act:'아레나',jam:'GENERAL',qty:5,from:'2026-09-21T00:00',st:'now',up:'2026-09-21 10:00'},
+  {act:'벡토',jam:'GENERAL',qty:5,from:'2026-09-21T00:00',st:'now',up:'2026-09-21 10:00'},
+  {act:'디지털 레이스',jam:'GENERAL',qty:4,from:'2026-09-21T00:00',st:'now',up:'2026-09-21 10:00'},
+  {act:'디지털 레이스',jam:'GENERAL',qty:3,from:'2026-08-01T00:00',st:'past',up:'2026-07-25 15:10',ex:true},
+  {act:'비전',jam:'GENERAL',qty:2,from:'2026-09-21T00:00',st:'now',up:'2026-09-21 10:00'},
+  {act:'스포츠랩',jam:'GENERAL',qty:2,from:'2026-09-21T00:00',st:'now',up:'2026-09-21 10:00'}
 ];
 var ST={plan:'적용 예정',now:'적용 중',past:'만료'};
 var CLS={plan:'plan',now:'on',past:'past'};
@@ -362,7 +362,7 @@ $('rows').innerHTML=RULES.map(function(r,i){
   return '<tr class="row'+(r.qty==null||r.ex?' keeprow':'')+'" data-i="'+i+'">'+
     '<td><span class="st '+CLS[r.st]+'"><span class="d"></span>'+ST[r.st]+'</span></td>'+
     '<td>'+r.act+(r.ex?'<span class="exrow">예시 행</span>':'')+'</td>'+
-    '<td>'+r.jam+'</td>'+
+    '<td class="code">'+r.jam+'</td>'+
     '<td class="r">'+(r.qty==null?TBD:r.qty+'개')+'</td>'+
     '<td class="ver">'+fmt(r.from)+'</td>'+
     '<td class="ver">'+r.up+'</td>'+
@@ -407,7 +407,7 @@ openRule=function(r,base){
   lock(false);
   $('lockMsg').hidden=true;
   $('fAct').value=base?base.act:ACTS[0];
-  $('fJam').value=base?base.jam:'일반 JAM';
+  $('fJam').value=base?base.jam:'GENERAL';
   $('fQty').value=base&&base.qty!=null?base.qty:''; $('fQty').placeholder='';
   $('fFrom').value='';
   $('mUp').textContent='저장할 때 기록돼요';
