@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta name="robots" content="noindex,nofollow">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>티켓 예매</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,400,0..1,0&display=swap">
+<link rel="stylesheet" href="common.css">
+<style>
+  .slotwrap{overflow-x:auto}.slots{display:grid;grid-template-columns:repeat(18,minmax(52px,1fr));border:1px solid var(--line);border-radius:8px;overflow:hidden;min-width:900px}
+  .slots div{text-align:center;padding:7px 4px;font-size:12px;border-right:1px solid var(--line-2)}
+  .slots div:nth-child(18n){border-right:none}
+  .slots .t{background:var(--surface-2);color:var(--muted);font-family:var(--mono)}
+  .slots .v{font-family:var(--mono);font-variant-numeric:tabular-nums}
+  .slots .v.busy{background:var(--busy);color:#212529}
+  .grid{display:grid;grid-template-columns:minmax(380px,.85fr) 1.15fr;gap:14px;align-items:start;margin-top:14px}
+  @media(max-width:1000px){.grid{grid-template-columns:1fr}}
+  .pick{display:grid;grid-template-columns:96px 1fr 100px;border:1px solid var(--line);border-radius:8px;overflow:hidden;min-height:420px}
+  .pick .col{border-right:1px solid var(--line-2);overflow:auto;max-height:520px}
+  .pick .col:last-child{border-right:none}
+  .pick .hd{font-size:12px;color:var(--muted);font-weight:600;padding:8px 10px;background:var(--surface-2);border-bottom:1px solid var(--line-2);position:sticky;top:0}
+  .pick .it{padding:9px 10px;font-size:12px;cursor:pointer;border-bottom:1px solid var(--line-2)}
+  .pick .it:hover{background:var(--surface-2)}
+  .pick .it.on{background:var(--accent-soft);color:var(--accent);font-weight:600}
+  .pick .it .s{display:block;font-size:10.5px;color:var(--muted);font-weight:400;margin-top:2px}
+  .pick .it.dis{color:#C8C8C8;cursor:not-allowed}
+  .pick .empty{padding:40px 10px;text-align:center;color:var(--muted);font-size:12px}
+  .stk{font-family:var(--mono);color:var(--muted);font-size:12px}
+  .row2{display:grid;grid-template-columns:96px 1fr;gap:8px 12px;align-items:center;font-size:13.5px}
+  .row2 .k{color:var(--muted)}
+  .qty{display:inline-flex;align-items:center;gap:8px}
+  .qty button{width:24px;height:24px;border:1px solid var(--line);background:var(--surface);border-radius:6px;cursor:pointer;color:var(--muted)}
+  .qty b{min-width:16px;text-align:center;font-variant-numeric:tabular-nums}
+  .del{border:none;background:none;color:var(--muted);cursor:pointer;font-size:15px}
+  .acc{display:flex;align-items:center;background:var(--surface-2);border-radius:8px;padding:10px 12px;cursor:pointer;font-weight:600;font-size:13.5px;margin-top:14px}
+  .acc .sp{flex:1}
+  .sum{display:grid;grid-template-columns:110px 1fr;gap:9px 12px;font-size:13.5px}
+  .sum .k{color:var(--muted)}.sum .v{font-weight:700;font-variant-numeric:tabular-nums}
+  .foot{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}
+  .placeholder{border:1px dashed var(--line);border-radius:8px;padding:34px 10px;text-align:center;color:var(--muted);font-size:12px}
+  .rule{font-size:12px;color:var(--muted);margin-top:6px}
+  .mini{width:auto;padding:5px 8px;font-size:12px}
+</style>
+<body>
+<div class="app">
+  <div class="crumb">인포데스크 &gt; <b>티켓 예매</b></div>
+  <h1>티켓 예매 <span class="ex">예시 데이터</span></h1>
+
+  <div class="card kept">
+    <h2>시간대별 레이스 판매 <span class="ktag">정하는 중</span><span class="sp"></span><span class="muted" style="font-size:12px;font-weight:400">30분 단위 · 레이스 시간표와 수량은 예시예요</span></h2>
+    <div class="slotwrap"><div class="slots" id="slots"></div></div>
+  </div>
+
+  <div class="grid">
+    <!-- 상품 선택 -->
+    <div class="card">
+      <h2>상품 선택</h2>
+      <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:12px">
+        <input class="ipt" id="useDate" type="date" value="2026-11-14">
+        <input class="ipt" id="q" placeholder="상품명을 입력하세요" oninput="renderProducts()">
+      </div>
+      <div class="pick">
+        <div class="col"><div class="hd">유형</div><div id="types"></div></div>
+        <div class="col"><div class="hd">상품명</div><div id="prods"><div class="empty">유형을 선택해 주세요</div></div></div>
+        <div class="col"><div class="hd">시간 [재고]</div><div id="times"><div class="empty">상품을 선택해 주세요</div></div></div>
+      </div>
+      <div class="rule">레이스가 들어간 상품은 시간을 골라야 해요. 실내 패키지처럼 일반 JAM만 있는 상품은 시간 없이 바로 담겨요.</div>
+    </div>
+
+    <!-- 주문 정보 -->
+    <div class="card">
+      <h2>주문 정보</h2>
+      <div id="emptyOrder" class="placeholder">상품을 먼저 선택해 주세요</div>
+      <div id="order" hidden>
+        <div class="sec">주문자 정보</div>
+        <div class="row2">
+          <div class="k">주문 구분</div><input class="ipt" placeholder="단체명, 외부 채널 예약번호 등">
+          <div class="k">이름</div><input class="ipt kept" placeholder="주문자 이름 (정하는 중)">
+          <div class="k">전화번호</div><input class="ipt kept" placeholder="010-0000-0000 (정하는 중)">
+          <div class="k">예약 채널</div><select class="sel" style="max-width:200px"><option>INFO DESK</option><option>현장 키오스크</option><option>전화 예약</option></select>
+        </div>
+        <div class="keptline" style="margin-top:8px"><b>정하는 중</b> · 현장 예매 때 주문자 이름·전화번호를 받을지 정하고 있어요. 받더라도 조회 화면에는 보여주지 않아요.</div>
+
+        <div class="sec">상품 정보</div>
+        <div class="tblwrap"><table>
+          <thead><tr><th>No.</th><th>상품명</th><th>시간</th><th>상품 구성</th><th>인원 구성</th><th></th></tr></thead>
+          <tbody id="lines"></tbody>
+        </table></div>
+
+        <div class="sec">일괄 할인</div>
+        <div class="row2">
+          <div class="k">자격 할인</div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap">
+            <select class="sel" id="qual" onchange="calc()"><option value="0">선택 안 함</option><option value="15">신분 · 군경·국가유공자·장애인 15%</option><option value="20">지역 · 인천시민 20%</option><option value="30">크루 30%</option></select>
+          </div>
+          <div class="k">직권 할인</div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap">
+            <select class="sel mini" id="adType" onchange="calc()"><option value="pct">비율(%)</option><option value="won">금액(원)</option></select>
+            <input class="ipt mini" id="adVal" placeholder="0" style="width:90px" oninput="calc()">
+            <input class="ipt" id="adWhy" placeholder="직권 할인 사유를 입력하세요" style="flex:1;min-width:180px">
+          </div>
+        </div>
+        <div class="rule">자격 할인은 하나만 쓸 수 있어요. OS에서는 예외로 자격 할인과 직권 할인을 함께 적용할 수 있어요.</div>
+
+        <div class="acc" onclick="toggleList()">개별 상품 리스트 (총 <span id="cnt">0</span>매)<span class="sp"></span><span id="accIco">⌄</span></div>
+        <div id="tickets" hidden>
+          <div class="tblwrap"><table>
+            <thead><tr><th>이용 일시</th><th>상품명</th><th class="r">상품 가격</th><th>쿠폰 번호</th><th class="r">할인 금액</th><th class="r">결제 예정 금액</th></tr></thead>
+            <tbody id="tlines"></tbody>
+          </table></div>
+        </div>
+
+        <div class="sec">최종 결제</div>
+        <div class="sum">
+          <div class="k">총 상품 가격</div><div class="v" id="sTot">₩0</div>
+          <div class="k">총 할인 금액</div><div class="v" id="sDc">₩0</div>
+          <div class="k">총 결제 금액</div><div class="v" id="sPay" style="color:var(--accent)">₩0</div>
+          <div class="k">결제 방식</div><div><span class="seg" id="payMode"><span class="on" onclick="pmSet('single')">단일 결제</span><span onclick="pmSet('split')">분할 결제</span></span></div>
+          <div class="k" id="payByL">결제 수단</div><div id="paySingle"><select class="sel" id="payBy" onchange="pmCheck()"><option value="">결제 수단을 선택해 주세요</option><option>카드</option><option>현금</option><option>통장입금</option><option>PG</option></select></div>
+        </div>
+        <div id="paySplit" hidden style="margin-left:122px;margin-top:-30px">
+          <div id="pmRows"></div>
+          <div style="display:flex;gap:8px;align-items:center;margin-top:6px;flex-wrap:wrap">
+            <button class="btn sm" style="border-color:var(--accent);color:var(--accent);min-width:140px" onclick="pmAdd()">+ 결제수단 추가</button>
+            <span id="pmLeft" style="background:var(--warn-soft);color:var(--warn);border-radius:11px;padding:6px 12px;font-size:12px;font-weight:600"></span>
+          </div>
+          <div class="rule">분할 결제는 현금·통장입금·PG만 선택할 수 있어요.</div>
+        </div>
+        <div class="foot"><button class="btn" onclick="reset()">취소하기</button><button class="btn pri" id="payBtn" disabled onclick="toast('예시 화면이라 실제로 결제되지 않아요.')">결제하기</button></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="memo">
+    <div class="mh">안내 · 구현 시 제외 가능</div>
+    <ul>
+      <li><b>상품</b>은 상품 관리에 등록된 ICN 상품을 보여줘요. 카테고리 대신 <b>패키지 / 추가구매</b> 유형으로 나눠요.</li>
+      <li><b>판매가</b>는 가격 정책 관리에서 정한 그날의 판매가예요. OS는 정규가로 팔고, 앱 −10% 할인은 적용하지 않아요.</li>
+      <li><b>시간 [재고]</b>는 재고 관리의 레이스 재고를 <b>30분 단위</b>로 보여줘요. 레이스가 없는 상품은 시간 자유예요.</li>
+      <li><b>인원 구성</b>은 앱·키오스크처럼 따로 넣어요. 레이스 포함 패키지는 <b>직접 운전 · 주니어 운전 · 동승자</b>, 실내 패키지는 <b>이용자 · 동반자녀</b>예요. 한 명이 티켓 한 장이에요.</li>
+      <li><b>주니어 운전</b>도 운전자로 보고 직접 운전과 같은 가격이에요. 나이·키 같은 이용 자격은 발권할 때 확인해요.</li>
+      <li><b>동승자</b>는 운전자(직접 + 주니어) 수만큼만 넣을 수 있어요. 동승자와 동반자녀는 한 명에 40,000원이에요. 동반자녀는 없어도 돼요.</li>
+      <li><b>추가구매</b>는 패키지를 산 고객만 살 수 있어요. 구성과 가격은 아직 정하지 않아서 예시로만 보여줘요.</li>
+      <li><b>자격 할인</b>은 신분·지역·크루 중 하나만 고르고, 크루가 직접 결제하는 곳이라 증빙만 확인하고 바로 적용해요(확인코드 입력 없음). OS에서는 예외로 <b>직권 할인과 함께</b> 쓸 수 있어요.</li>
+      <li><b>쿠폰</b>은 개별 상품 리스트에서 티켓마다 쿠폰 번호를 넣어요.</li>
+    </ul>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+var SLOT_T=['10:00','10:30','11:00','11:30','12:00','12:30','13:00','13:30','14:00','14:30','15:00','15:30','16:00','16:30','17:00','17:30','18:00','18:30'];
+var SLOT_V=[21,21,19,19,6,6,5,4,20,20,22,22,21,20,8,7,3,0];
+var PRODUCTS=[
+  {id:'race',type:'패키지',name:'레이스 포함 패키지',comp:'RACE 2 · GENERAL 20',price:64000,race:true,opt:'동승자'},
+  {id:'indoor',type:'패키지',name:'실내 패키지',comp:'GENERAL 40',price:64000,race:false},
+  {id:'add-race',type:'추가구매',name:'레이스 JAM 1개권',comp:'RACE 1',price:null,race:true,ex:true},
+  {id:'add-gen',type:'추가구매',name:'일반 10 JAM',comp:'GENERAL 10',price:null,race:false,ex:true},
+  {id:'add-mix',type:'추가구매',name:'레이스 1 + 일반 10 JAM',comp:'RACE 1 · GENERAL 10',price:null,race:true,ex:true}
+];
+var OPT_PRICE=40000;
+var RACE_TIMES=[['10:00',8],['10:30',0],['11:00',12],['11:30',3],['12:00',14],['12:30',11],['13:00',6],['13:30',10],['14:00',2],['14:30',7],['15:00',9],['15:30',4]];
+var state={type:null,prod:null,lines:[]};
+function won(n){return n==null?'미정':'₩'+Math.round(n).toLocaleString('ko-KR');}
+function toast(m){var t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(function(){t.classList.remove('show')},2200);}
+function seg(el){el.parentNode.querySelectorAll('span').forEach(function(s){s.classList.toggle('on',s===el)});}
+(function(){var h='';SLOT_T.forEach(function(t){h+='<div class="t">'+t+'</div>'});SLOT_V.forEach(function(v){h+='<div class="v'+(v>=19?' busy':'')+'">'+v+'</div>'});document.getElementById('slots').innerHTML=h;})();
+function renderTypes(){var h='';['패키지','추가구매'].forEach(function(t){h+='<div class="it'+(state.type===t?' on':'')+'" onclick="pickType(\''+t+'\')">'+t+'</div>'});document.getElementById('types').innerHTML=h;}
+function pickType(t){state.type=t;state.prod=null;renderTypes();renderProducts();document.getElementById('times').innerHTML='<div class="empty">상품을 선택해 주세요</div>';}
+function renderProducts(){
+  var q=document.getElementById('q').value.trim();
+  var list=PRODUCTS.filter(function(p){return (q?p.name.indexOf(q)>=0:p.type===state.type)});
+  if(!q&&!state.type){document.getElementById('prods').innerHTML='<div class="empty">유형을 선택해 주세요</div>';return;}
+  var h=list.map(function(p){return '<div class="it'+(state.prod===p.id?' on':'')+(p.ex?' kept':'')+'" onclick="pickProd(\''+p.id+'\')">'+p.name+'<span class="s">'+p.comp+' · '+(p.ex?'예시 · 구성 미정':won(p.price))+'</span></div>'}).join('');
+  document.getElementById('prods').innerHTML=h||'<div class="empty">검색 결과가 없어요</div>';
+}
+function pickProd(id){
+  var p=PRODUCTS.filter(function(x){return x.id===id})[0];state.prod=id;renderProducts();
+  var tm=document.getElementById('times');
+  if(!p.race){tm.innerHTML='<div class="it" onclick="addLine(\''+id+'\',\'시간 자유\')">시간 자유</div>';return;}
+  tm.innerHTML=RACE_TIMES.map(function(r){var dis=r[1]<=0;return '<div class="it'+(dis?' dis':'')+'" '+(dis?'':'onclick="addLine(\''+id+'\',\''+r[0]+'\')"')+'>'+r[0]+' <span class="stk">['+r[1]+']</span></div>'}).join('');
+}
+function roles(p){
+  if(p.id==='race')return [{k:'d',label:'직접 운전',comp:'RACE 2 · GENERAL 20',price:64000},{k:'j',label:'주니어 운전',comp:'RACE 2 · GENERAL 20',price:64000},{k:'p',label:'동승자',comp:'동승 RACE 2 · GENERAL 20',price:40000}];
+  if(p.id==='indoor')return [{k:'a',label:'이용자',comp:'GENERAL 40',price:64000},{k:'c',label:'동반자녀',comp:'GENERAL 30',price:40000}];
+  return [{k:'q',label:'수량',comp:p.comp,price:p.price}];
+}
+function addLine(id,time){
+  var p=PRODUCTS.filter(function(x){return x.id===id})[0];
+  var ex=state.lines.filter(function(l){return l.id===id&&l.time===time})[0];
+  if(!ex){ex={id:id,time:time};roles(p).forEach(function(r){ex[r.k]=0});state.lines.push(ex);}
+  ex[roles(p)[0].k]++;
+  render();
+}
+function chg(i,k,d){var l=state.lines[i];l[k]=Math.max(0,l[k]+d);
+  if(l.id==='race'){if(l.d+l.j<1){l[k]-=d;toast('운전자(직접 또는 주니어)가 한 명 이상 있어야 해요.');}else if(l.p>l.d+l.j){l.p=l.d+l.j;toast('동승자는 운전자 수만큼만 넣을 수 있어요.');}}
+  else if(l.id==='indoor'){if(l.a<1){l.a=1;toast('이용자가 한 명 이상 있어야 해요.');}}
+  else if(l.q<1)l.q=1;
+  render();}
+function del(i){state.lines.splice(i,1);render();}
+function render(){
+  var has=state.lines.length>0;
+  document.getElementById('emptyOrder').hidden=has;document.getElementById('order').hidden=!has;
+  var d=document.getElementById('useDate').value;
+  document.getElementById('lines').innerHTML=state.lines.map(function(l,i){var p=PRODUCTS.filter(function(x){return x.id===l.id})[0];
+    var cnt=roles(p).map(function(r){return '<div class="qty" style="display:flex;margin:3px 0"><span style="min-width:72px;display:inline-block">'+r.label+'</span><button onclick="chg('+i+',\''+r.k+'\',-1)">−</button><b>'+l[r.k]+'</b><button onclick="chg('+i+',\''+r.k+'\',1)">+</button><span class="muted" style="font-size:12px;min-width:64px;text-align:right">'+won(r.price)+'</span></div>'}).join('');
+    return '<tr'+(p.ex?' class="kept"':'')+'><td>'+(i+1)+'</td><td>'+p.name+'</td><td class="code">'+d+' '+l.time+'</td><td class="code">'+p.comp+'</td><td class="l">'+cnt+'</td><td><button class="del" onclick="del('+i+')" title="삭제">🗑</button></td></tr>';}).join('');
+  calc();
+}
+function calc(){
+  var d=document.getElementById('useDate').value,rows=[],tot=0,undec=false;
+  state.lines.forEach(function(l){var p=PRODUCTS.filter(function(x){return x.id===l.id})[0];
+    roles(p).forEach(function(r){for(var k=0;k<l[r.k];k++){rows.push({name:p.name+(r.k==='q'?'':' · '+r.label),time:l.time,price:r.price});if(r.price==null)undec=true;else tot+=r.price;}});
+  });
+  var qp=+document.getElementById('qual').value||0, at=document.getElementById('adType').value, av=+(document.getElementById('adVal').value||'').replace(/[^0-9]/g,'')||0;
+  var dcTot=0;
+  var tl=rows.map(function(r){var dc=0;if(r.price!=null){dc=r.price*qp/100;if(at==='pct')dc+=r.price*av/100;dc=Math.min(dc,r.price);}dcTot+=dc;return {r:r,dc:dc};});
+  if(at==='won'&&av>0){var cap=tot-dcTot;dcTot+=Math.min(av,Math.max(cap,0));}
+  document.getElementById('cnt').textContent=rows.length;
+  document.getElementById('tlines').innerHTML=tl.map(function(o){var r=o.r;return '<tr><td class="code">'+d+' '+r.time+'</td><td>'+r.name+'</td><td class="r">'+won(r.price)+'</td><td><input class="ipt mini" placeholder="쿠폰 번호" style="width:120px"></td><td class="r">'+won(o.dc)+'</td><td class="r">'+(r.price==null?'미정':won(r.price-o.dc))+'</td></tr>';}).join('');
+  document.getElementById('sTot').textContent=undec?won(tot)+' + 미정':won(tot);
+  document.getElementById('sDc').textContent=won(dcTot);
+  document.getElementById('sPay').textContent=undec?won(tot-dcTot)+' + 미정':won(tot-dcTot);
+  PM.amt=tot-dcTot;PM.undec=undec;PM.has=rows.length>0;pmCheck();
+}
+var PM={mode:'single',rows:[{by:'',v:''},{by:'',v:''}],amt:0,undec:false,has:false};
+function pmSet(m){PM.mode=m;var sp=document.querySelectorAll('#payMode span');sp[0].classList.toggle('on',m==='single');sp[1].classList.toggle('on',m==='split');
+  document.getElementById('paySingle').hidden=m!=='single';document.getElementById('payByL').style.visibility=m==='single'?'visible':'hidden';document.getElementById('paySplit').hidden=m!=='split';pmRender();}
+function pmLeft(){return PM.amt-PM.rows.reduce(function(a,x){return a+(+x.v||0)},0);}
+function pmRender(){document.getElementById('pmRows').innerHTML=PM.rows.map(function(x,i){return '<div style="display:flex;gap:8px;align-items:center;margin-bottom:6px"><select class="sel" style="flex:1" onchange="PM.rows['+i+'].by=this.value;pmCheck()"><option value="">결제 수단을 선택해 주세요</option>'+['현금','통장입금','PG'].map(function(o){return '<option'+(x.by===o?' selected':'')+'>'+o+'</option>'}).join('')+'</select><input class="ipt" style="flex:1;text-align:right" placeholder="금액 입력" value="'+(x.v?(+x.v).toLocaleString('ko-KR'):'')+'" oninput="PM.rows['+i+'].v=this.value.replace(/[^0-9]/g,\'\');pmCheck()"><button class="del" style="color:var(--ok);font-size:12px;white-space:nowrap" onclick="pmFill('+i+')">⇥ 잔액</button><button class="del" style="color:var(--red);font-size:12px;white-space:nowrap" onclick="PM.rows.splice('+i+',1);pmRender()">🗑 삭제</button></div>'}).join('');pmCheck();}
+function pmAdd(){PM.rows.push({by:'',v:''});pmRender();}
+function pmFill(i){PM.rows[i].v=String(Math.max(0,(+PM.rows[i].v||0)+pmLeft()));pmRender();}
+function pmCheck(){var ok;if(PM.mode==='single'){ok=!!document.getElementById('payBy').value;}
+  else{var l=pmLeft();document.getElementById('pmLeft').textContent='남은 금액 ₩'+Math.round(l).toLocaleString('ko-KR');ok=!PM.undec&&Math.round(l)===0&&PM.rows.length>0&&PM.rows.every(function(x){return x.by&&+x.v>0});}
+  document.getElementById('payBtn').disabled=!(PM.has&&ok);}
+function toggleList(){var t=document.getElementById('tickets');t.hidden=!t.hidden;document.getElementById('accIco').textContent=t.hidden?'⌄':'⌃';}
+function reset(){state.lines=[];PM.rows=[{by:'',v:''},{by:'',v:''}];pmSet('single');['qual','adVal','adWhy','payBy'].forEach(function(id){var e=document.getElementById(id);e.value=e.tagName==='SELECT'?e.options[0].value:'';});render();}
+document.getElementById('useDate').addEventListener('change',render);
+renderTypes();
+</script>
+</body>
+</html>

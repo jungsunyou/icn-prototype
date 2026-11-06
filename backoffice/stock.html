@@ -240,7 +240,7 @@ tr.row:hover td,tr.click:hover td{background:rgba(33,37,41,.05) !important}
     </div>
   </div>
   <div class="panel keptpanel">
-    <div class="ph">OS 실시간 (운영) <span class="kchip">킵</span><span class="sp"></span><span class="cnt" id="osSlot" style="color:var(--note)">10:00~11:00 슬롯</span></div>
+    <div class="ph">OS 실시간 (운영) <span class="kchip">킵</span><span class="sp"></span><span class="cnt" id="osSlot" style="color:var(--note)">10:00~10:30 슬롯</span></div>
     <div class="os" id="osCards"></div>
     <div id="osTracks"></div>
   </div>
@@ -286,7 +286,7 @@ tr.row:hover td,tr.click:hover td{background:rgba(33,37,41,.05) !important}
     <div class="ph">재고 운영 기준</div>
     <div class="guide">
       <ul>
-        <li><b>판매 단위</b> — 레이스·마스터 레이스·아레나·벡토 모두 <b>1시간 단위</b>로 팔아요.</li>
+        <li><b>판매 단위</b> — 레이스·마스터 레이스·아레나·벡토 모두 <b>30분 단위</b>로 팔아요.</li>
         <li><b>재고 묶음</b> — 트랙(코스)을 나누지 않고 액티비티마다 재고 하나로 관리해요.</li>
         <li><b>레이스 재고</b> — 1회에 차량 1대를 써요. 동승자가 있어 2명이 타도 재고는 1대만 줄어요.</li>
         <li><b>주니어</b> — 주니어 전용 차량은 없어요. 성인·주니어 운전 모두 같은 레이스 재고를 써요.</li>
@@ -311,16 +311,16 @@ tr.row:hover td,tr.click:hover td{background:rgba(33,37,41,.05) !important}
 <script>
 var ACTS=[
   {id:'race',label:'레이스',unit:'차량(대)',
-    slots:[{t:'09:00 ~ 10:00',cap:720,sold:540,stop:false},{t:'10:00 ~ 11:00',cap:720,sold:712,stop:false},{t:'11:00 ~ 12:00',cap:720,sold:720,stop:false},{t:'12:00 ~ 13:00',cap:600,sold:210,stop:false},{t:'13:00 ~ 14:00',cap:720,sold:0,stop:true}],
+    slots:[{t:'09:00 ~ 09:30',cap:360,sold:270,stop:false},{t:'09:30 ~ 10:00',cap:360,sold:270,stop:false},{t:'10:00 ~ 10:30',cap:360,sold:356,stop:false},{t:'10:30 ~ 11:00',cap:360,sold:356,stop:false},{t:'11:00 ~ 11:30',cap:360,sold:360,stop:false},{t:'11:30 ~ 12:00',cap:360,sold:360,stop:false},{t:'12:00 ~ 12:30',cap:360,sold:105,stop:false},{t:'12:30 ~ 13:00',cap:360,sold:105,stop:false},{t:'13:00 ~ 13:30',cap:360,sold:0,stop:true},{t:'13:30 ~ 14:00',cap:360,sold:0,stop:false}],
     os:{예약:712,탑승:655,잔여:8,'가동 트랙':'7/8'}, tracks:[{nm:'레드',load:55,c:'ok'},{nm:'블루',load:82,c:'mid'},{nm:'오렌지',load:96,c:'hi'}]},
   {id:'master',label:'마스터 레이스',unit:'차량(대)',
-    slots:[{t:'10:00 ~ 11:00',cap:24,sold:18,stop:false},{t:'11:00 ~ 12:00',cap:24,sold:24,stop:false},{t:'14:00 ~ 15:00',cap:24,sold:6,stop:false}],
+    slots:[{t:'10:00 ~ 10:30',cap:12,sold:9,stop:false},{t:'10:30 ~ 11:00',cap:12,sold:9,stop:false},{t:'11:00 ~ 11:30',cap:12,sold:12,stop:false},{t:'11:30 ~ 12:00',cap:12,sold:12,stop:false}],
     os:{예약:18,탑승:15,잔여:6,'가동 트랙':'1/1'}, tracks:[{nm:'마스터 트랙',load:70,c:'mid'}]},
   {id:'arena',label:'아레나',unit:'인원(명)',
-    slots:[{t:'09:00 ~ 10:00',cap:40,sold:22,stop:false},{t:'10:00 ~ 11:00',cap:40,sold:38,stop:false},{t:'11:00 ~ 12:00',cap:40,sold:40,stop:false}],
+    slots:[{t:'09:00 ~ 09:30',cap:20,sold:11,stop:false},{t:'09:30 ~ 10:00',cap:20,sold:11,stop:false},{t:'10:00 ~ 10:30',cap:20,sold:19,stop:false},{t:'10:30 ~ 11:00',cap:20,sold:19,stop:false},{t:'11:00 ~ 11:30',cap:20,sold:20,stop:false},{t:'11:30 ~ 12:00',cap:20,sold:20,stop:false}],
     os:{예약:38,입장:30,잔여:2,'가동 부스':'2/2'}, tracks:[{nm:'부스 A',load:60,c:'ok'},{nm:'부스 B',load:88,c:'mid'}]},
   {id:'vecto',label:'벡토',unit:'인원(명)',
-    slots:[{t:'09:00 ~ 10:00',cap:30,sold:12,stop:false},{t:'10:00 ~ 11:00',cap:30,sold:28,stop:false}],
+    slots:[{t:'09:00 ~ 09:30',cap:15,sold:6,stop:false},{t:'09:30 ~ 10:00',cap:15,sold:6,stop:false},{t:'10:00 ~ 10:30',cap:15,sold:14,stop:false},{t:'10:30 ~ 11:00',cap:15,sold:14,stop:false}],
     os:{예약:28,입장:20,잔여:2,'가동 기구':'2/3'}, tracks:[{nm:'기구 1',load:50,c:'ok'},{nm:'기구 2',load:75,c:'mid'}]}
 ];
 var cur=0;
