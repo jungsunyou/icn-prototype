@@ -330,7 +330,7 @@ tr.row:hover td,tr.click:hover td{background:rgba(33,37,41,.05) !important}
       <button class="btn pri sm" onclick="openDrawer('신규 프로모션','일반')">+ 프로모션 등록</button>
     </div>
     <div class="panel">
-      <div class="ph">프로모션 <span class="cnt">· 42건</span><span class="sp"></span><span class="cnt">정렬: 최신순</span></div>
+      <div class="ph">프로모션 <span class="cnt">· 44건</span><span class="sp"></span><span class="cnt">정렬: 최신순</span></div>
       <div class="tblwrap"><table>
         <thead><tr><th>유형</th><th>프로모션명</th><th>코드</th><th>할인</th><th>적용 상품</th><th>상태</th><th>활성 기간</th><th class="r">연결 쿠폰</th><th></th></tr></thead>
         <tbody>
@@ -339,9 +339,11 @@ tr.row:hover td,tr.click:hover td{background:rgba(33,37,41,.05) !important}
           <tr class="click" onclick="openDrawer('인천시민 할인','신분')"><td><span class="typ y-id">신분</span></td><td>인천시민 할인</td><td class="code">PRM-ICN</td><td>−20%</td><td>전체</td><td><span class="pill s-on">활성</span></td><td>상시</td><td class="r">1종</td><td><button class="mini">편집</button></td></tr>
           <tr class="click" onclick="openDrawer('크루 할인','신분')"><td><span class="typ y-id">신분</span></td><td>크루 할인</td><td class="code">PRM-CREW</td><td>−30%</td><td>전체</td><td><span class="pill s-on">활성</span></td><td>상시</td><td class="r">1종</td><td><button class="mini">편집</button></td></tr>
           <tr class="click" onclick="openDrawer('F&amp;B 교환','교환')"><td><span class="typ y-exc">교환</span></td><td>F&amp;B 교환</td><td class="code">PRM-FNB</td><td>교환</td><td>F&amp;B PSU</td><td><span class="pill s-on">활성</span></td><td>11-01 ~ 12-31</td><td class="r">2종</td><td><button class="mini">편집</button></td></tr>
+          <tr class="click" onclick="openDrawer('트레이니 교환','교환','jam','trn')"><td><span class="typ y-exc">교환</span></td><td>트레이니 교환</td><td class="code">PRM-TRN</td><td>JAM 교환</td><td class="code">RACE 1 → MST-RACE 1</td><td><span class="pill s-on">활성</span></td><td>상시</td><td class="r">—</td><td><button class="mini">편집</button></td></tr>
+          <tr class="click" onclick="openDrawer('마스터 교환','교환','jam','mst')"><td><span class="typ y-exc">교환</span></td><td>마스터 교환</td><td class="code">PRM-MST</td><td>JAM 교환</td><td class="code">GENERAL <span style="color:var(--note);font-weight:700">미결</span> → MST-RACE 1</td><td><span class="pill s-on">활성</span></td><td>상시</td><td class="r">—</td><td><button class="mini">편집</button></td></tr>
         </tbody>
       </table></div>
-      <div class="pager"><span style="margin-right:auto">총 42건 · 20/페이지</span><span class="pg">‹</span><span class="pg on">1</span><span class="pg">2</span><span class="pg">3</span><span class="pg">›</span></div>
+      <div class="pager"><span style="margin-right:auto">총 44건 · 20/페이지</span><span class="pg">‹</span><span class="pg on">1</span><span class="pg">2</span><span class="pg">3</span><span class="pg">›</span></div>
     </div>
   </section>
 
@@ -486,6 +488,18 @@ tr.row:hover td,tr.click:hover td{background:rgba(33,37,41,.05) !important}
     <div class="fld" id="qualBlock" hidden><div class="fl">자격 <span class="req">*</span></div><div class="fc"><div style="display:flex;gap:8px"><select class="sel" id="qualSel" style="flex:1"></select><button class="btn ghost sm" onclick="addQual()">+ 자격</button></div></div></div>
 
     <!-- 교환: 교환 대상은 쿠폰에서 지정 -->
+    <div class="fld" id="excModeBlock" hidden><div class="fl">교환 방식 <span class="req">*</span></div><div class="fc"><div class="radio" id="excModeRadio"><span class="opt on" data-m="item" onclick="setExcMode('item')">상품 교환권</span><span class="opt" data-m="jam" onclick="setExcMode('jam')">JAM 교환</span></div></div></div>
+    <div id="jamBlock" hidden>
+      <div class="fld"><div class="fl">대상 <span class="req">*</span></div><div class="fc"><select class="sel" id="jxTarget" style="width:100%" onchange="setJamTarget(this.value)"><option value="trn">마스터 트레이니 자격 달성</option><option value="mst">마스터 조건 달성</option></select></div></div>
+      <div class="fld"><div class="fl">교환 <span class="req">*</span></div><div class="fc"><div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+        <select class="sel" id="jxOut"><option value="RACE">RACE · 레이스 JAM</option><option value="GENERAL">GENERAL · 일반 JAM</option></select>
+        <input class="ipt" id="jxOutQty" style="width:64px" value="1"><span style="color:var(--muted)">개 →</span>
+        <select class="sel" id="jxIn"><option value="MST-RACE">MST-RACE · 마스터 레이스 JAM</option></select>
+        <input class="ipt" style="width:52px" value="1"><span style="color:var(--muted)">개</span>
+      </div><div class="keptline" id="jxQtyNote" style="margin-top:6px" hidden><b>미결</b> · 일반 JAM 수량은 마스터 레이스 JAM 가격에 맞춰 정할 예정이에요.</div></div></div>
+      <div class="fld"><div class="fl">성인 인증</div><div class="fc"><div class="autoval" id="jxAdult">필요 없음 · 미성년자도 교환할 수 있어요</div></div></div>
+      <div class="fld"><div class="fl">교환 조건</div><div class="fc"><div class="autoval">교환마다 1인 1회 · 달성한 당일만 · 교환할 JAM이 부족하면 교환할 수 없어요</div></div></div>
+    </div>
     <div class="fld" id="excBlock" hidden><div class="fl">교환</div><div class="fc"><div class="keptline">교환 프로모션은 <b>교환권을 주는 규칙</b>만 정해요. <b>어떤 상품으로 바꿔줄지는 쿠폰을 발급할 때</b> 골라요.</div></div></div>
 
     <!-- 일반·신분: 적용 상품 -->
@@ -506,7 +520,7 @@ tr.row:hover td,tr.click:hover td{background:rgba(33,37,41,.05) !important}
       </div>
     </div></div>
 
-    <div class="fld"><div class="fl">크루 확인 필요</div><div class="fc"><span class="toggle" onclick="toggleCrew()"><span class="sw off" id="crewSw"></span> <span id="crewLbl">사용 안 함</span></span></div></div>
+    <div class="fld" id="crewRow"><div class="fl">크루 확인 필요</div><div class="fc"><span class="toggle" onclick="toggleCrew()"><span class="sw off" id="crewSw"></span> <span id="crewLbl">사용 안 함</span></span></div></div>
     <div id="crewBlock" hidden>
       <div class="fld"><div class="fl">크루 확인 안내</div><div class="fc"><input class="ipt" id="crewGuide" style="width:100%" placeholder="예: 국가유공자증 확인"></div></div>
       <div class="fld"><div class="fl">확인 시점</div><div class="fc"><div class="autoval" id="crewWhen">할인 적용 시</div></div></div>
@@ -522,6 +536,9 @@ tr.row:hover td,tr.click:hover td{background:rgba(33,37,41,.05) !important}
         <li><b>유형</b>은 일반·신분·교환 중 하나를 골라요. 직권할인은 OS에서만 따로 다뤄요.</li>
         <li><b>신분(자격) 할인</b>은 자격 이름으로 만들고 다시 쓸 수 있어요(+ 자격으로 추가). 한 번에 하나만 적용돼요.</li>
         <li><b>교환</b>은 할인 금액이 없어요. 어떤 상품으로 바꿔줄지는 쿠폰을 발급할 때 <b>상품 관리에 등록된 상품</b> 중에서 골라요. 교환 상품은 꼭 있어야 해요.</li>
+        <li><b>교환 방식</b>은 상품 교환권과 JAM 교환 두 가지예요. JAM 교환은 가지고 있는 JAM을 마스터 레이스 JAM으로 바꿔 주는 교환이에요.</li>
+        <li><b>JAM 교환</b>의 대상은 '마스터 트레이니 자격 달성'과 '마스터 조건 달성' 중에서 골라요. 마스터 조건 달성은 본인인증으로 성인이 확인된 고객만 교환할 수 있어요. 미성년자는 마스터 라이선스를 받아도 마스터 트레이니로 타고, 일반 JAM을 마스터 레이스 JAM으로 바꿀 수 없어요.</li>
+        <li><b>JAM 교환</b>은 교환마다 1인 1회, 자격을 달성한 당일에만 할 수 있어요. 교환할 JAM이 부족하면 교환할 수 없어요. 쿠폰 없이 프로모션만으로 운영해요.</li>
         <li><b>적용 상품</b>은 여러 개 고를 수 있어요. 연결은 여기서만 하고, 상품 관리에서는 보기만 해요.</li>
         <li><b>크루 확인</b>을 켜면 할인을 적용할 때(교환은 사용할 때) <b>크루 승인코드</b>가 필요해요. 코드는 크루마다 매일 자동으로 생기고, 신분 유형은 기본으로 켜져 있어요.</li>
         <li style="color:var(--note)"><b>정하는 중</b> · 프로모션이 진행 중일 때 크루 확인 설정을 바꿀 수 있게 할지</li>
@@ -812,21 +829,40 @@ function cPromoChange(){
   document.getElementById('cExcBlock').hidden=!exc;
 }
 
-function openDrawer(n,t){document.getElementById('dwTitle').textContent=n;setPromoType(t||'일반');document.getElementById('ov').classList.add('show');document.getElementById('dw').classList.add('show');}
+function openDrawer(n,t,m,tg){document.getElementById('dwTitle').textContent=n;setPromoType(t||'일반');setExcMode(m||'item');if(m==='jam'){document.getElementById('jxTarget').value=tg||'trn';setJamTarget(tg||'trn');}document.getElementById('ov').classList.add('show');document.getElementById('dw').classList.add('show');}
 function setPromoType(t){
   document.querySelectorAll('#typeRadio .opt').forEach(function(o){o.classList.toggle('on',o.dataset.y===t)});
   var exc=(t==='교환');
   document.getElementById('discBlock').hidden=exc;
   document.getElementById('applyBlock').hidden=exc;
   document.getElementById('qualBlock').hidden=(t!=='신분');
+  document.getElementById('excModeBlock').hidden=!exc;
   document.getElementById('excBlock').hidden=!exc;
+  if(!exc){document.getElementById('jamBlock').hidden=true;document.getElementById('crewRow').hidden=false;}
   setCrew(t==='신분');
   document.getElementById('crewWhen').textContent=exc?'교환(사용) 시':'할인 적용 시';
   document.getElementById('crewGuide').value=(t==='신분')?'신분증 확인':'';
+  if(exc){var cm=document.querySelector('#excModeRadio .opt.on');setExcMode(cm?cm.dataset.m:'item');}
 }
 function setCrew(on){var sw=document.getElementById('crewSw');sw.classList.toggle('off',!on);document.getElementById('crewLbl').textContent=on?'사용':'사용 안 함';document.getElementById('crewBlock').hidden=!on;}
 function toggleCrew(){setCrew(document.getElementById('crewSw').classList.contains('off'));}
 function openIssue(){cPromoChange();document.getElementById('ov').classList.add('show');document.getElementById('dwC').classList.add('show');}
+function setExcMode(m){
+  var exc=document.querySelector('#typeRadio .opt.on').dataset.y==='교환';
+  document.querySelectorAll('#excModeRadio .opt').forEach(function(o){o.classList.toggle('on',o.dataset.m===m)});
+  var jam=exc&&m==='jam';
+  document.getElementById('jamBlock').hidden=!jam;
+  document.getElementById('excBlock').hidden=!(exc&&m!=='jam');
+  document.getElementById('crewRow').hidden=jam;
+  if(jam){document.getElementById('crewBlock').hidden=true;}
+}
+function setJamTarget(v){
+  var mst=(v==='mst');
+  document.getElementById('jxOut').value=mst?'GENERAL':'RACE';
+  var q=document.getElementById('jxOutQty');q.value=mst?'미결':'1';q.style.color=mst?'var(--note)':'';q.style.borderColor=mst?'var(--note)':'';
+  document.getElementById('jxQtyNote').hidden=!mst;
+  document.getElementById('jxAdult').textContent=mst?'필요 · 본인인증으로 성인이 확인된 고객만 교환할 수 있어요':'필요 없음 · 미성년자도 교환할 수 있어요';
+}
 function closeDrawer(){document.getElementById('ov').classList.remove('show');document.getElementById('dw').classList.remove('show');document.getElementById('dw2').classList.remove('show');document.getElementById('dwC').classList.remove('show');document.getElementById('dwB').classList.remove('show');document.getElementById('dwR').classList.remove('show');}
 /* ===== 달력 date picker (CJU 스타일) ===== */
 var CAL={vy:2026,vm:10,start:'2026-11-01',end:'2026-11-30'}; // vm 0-based
