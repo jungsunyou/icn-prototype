@@ -48,6 +48,7 @@
   .chs .ch+.ch{position:relative}.chs .ch+.ch::before{content:"";position:absolute;left:-3px;top:18px;bottom:18px;width:1px;background:var(--line)}
   .chs .ch.kept.on{background:var(--accent-soft)!important}
   .chs .ch.kept+.ch::before,.chs .ch.kept::before{display:none}
+  .ktxt{color:var(--note)!important;background:var(--note-soft);outline:1px dashed var(--note);outline-offset:1px;border-radius:3px}
   .pmbox{border:1px solid var(--line);border-radius:12px;margin-top:14px;padding:12px 14px}
   .pmbox .ph{display:flex;align-items:center;gap:8px;font-size:13.5px;font-weight:500}
   .pmbox .ph::before{content:"";width:3px;height:14px;background:var(--accent);border-radius:2px}
@@ -101,7 +102,7 @@
       <li><b>분할 결제</b>한 주문은 결제 수단별로 나눠서 합계에 들어가요.</li>
       <li><b>노쇼</b> 금액은 제주와 같은 기준으로 계산해요.</li>
       <li><b>CSV 다운로드</b>는 지금 화면에 보이는 목록(채널·검색 조건 반영)을 내려받아요.</li>
-      <li style="color:var(--note)"><b style="color:var(--note)">정하는 중</b> · ICN 판매 채널은 아직 정해지지 않았어요. 지금 보이는 채널 탭은 예시예요.</li>
+      <li style="color:var(--note)"><b style="color:var(--note)">정하는 중</b> · ICN 판매 채널은 아직 정해지지 않았어요. 지금 보이는 채널 탭은 예시예요. 보라 점선은 제주 화면에 없는데 임의로 넣은 것: 상품명 아래 인원 구성 줄, '(결제 금액 기준)' 표기</li>
     </ul>
   </div>
 </div>
@@ -266,10 +267,10 @@ function run(){
   var list=all.filter(function(r){return inCh(r,CH)});
   if(SORT.k)list.sort(function(x,y){var a=SORT.k in x?x[SORT.k]:amt(x)[SORT.k],b=SORT.k in y?y[SORT.k]:amt(y)[SORT.k];return (a>b?1:a<b?-1:0)*SORT.dir;});
   var pb=document.getElementById('pmbox');pb.hidden=CH==='전체';
-  if(CH!=='전체'){var m=payMethods(list);document.getElementById('pmTitle').innerHTML=CH+' 결제 수단 내역 <span class="muted" style="font-size:12px;font-weight:400">(결제 금액 기준)</span>';
+  if(CH!=='전체'){var m=payMethods(list);document.getElementById('pmTitle').innerHTML=CH+' 결제 수단 내역 <span class="ktxt" style="font-size:12px;font-weight:400">(결제 금액 기준)</span>';
     var ks=Object.keys(m);document.getElementById('pms').innerHTML=ks.length?ks.map(function(k){return '<div class="pm"><div class="pn">'+k+'</div><div class="pv">'+won(m[k])+'</div></div>'}).join(''):'<div class="muted" style="font-size:12px">이 채널은 결제 내역이 없어요.</div>';}
   document.getElementById('tb').innerHTML=list.length?list.map(function(r){var i=ROWS.indexOf(r),a=amt(r),is=issSum(r);
-    return '<tr class="row" onclick="openDw('+i+')"><td class="code">'+r.order+'</td><td class="code">'+r.resv+'</td><td>'+r.ch+'</td><td>'+(r.div||'-')+'</td><td><span class="pill '+(is==='미발권'?'p-gray':'p-blue')+'">'+is+'</span></td><td class="pn2">'+prodName(r)+'<br><span class="muted" style="font-size:12px">'+roleLine(r)+'</span></td><td class="code">'+r.rd+'</td><td class="num">'+r.items.length+'</td><td class="num">'+a.pay.toLocaleString('ko-KR')+'</td><td class="num">'+a.ref.toLocaleString('ko-KR')+'</td><td class="num">'+a.sale.toLocaleString('ko-KR')+'</td><td class="code">'+r.od+'</td></tr>'}).join(''):'<tr><td colspan="12" class="empty">검색 결과가 없어요</td></tr>';
+    return '<tr class="row" onclick="openDw('+i+')"><td class="code">'+r.order+'</td><td class="code">'+r.resv+'</td><td>'+r.ch+'</td><td>'+(r.div||'-')+'</td><td><span class="pill '+(is==='미발권'?'p-gray':'p-blue')+'">'+is+'</span></td><td class="pn2">'+prodName(r)+'<br><span class="ktxt" style="font-size:12px">'+roleLine(r)+'</span></td><td class="code">'+r.rd+'</td><td class="num">'+r.items.length+'</td><td class="num">'+a.pay.toLocaleString('ko-KR')+'</td><td class="num">'+a.ref.toLocaleString('ko-KR')+'</td><td class="num">'+a.sale.toLocaleString('ko-KR')+'</td><td class="code">'+r.od+'</td></tr>'}).join(''):'<tr><td colspan="12" class="empty">검색 결과가 없어요</td></tr>';
   document.getElementById('tot').textContent='총 '+list.length+'개 항목';
 }
 var cur=null;

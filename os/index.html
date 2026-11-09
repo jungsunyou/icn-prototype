@@ -123,6 +123,9 @@
           <a data-id="reservation" data-file="reservation.html">예약 조회</a>
           <a data-id="settlement" data-file="settlement.html">일일 정산</a>
           <a data-id="autorefund" data-file="autorefund.html">티켓 자동 환불</a>
+          <a data-id="mapping" data-file="mapping.html">사후 매핑</a>
+          <a data-id="forcemapping" data-file="forcemapping.html">강제 매핑</a>
+          <a data-id="exchangecoupon" data-file="exchangecoupon.html">교환쿠폰 사용현황</a>
         </nav>
       </div>
     </div>
@@ -147,7 +150,10 @@
     {id:'booking',file:'booking.html',label:'티켓 예매'},
     {id:'reservation',file:'reservation.html',label:'예약 조회'},
     {id:'settlement',file:'settlement.html',label:'일일 정산'},
-    {id:'autorefund',file:'autorefund.html',label:'티켓 자동 환불'}
+    {id:'autorefund',file:'autorefund.html',label:'티켓 자동 환불'},
+    {id:'mapping',file:'mapping.html',label:'사후 매핑'},
+    {id:'forcemapping',file:'forcemapping.html',label:'강제 매핑'},
+    {id:'exchangecoupon',file:'exchangecoupon.html',label:'교환쿠폰 사용현황'}
   ];
   var view=document.getElementById('view'), nav=document.getElementById('nav'), mtabs=document.getElementById('mtabs');
   items.forEach(function(it){var a=document.createElement('a');a.textContent=it.label;a.dataset.id=it.id;a.dataset.file=it.file;a.href='#'+it.id;mtabs.appendChild(a);});

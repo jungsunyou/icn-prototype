@@ -31,6 +31,7 @@
   .flt select{flex:1;border:none;background:none;outline:none;font-size:13.5px;font-family:var(--font);color:var(--fg)}
   td.pn2{white-space:normal;line-height:1.5;min-width:150px}
   .num.kept{color:var(--note)}
+  .ktxt{color:var(--note)!important;background:var(--note-soft);outline:1px dashed var(--note);outline-offset:1px;border-radius:3px}
   .modal{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(10,14,22,.36);z-index:60}
   .modal .box{background:var(--surface);border-radius:16px;padding:22px;width:min(420px,92vw);box-shadow:0 10px 30px rgba(0,0,0,.18)}
   @media(max-width:900px){.flt{grid-template-columns:1fr}}
@@ -68,7 +69,7 @@
     <div class="crumbs"><a onclick="back()">티켓 자동 환불</a> › <span>환불 대상 리스트</span></div>
     <h1>환불 대상 리스트 <span class="ex">예시 데이터</span></h1>
     <div class="card">
-      <div class="lh"><span class="t" id="lTitle"></span><span class="sp"></span>
+      <div class="lh"><span class="t ktxt" id="lTitle"></span><span class="sp"></span>
         <button class="btn sm kept" onclick="toast('ICN은 시간권 상품이 없어 정하는 중이에요.')">시간권 제외</button>
         <button class="btn sm danger" id="cfBtn" disabled onclick="askConfirm()">환불 확정</button>
       </div>
@@ -80,7 +81,7 @@
       <div class="tblwrap"><table class="grp">
         <thead>
           <tr><th class="g" colspan="7">자동 환불 대상</th><th class="g gl" colspan="2">환불 예상가</th><th class="g gl" colspan="2">환불 처리 결과</th></tr>
-          <tr><th><input type="checkbox" id="all" onchange="document.querySelectorAll('.rk:not(:disabled)').forEach(function(c){c.checked=this.checked}.bind(this));cfCheck()"></th><th>주문 번호</th><th>상품 주문 번호</th><th>채널</th><th>상품명</th><th>예약 시간</th><th>결제 금액</th><th class="gl">탑승 횟수</th><th class="kept">환불 예상가</th><th class="gl">처리 상태</th><th>환불 금액</th></tr>
+          <tr><th><input type="checkbox" id="all" onchange="document.querySelectorAll('.rk:not(:disabled)').forEach(function(c){c.checked=this.checked}.bind(this));cfCheck()"></th><th>주문 번호</th><th>상품 주문 번호</th><th>채널</th><th>상품명</th><th>예약 시간</th><th class="kept">결제 금액</th><th class="gl">탑승 횟수</th><th class="kept">환불 예상가</th><th class="gl">처리 상태</th><th>환불 금액</th></tr>
         </thead>
         <tbody id="lb"></tbody>
       </table></div>
@@ -93,14 +94,14 @@
         <li><b>탑승 횟수</b>는 그 티켓으로 이미 탄 레이스 수 / 받은 레이스 수예요. 다 탄 티켓은 환불 예상가가 0원이에요.</li>
         <li>티켓을 골라 <b>환불 확정</b>을 누르면 처리 상태가 '환불 확정'이 되고, 자동 환불 처리에서 환불돼요. 끝나면 '환불 완료'와 환불 금액이 보여요.</li>
         <li>이미 환불이 끝났거나 데스크에서 환불한 티켓은 고를 수 없어요.</li>
-        <li style="color:var(--note)"><b style="color:var(--note)">정하는 중</b> · 시간권 제외 버튼(ICN은 일반 시간권 상품이 없음), 환불 예상가 계산 규칙</li>
+        <li style="color:var(--note)"><b style="color:var(--note)">정하는 중</b> · 시간권 제외 버튼(ICN은 일반 시간권 상품이 없음), 환불 예상가 계산 규칙. 보라 점선은 제주 화면에 없는데 임의로 넣은 것: 제목 문구 형식, 결제 금액 열(제주는 정산가), 탑승 횟수 '탄 수 / 받은 수' 표기, '환불 확정' 처리 상태, 환불 확정 확인 창</li>
       </ul>
     </div>
   </section>
 </div>
 
 <div class="modal" id="mOk" hidden onclick="if(event.target===this)this.hidden=true">
-  <div class="box">
+  <div class="box kept">
     <b id="okT"></b>
     <div style="margin-top:10px;font-size:13.5px;line-height:1.6" id="okB"></div>
     <div style="display:flex;justify-content:flex-end;gap:6px;margin-top:16px"><button class="btn sm" onclick="document.getElementById('mOk').hidden=true">취소</button><button class="btn sm danger" id="okGo">확인</button></div>
@@ -137,7 +138,7 @@ function slotSt(s){var tk=s.tickets.filter(function(t){return t.st!=='데스크 
   return s.notified?'알림톡 발송 완료':'환불미확정';}
 function renderMain(){
   var d=document.getElementById('d').value;
-  if(d!=='2026-11-14'){document.getElementById('blocks').innerHTML='<div class="empty" style="padding:40px;text-align:center;color:var(--muted)">이 날짜에는 운영을 멈춘 기록이 없어요.</div>';return;}
+  if(d!=='2026-11-14'){document.getElementById('blocks').innerHTML='<div class="empty" style="padding:40px;text-align:center;"><span class="ktxt">이 날짜에는 운영을 멈춘 기록이 없어요.</span></div>';return;}
   document.getElementById('blocks').innerHTML=BLOCKS.map(function(b,bi){
     var rows=b.slots.map(function(s,si){var n=s.tickets.length,e=s.tickets.reduce(function(a,t){return a+est(t)},0),st=slotSt(s);
       var cf=s.tickets.filter(function(t){return t.st==='알림톡 발송 완료'||t.st==='환불 확정'||t.st==='환불 완료'}).length,cx=s.tickets.filter(function(t){return t.st==='데스크 환불'}).length,dn=s.tickets.filter(function(t){return t.st==='환불 완료'});
@@ -163,7 +164,7 @@ function curTickets(){var s=BLOCKS[CUR.b].slots[CUR.s];var c=document.getElement
   return s.tickets.filter(function(t){return (!c||t.ch===c)&&(!p||t.prod===p)&&(!st||t.st===st)});}
 function renderList(){var list=curTickets();
   document.getElementById('lb').innerHTML=list.length?list.map(function(t){var lock=t.st==='환불 완료'||t.st==='데스크 환불'||t.st==='환불 확정';var i=BLOCKS[CUR.b].slots[CUR.s].tickets.indexOf(t);
-    return '<tr><td><input type="checkbox" class="rk" data-i="'+i+'" onchange="cfCheck()"'+(lock?' disabled':'')+'></td><td class="code">'+t.order+'</td><td class="code">'+t.po+'</td><td>'+t.ch+'</td><td class="pn2">'+t.prod+'<br><span class="muted" style="font-size:12px">'+t.role+'</span></td><td class="code">'+t.rd+'</td><td class="num">'+won(t.pay)+'</td><td class="num gl">'+t.used+' / '+t.total+'</td><td class="num kept">'+won(est(t))+'</td><td class="gl"><span class="pill '+STC[t.st]+'">'+t.st+'</span></td><td class="num">'+(t.st==='환불 완료'?won(est(t)):'-')+'</td></tr>';}).join(''):'<tr><td colspan="11" style="padding:40px;text-align:center;color:var(--muted)">검색 결과가 없어요</td></tr>';
+    return '<tr><td><input type="checkbox" class="rk" data-i="'+i+'" onchange="cfCheck()"'+(lock?' disabled':'')+'></td><td class="code">'+t.order+'</td><td class="code">'+t.po+'</td><td>'+t.ch+'</td><td class="pn2">'+t.prod+'<br><span class="muted" style="font-size:12px">'+t.role+'</span></td><td class="code">'+t.rd+'</td><td class="num">'+won(t.pay)+'</td><td class="num gl"><span class="ktxt">'+t.used+' / '+t.total+'</span></td><td class="num kept">'+won(est(t))+'</td><td class="gl"><span class="pill '+STC[t.st]+(t.st==='환불 확정'?' ktxt':'')+'">'+t.st+'</span></td><td class="num">'+(t.st==='환불 완료'?won(est(t)):'-')+'</td></tr>';}).join(''):'<tr><td colspan="11" style="padding:40px;text-align:center;color:var(--muted)">검색 결과가 없어요</td></tr>';
   document.getElementById('tot').textContent='총 '+list.length+'개 항목';cfCheck();}
 function cfCheck(){document.getElementById('cfBtn').disabled=!document.querySelectorAll('.rk:checked').length;}
 function askConfirm(){var ks=Array.from(document.querySelectorAll('.rk:checked')).map(function(c){return +c.dataset.i});var s=BLOCKS[CUR.b].slots[CUR.s];

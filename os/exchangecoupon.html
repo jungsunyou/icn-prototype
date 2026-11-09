@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta name="robots" content="noindex,nofollow">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>교환쿠폰 사용현황</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="common.css">
+<style>
+  .ktxt{color:var(--note)!important;background:var(--note-soft);outline:1px dashed var(--note);outline-offset:1px;border-radius:3px}
+  .bar{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+  .fld{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--border);border-radius:8px;height:34px;padding:0 10px;background:#fff;color:var(--muted);font-size:13.5px}
+  .fld input,.fld select{border:none;outline:none;background:none;font-size:13.5px;font-family:var(--font);color:var(--fg)}
+  .fld i{width:1px;height:14px;background:var(--border)}
+  .fld .x{border:none;background:none;color:var(--muted);cursor:pointer;font-size:13px;padding:0}
+  .nick{position:relative;flex:1;min-width:260px;max-width:480px}
+  .nick .fld{width:100%}.nick input{flex:1}
+  .ac{position:absolute;left:0;right:0;top:38px;background:#fff;border:1px solid var(--border);border-radius:8px;box-shadow:0 6px 16px rgba(0,0,0,.08);z-index:5;padding:4px}
+  .ac div{padding:7px 10px;border-radius:6px;cursor:pointer;font-size:13.5px}.ac div:hover{background:var(--accent-soft)}
+  .mdl{position:fixed;inset:0;background:rgba(33,37,41,.35);display:flex;align-items:center;justify-content:center;z-index:60}
+  .mdl .box{background:#fff;border-radius:16px;padding:26px 24px 20px;width:min(300px,90vw);text-align:center}
+  .mdl .t{font-size:15px;font-weight:500}.mdl .b{font-size:13.5px;margin:18px 0 22px}
+  .mdl .row{display:flex;gap:8px}.mdl .row .btn{flex:1;height:34px}
+  .btn.light{background:#F5F5F5;border-color:#F5F5F5;color:var(--fg);font-weight:400}
+  .ttop{position:fixed;left:50%;top:14px;transform:translateX(-50%);background:#fff;border-radius:14px;box-shadow:0 6px 20px rgba(0,0,0,.12);padding:10px 14px;display:flex;gap:10px;align-items:flex-start;z-index:70;min-width:280px}
+  .ttop .ic{width:18px;height:18px;border-radius:50%;background:#212529;color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-top:1px}
+  .ttop .m{font-size:13.5px}.ttop .s{font-size:12px;color:var(--muted);margin-top:2px}
+  .ttop .x{border:none;background:none;cursor:pointer;color:var(--fg);font-size:15px;margin-left:auto}
+  .listhd{margin:18px 0 4px;font-size:13.5px;font-weight:500}
+</style>
+<body>
+<div class="app">
+  <h1>교환쿠폰 사용현황 <span class="ex">예시 데이터</span></h1>
+  <div class="card">
+    <div class="bar">
+      <label class="fld"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg><input type="date" id="d" value="2026-11-14" onchange="run()"></label>
+      <label class="fld"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 7h16v3a2 2 0 0 0 0 4v3H4v-3a2 2 0 0 0 0-4z"/></svg>프로모션<i></i><select id="pr" onchange="run()"><option value="">프로모션을 선택하세요</option><option>F&amp;B 교환</option></select><button class="x" onclick="event.preventDefault();document.getElementById('pr').value='';run()">✕</button></label>
+      <div class="nick">
+        <label class="fld"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4-4"/></svg><input id="nk" placeholder="닉네임을 입력하세요" oninput="suggest()" autocomplete="off"><button class="x" onclick="event.preventDefault();pickNick('')">✕</button></label>
+        <div class="ac" id="ac" hidden></div>
+      </div>
+    </div>
+    <div class="listhd">교환 쿠폰 목록</div>
+    <div class="tblwrap"><table>
+      <thead><tr><th>쿠폰 코드</th><th>사용 여부</th><th>사용 일시</th><th>발급 일시</th><th>사용 처리</th></tr></thead>
+      <tbody id="tb"></tbody>
+    </table></div>
+    <div class="dspager"><span id="tot">총 0개 항목</span><span>1 페이지 중 1 페이지</span><span class="rpp">페이지당 행 수 : <select style="border:none;background:none;font-size:13.5px;font-family:var(--font)"><option>10</option><option>20</option><option>50</option></select></span><span class="sp"></span><div class="pgs"><span>«</span><span>‹</span><span class="on">1</span><span>›</span><span>»</span></div></div>
+  </div>
+
+  <div class="memo">
+    <div class="mh">안내 · 구현 시 제외 가능</div>
+    <ul>
+      <li><b>교환쿠폰 사용현황</b>은 고객이 가진 교환쿠폰을 크루가 찾아서 현장에서 사용 처리하거나, 잘못 처리한 걸 미사용으로 되돌리는 화면이에요.</li>
+      <li><b>날짜</b>를 고르고, <b>프로모션</b>을 골라 그 프로모션의 교환쿠폰만 볼 수 있어요. 프로모션 목록에는 교환 유형 프로모션만 나와요.</li>
+      <li><b>닉네임</b>을 입력하면 맞는 고객이 아래에 뜨고, 고객을 고르면 그 고객의 쿠폰만 보여요. 실명·전화번호로는 찾지 않아요.</li>
+      <li>목록의 <b>사용 처리</b> 칸에서 쿠폰마다 사용 / 미사용 처리를 해요. 사용 처리하면 사용 일시가 남아요.</li>
+      <li>JAM 교환(트레이니·마스터 교환)은 쿠폰 없이 운영하므로 여기에 나오지 않아요.</li>
+      <li><b>사용처리</b>를 누르면 확인 창이 뜨고, 확인하면 사용으로 바뀌며 버튼이 <b>미사용처리</b>로 바뀌어요. 미사용처리하면 다시 미사용이 돼요. 처리하면 위쪽에 완료 안내가 떠요.</li>
+      <li>고객을 고르면 검색창에 닉네임만 보여요. 닉네임은 겹치지 않아서 닉네임만으로 고객을 정확히 고를 수 있어요.</li>
+      <li style="color:var(--note)"><b style="color:var(--note)">정하는 중</b> · 날짜가 발급일 기준인지 사용일 기준인지, ICN 교환 프로모션 목록(지금은 F&amp;B 교환만). 보라 점선은 제주 화면에서 확인하지 못한 것: 닉네임 추천 목록 모양</li>
+    </ul>
+  </div>
+</div>
+<div class="mdl" id="mdl" hidden onclick="if(event.target===this)this.hidden=true"><div class="box"><div class="t" id="mT"></div><div class="b" id="mB"></div><div class="row"><button class="btn light" onclick="$('mdl').hidden=true">닫기</button><button class="btn pri" id="mGo">확인</button></div></div></div>
+<div class="ttop" id="ttop" hidden><span class="ic">i</span><div><div class="m" id="tM"></div><div class="s" id="tS"></div></div><button class="x" onclick="$('ttop').hidden=true">✕</button></div>
+
+<script>
+var C=[
+ {code:'1DZ8N3R4VQ',pr:'F&B 교환',nick:'번개질주',used:false,ua:'',ia:'2026-11-14 09:15'},
+ {code:'HHOHX9N0IT',pr:'F&B 교환',nick:'번개질주',used:true,ua:'2026-11-14 11:02',ia:'2026-11-14 09:15'},
+ {code:'K2W9TZ7PQA',pr:'F&B 교환',nick:'코너장인',used:false,ua:'',ia:'2026-11-14 10:40'},
+ {code:'R5D8LN3XWE',pr:'F&B 교환',nick:'주말드라이버',used:true,ua:'2026-11-14 12:31',ia:'2026-11-14 10:05'},
+ {code:'B6Y4QCM1ZR',pr:'F&B 교환',nick:'파란번호판',used:false,ua:'',ia:'2026-11-14 10:58'},
+ {code:'M8J1VE5HKS',pr:'F&B 교환',nick:'라임레이서',used:false,ua:'',ia:'2026-11-14 13:20'}];
+var NICK='',WD='일월화수목금토';
+function $(i){return document.getElementById(i);}
+function fmt(t){if(!t)return '-';var d=new Date(t.slice(0,10)+'T00:00:00');return t.slice(0,10)+' '+WD[d.getDay()]+' '+t.slice(11);}
+function nowStr(){var n=new Date();return '2026-11-14 '+n.toTimeString().slice(0,5);}
+function tTop(m){var n=new Date(),h=n.getHours(),mi=('0'+n.getMinutes()).slice(-2);$('tM').textContent=m;$('tS').textContent='2026년 11월 14일 '+(h<12?'오전 ':'오후 ')+((h%12)||12)+':'+mi;$('ttop').hidden=false;clearTimeout(tTop._t);tTop._t=setTimeout(function(){$('ttop').hidden=true},3000);}
+function suggest(){var q=$('nk').value.trim();NICK='';var ns=[...new Set(C.map(function(c){return c.nick}))].filter(function(n){return q&&n.indexOf(q)>=0});
+  $('ac').innerHTML=ns.length?ns.map(function(n){return '<div onclick="pickNick(\''+n+'\')">'+n+'</div>'}).join(''):'<div style="color:var(--muted);cursor:default">맞는 고객이 없어요</div>';$('ac').hidden=!q;$('ac').classList.add('kept');if(!q)run();}
+function pickNick(n){NICK=n;$('nk').value=n;$('ac').hidden=true;run();}
+function run(){var d=$('d').value,p=$('pr').value;
+  var list=C.filter(function(c){return (c.ia.slice(0,10)===d||c.ua.slice(0,10)===d)&&(!p||c.pr===p)&&(!NICK||c.nick===NICK)});
+  $('tb').innerHTML=list.length?list.map(function(c){var i=C.indexOf(c);return '<tr><td class="code">'+c.code+'</td><td><span class="pill '+(c.used?'p-blue':'p-gray')+'">'+(c.used?'사용':'미사용')+'</span></td><td class="code">'+fmt(c.ua)+'</td><td class="code">'+fmt(c.ia)+'</td><td>'+(c.used?'<button class="btn sm warn" onclick="ask('+i+')">미사용처리</button>':'<button class="btn sm pri" onclick="ask('+i+')">사용처리</button>')+'</td></tr>'}).join(''):'<tr><td colspan="5" style="padding:40px;text-align:center;color:var(--muted)">검색 결과가 없어요</td></tr>';
+  $('tot').textContent='총 '+list.length+'개 항목';}
+function ask(i){var c=C[i],w=c.used?'미사용':'사용';$('mT').textContent='쿠폰 '+w+' 처리';$('mB').textContent=c.code+' 쿠폰을 '+w+' 처리하시겠습니까?';
+  $('mGo').onclick=function(){c.used=!c.used;c.ua=c.used?nowStr():'';$('mdl').hidden=true;run();tTop('쿠폰 '+w+' 처리가 완료되었습니다.');};$('mdl').hidden=false;}
+document.addEventListener('click',function(e){if(!e.target.closest('.nick'))$('ac').hidden=true;});
+run();
+</script>
+</body>
+</html>
