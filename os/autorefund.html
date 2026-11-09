@@ -54,7 +54,7 @@
         <li><b>자동 환불</b>은 파크 사정(기상 등)으로 레이스 운영을 멈췄을 때, 멈춘 시간대의 예약을 한 번에 환불하는 화면이에요. 지금은 레이스만 다뤄요.</li>
         <li><b>주문 취소 기준 시간</b>은 파크 운영 관리에서 운영을 멈출 때 정한 시각이에요. 기준 시간마다 표가 하나씩 생기고, 줄은 예약 시간(30분 단위)이에요.</li>
         <li><b>환불 예상가</b>는 아직 타지 않은 레이스만큼이에요. 이미 탄 레이스는 빼고, 위약금 없이 환불해요.</li>
-        <li><b>환불 예상가 안내</b>를 누르면 고객에게 환불 예정 금액을 알림톡으로 보내요. 보낸 뒤에는 처리자·확정 일시가 남고 처리 상태가 '알림톡 발송 완료'로 바뀌어요.</li>
+        <li><b>환불 예상가 안내</b>를 누르면 확인 창 없이 바로 고객에게 환불 예정 금액 알림톡을 보내고 그 시간대 티켓이 확정돼요. 처리자·확정 일시(초까지)가 남고, 처리 상태는 '알림톡 발송 완료', 확정 수는 대상 매수가 돼요. 알림톡 수는 실제로 발송된 결과가 오면 늘어나요.</li>
         <li><b>총 매수</b>를 누르면 그 시간대의 환불 대상 리스트가 열려요. 거기서 티켓을 골라 <b>환불 확정</b>해야 실제 환불이 진행돼요.</li>
         <li><b>처리 상태</b>는 환불미확정 → 알림톡 발송 완료 → 환불 확정 → 환불 완료 순서로 바뀌어요. 자동 환불 전에 인포데스크에서 먼저 환불한 티켓은 '데스크 환불'로 보여요.</li>
         <li><b>외부 채널</b>(네이버·마이리얼트립·클룩 등) 주문은 자동 환불하지 않아요. 앱·키오스크·인포데스크 주문만 대상이에요.</li>
@@ -121,12 +121,12 @@ var BLOCKS=[
     {t:'12:30',tickets:[].concat(order('앱',[tk('앱','직접 운전',57600,0)]),order('키오스크',[tk('키오스크','직접 운전',64000,0)]))},
     {t:'13:00',tickets:[]}
   ]},
-  {cut:'15:10:00',done:{who:'크루 하늘',at:'2026-11-14 15:42'},slots:[
+  {cut:'15:10:00',done:{who:'크루 하늘',at:'2026-11-14 15:42:08'},slots:[
     {t:'15:30',notified:true,tickets:[].concat(order('앱',[tk('앱','직접 운전',57600,0,'환불 완료'),tk('앱','동승자',36000,0,'환불 완료')]),order('키오스크',[tk('키오스크','직접 운전',64000,1,'환불 완료')]))},
     {t:'16:00',notified:true,tickets:[].concat(order('INFO DESK',[tk('INFO DESK','직접 운전',64000,0,'데스크 환불')]),order('앱',[tk('앱','직접 운전',57600,0,'환불 완료')]))}
   ]}
 ];
-BLOCKS.forEach(function(b){b.slots.forEach(function(s){s.tickets.forEach(function(t){t.prod='레이스 포함 패키지';t.rd='2026-11-14 '+s.t;});if(b.done&&s.notified){s.who=b.done.who;s.at=b.done.at;}});});
+BLOCKS.forEach(function(b){b.slots.forEach(function(s){s.tickets.forEach(function(t){t.prod='레이스 포함 패키지';t.rd='2026-11-14 '+s.t;});if(b.done&&s.notified){s.who=b.done.who;s.at=b.done.at;s.sent=s.tickets.filter(function(t){return t.st!=='데스크 환불'}).length;}});});
 var STC={'환불미확정':'p-gray','알림톡 발송 완료':'p-blue','환불 확정':'p-warn','환불 완료':'p-ok','데스크 환불':'p-gray'};
 function won(n){return Math.round(n).toLocaleString('ko-KR');}
 function est(t){return t.st==='데스크 환불'?0:Math.min(t.pay,Math.max(0,t.total-t.used)*JAM);}
@@ -140,20 +140,18 @@ function renderMain(){
   if(d!=='2026-11-14'){document.getElementById('blocks').innerHTML='<div class="empty" style="padding:40px;text-align:center;color:var(--muted)">이 날짜에는 운영을 멈춘 기록이 없어요.</div>';return;}
   document.getElementById('blocks').innerHTML=BLOCKS.map(function(b,bi){
     var rows=b.slots.map(function(s,si){var n=s.tickets.length,e=s.tickets.reduce(function(a,t){return a+est(t)},0),st=slotSt(s);
-      var cf=s.tickets.filter(function(t){return t.st==='환불 확정'||t.st==='환불 완료'}).length,cx=s.tickets.filter(function(t){return t.st==='데스크 환불'}).length,dn=s.tickets.filter(function(t){return t.st==='환불 완료'});
+      var cf=s.tickets.filter(function(t){return t.st==='알림톡 발송 완료'||t.st==='환불 확정'||t.st==='환불 완료'}).length,cx=s.tickets.filter(function(t){return t.st==='데스크 환불'}).length,dn=s.tickets.filter(function(t){return t.st==='환불 완료'});
       return '<tr><td class="tm code">'+s.t+'</td>'+CH.map(function(c){return '<td class="num">'+s.tickets.filter(function(t){return t.ch===c}).length+'</td>'}).join('')+
       '<td class="num">'+(n?'<span class="lnk" onclick="openList('+bi+','+si+')">'+n+'</span>':'0')+'</td><td class="num kept">'+won(e)+'</td>'+
       '<td><button class="btn sm danger" '+(n&&!s.notified?'':'disabled ')+'onclick="askNotify('+bi+','+si+')">환불 예상가 안내</button></td>'+
-      '<td class="gl">'+(s.who||'-')+'</td><td class="code">'+(s.at||'-')+'</td><td><span class="pill '+STC[st]+'">'+st+'</span></td><td class="num">'+cf+'</td><td class="num">'+(s.notified?n-cx:0)+'</td><td class="num">'+cx+'</td><td class="num">'+dn.length+'</td><td class="num">'+won(dn.reduce(function(a,t){return a+est(t)},0))+'</td></tr>';}).join('');
+      '<td class="gl">'+(s.who||'-')+'</td><td class="code">'+(s.at||'-')+'</td><td><span class="pill '+STC[st]+'">'+st+'</span></td><td class="num">'+cf+'</td><td class="num">'+(s.sent||0)+'</td><td class="num">'+cx+'</td><td class="num">'+dn.length+'</td><td class="num">'+won(dn.reduce(function(a,t){return a+est(t)},0))+'</td></tr>';}).join('');
     return '<div class="blk"><div class="bh"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg>주문 취소 기준 시간 ('+b.cut+')</div><div class="tblwrap"><table class="grp"><thead><tr><th class="g" colspan="'+(CH.length+4)+'">자동 환불 대상</th><th class="g gl" colspan="8">처리 결과</th></tr><tr><th>예약 시간</th>'+CH.map(function(c){return '<th class="kept">'+c+'</th>'}).join('')+'<th>총 매수</th><th class="kept">환불 예상가</th><th>알림톡 발송</th><th class="gl">처리자</th><th>확정 일시</th><th>처리 상태</th><th>확정 수</th><th>알림톡 수</th><th>취소 수</th><th>환불 수</th><th>환불 금액</th></tr></thead><tbody>'+rows+'</tbody></table></div></div>';
   }).join('');
 }
-function now(){return '2026-11-14 '+new Date().toTimeString().slice(0,5);}
+function now(){return '2026-11-14 '+new Date().toTimeString().slice(0,8);}
 function askNotify(bi,si){var s=BLOCKS[bi].slots[si];
-  document.getElementById('okT').textContent='환불 예상가 안내';
-  document.getElementById('okB').innerHTML='예약 시간 '+s.t+' 고객 '+s.tickets.filter(function(t){return t.st!=='데스크 환불'}).length+'명에게 환불 예정 금액을 알림톡으로 보낼까요?<br><span class="muted" style="font-size:12px">보낸 뒤에는 되돌릴 수 없어요.</span>';
-  document.getElementById('okGo').onclick=function(){s.notified=true;s.who='크루 (나)';s.at=now();document.getElementById('mOk').hidden=true;renderMain();toast('예시 화면이라 실제로 보내지 않아요. 처리 상태만 바꿨어요.');};
-  document.getElementById('mOk').hidden=false;}
+  s.tickets.forEach(function(t){if(t.st==='환불미확정')t.st='알림톡 발송 완료';});
+  s.notified=true;s.sent=0;s.who='크루 (나)';s.at=now();renderMain();toast('환불 예상가 알림톡이 발송되었습니다.');}
 var CUR=null;
 function openList(bi,si){CUR={b:bi,s:si};var b=BLOCKS[bi],s=b.slots[si];
   document.getElementById('lTitle').textContent='[레이스] 예약 시간 '+s.t+' · 주문 취소 기준 시간 '+b.cut;
