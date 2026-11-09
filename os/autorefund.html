@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta name="robots" content="noindex,nofollow">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>티켓 자동 환불</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="common.css">
+<style>
+  .bar{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+  .datef{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--border);border-radius:8px;height:40px;padding:0 12px;color:var(--muted);background:#fff}
+  .datef input{border:none;outline:none;font-size:13.5px;font-family:var(--font);color:var(--fg)}
+  .tabs{display:flex;gap:6px;margin:16px 0 0;padding-bottom:12px;border-bottom:1px solid var(--line)}
+  .tabs span{height:28px;padding:0 12px;border-radius:14px;display:inline-flex;align-items:center;font-size:13.5px;color:var(--muted)}
+  .tabs span.on{background:var(--accent);color:#fff;font-weight:600}
+  .blk{margin-top:22px}
+  .blk .bh{display:flex;align-items:center;gap:6px;font-size:13.5px;font-weight:500;margin-bottom:10px}
+  .blk .bh svg{color:var(--muted)}
+  table.grp th.g{background:#FAFAFA;font-weight:500}
+  table.grp th.gl,table.grp td.gl{border-left:1px solid var(--line)}
+  td.tm{background:#FAFAFA}
+  .lnk{color:var(--accent);text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+  .crumbs{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);margin:0 0 4px}
+  .crumbs a{color:var(--fg);font-weight:600;cursor:pointer}
+  .lh{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .lh .t{font-size:15px;font-weight:600}.lh .sp{flex:1}
+  .flt{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:18px 0 6px}
+  .flt label{display:flex;align-items:center;gap:8px;border:1px solid var(--border);border-radius:8px;height:34px;padding:0 10px;background:#fff;font-size:13.5px;color:var(--muted)}
+  .flt label i{width:1px;height:14px;background:var(--border)}
+  .flt select{flex:1;border:none;background:none;outline:none;font-size:13.5px;font-family:var(--font);color:var(--fg)}
+  td.pn2{white-space:normal;line-height:1.5;min-width:150px}
+  .num.kept{color:var(--note)}
+  .modal{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(10,14,22,.36);z-index:60}
+  .modal .box{background:var(--surface);border-radius:16px;padding:22px;width:min(420px,92vw);box-shadow:0 10px 30px rgba(0,0,0,.18)}
+  @media(max-width:900px){.flt{grid-template-columns:1fr}}
+</style>
+<body>
+<div class="app">
+  <!-- 목록 -->
+  <section id="vMain">
+    <h1>티켓 자동 환불 <span class="ex">예시 데이터</span></h1>
+    <div class="card">
+      <div class="bar">
+        <label class="datef"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg><input type="date" id="d" value="2026-11-14" onchange="renderMain()"></label>
+      </div>
+      <div class="tabs"><span class="on">레이스</span></div>
+      <div id="blocks"></div>
+    </div>
+
+    <div class="memo">
+      <div class="mh">안내 · 구현 시 제외 가능</div>
+      <ul>
+        <li><b>자동 환불</b>은 파크 사정(기상 등)으로 레이스 운영을 멈췄을 때, 멈춘 시간대의 예약을 한 번에 환불하는 화면이에요. 지금은 레이스만 다뤄요.</li>
+        <li><b>주문 취소 기준 시간</b>은 파크 운영 관리에서 운영을 멈출 때 정한 시각이에요. 기준 시간마다 표가 하나씩 생기고, 줄은 예약 시간(30분 단위)이에요.</li>
+        <li><b>환불 예상가</b>는 아직 타지 않은 레이스만큼이에요. 이미 탄 레이스는 빼고, 위약금 없이 환불해요.</li>
+        <li><b>환불 예상가 안내</b>를 누르면 고객에게 환불 예정 금액을 알림톡으로 보내요. 보낸 뒤에는 처리자·확정 일시가 남고 처리 상태가 '알림톡 발송 완료'로 바뀌어요.</li>
+        <li><b>총 매수</b>를 누르면 그 시간대의 환불 대상 리스트가 열려요. 거기서 티켓을 골라 <b>환불 확정</b>해야 실제 환불이 진행돼요.</li>
+        <li><b>처리 상태</b>는 환불미확정 → 알림톡 발송 완료 → 환불 확정 → 환불 완료 순서로 바뀌어요. 자동 환불 전에 인포데스크에서 먼저 환불한 티켓은 '데스크 환불'로 보여요.</li>
+        <li><b>외부 채널</b>(네이버·마이리얼트립·클룩 등) 주문은 자동 환불하지 않아요. 앱·키오스크·인포데스크 주문만 대상이에요.</li>
+        <li style="color:var(--note)"><b style="color:var(--note)">정하는 중</b> · 자동 환불 대상 채널 목록(판매 채널 미확정), 환불 예상가 계산 규칙(미탑승 레이스를 어떤 금액으로 계산할지)</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 환불 대상 리스트 -->
+  <section id="vList" hidden>
+    <div class="crumbs"><a onclick="back()">티켓 자동 환불</a> › <span>환불 대상 리스트</span></div>
+    <h1>환불 대상 리스트 <span class="ex">예시 데이터</span></h1>
+    <div class="card">
+      <div class="lh"><span class="t" id="lTitle"></span><span class="sp"></span>
+        <button class="btn sm kept" onclick="toast('ICN은 시간권 상품이 없어 정하는 중이에요.')">시간권 제외</button>
+        <button class="btn sm danger" id="cfBtn" disabled onclick="askConfirm()">환불 확정</button>
+      </div>
+      <div class="flt">
+        <label>채널<i></i><select id="fCh" onchange="renderList()"></select></label>
+        <label>상품<i></i><select id="fPd" onchange="renderList()"></select></label>
+        <label>처리 상태<i></i><select id="fSt" onchange="renderList()"></select></label>
+      </div>
+      <div class="tblwrap"><table class="grp">
+        <thead>
+          <tr><th class="g" colspan="7">자동 환불 대상</th><th class="g gl" colspan="2">환불 예상가</th><th class="g gl" colspan="2">환불 처리 결과</th></tr>
+          <tr><th><input type="checkbox" id="all" onchange="document.querySelectorAll('.rk:not(:disabled)').forEach(function(c){c.checked=this.checked}.bind(this));cfCheck()"></th><th>주문 번호</th><th>상품 주문 번호</th><th>채널</th><th>상품명</th><th>예약 시간</th><th>결제 금액</th><th class="gl">탑승 횟수</th><th class="kept">환불 예상가</th><th class="gl">처리 상태</th><th>환불 금액</th></tr>
+        </thead>
+        <tbody id="lb"></tbody>
+      </table></div>
+      <div class="dspager"><span id="tot">총 0개 항목</span><span>1 페이지 중 1 페이지</span><span class="rpp">페이지당 행 수 : <select style="border:none;background:none;font-size:13.5px;font-family:var(--font)"><option>20</option><option>50</option><option>100</option></select></span><span class="sp"></span><div class="pgs"><span>«</span><span>‹</span><span class="on">1</span><span>›</span><span>»</span></div></div>
+    </div>
+    <div class="memo">
+      <div class="mh">안내 · 구현 시 제외 가능</div>
+      <ul>
+        <li>한 줄이 티켓 한 장이에요(직접 운전·주니어 운전·동승자). 고객 실명·전화번호는 보여주지 않아요.</li>
+        <li><b>탑승 횟수</b>는 그 티켓으로 이미 탄 레이스 수 / 받은 레이스 수예요. 다 탄 티켓은 환불 예상가가 0원이에요.</li>
+        <li>티켓을 골라 <b>환불 확정</b>을 누르면 처리 상태가 '환불 확정'이 되고, 자동 환불 처리에서 환불돼요. 끝나면 '환불 완료'와 환불 금액이 보여요.</li>
+        <li>이미 환불이 끝났거나 데스크에서 환불한 티켓은 고를 수 없어요.</li>
+        <li style="color:var(--note)"><b style="color:var(--note)">정하는 중</b> · 시간권 제외 버튼(ICN은 일반 시간권 상품이 없음), 환불 예상가 계산 규칙</li>
+      </ul>
+    </div>
+  </section>
+</div>
+
+<div class="modal" id="mOk" hidden onclick="if(event.target===this)this.hidden=true">
+  <div class="box">
+    <b id="okT"></b>
+    <div style="margin-top:10px;font-size:13.5px;line-height:1.6" id="okB"></div>
+    <div style="display:flex;justify-content:flex-end;gap:6px;margin-top:16px"><button class="btn sm" onclick="document.getElementById('mOk').hidden=true">취소</button><button class="btn sm danger" id="okGo">확인</button></div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+var CH=['앱','키오스크','INFO DESK'];
+var JAM=25000; // 레이스 JAM 1개 금액(PSU 정가 기준) · 계산 규칙은 정하는 중
+var seq=1788900,ord=500;
+function tk(ch,role,pay,used,st){return {ch:ch,role:role,pay:pay,used:used,total:2,st:st||'환불미확정',po:String(seq++)};}
+function order(ch,list){var o='O261114000'+(ord++);list.forEach(function(t){t.order=o;});return list;}
+var BLOCKS=[
+  {cut:'11:37:00',slots:[
+    {t:'11:30',tickets:[].concat(order('키오스크',[tk('키오스크','직접 운전',64000,1),tk('키오스크','동승자',40000,1)]),order('앱',[tk('앱','직접 운전',57600,0)]),order('INFO DESK',[tk('INFO DESK','직접 운전',64000,2)]))},
+    {t:'12:00',tickets:[].concat(order('키오스크',[tk('키오스크','직접 운전',64000,0),tk('키오스크','주니어 운전',64000,0)]),order('앱',[tk('앱','직접 운전',57600,0),tk('앱','동승자',36000,0)]),order('INFO DESK',[tk('INFO DESK','직접 운전',64000,0,'데스크 환불')]))},
+    {t:'12:30',tickets:[].concat(order('앱',[tk('앱','직접 운전',57600,0)]),order('키오스크',[tk('키오스크','직접 운전',64000,0)]))},
+    {t:'13:00',tickets:[]}
+  ]},
+  {cut:'15:10:00',done:{who:'크루 하늘',at:'2026-11-14 15:42'},slots:[
+    {t:'15:30',notified:true,tickets:[].concat(order('앱',[tk('앱','직접 운전',57600,0,'환불 완료'),tk('앱','동승자',36000,0,'환불 완료')]),order('키오스크',[tk('키오스크','직접 운전',64000,1,'환불 완료')]))},
+    {t:'16:00',notified:true,tickets:[].concat(order('INFO DESK',[tk('INFO DESK','직접 운전',64000,0,'데스크 환불')]),order('앱',[tk('앱','직접 운전',57600,0,'환불 완료')]))}
+  ]}
+];
+BLOCKS.forEach(function(b){b.slots.forEach(function(s){s.tickets.forEach(function(t){t.prod='레이스 포함 패키지';t.rd='2026-11-14 '+s.t;});if(b.done&&s.notified){s.who=b.done.who;s.at=b.done.at;}});});
+var STC={'환불미확정':'p-gray','알림톡 발송 완료':'p-blue','환불 확정':'p-warn','환불 완료':'p-ok','데스크 환불':'p-gray'};
+function won(n){return Math.round(n).toLocaleString('ko-KR');}
+function est(t){return t.st==='데스크 환불'?0:Math.min(t.pay,Math.max(0,t.total-t.used)*JAM);}
+function toast(m){var e=document.getElementById('toast');e.textContent=m;e.classList.add('show');clearTimeout(e._t);e._t=setTimeout(function(){e.classList.remove('show')},2400);}
+function slotSt(s){var tk=s.tickets.filter(function(t){return t.st!=='데스크 환불'});if(!s.tickets.length)return '환불미확정';
+  if(tk.length&&tk.every(function(t){return t.st==='환불 완료'}))return '환불 완료';
+  if(tk.some(function(t){return t.st==='환불 확정'||t.st==='환불 완료'}))return '환불 확정';
+  return s.notified?'알림톡 발송 완료':'환불미확정';}
+function renderMain(){
+  var d=document.getElementById('d').value;
+  if(d!=='2026-11-14'){document.getElementById('blocks').innerHTML='<div class="empty" style="padding:40px;text-align:center;color:var(--muted)">이 날짜에는 운영을 멈춘 기록이 없어요.</div>';return;}
+  document.getElementById('blocks').innerHTML=BLOCKS.map(function(b,bi){
+    var rows=b.slots.map(function(s,si){var n=s.tickets.length,e=s.tickets.reduce(function(a,t){return a+est(t)},0),st=slotSt(s);
+      var cf=s.tickets.filter(function(t){return t.st==='환불 확정'||t.st==='환불 완료'}).length,cx=s.tickets.filter(function(t){return t.st==='데스크 환불'}).length,dn=s.tickets.filter(function(t){return t.st==='환불 완료'});
+      return '<tr><td class="tm code">'+s.t+'</td>'+CH.map(function(c){return '<td class="num">'+s.tickets.filter(function(t){return t.ch===c}).length+'</td>'}).join('')+
+      '<td class="num">'+(n?'<span class="lnk" onclick="openList('+bi+','+si+')">'+n+'</span>':'0')+'</td><td class="num kept">'+won(e)+'</td>'+
+      '<td><button class="btn sm danger" '+(n&&!s.notified?'':'disabled ')+'onclick="askNotify('+bi+','+si+')">환불 예상가 안내</button></td>'+
+      '<td class="gl">'+(s.who||'-')+'</td><td class="code">'+(s.at||'-')+'</td><td><span class="pill '+STC[st]+'">'+st+'</span></td><td class="num">'+cf+'</td><td class="num">'+(s.notified?n-cx:0)+'</td><td class="num">'+cx+'</td><td class="num">'+dn.length+'</td><td class="num">'+won(dn.reduce(function(a,t){return a+est(t)},0))+'</td></tr>';}).join('');
+    return '<div class="blk"><div class="bh"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg>주문 취소 기준 시간 ('+b.cut+')</div><div class="tblwrap"><table class="grp"><thead><tr><th class="g" colspan="'+(CH.length+4)+'">자동 환불 대상</th><th class="g gl" colspan="8">처리 결과</th></tr><tr><th>예약 시간</th>'+CH.map(function(c){return '<th class="kept">'+c+'</th>'}).join('')+'<th>총 매수</th><th class="kept">환불 예상가</th><th>알림톡 발송</th><th class="gl">처리자</th><th>확정 일시</th><th>처리 상태</th><th>확정 수</th><th>알림톡 수</th><th>취소 수</th><th>환불 수</th><th>환불 금액</th></tr></thead><tbody>'+rows+'</tbody></table></div></div>';
+  }).join('');
+}
+function now(){return '2026-11-14 '+new Date().toTimeString().slice(0,5);}
+function askNotify(bi,si){var s=BLOCKS[bi].slots[si];
+  document.getElementById('okT').textContent='환불 예상가 안내';
+  document.getElementById('okB').innerHTML='예약 시간 '+s.t+' 고객 '+s.tickets.filter(function(t){return t.st!=='데스크 환불'}).length+'명에게 환불 예정 금액을 알림톡으로 보낼까요?<br><span class="muted" style="font-size:12px">보낸 뒤에는 되돌릴 수 없어요.</span>';
+  document.getElementById('okGo').onclick=function(){s.notified=true;s.who='크루 (나)';s.at=now();document.getElementById('mOk').hidden=true;renderMain();toast('예시 화면이라 실제로 보내지 않아요. 처리 상태만 바꿨어요.');};
+  document.getElementById('mOk').hidden=false;}
+var CUR=null;
+function openList(bi,si){CUR={b:bi,s:si};var b=BLOCKS[bi],s=b.slots[si];
+  document.getElementById('lTitle').textContent='[레이스] 예약 시간 '+s.t+' · 주문 취소 기준 시간 '+b.cut;
+  function opts(a){return '<option value="">선택 안 함</option>'+a.map(function(x){return '<option>'+x+'</option>'}).join('');}
+  document.getElementById('fCh').innerHTML=opts(CH);document.getElementById('fPd').innerHTML=opts(['레이스 포함 패키지']);document.getElementById('fSt').innerHTML=opts(Object.keys(STC));
+  document.getElementById('vMain').hidden=true;document.getElementById('vList').hidden=false;document.getElementById('all').checked=false;renderList();window.scrollTo(0,0);}
+function back(){document.getElementById('vList').hidden=true;document.getElementById('vMain').hidden=false;renderMain();}
+function curTickets(){var s=BLOCKS[CUR.b].slots[CUR.s];var c=document.getElementById('fCh').value,p=document.getElementById('fPd').value,st=document.getElementById('fSt').value;
+  return s.tickets.filter(function(t){return (!c||t.ch===c)&&(!p||t.prod===p)&&(!st||t.st===st)});}
+function renderList(){var list=curTickets();
+  document.getElementById('lb').innerHTML=list.length?list.map(function(t){var lock=t.st==='환불 완료'||t.st==='데스크 환불'||t.st==='환불 확정';var i=BLOCKS[CUR.b].slots[CUR.s].tickets.indexOf(t);
+    return '<tr><td><input type="checkbox" class="rk" data-i="'+i+'" onchange="cfCheck()"'+(lock?' disabled':'')+'></td><td class="code">'+t.order+'</td><td class="code">'+t.po+'</td><td>'+t.ch+'</td><td class="pn2">'+t.prod+'<br><span class="muted" style="font-size:12px">'+t.role+'</span></td><td class="code">'+t.rd+'</td><td class="num">'+won(t.pay)+'</td><td class="num gl">'+t.used+' / '+t.total+'</td><td class="num kept">'+won(est(t))+'</td><td class="gl"><span class="pill '+STC[t.st]+'">'+t.st+'</span></td><td class="num">'+(t.st==='환불 완료'?won(est(t)):'-')+'</td></tr>';}).join(''):'<tr><td colspan="11" style="padding:40px;text-align:center;color:var(--muted)">검색 결과가 없어요</td></tr>';
+  document.getElementById('tot').textContent='총 '+list.length+'개 항목';cfCheck();}
+function cfCheck(){document.getElementById('cfBtn').disabled=!document.querySelectorAll('.rk:checked').length;}
+function askConfirm(){var ks=Array.from(document.querySelectorAll('.rk:checked')).map(function(c){return +c.dataset.i});var s=BLOCKS[CUR.b].slots[CUR.s];
+  var sum=ks.reduce(function(a,k){return a+est(s.tickets[k])},0);
+  document.getElementById('okT').textContent='환불 확정';
+  document.getElementById('okB').innerHTML='고른 티켓 '+ks.length+'장, 환불 예상가 '+won(sum)+'원을 환불 확정할까요?<br><span class="muted" style="font-size:12px">확정하면 자동 환불 처리에서 환불이 진행돼요.</span>';
+  document.getElementById('okGo').onclick=function(){ks.forEach(function(k){s.tickets[k].st='환불 확정'});if(!s.who){s.who='크루 (나)';s.at=now();}document.getElementById('mOk').hidden=true;document.getElementById('all').checked=false;renderList();toast('예시 화면이라 실제로 환불되지 않아요. 처리 상태만 바꿨어요.');};
+  document.getElementById('mOk').hidden=false;}
+renderMain();
+</script>
+</body>
+</html>
