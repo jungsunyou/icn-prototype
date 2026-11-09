@@ -121,6 +121,7 @@
         <nav class="nav" id="nav">
           <a data-id="booking" data-file="booking.html">티켓 예매</a>
           <a data-id="reservation" data-file="reservation.html">예약 조회</a>
+          <a data-id="settlement" data-file="settlement.html">일일 정산</a>
         </nav>
       </div>
     </div>
@@ -143,7 +144,8 @@
 (function(){
   var items=[
     {id:'booking',file:'booking.html',label:'티켓 예매'},
-    {id:'reservation',file:'reservation.html',label:'예약 조회'}
+    {id:'reservation',file:'reservation.html',label:'예약 조회'},
+    {id:'settlement',file:'settlement.html',label:'일일 정산'}
   ];
   var view=document.getElementById('view'), nav=document.getElementById('nav'), mtabs=document.getElementById('mtabs');
   items.forEach(function(it){var a=document.createElement('a');a.textContent=it.label;a.dataset.id=it.id;a.dataset.file=it.file;a.href='#'+it.id;mtabs.appendChild(a);});

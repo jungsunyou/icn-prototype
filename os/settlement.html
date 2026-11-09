@@ -1,0 +1,339 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta name="robots" content="noindex,nofollow">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>일일 정산</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,400,0..1,0&display=swap">
+<link rel="stylesheet" href="common.css">
+<style>
+  .bar{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+  .bar .lbl{font-size:13.5px;color:var(--muted)}
+  .lsep{width:1px;height:16px;background:#EBEBEB;margin:0 2px 0 -4px}
+  .datef{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--border);border-radius:8px;height:40px;padding:0 12px;color:var(--muted);background:#fff}
+  .datef input{border:none;outline:none;font-size:13.5px;font-family:var(--font);color:var(--fg)}
+  .seg span{height:34px}
+  .sbox{display:flex;align-items:center;flex:1;min-width:320px;max-width:680px;border:1px solid var(--border);border-radius:8px;background:#fff;height:40px;padding:0 12px;gap:8px}
+  .sbox .si{color:var(--muted);display:inline-flex}
+  .sbox select{border:none;background:none;font-size:13.5px;font-family:var(--font);color:var(--fg);outline:none}
+  .sbox input{border:none;flex:1;background:none;outline:none;font-size:13.5px;font-family:var(--font)}
+  .sbox .clr{border:none;background:none;color:var(--muted);cursor:pointer;font-size:15px}
+  .listhd{display:flex;align-items:center;gap:8px;margin:20px 0 4px;font-size:15px;font-weight:500}
+  .listhd .sp{flex:1}
+  .link{color:var(--fg)}
+  .empty{padding:40px;text-align:center;color:var(--muted)}
+  /* 상세 */
+  .acts{display:flex;gap:10px;flex-wrap:wrap}
+  .ord .oh{display:flex;align-items:center;gap:8px;padding:4px 4px 12px;border-bottom:1px solid var(--line);font-size:15px}
+  .ord .oh .sp{flex:1}
+  .ord .caret{border:none;background:none;color:var(--muted);cursor:pointer;font-size:15px;padding:0 8px}
+  .psu table{font-size:12px}.psu th,.psu td{padding:4px 8px;height:26px;border:none;font-size:12px}.psu th{font-weight:600;height:auto}
+  .psu .tot{display:inline-block;border:1px solid var(--line);border-radius:8px;padding:4px 10px;margin-top:4px}
+  td.wrap{white-space:normal;min-width:120px}
+  td.oi{white-space:normal;line-height:1.5;font-size:12px;min-width:110px;color:var(--sub)}
+  td.wrap{min-width:140px}
+  .u{text-decoration:underline;text-underline-offset:3px}
+  .vsep{width:1px;height:26px;background:var(--line);margin:0 4px}
+  .modal{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(10,14,22,.36);z-index:60}
+  .modal .box{background:var(--surface);border-radius:16px;padding:18px;width:min(380px,92vw);box-shadow:0 10px 30px rgba(0,0,0,.18)}
+  .modal textarea{width:100%;min-height:110px;margin-top:8px}
+  .chs{display:flex;gap:4px;overflow-x:auto;padding:6px 0 10px;border-bottom:1px solid var(--line)}
+  .chs .ch{flex:0 0 auto;min-width:104px;padding:12px 14px;border-radius:12px;text-align:center;cursor:pointer;border:1px solid transparent}
+  .chs .ch .cn{font-size:12px;color:var(--muted)}
+  .chs .ch .cv{font-family:var(--mono);font-size:15px;color:var(--muted);margin-top:8px;letter-spacing:-.3px}
+  .chs .ch:hover{background:rgba(33,37,41,.04)}
+  .chs .ch.on{background:var(--accent-soft)}.chs .ch.on .cn{color:var(--fg);font-weight:600}.chs .ch.on .cv{color:var(--accent);font-weight:600}
+  .chs .ch+.ch{position:relative}.chs .ch+.ch::before{content:"";position:absolute;left:-3px;top:18px;bottom:18px;width:1px;background:var(--line)}
+  .chs .ch.kept.on{background:var(--accent-soft)!important}
+  .chs .ch.kept+.ch::before,.chs .ch.kept::before{display:none}
+  .pmbox{border:1px solid var(--line);border-radius:12px;margin-top:14px;padding:12px 14px}
+  .pmbox .ph{display:flex;align-items:center;gap:8px;font-size:13.5px;font-weight:500}
+  .pmbox .ph::before{content:"";width:3px;height:14px;background:var(--accent);border-radius:2px}
+  .pmbox .ph .sp{flex:1}
+  .pms{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+  .pm{min-width:140px;background:#F7F8FA;border-radius:12px;padding:12px 14px}
+  .pm .pn{font-size:12px;color:var(--fg)}.pm .pv{font-family:var(--mono);font-size:13.5px;color:var(--accent);margin-top:8px}
+  th.srt{cursor:pointer;user-select:none}th.srt .sg{color:#C8C8C8;margin-left:4px;font-size:11px}th.srt.on .sg{color:var(--accent)}
+  td.pn2{white-space:normal;line-height:1.5;min-width:150px}
+  .mlink{color:var(--accent);cursor:pointer;font-size:13.5px;background:none;border:none;padding:0}
+</style>
+<body>
+<div class="app">
+  <div class="crumb">인포데스크 &gt; <b>일일 정산</b></div>
+  <h1>일일 정산 <span class="ex">예시 데이터</span></h1>
+
+  <div class="card">
+    <div class="bar">
+      <span class="lbl">검색 일시 기준</span><span class="lsep"></span>
+      <span class="seg" id="basis"><span class="on" data-b="rd" onclick="seg(this);run()"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg> 예약</span><span data-b="od" onclick="seg(this);run()"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5.5" width="18" height="13" rx="2"/><path d="M3 10h18"/></svg> 주문</span></span>
+      <label class="datef"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg><input type="date" id="d" value="2026-11-14" onchange="run()"></label>
+      <div class="sbox"><span class="si"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4-4"/></svg></span>
+        <select id="stype" onchange="run()"><option value="resv">예약번호</option><option value="order">주문번호</option><option value="prod">상품명</option></select>
+        <input id="kw" placeholder="검색 조건에 맞는 검색어를 입력하세요" oninput="run()">
+        <button class="clr" onclick="document.getElementById('kw').value='';run()">✕</button>
+      </div>
+    </div>
+    <div class="listhd">주문 목록 <span class="muted" style="font-size:12px;font-weight:400">(환불 금액 제외)</span><span class="sp"></span>
+      <button class="btn sm pri" onclick="toast('예시 화면이라 파일을 내려받지 않아요. 지금 보이는 목록이 CSV로 저장돼요.')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg> CSV 다운로드</button>
+    </div>
+    <div class="chs" id="chs"></div>
+    <div class="pmbox" id="pmbox" hidden>
+      <div class="ph"><span id="pmTitle"></span><span class="sp"></span><button class="caret mlink" style="color:var(--muted)" onclick="var p=document.getElementById('pms');p.hidden=!p.hidden;this.textContent=p.hidden?'⌄':'⌃'">⌃</button></div>
+      <div class="pms" id="pms"></div>
+    </div>
+    <div class="tblwrap" style="margin-top:6px"><table>
+      <thead><tr><th>주문 번호</th><th>예약 번호</th><th>채널</th><th>주문 구분</th><th>상태</th><th>상품명</th><th class="srt" data-k="rd" onclick="sortBy(this)">예약 일시<span class="sg">↕</span></th><th>매수</th><th class="srt" data-k="pay" onclick="sortBy(this)">결제 금액<span class="sg">↕</span></th><th class="srt" data-k="ref" onclick="sortBy(this)">환불 금액<span class="sg">↕</span></th><th class="srt" data-k="sale" onclick="sortBy(this)">매출 금액<span class="sg">↕</span></th><th class="srt" data-k="od" onclick="sortBy(this)">주문 일시<span class="sg">↕</span></th></tr></thead>
+      <tbody id="tb"></tbody>
+    </table></div>
+    <div class="dspager"><span id="tot">총 0개 항목</span><span>1 페이지 중 1 페이지</span><span class="rpp">페이지당 행 수 : <select style="border:none;background:none;font-size:13.5px;font-family:var(--font)"><option>20</option><option>50</option><option>100</option></select></span><span class="sp"></span><div class="pgs"><span>«</span><span>‹</span><span class="on">1</span><span>›</span><span>»</span></div></div>
+  </div>
+
+  <div class="memo">
+    <div class="mh">안내 · 구현 시 제외 가능</div>
+    <ul>
+      <li><b>채널별 금액</b>은 그날 주문의 매출 금액 합계예요. 매출 금액은 결제 금액에서 환불 금액을 뺀 값이에요.</li>
+      <li><b>채널</b>을 누르면 그 채널 주문만 목록에 보이고, 결제 수단별 결제 금액 합계가 함께 열려요. 다시 '전체'를 누르면 모든 채널이 보여요.</li>
+      <li><b>검색 일시 기준</b>은 예약(이용일)과 주문(결제일) 중에서 골라요. 같은 날짜라도 기준에 따라 목록이 달라져요.</li>
+      <li><b>검색</b>은 예약번호·주문번호·상품명으로 해요. 이름·전화번호로는 찾지 않아요.</li>
+      <li><b>줄을 누르면</b> 예약 조회와 같은 예약 상세가 열려요. 환불·금액 수정·재결제를 여기서도 바로 처리할 수 있어요.</li>
+      <li><b>분할 결제</b>한 주문은 결제 수단별로 나눠서 합계에 들어가요.</li>
+      <li><b>노쇼</b> 금액은 제주와 같은 기준으로 계산해요.</li>
+      <li><b>CSV 다운로드</b>는 지금 화면에 보이는 목록(채널·검색 조건 반영)을 내려받아요.</li>
+      <li style="color:var(--note)"><b style="color:var(--note)">정하는 중</b> · ICN 판매 채널은 아직 정해지지 않았어요. 지금 보이는 채널 탭은 예시예요.</li>
+    </ul>
+  </div>
+</div>
+
+<!-- 예약 상세 -->
+<div class="ov" id="ov" onclick="closeDw()"></div>
+<aside class="drawer wide" id="dw">
+  <div class="dh"><h3>예약 상세 정보</h3><span class="sub" id="dwNo"></span><span class="sp"></span>
+    <div class="acts">
+      <button class="btn pri" onclick="openHist()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3.5 12a8.5 8.5 0 1 0 2.5-6"/><path d="M3 4v4h4M12 8v4l3 2"/></svg> 처리 이력</button>
+      <button class="btn danger" onclick="toast('예시 화면이라 실제로 환불되지 않아요.')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5.5" width="18" height="13" rx="2"/><path d="M3 10h18M4 4l16 16"/></svg> 전체 환불</button>
+      <button class="x" onclick="closeDw()">닫기</button>
+    </div></div>
+  <div class="db">
+    <div class="card">
+      <h2>예약자 정보</h2>
+      <div class="kv" id="dwKv"></div>
+    </div>
+
+    <div class="card">
+      <h2>주문 내역 및 이용 현황<span class="sp"></span><button class="btn sm danger" id="refBtn" disabled onclick="toast('예시 화면이라 실제로 환불되지 않아요.')">환불 확정</button><button class="btn sm pri" onclick="openEdit()">금액 수정</button></h2>
+      <div id="dwOrders"></div>
+    </div>
+
+    <div class="card">
+      <h2>발권 처리<span class="sp"></span>
+        <button class="btn sm kept" onclick="toast('레이서 분리는 정하는 중이에요.')">레이서 분리</button>
+        <button class="btn sm kept" onclick="toast('레이서 병합은 정하는 중이에요.')">레이서 병합</button>
+        <span class="vsep"></span>
+        <button class="btn sm pri" id="issBtn" disabled onclick="toast('예시 화면이라 실제로 발권되지 않아요.')">발권하기</button>
+        <button class="btn sm pri" id="issCancel" disabled onclick="toast('예시 화면이라 실제로 취소되지 않아요.')">발권 취소</button>
+      </h2>
+      <div class="tblwrap">
+        <table><thead><tr><th><input type="checkbox" onchange="document.querySelectorAll('.tck').forEach(function(c){c.checked=this.checked}.bind(this));issCheck()"></th><th>레이서</th><th>상품 주문 번호</th><th>티켓 No</th><th>발권 상태</th><th>상품명</th><th>티켓</th><th>발권 일시</th><th>할인</th></tr></thead><tbody id="dwTk"></tbody></table>
+      </div>
+    </div>
+
+    <div class="memo">
+      <div class="mh">안내 · 구현 시 제외 가능</div>
+      <ul>
+        <li><b>예약자 정보</b>는 주문 구분과 닉네임만 보여줘요. 실명·전화번호·이메일은 보여주지 않아요.</li>
+        <li><b>주문 내역</b>은 티켓 한 장이 한 줄이에요(직접 운전·주니어 운전·동승자·이용자·동반자녀). 체크해서 골라 <b>환불 확정</b>하거나, 주문 단위로 <b>전체 환불</b>해요.</li>
+        <li><b>환불 대상 확인</b>의 '환불 확인'을 누르면 그 티켓의 PSU(JAM)를 얼마나 썼는지 자세히 펼쳐져요. 제공·이용·남음은 확정 데이터예요.</li>
+        <li><b>발권 처리</b>에서는 티켓에 NFC ID를 매핑해 발권하고, 필요하면 발권을 취소해요. 다시 발권하면 '재발권'으로 표시돼요.</li>
+        <li><b>금액 수정</b>은 고른 티켓의 결제 금액을 사유와 함께 바꿔요. 바뀐 차액은 <b>재결제</b>로 처리해요. 재결제는 기존 결제를 취소하고 지금 금액으로 다시 결제해요.</li>
+        <li><b>거래 이력</b>은 그 주문의 결제·부분 취소·재결제 기록이에요. 처리 이력(크루 작업·메모)과는 따로 봐요.</li>
+        <li><b>매출 금액</b>은 결제 금액에서 환불 금액을 뺀 값이에요.</li>
+        <li><b>처리 이력</b>에는 취소·환불·발권 기록과 크루가 남긴 메모가 쌓여요. 처리자는 크루 이름으로 남아요.</li>
+        <li style="color:var(--note)"><b style="color:var(--note)">정하는 중</b> · 환불 금액 계산 규칙(미사용 PSU를 어떤 기준으로 나눌지), 금액 수정·재결제를 ICN에서 어디까지 허용할지, 레이서 분리·병합을 ICN에서도 쓸지</li>
+      </ul>
+    </div>
+  </div>
+</aside>
+
+<!-- 처리 이력 -->
+<aside class="drawer" id="dwH" style="z-index:45;width:min(820px,96vw)">
+  <div class="dh"><h3>처리 이력</h3><span class="sp"></span><button class="btn sm pri" onclick="openMemo()">메모 추가</button><button class="x" onclick="closeHist()">✕</button></div>
+  <div class="db"><div class="tblwrap" style="background:var(--surface);border:1px solid var(--line);border-radius:16px">
+    <table><thead><tr><th>주문번호</th><th>티켓 No</th><th>주문 상태</th><th>환불 상태</th><th>내용</th><th>처리자</th><th>처리 일시</th></tr></thead><tbody id="hist"></tbody></table>
+  </div></div>
+</aside>
+<div class="modal" id="memo" hidden onclick="if(event.target===this)this.hidden=true">
+  <div class="box">
+    <div style="display:flex;align-items:center;gap:8px"><b style="font-size:13.5px">주문번호</b><select class="sel" id="memoOrder" style="flex:1"></select></div>
+    <div style="margin-top:12px;font-size:13.5px">추가할 내용을 작성해 주세요.</div>
+    <textarea class="ipt" id="memoTxt"></textarea>
+    <div style="display:flex;justify-content:flex-end;gap:6px;margin-top:10px"><button class="btn sm" onclick="document.getElementById('memo').hidden=true">취소</button><button class="btn sm pri" onclick="saveMemo()">저장</button></div>
+  </div>
+</div>
+<div class="modal" id="mTx" hidden onclick="if(event.target===this)this.hidden=true">
+  <div class="box" style="width:min(720px,94vw)">
+    <div style="display:flex;align-items:center"><b>거래 이력</b><span style="flex:1"></span><button class="x" onclick="document.getElementById('mTx').hidden=true">✕</button></div>
+    <div class="tblwrap" style="margin-top:10px"><table><thead><tr><th>일시</th><th>구분</th><th>결제 수단</th><th class="r">금액</th><th>처리자</th></tr></thead><tbody id="txBody"></tbody></table></div>
+  </div>
+</div>
+<div class="modal" id="mEdit" hidden onclick="if(event.target===this)this.hidden=true">
+  <div class="box" style="width:min(460px,94vw)">
+    <b>금액 수정</b>
+    <div class="muted" style="font-size:12px;margin-top:4px">고른 티켓의 결제 금액을 바꿔요. 바뀐 차액은 재결제로 처리해요.</div>
+    <div id="editRows" style="margin-top:10px"></div>
+    <textarea class="ipt" id="editWhy" placeholder="수정 사유를 입력하세요" style="width:100%;min-height:70px;margin-top:8px"></textarea>
+    <div style="display:flex;justify-content:flex-end;gap:6px;margin-top:10px"><button class="btn sm" onclick="document.getElementById('mEdit').hidden=true">취소</button><button class="btn sm pri" onclick="saveEdit()">저장</button></div>
+  </div>
+</div>
+<div class="modal" id="mRepay" hidden onclick="if(event.target===this)this.hidden=true">
+  <div class="box" style="width:min(620px,94vw);border-radius:16px;padding:24px">
+    <div style="text-align:center;font-size:15px;font-weight:600">재결제</div>
+    <div style="text-align:center;margin-top:16px;font-size:13.5px" id="rpOrder"></div>
+    <div style="text-align:center;margin-top:8px;font-size:12px;color:var(--muted)">재결제 금액</div>
+    <div style="text-align:center;font-family:var(--mono);font-size:20px;color:var(--accent);font-weight:600" id="rpAmt"></div>
+    <div style="display:grid;grid-template-columns:80px 1fr;gap:14px 12px;align-items:center;margin-top:20px">
+      <div style="font-size:13.5px">결제 방식</div>
+      <div><span class="seg" id="rpMode"><span class="on" onclick="rpSet('single')">단일 결제</span><span onclick="rpSet('split')">분할 결제</span></span></div>
+      <div style="font-size:13.5px" id="rpByL">결제 수단</div>
+      <div id="rpSingle"><select class="sel" id="rpBy" onchange="rpCheck()"><option value="">결제 수단을 선택해 주세요</option><option>카드</option><option>현금</option><option>통장입금</option><option>PG</option></select></div>
+    </div>
+    <div id="rpSplit" hidden style="margin-left:92px;margin-top:-26px">
+      <div id="rpRows"></div>
+      <div style="display:flex;gap:8px;align-items:center;margin-top:8px;flex-wrap:wrap">
+        <button class="btn" style="border-color:var(--accent);color:var(--accent);min-width:150px" onclick="rpAdd()">+ 결제수단 추가</button>
+        <span id="rpLeft" style="background:var(--warn-soft);color:var(--warn);border-radius:11px;padding:8px 14px;font-size:13.5px;font-weight:600"></span>
+      </div>
+      <div style="font-size:12px;color:var(--muted);margin-top:8px">분할 결제는 현금·통장입금·PG만 선택할 수 있어요.</div>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:22px;border-top:1px solid var(--line);padding-top:18px">
+      <button class="btn" style="flex:1;padding:12px" onclick="document.getElementById('mRepay').hidden=true">취소</button>
+      <button class="btn pri" id="rpGo" style="flex:1;padding:12px" disabled onclick="doRepay()">결제 진행</button>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+var PK={race:{name:'레이스 포함 패키지',psu:[['RACE',2],['GENERAL',20]]},pass:{name:'레이스 포함 패키지',psu:[['RACE',2],['GENERAL',20]]},indoor:{name:'실내 패키지',psu:[['GENERAL',40]]},child:{name:'실내 패키지',psu:[['GENERAL',30]]}};
+function it(pk,role,price,dc,dcName,used,ticket,iss,st){return {pk:pk,role:role,price:price,dc:dc||0,dcName:dcName||'-',used:used||[],ticket:ticket||'',iss:iss||'미발권',st:st||'결제 완료'};}
+var ROWS=[
+  {order:'O26111400012',ch:'INFO DESK',st:'이용 중',resv:'R5859609',pay:'카드',nick:'번개질주',member:'회원',div:'',od:'2026-11-14 09:12',rd:'2026-11-14 11:00',
+   items:[it('race','직접 운전',64000,0,'-',[1,6],'0412 8830 1192','발권'),it('race','주니어 운전',64000,0,'-',[1,0],'0412 8830 1193','발권')]},
+  {order:'O26111400015',ch:'앱',st:'예약',resv:'R2595532',pay:'TOSS',nick:'코너장인',member:'회원',div:'',od:'2026-11-13 21:40',rd:'2026-11-14 시간 자유',
+   items:[it('indoor','이용자',57600,0,'앱 −10% 반영가',[0],'','미발권')]},
+  {order:'O26111400021',ch:'마이리얼트립',st:'이용 완료',resv:'R0822293',pay:'MRT 결제',nick:'초록헬멧',member:'비회원',div:'MRT-88412',od:'2026-11-10 14:02',rd:'2026-11-14 13:00',
+   items:[it('race','직접 운전',64000,0,'-',[2,20],'0412 8830 1240','발권')]},
+  {order:'O26111400027',ch:'INFO DESK',st:'부분 환불',resv:'R4427157',pay:'카드',nick:'주말드라이버',member:'회원',div:'',od:'2026-11-14 10:05',rd:'2026-11-14 14:00',
+   items:[it('race','직접 운전',64000,12800,'인천시민 20%',[1,4],'0412 8830 1288','발권'),it('pass','동승자',40000,8000,'인천시민 20%',[0,0],'0412 8830 1289','발권 취소','환불')]},
+  {order:'O26111400033',ch:'키오스크',st:'환불',resv:'R0791077',pay:'카드',nick:'라임레이서',member:'비회원',div:'',od:'2026-11-14 10:31',rd:'2026-11-14 시간 자유',
+   items:[it('indoor','이용자',64000,0,'-',[0],'','미발권','환불'),it('child','동반자녀',40000,0,'-',[0],'','미발권','환불')]},
+  {order:'O26111400041',ch:'INFO DESK',st:'이용 중',resv:'R2394136',pay:'계좌이체',nick:'파란번호판',member:'회원',div:'○○초 체험학습',od:'2026-11-14 10:58',rd:'2026-11-14 시간 자유',
+   items:[it('indoor','이용자',64000,6400,'직권 10% · 단체',[12],'0412 8830 1302','발권'),it('indoor','이용자',64000,6400,'직권 10% · 단체',[5],'0412 8830 1303','발권'),it('child','동반자녀',40000,4000,'직권 10% · 단체',[0],'0412 8830 1304','발권')]},
+  {order:'O26111400048',ch:'클룩',st:'예약',resv:'R9249847',pay:'KLOOK 결제',nick:'스핀아웃',member:'비회원',div:'KLK-20931',od:'2026-11-12 08:44',rd:'2026-11-14 15:30',
+   items:[it('race','직접 운전',64000,0,'-',[0,0],'','미발권')]},
+  {order:'O26111400052',ch:'네이버',st:'예약',resv:'R7731045',pay:'네이버페이',nick:'드리프트곰',member:'회원',div:'NV-55120',od:'2026-11-14 08:20',rd:'2026-11-14 16:00',
+   items:[it('race','직접 운전',64000,0,'-',[0,0],'','미발권'),it('pass','동승자',40000,0,'-',[0,0],'','미발권')]},
+  {order:'O26111400060',ch:'단체',st:'이용 중',resv:'R6612078',pay:'통장입금',nick:'한빛중 인솔',member:'비회원',div:'한빛중 2학년',od:'2026-11-11 15:00',rd:'2026-11-14 10:00',
+   items:[it('indoor','이용자',64000,0,'-',[8],'0412 8830 1150','발권'),it('indoor','이용자',64000,0,'-',[11],'0412 8830 1151','발권'),it('indoor','이용자',64000,0,'-',[6],'0412 8830 1152','발권')]},
+  {order:'O26111400063',ch:'INFO DESK',st:'예약',resv:'R3308861',pay:'현금 + PG',pays:[['현금',40000],['PG',64000]],nick:'은빛휠',member:'회원',div:'',od:'2026-11-14 11:20',rd:'2026-11-14 12:00',
+   items:[it('race','직접 운전',64000,0,'-',[0,0],'0412 8830 1320','발권'),it('pass','동승자',40000,0,'-',[0,0],'0412 8830 1321','발권')]}
+];
+var CHS=['네이버','앱','키오스크','INFO DESK','단체','마이리얼트립','클룩','노쇼'];
+var CH='전체',SORT={k:'',dir:1};
+var STC={'예약':'p-blue','이용 중':'p-ok','이용 완료':'p-gray','만료':'p-gray','부분 만료':'p-warn','부분 환불':'p-warn','환불':'p-red','환불 처리 중':'p-warn','환불 실패':'p-red'};
+var HIST={};
+function won(n){return '₩'+Math.round(n).toLocaleString('ko-KR');}
+function seg(el){el.parentNode.querySelectorAll('span').forEach(function(s){s.classList.toggle('on',s===el)});}
+function toast(m){var t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(function(){t.classList.remove('show')},2200);}
+function prodName(r){var n=PK[r.items[0].pk].name;var kinds={};r.items.forEach(function(i){kinds[PK[i.pk].name]=1});var k=Object.keys(kinds);return k.length>1?k[0]+' 외 '+(k.length-1)+'종':n;}
+function issSum(r){var n=r.items.filter(function(i){return i.iss==='발권'||i.iss==='재발권'}).length;return n===0?'미발권':n===r.items.length?'발권':'일부 발권';}
+function amt(r){var pay=0,ref=0;r.items.forEach(function(x){var p=payOf(x);pay+=p;if(x.st==='환불')ref+=p;});return {pay:pay,ref:ref,sale:pay-ref};}
+function roleLine(r){var c={};r.items.forEach(function(x){c[x.role]=(c[x.role]||0)+1});return Object.keys(c).map(function(k){return k+' '+c[k]}).join(' · ');}
+function base(){var b=document.querySelector('#basis span.on').dataset.b,d=document.getElementById('d').value;
+  var ty=document.getElementById('stype').value,kw=document.getElementById('kw').value.trim();
+  return ROWS.filter(function(r){if(r[b].slice(0,10)!==d)return false;if(!kw)return true;
+    if(ty==='resv')return r.resv.indexOf(kw)>=0;if(ty==='order')return r.order.indexOf(kw)>=0;return prodName(r).indexOf(kw)>=0||roleLine(r).indexOf(kw)>=0;});}
+function inCh(r,c){return c==='전체'||(c==='노쇼'?!!r.noshow:r.ch===c);}
+function setCh(c){CH=c;run();}
+function sortBy(th){var k=th.dataset.k;SORT=SORT.k===k?{k:k,dir:-SORT.dir}:{k:k,dir:1};document.querySelectorAll('th.srt').forEach(function(h){h.classList.toggle('on',h.dataset.k===SORT.k);h.querySelector('.sg').textContent=h.dataset.k===SORT.k?(SORT.dir>0?'↑':'↓'):'↕'});run();}
+function payMethods(list){var m={};if(CH==='INFO DESK')['카드','현금','통장입금','PG'].forEach(function(k){m[k]=0});
+  list.forEach(function(r){(r.pays||[[r.pay,amt(r).pay]]).forEach(function(p){var k=p[0]==='계좌이체'?'통장입금':p[0];m[k]=(m[k]||0)+p[1]})});return m;}
+function run(){
+  var all=base();
+  document.getElementById('chs').innerHTML=['전체'].concat(CHS).map(function(c){var v=all.filter(function(r){return inCh(r,c)}).reduce(function(a,r){return a+amt(r).sale},0);
+    return '<div class="ch'+(c===CH?' on':'')+(c!=='전체'?' kept':'')+'" onclick="setCh(\''+c+'\')"><div class="cn">'+c+'</div><div class="cv">'+won(v)+'</div></div>'}).join('');
+  var list=all.filter(function(r){return inCh(r,CH)});
+  if(SORT.k)list.sort(function(x,y){var a=SORT.k in x?x[SORT.k]:amt(x)[SORT.k],b=SORT.k in y?y[SORT.k]:amt(y)[SORT.k];return (a>b?1:a<b?-1:0)*SORT.dir;});
+  var pb=document.getElementById('pmbox');pb.hidden=CH==='전체';
+  if(CH!=='전체'){var m=payMethods(list);document.getElementById('pmTitle').innerHTML=CH+' 결제 수단 내역 <span class="muted" style="font-size:12px;font-weight:400">(결제 금액 기준)</span>';
+    var ks=Object.keys(m);document.getElementById('pms').innerHTML=ks.length?ks.map(function(k){return '<div class="pm"><div class="pn">'+k+'</div><div class="pv">'+won(m[k])+'</div></div>'}).join(''):'<div class="muted" style="font-size:12px">이 채널은 결제 내역이 없어요.</div>';}
+  document.getElementById('tb').innerHTML=list.length?list.map(function(r){var i=ROWS.indexOf(r),a=amt(r),is=issSum(r);
+    return '<tr class="row" onclick="openDw('+i+')"><td class="code">'+r.order+'</td><td class="code">'+r.resv+'</td><td>'+r.ch+'</td><td>'+(r.div||'-')+'</td><td><span class="pill '+(is==='미발권'?'p-gray':'p-blue')+'">'+is+'</span></td><td class="pn2">'+prodName(r)+'<br><span class="muted" style="font-size:12px">'+roleLine(r)+'</span></td><td class="code">'+r.rd+'</td><td class="num">'+r.items.length+'</td><td class="num">'+a.pay.toLocaleString('ko-KR')+'</td><td class="num">'+a.ref.toLocaleString('ko-KR')+'</td><td class="num">'+a.sale.toLocaleString('ko-KR')+'</td><td class="code">'+r.od+'</td></tr>'}).join(''):'<tr><td colspan="12" class="empty">검색 결과가 없어요</td></tr>';
+  document.getElementById('tot').textContent='총 '+list.length+'개 항목';
+}
+var cur=null;
+function openDw(i){var r=ROWS[i];cur=i;
+  document.getElementById('dwNo').textContent='예약 번호 '+r.resv+' / 예약 채널 '+r.ch;
+  document.getElementById('dwKv').innerHTML=[['주문 구분',r.div||'-'],['닉네임',r.nick]].map(function(a){return '<div class="k">'+a[0]+'</div><div>'+a[1]+'</div>'}).join('');
+  renderOrders();renderTk();
+  if(!HIST[i]){HIST[i]=[];r.items.forEach(function(x){if(x.iss==='발권')HIST[i].push([r.order,x.ticket,'결제 완료','-','발권 ('+x.role+')','크루 하늘',r.rd.slice(0,10)+' 10:40']);if(x.st==='환불')HIST[i].push([r.order,x.ticket||'-','취소','환불','환불 요청 '+won(x.price-x.dc)+' 환불','크루 바다',r.rd.slice(0,10)+' 12:12']);});}
+  document.getElementById('ov').classList.add('show');document.getElementById('dw').classList.add('show');}
+function renderTk(){var r=ROWS[cur];
+  document.getElementById('dwTk').innerHTML=r.items.map(function(x,k){var t=x.ticket?x.ticket.split(' '):null;return '<tr><td><input type="checkbox" class="tck" onchange="issCheck()"></td><td>'+r.nick+(k?' ('+x.role+')':'')+'</td><td class="code">'+r.order.slice(-5)+'-'+(k+1)+'</td><td class="code" style="line-height:1.5">'+(t?t[0]+'<br>'+t.slice(1).join(''):'-')+'</td><td>'+x.iss+'</td><td class="wrap">'+PK[x.pk].name+' · '+x.role+'</td><td>'+(x.iss==='발권'?'<button class="btn sm warn" style="min-width:96px" onclick="toast(\'예시 화면이라 실제로 재발권되지 않아요.\')">재발권</button>':'-')+'</td><td class="code">'+(x.iss==='발권'?r.rd.slice(0,10)+' 10:4'+k:'-')+'</td><td>'+(x.dc?x.dcName:'-')+'</td></tr>'}).join('');issCheck();}
+function issCheck(){var n=document.querySelectorAll('.tck:checked').length;document.getElementById('issBtn').disabled=!n;document.getElementById('issCancel').disabled=!n;}
+function refCheck(){document.getElementById('refBtn').disabled=!picked().length;}
+function psuTable(x){var ps=PK[x.pk].psu;
+  return '<div class="psu"><table><thead><tr><th>PSU</th><th class="kept">비율가</th><th>제공</th><th>이용</th><th class="kept">환불 금액</th></tr></thead><tbody>'+ps.map(function(p,j){var u=x.used[j]||0;return '<tr><td>'+p[0]+'</td><td class="num kept">정하는 중</td><td>'+p[1]+'</td><td>'+u+'</td><td class="num kept">정하는 중</td></tr>'}).join('')+'</tbody></table><div style="text-align:right;padding-right:10px"><span class="tot num kept">정하는 중</span></div></div>';}
+function payOf(x){return x.pay!=null?x.pay:x.price-x.dc;}
+function renderOrders(){var r=ROWS[cur];var sumP=0,sumD=0,sumPay=0,sumR=0;
+  var rows=r.items.map(function(x,k){var pay=payOf(x);sumP+=x.price;sumD+=x.dc;sumPay+=pay;var ref=x.st==='환불'?pay:0;sumR+=ref;
+    var c=x.st==='환불'?'p-red':x.iss==='발권'?'p-blue':'p-gray';
+    return '<tr><td><input type="checkbox" class="ick" data-k="'+k+'" onchange="refCheck()"'+(x.st==='환불'?' disabled':'')+'></td><td><span class="pill '+c+'">'+(x.st==='환불'?'환불':x.iss)+'</span></td><td class="oi">'+r.order.slice(-5)+'-'+(k+1)+'<br>'+r.ch+'<br>'+r.pay+'</td><td class="code">'+(x.ticket?x.ticket.replace(/ /g,''):'-')+'</td><td class="wrap">'+PK[x.pk].name+'<br>· '+x.role+'</td><td class="wrap">'+r.rd+'</td><td class="num">'+x.price.toLocaleString('ko-KR')+'</td><td>'+(x.dc?x.dcName:'-')+'</td><td class="num">'+x.dc.toLocaleString('ko-KR')+'</td><td class="num"><span class="u">'+pay.toLocaleString('ko-KR')+'</span>'+(x.edited?'<br><span class="pill p-warn">수정됨</span>':'')+'</td><td><button class="btn sm pri" onclick="var e=document.getElementById(\'psu'+k+'\');e.hidden=!e.hidden">환불 확인</button><div id="psu'+k+'" hidden style="margin-top:8px">'+psuTable(x)+'</div></td><td class="num" style="color:var(--red)">'+(ref?ref.toLocaleString('ko-KR'):'-')+'</td><td class="num" style="color:var(--accent)">'+(pay-ref).toLocaleString('ko-KR')+'</td></tr>';}).join('');
+  document.getElementById('dwOrders').innerHTML='<div class="ord"><div class="oh"><input type="radio" checked> 주문번호 '+r.order.slice(-6)+' ('+r.items.length+'건)<span class="sp"></span><button class="btn sm pri" onclick="openTx()">거래 이력</button><button class="btn sm warn" onclick="openRepay()">재결제</button><button class="btn sm danger" onclick="toast(\'예시 화면이라 실제로 환불되지 않아요.\')">전체 환불</button><button class="caret" onclick="var t=document.getElementById(\'ordTbl\');t.hidden=!t.hidden;this.textContent=t.hidden?\'⌄\':\'⌃\'">⌃</button></div><div class="tblwrap" id="ordTbl"><table><thead><tr><th></th><th>상태</th><th>주문 정보</th><th>티켓 번호</th><th>상품명</th><th>이용 일시</th><th>상품 가격</th><th>할인 내역</th><th>할인 금액</th><th>결제 금액</th><th>환불 대상 확인</th><th>환불 금액</th><th>매출 금액</th></tr></thead><tbody><tr><td></td><td></td><td></td><td></td><td></td><td></td><td class="num">'+sumP.toLocaleString('ko-KR')+'</td><td></td><td class="num">'+sumD.toLocaleString('ko-KR')+'</td><td class="num">'+sumPay.toLocaleString('ko-KR')+'</td><td>-</td><td class="num" style="color:var(--red)">'+(sumR?sumR.toLocaleString('ko-KR'):'-')+'</td><td class="num" style="color:var(--accent)">'+(sumPay-sumR).toLocaleString('ko-KR')+'</td></tr>'+rows+'</tbody></table></div></div>';refCheck();}
+function picked(){return Array.from(document.querySelectorAll('.ick:checked')).map(function(c){return +c.dataset.k});}
+function openEdit(){var ks=picked();if(!ks.length){toast('금액을 수정할 티켓을 먼저 골라 주세요.');return;}var r=ROWS[cur];
+  document.getElementById('editRows').innerHTML=ks.map(function(k){var x=r.items[k];return '<div style="display:flex;align-items:center;gap:8px;margin:6px 0;font-size:12px"><span style="flex:1">'+PK[x.pk].name+' · '+x.role+' <span class="muted">('+won(payOf(x))+')</span></span><input class="ipt" data-k="'+k+'" style="width:120px;text-align:right" value="'+payOf(x)+'"></div>'}).join('');
+  document.getElementById('editWhy').value='';document.getElementById('mEdit').hidden=false;}
+function saveEdit(){var why=document.getElementById('editWhy').value.trim();if(!why){toast('수정 사유를 입력해 주세요.');return;}var r=ROWS[cur],diff=0;
+  document.querySelectorAll('#editRows input').forEach(function(e){var x=r.items[+e.dataset.k],v=+e.value.replace(/[^0-9]/g,'')||0,old=payOf(x);if(v!==old){diff+=v-old;x.pay=v;x.edited=true;}});
+  HIST[cur].push([r.order,'-','결제 완료','-','금액 수정 '+(diff>=0?'+':'')+won(diff).replace('₩-','-₩')+' · '+why,'크루 (나)','2026-11-14 '+new Date().toTimeString().slice(0,5)]);
+  r.pending=(r.pending||0)+diff;document.getElementById('mEdit').hidden=true;renderOrders();toast(diff?'금액을 수정했어요. 차액은 재결제로 처리해요.':'바뀐 금액이 없어요.');}
+function baseTx(r){return r.tx||(r.tx=[[r.od,'결제',r.pay,r.items.reduce(function(a,x){return a+x.price-x.dc},0),r.ch==='INFO DESK'?'크루 하늘':'시스템']]);}
+function openTx(){var r=ROWS[cur];var tx=baseTx(r);
+  r.items.forEach(function(x){if(x.st==='환불'&&!tx.some(function(t){return t[1]==='부분 취소'&&t[3]===-(x.price-x.dc)}))tx.push(['2026-11-14 12:12','부분 취소',r.pay,-(x.price-x.dc),'크루 바다'])});
+  document.getElementById('txBody').innerHTML=tx.map(function(t){return '<tr><td class="code">'+t[0]+'</td><td>'+t[1]+'</td><td>'+t[2]+'</td><td class="r">'+(t[3]<0?'-₩'+Math.abs(t[3]).toLocaleString('ko-KR'):won(t[3]))+'</td><td>'+t[4]+'</td></tr>'}).join('');
+  document.getElementById('mTx').hidden=false;}
+var RP={mode:'single',rows:[],amt:0};
+function rpNow(){var r=ROWS[cur];return r.items.reduce(function(a,x){return a+(x.st==='환불'?0:payOf(x))},0);}
+function openRepay(){var r=ROWS[cur];RP={mode:'single',rows:[{by:'',v:''},{by:'',v:''}],amt:rpNow()};
+  document.getElementById('rpOrder').textContent='주문번호 '+r.order;
+  document.getElementById('rpAmt').textContent=RP.amt.toLocaleString('ko-KR')+'원';
+  document.getElementById('rpBy').value='';rpSet('single');document.getElementById('mRepay').hidden=false;}
+function rpSet(m){RP.mode=m;var sp=document.querySelectorAll('#rpMode span');sp[0].classList.toggle('on',m==='single');sp[1].classList.toggle('on',m==='split');
+  document.getElementById('rpSingle').hidden=m!=='single';document.getElementById('rpByL').style.visibility=m==='single'?'visible':'hidden';document.getElementById('rpSplit').hidden=m!=='split';rpRender();}
+function rpLeft(){return RP.amt-RP.rows.reduce(function(a,x){return a+(+String(x.v).replace(/[^0-9]/g,'')||0)},0);}
+function rpRender(){document.getElementById('rpRows').innerHTML=RP.rows.map(function(x,i){return '<div style="display:flex;gap:8px;align-items:center;margin-bottom:8px"><select class="sel" style="flex:1" onchange="RP.rows['+i+'].by=this.value;rpCheck()"><option value="">결제 수단을 선택해 주세요</option>'+['현금','통장입금','PG'].map(function(o){return '<option'+(x.by===o?' selected':'')+'>'+o+'</option>'}).join('')+'</select><input class="ipt" style="flex:1;text-align:right" placeholder="금액 입력" value="'+(x.v?(+x.v).toLocaleString('ko-KR'):'')+'" oninput="RP.rows['+i+'].v=this.value.replace(/[^0-9]/g,\'\');rpCheck()"><button class="mlink" style="color:var(--ok);white-space:nowrap" onclick="rpFill('+i+')">⇥ 잔액</button><button class="mlink" style="color:var(--red);white-space:nowrap" onclick="RP.rows.splice('+i+',1);rpRender()">🗑 삭제</button></div>'}).join('');rpCheck();}
+function rpAdd(){RP.rows.push({by:'',v:''});rpRender();}
+function rpFill(i){var cur=+RP.rows[i].v||0;RP.rows[i].v=String(Math.max(0,cur+rpLeft()));rpRender();}
+function rpCheck(){var ok;if(RP.mode==='single'){ok=!!document.getElementById('rpBy').value;}
+  else{var l=rpLeft();document.getElementById('rpLeft').textContent='남은 금액 ₩'+l.toLocaleString('ko-KR');ok=l===0&&RP.rows.length>0&&RP.rows.every(function(x){return x.by&&+x.v>0});}
+  document.getElementById('rpGo').disabled=!ok;}
+function doRepay(){var r=ROWS[cur],t='2026-11-14 '+new Date().toTimeString().slice(0,5);baseTx(r);
+  var paid=r.tx.reduce(function(a,x){return a+x[3]},0);r.tx.push([t,'결제 취소',r.pay,-paid,'크루 (나)']);
+  var parts=RP.mode==='single'?[{by:document.getElementById('rpBy').value,v:RP.amt}]:RP.rows.map(function(x){return {by:x.by,v:+x.v}});
+  parts.forEach(function(p){r.tx.push([t,'재결제',p.by,p.v,'크루 (나)'])});
+  HIST[cur].push([r.order,'-','결제 완료','-','재결제 '+won(RP.amt)+' ('+parts.map(function(p){return p.by}).join(' + ')+')','크루 (나)',t]);
+  document.getElementById('mRepay').hidden=true;toast('예시 화면이라 실제로 결제되지 않아요. 거래 이력에만 남겼어요.');}
+function closeDw(){['ov','dw','dwH'].forEach(function(id){document.getElementById(id).classList.remove('show')});}
+function renderHist(){var h=HIST[cur]||[];document.getElementById('hist').innerHTML=h.length?h.map(function(a){return '<tr><td class="code">'+a[0]+'</td><td class="code">'+a[1]+'</td><td>'+a[2]+'</td><td>'+a[3]+'</td><td class="wrap">'+a[4]+'</td><td>'+a[5]+'</td><td class="code">'+a[6]+'</td></tr>'}).join(''):'<tr><td colspan="7" class="empty">처리 이력이 없어요</td></tr>';}
+function openHist(){renderHist();document.getElementById('dwH').classList.add('show');}
+function closeHist(){document.getElementById('dwH').classList.remove('show');}
+function openMemo(){var r=ROWS[cur];document.getElementById('memoOrder').innerHTML='<option>'+r.order+'</option>';document.getElementById('memoTxt').value='';document.getElementById('memo').hidden=false;}
+function saveMemo(){var t=document.getElementById('memoTxt').value.trim();if(!t){toast('추가할 내용을 입력해 주세요.');return;}
+  HIST[cur].push([document.getElementById('memoOrder').value,'-','-','-',t,'크루 (나)','2026-11-14 '+new Date().toTimeString().slice(0,5)]);
+  document.getElementById('memo').hidden=true;renderHist();toast('메모를 추가했어요.');}
+run();
+</script>
+</body>
+</html>
