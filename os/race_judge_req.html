@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta name="robots" content="noindex,nofollow">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>레이스 심사 요청</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="common.css">
+<style>
+  .req{max-width:480px;margin:0 auto}
+  .rh{display:flex;align-items:center;gap:6px;margin-bottom:16px}.rh b{font-size:13.5px;font-weight:600}.rh .sp{flex:1}
+  .gi{display:inline-flex;align-items:center;border:1px solid var(--border);border-radius:6px;height:34px;padding:0 8px;width:84px;gap:4px}
+  .gi input{border:none;outline:none;width:100%;font-size:12px;font-family:var(--font)}.gi button{border:none;background:none;color:var(--muted);cursor:pointer;padding:0}
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+  .tb{height:58px;border:1px solid var(--line);border-radius:4px;background:#fff;font-size:20px;font-weight:700;cursor:pointer;font-family:var(--font);box-shadow:0 1px 2px rgba(0,0,0,.06)}
+  .tb.on{border-color:var(--accent);background:var(--accent);color:#fff}
+  .go{width:100%;height:40px;margin-top:18px}
+  .mw{position:fixed;inset:0;background:rgba(33,37,41,.35);display:flex;align-items:center;justify-content:center;z-index:60}
+  .pb{background:#fff;border-radius:22px;padding:26px 28px 20px;width:min(380px,92vw);text-align:center;font-size:13.5px;line-height:1.6}
+  .pl{display:grid;gap:8px;margin-top:20px}.pr{display:flex;align-items:center;gap:20px;justify-content:space-between}.pr .code{min-width:64px;text-align:left}
+  .pbtns{display:flex;gap:8px;margin-top:24px}.pbtns .btn{flex:1;height:36px}.btn.light{background:#F5F5F5;border-color:#F5F5F5;color:#212529;font-weight:400}
+  .ttop{position:fixed;left:50%;top:14px;transform:translateX(-50%);background:#fff;border-radius:14px;box-shadow:0 6px 20px rgba(0,0,0,.12);padding:10px 14px;display:flex;gap:10px;align-items:flex-start;z-index:70;min-width:280px}
+  .ttop .ic{width:18px;height:18px;border-radius:50%;background:#212529;color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-top:1px}
+  .ttop .m{font-size:13.5px}.ttop .s{font-size:12px;color:var(--muted);margin-top:2px}.ttop .x{border:none;background:none;cursor:pointer;margin-left:auto;font-size:15px}
+</style>
+<body>
+<div class="app">
+  <h1>레이스 심사 요청 <span class="ex">예시 데이터</span></h1>
+  <div class="card req">
+    <div class="rh"><b>심사 요청</b><span title="심사가 필요한 레이스의 트랙을 고르거나 GR 번호로 찾아 요청해요" style="color:var(--accent);cursor:help">ⓘ</span><span class="sp"></span>
+      <span class="gi"><input id="gr" placeholder="GR 번호" oninput="chk()"><button id="grx" hidden onclick="$('gr').value='';chk()">✕</button></span><button class="btn sm pri" id="sb" disabled onclick="byGr()">검색</button></div>
+    <div class="grid" id="grid"></div>
+    <button class="btn pri go" id="go" disabled onclick="byTrack()">요청</button>
+  </div>
+  <div class="memo" style="max-width:480px;margin-left:auto;margin-right:auto">
+    <div class="mh">안내 · 구현 시 제외 가능</div>
+    <ul>
+      <li><b>트랙</b>을 고르고 <b>요청</b>을 누르면, 그 트랙에서 진행 중인 레이스 목록이 떠요. 심사할 레이스의 <b>확인</b>을 누르면 다시 한 번 묻고, 확인하면 심사 요청이 완료돼요.</li>
+      <li>진행 중인 레이스가 없으면 "진행중인 레이스가 없습니다."라고 알려줘요. (예시: 4번 · R 트랙)</li>
+      <li><b>GR 번호</b>로 검색하면 그 차량을 탄 레이스 목록이 떠요. 같은 방식으로 골라 요청해요.</li>
+      <li>요청한 레이스는 <b>레이스 심사 목록</b>에 올라가고, 열면 '접수' 상태예요.</li>
+      <li style="color:var(--note)"><b style="color:var(--note)">정하는 중</b> · 트랙 번호 붙이는 방식(예시: 1코스 1·2, 2코스 3·4, 3코스 5·6, ICN-L은 L, ICN-R은 R), 차량 번호 형식(예시 GR1-012), GR 검색 결과가 없을 때 문구</li>
+    </ul>
+  </div>
+</div>
+<div class="mw" id="mw" hidden onclick="if(event.target===this)this.hidden=true"><div class="pb" id="pb"></div></div>
+<div class="toast" id="toast"></div>
+<script src="race.js"></script>
+<script>
+var SEL=null,LIVE=liveRaces();
+function render(){var rows=[];COURSES.forEach(function(co){if(co.c.indexOf('ICN')===0)return;rows.push(co.tracks);});rows.push(['L','R']);
+  $('grid').innerHTML=rows.map(function(r){return r.map(function(t){return '<button class="tb'+(SEL===t?' on':'')+'" onclick="pick(\''+t+'\')">'+t+'</button>'}).join('')}).join('');}
+function pick(t){SEL=SEL===t?null:t;render();chk();}
+function chk(){var g=$('gr').value.trim();$('sb').disabled=!g;$('grx').hidden=!g;$('go').disabled=!SEL;}
+function trackLbl(r){return r.course+'코스 '+r.track+'트랙';}
+function pop(h){$('pb').innerHTML=h;$('mw').hidden=false;}
+function close_(){$('mw').hidden=true;}
+function byTrack(){var list=LIVE.filter(function(r){return r.track===SEL});
+  if(!list.length){pop('진행중인 레이스가 없습니다.<div class="pbtns"><button class="btn light" onclick="close_()">닫기</button></div>');return;}
+  pop(SEL+' 트랙에<br>'+list.length+'개의 레이스가 진행중입니다.<br>심사 대상을 선택해주세요.<div class="pl">'+list.map(function(r){return '<div class="pr"><span class="code">'+r.gr+'</span><span>'+r.time+' 이용</span><button class="btn sm pri" onclick="ask('+LIVE.indexOf(r)+')">확인</button></div>'}).join('')+'</div>');}
+function byGr(){var q=$('gr').value.trim().toUpperCase();var list=LIVE.filter(function(r){return r.gr.indexOf(q)>=0});
+  if(!list.length){pop('<span class="ktxt">GR '+q+'을(를) 탑승한 레이스가 없습니다.</span><div class="pbtns"><button class="btn light" onclick="close_()">닫기</button></div>');return;}
+  pop('GR '+list[0].gr+'을(를) 탑승한<br>'+list.length+'개의 레이스가 존재합니다.<br>심사 대상을 선택하세요.<div class="pl">'+list.map(function(r){return '<div class="pr"><span>'+r.course+'코스</span><span>'+r.track+'트랙</span><span>'+r.time+' 이용</span><button class="btn sm pri" onclick="ask('+LIVE.indexOf(r)+')">확인</button></div>'}).join('')+'</div>');}
+function ask(i){var r=LIVE[i];pop(r.gr+'<br>'+trackLbl(r)+'<br>'+r.time+' 이용<br>심사를 요청하시겠습니까?<div class="pbtns"><button class="btn light" onclick="close_()">닫기</button><button class="btn pri" onclick="send('+i+')">확인</button></div>');}
+function send(i){var r=LIVE[i];var a=jLoad()||[];a.unshift({gr:r.gr,course:r.course,track:r.track,use:'2026-11-14 '+r.time+':'+String(10+a.length%50),req:nowFull(),reqBy:'크루 (나)',st:'접수'});jSave(a);
+  close_();SEL=null;render();chk();tTop('심사 요청이 완료되었습니다.');}
+render();
+</script>
+<style>.ktxt{color:var(--note);background:var(--note-soft);outline:1px dashed var(--note);outline-offset:1px;border-radius:3px}</style>
+</body>
+</html>

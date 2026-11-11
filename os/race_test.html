@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta name="robots" content="noindex,nofollow">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>테스트 레이스</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="common.css">
+<style>
+  .bar{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+  .datef{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--border);border-radius:8px;height:34px;padding:0 10px;color:var(--muted);background:#fff}
+  .datef input{border:none;outline:none;font-size:13.5px;font-family:var(--font);color:var(--fg)}
+  .sbox{display:flex;align-items:center;flex:1;min-width:300px;max-width:480px;border:1px solid var(--border);border-radius:8px;background:#fff;height:34px;padding:0 10px;gap:8px;color:var(--muted)}
+  .sbox select{border:none;background:none;font-size:13.5px;font-family:var(--font);color:var(--fg);outline:none}
+  .sbox input{border:none;flex:1;background:none;outline:none;font-size:13.5px;font-family:var(--font)}
+  .listhd{display:flex;align-items:center;gap:8px;margin:18px 0 4px;font-size:13.5px;font-weight:500}.listhd .sp{flex:1}
+  th .dd{color:#C8C8C8;font-size:10px;margin-left:3px}
+  .rd{background:var(--bg)}.rd .dh .cl{border:none;background:none;cursor:pointer;font-size:13px}
+  .rgrid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;align-items:start}.rcol{display:flex;flex-direction:column;gap:16px;min-width:0}
+  .kv2{display:grid;grid-template-columns:150px 1fr;gap:18px 12px;font-size:12.5px}
+  .acc{border-top:1px solid var(--line);margin-top:14px}.acc .ah{display:flex;align-items:center;gap:10px;padding:12px 0;font-size:12.5px;cursor:pointer}.acc .ah .sp{flex:1}.acc .ah .cv{color:var(--muted)}
+  .acc .ab{padding:2px 0 14px}
+  .seg2{width:100%;border:1px solid var(--line);border-collapse:collapse;font-size:11.5px}.seg2 th,.seg2 td{height:26px;padding:2px 6px;border:none}.seg2 th{font-weight:500;border-bottom:1px solid var(--line)}
+  .chart{width:100%;height:auto;display:block}
+  .vh{display:flex;align-items:center;gap:8px}.vh .sp{flex:1}.vh .tg{font-size:12px;color:var(--muted)}.vh .tg.on{color:var(--accent)}
+  .sw{width:34px;height:20px;border-radius:10px;background:#C8C8C8;position:relative;cursor:pointer}.sw::after{content:"";position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#fff;transition:.15s}.sw.on{background:var(--accent)}.sw.on::after{left:16px}
+  .vid{position:relative;aspect-ratio:16/9;margin-top:16px;background:linear-gradient(135deg,#1f2a38,#3a4b5c);display:flex;align-items:flex-end}
+  .vid .vc{width:100%;padding:0 12px 10px;color:#fff;font-size:12px}.vid .vc .pr{height:3px;background:rgba(255,255,255,.35);margin-bottom:12px}.vid .vc .rw{display:flex;gap:14px;align-items:center}.vid .vc .rw .sp{flex:1}
+  .vid .lbl{position:absolute;left:14px;top:12px;color:rgba(255,255,255,.7);font-size:12px}
+  .thumbs{display:flex;gap:8px;margin-top:4px;flex-wrap:wrap}.th{width:150px;aspect-ratio:16/9;border-radius:2px;position:relative;cursor:pointer;background:linear-gradient(135deg,#2b3644,#56606b);outline:2px solid transparent}
+  .th.on{outline-color:var(--accent)}.th span{position:absolute;right:8px;bottom:8px;background:#fff;border-radius:10px;padding:1px 8px;font-size:10.5px;color:#212529}
+  @media(max-width:1000px){.rgrid{grid-template-columns:1fr}}
+  .ktxt{color:var(--note)!important;background:var(--note-soft);outline:1px dashed var(--note);outline-offset:1px;border-radius:3px}
+  .c-green{background:rgba(0,128,0,.10);color:#2E7D32}.c-blue{background:var(--accent-soft);color:var(--accent)}.c-red{background:var(--red-soft);color:var(--red)}.c-gray{background:#F1F1F1;color:#878A99}
+</style>
+<body>
+<div class="app">
+  <h1>테스트 레이스 <span class="ex">예시 데이터</span></h1>
+  <div class="card">
+    <div class="bar"><label class="datef">▦ <input type="date" id="d" value="2026-11-14" onchange="run()"></label>
+      <div class="sbox">⌕ <select id="st"><option>티켓 No</option><option>이름</option><option>GR 번호</option></select><input id="kw" placeholder="검색조건에 맞는 검색어를 입력하세요" oninput="run()"></div></div>
+    <div class="listhd">테스트 레이스 목록<span class="sp"></span><button class="btn sm pri" onclick="toast('예시 화면이라 파일을 내려받지 않아요.')">CSV 다운로드</button></div>
+    <div class="tblwrap"><table><thead><tr><th>일시</th><th>이름<span class="dd">▼</span></th><th>이용 No</th><th>액티비티 상태<span class="dd">▼</span></th><th>기록 상태<span class="dd">▼</span></th><th>코스<span class="dd">▼</span></th><th>트랙<span class="dd">▼</span></th><th>GR 번호</th><th>랩타임<span class="dd">▼</span></th><th>반응 시간</th><th>최고 속도</th><th>평균 속도</th><th>최고 G</th></tr></thead><tbody id="tb"></tbody></table></div>
+    <div class="dspager"><span id="tot">총 0개 항목</span><span>1 페이지 중 1 페이지</span><span class="rpp">페이지당 행 수 : <select style="border:none;background:none;font-size:13.5px;font-family:var(--font)"><option>20</option><option>50</option><option>100</option></select></span><span class="sp"></span><div class="pgs"><span>«</span><span>‹</span><span class="on">1</span><span>›</span><span>»</span></div></div>
+  </div>
+  <div class="memo"><div class="mh">안내 · 구현 시 제외 가능</div><ul><li>운영 전 차량 · 트랙 점검용으로 탄 테스트 레이스 기록을 봐요. 이름은 테스트한 크루예요.</li><li>랩타임 · 반응 시간 · 최고/평균 속도 · 최고 G를 바로 비교할 수 있어요.</li>
+      <li>줄을 누르면 <b>테스트 레이스 상세</b>가 열려요. 테스터 정보(이름 · 운영자 티켓 No), 테스트 주행 정보(주행 일시 · 이용 No · GR 번호 · 코스/트랙 · 부정 출발 여부 · 반응 시간 · 랩타임 · 최고/평균 속도 · 최고 횡G), 부스터 획득 정보(획득/사용/웜업 · 구간별 기록), 그래프, 영상을 봐요.</li>
+    <li style="color:var(--note)"><b style="color:var(--note)">정하는 중</b> · 트랙 번호 붙이는 방식(예시: 1코스 1·2, 2코스 3·4, 3코스 5·6, ICN-L · ICN-R), 차량 번호 형식(지금은 예시: GR1-012). 기록 값과 검색 유형 목록(티켓 No 외)은 예시예요.</li></ul></div>
+</div>
+<div class="ov" id="ov" onclick="closeR()"></div>
+<aside class="drawer wide rd" id="dw"><div class="dh"><h3>테스트 레이스 상세</h3><span class="sp"></span><button class="cl" onclick="closeR()">닫기</button></div><div class="db" id="rb"></div></aside>
+<div class="toast" id="toast"></div>
+<script src="race.js"></script>
+<script>
+var NICK=['번개질주','코너장인','초록헬멧','주말드라이버','라임레이서','파란번호판','스핀아웃','은빛휠'];
+function tracks(){var a=[];COURSES.forEach(function(c){c.tracks.forEach(function(t){a.push(t)})});return a;}
+function carFor(t){var co=courseOf(t);var ct=CAR_TYPES.filter(function(x){return x.course.indexOf(co)>=0})[0]||CAR_TYPES[0];return carNo(ct.t,(ct.t==='GR2'?200:ct.t==='XGR'?0:100)+((t.charCodeAt(0)*7)%80)+1);}
+function rowsFor(n,date){var T=tracks(),out=[];for(var i=0;i<n;i++){var t=T[(i*3)%T.length];out.push({no:n-i,dt:date+' '+String(10+Math.floor(i/2)).padStart(2,'0')+':'+(i%2?'30':'05'),nick:NICK[i%NICK.length],ticket:'0412 8830 '+(1192+i*7),use:'U'+(5521000+i*13),act:i%5===4?'이용 중':'이용 완료',rec:i%4===3?'오류':'정상',media:i%3===2?'없음':'있음',course:courseOf(t),track:t,gr:carFor(t),req:date+' '+String(10+Math.floor(i/2)).padStart(2,'0')+':'+(i%2?'48':'21')});}return out;}
+var CREW=['크루 하늘','크루 바다','크루 산'];var R=rowsFor(5,'2026-11-14').map(function(r,i){r.crew=CREW[i%3];r.lap=(88+i*1.37).toFixed(3);r.react=(0.42+i*0.03).toFixed(2);r.max=(38+i*0.8).toFixed(1);r.avg=(29+i*0.6).toFixed(1);r.g=(0.81+i*0.02).toFixed(2);r.act='종료';r.nick=r.crew;return r;});
+var ACT={'준비중':'c-gray','시작':'c-gray','게임중':'c-green','종료':'c-blue','무효':'c-red','무탑승':'c-gray'},REC={'정상':'c-blue','오류':'c-red','무기록':'c-gray'};
+function run(){var kw=$('kw').value.trim();var list=R.filter(function(r){return r.dt.slice(0,10)===$('d').value&&(!kw||(r.crew+r.gr+r.ticket).indexOf(kw)>=0)});
+ $('tb').innerHTML=list.length?list.map(function(r){return '<tr class="row" onclick="openR('+R.indexOf(r)+')"><td class="code">'+r.dt+'</td><td>'+r.crew+'</td><td class="code">'+r.use+'</td><td><span class="pill p-blue">종료</span></td><td><span class="pill '+(r.rec==='오류'?'p-red':'p-blue')+'">'+r.rec+'</span></td><td>'+r.course+'</td><td class="kept">'+r.track+'</td><td class="code">'+r.gr+'</td><td class="num">'+r.lap+'</td><td class="num">'+r.react+'</td><td class="num">'+r.max+'</td><td class="num">'+r.avg+'</td><td class="num">'+r.g+'</td></tr>'}).join(''):'<tr><td colspan="13" style="padding:40px;color:var(--muted)">데이터가 없어요</td></tr>';$('tot').textContent='총 '+list.length+'개 항목';}
+run();
+</script>
+<script>window.TEST_MODE=true;</script>
+<script src="race_record_detail.js"></script>
+</body>
+</html>

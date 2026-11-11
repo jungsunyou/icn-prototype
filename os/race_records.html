@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta name="robots" content="noindex,nofollow">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>레이스 기록 목록</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="common.css">
+<style>
+  .ktxt{color:var(--note)!important;background:var(--note-soft);outline:1px dashed var(--note);outline-offset:1px;border-radius:3px}
+  .bar{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+  .datef{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--border);border-radius:8px;height:34px;padding:0 10px;color:var(--muted);background:#fff}
+  .datef input{border:none;outline:none;font-size:13.5px;font-family:var(--font);color:var(--fg)}
+  .sbox{display:flex;align-items:center;flex:1;min-width:300px;max-width:480px;border:1px solid var(--border);border-radius:8px;background:#fff;height:34px;padding:0 10px;gap:8px;color:var(--muted)}
+  .sbox select{border:none;background:none;font-size:13.5px;font-family:var(--font);color:var(--fg);outline:none}
+  .sbox input{border:none;flex:1;background:none;outline:none;font-size:13.5px;font-family:var(--font)}
+  .listhd{display:flex;align-items:center;gap:8px;margin:18px 0 4px;font-size:13.5px;font-weight:500}.listhd .sp{flex:1}
+  th.f{cursor:pointer;position:relative;line-height:1.3}th.f .dd{color:#C8C8C8;font-size:10px;margin-left:4px}
+  .menu{position:absolute;top:100%;left:50%;transform:translateX(-50%);background:#fff;border-radius:10px;box-shadow:0 4px 16px rgba(0,0,0,.12);padding:6px;z-index:10;min-width:110px;text-align:left;font-weight:400}
+  .menu div{padding:8px 12px;border-radius:6px;cursor:pointer;white-space:nowrap}.menu div:hover,.menu div.on{background:var(--accent-soft)}
+  .c-green{background:rgba(0,128,0,.10);color:#2E7D32}.c-blue{background:var(--accent-soft);color:var(--accent)}.c-red{background:var(--red-soft);color:var(--red)}.c-gray{background:#F1F1F1;color:#878A99}
+  .rd{background:var(--bg)}.rd .dh .cl{border:none;background:none;cursor:pointer;font-size:13px}
+  .rgrid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;align-items:start}.rcol{display:flex;flex-direction:column;gap:16px;min-width:0}
+  .kv2{display:grid;grid-template-columns:150px 1fr;gap:18px 12px;font-size:12.5px}
+  .acc{border-top:1px solid var(--line);margin-top:14px}.acc .ah{display:flex;align-items:center;gap:10px;padding:12px 0;font-size:12.5px;cursor:pointer}.acc .ah .sp{flex:1}.acc .ah .cv{color:var(--muted)}
+  .acc .ab{padding:2px 0 14px}
+  .seg2{width:100%;border:1px solid var(--line);border-collapse:collapse;font-size:11.5px}.seg2 th,.seg2 td{height:26px;padding:2px 6px;border:none}.seg2 th{font-weight:500;border-bottom:1px solid var(--line)}
+  .chart{width:100%;height:auto;display:block}
+  .vh{display:flex;align-items:center;gap:8px}.vh .sp{flex:1}.vh .tg{font-size:12px;color:var(--muted)}.vh .tg.on{color:var(--accent)}
+  .sw{width:34px;height:20px;border-radius:10px;background:#C8C8C8;position:relative;cursor:pointer}.sw::after{content:"";position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#fff;transition:.15s}.sw.on{background:var(--accent)}.sw.on::after{left:16px}
+  .vid{position:relative;aspect-ratio:16/9;margin-top:16px;background:linear-gradient(135deg,#1f2a38,#3a4b5c);display:flex;align-items:flex-end}
+  .vid .vc{width:100%;padding:0 12px 10px;color:#fff;font-size:12px}.vid .vc .pr{height:3px;background:rgba(255,255,255,.35);margin-bottom:12px}.vid .vc .rw{display:flex;gap:14px;align-items:center}.vid .vc .rw .sp{flex:1}
+  .vid .lbl{position:absolute;left:14px;top:12px;color:rgba(255,255,255,.7);font-size:12px}
+  .thumbs{display:flex;gap:8px;margin-top:4px;flex-wrap:wrap}.th{width:150px;aspect-ratio:16/9;border-radius:2px;position:relative;cursor:pointer;background:linear-gradient(135deg,#2b3644,#56606b);outline:2px solid transparent}
+  .th.on{outline-color:var(--accent)}.th span{position:absolute;right:8px;bottom:8px;background:#fff;border-radius:10px;padding:1px 8px;font-size:10.5px;color:#212529}
+  @media(max-width:1000px){.rgrid{grid-template-columns:1fr}}
+</style>
+<body>
+<div class="app">
+  <h1>레이스 기록 목록 <span class="ex">예시 데이터</span></h1>
+  <div class="card">
+    <div class="bar"><label class="datef">▦ <input type="date" id="d" value="2026-11-14" onchange="run()"></label>
+      <div class="sbox">⌕ <select id="st"><option>티켓 No</option></select><input id="kw" placeholder="검색조건에 맞는 검색어를 입력하세요" oninput="run()"></div></div>
+    <div class="listhd">기록 목록<span class="sp"></span><button class="btn sm pri" onclick="toast('예시 화면이라 파일을 내려받지 않아요.')">CSV 다운로드</button><button class="btn sm pri" id="del" disabled onclick="toast('예시 화면이라 실제로 지우지 않아요.')">기록 삭제</button></div>
+    <div class="tblwrap"><table><thead><tr id="thr"></tr></thead><tbody id="tb"></tbody></table></div>
+    <div class="dspager"><span id="tot">총 0개 항목</span><span>1 페이지 중 1 페이지</span><span class="rpp">페이지당 행 수 : <select style="border:none;background:none;font-size:13.5px;font-family:var(--font)"><option>20</option><option>50</option><option>100</option></select></span><span class="sp"></span><div class="pgs"><span>«</span><span>‹</span><span class="on">1</span><span>›</span><span>»</span></div></div>
+  </div>
+  <div class="memo"><div class="mh">안내 · 구현 시 제외 가능</div><ul>
+    <li>레이스 기록이 한 줄씩 쌓여요. 날짜와 티켓 No로 찾아요.</li>
+    <li><b>액티비티 상태</b>(준비중 · 시작 · 게임중 · 종료 · 무효 · 무탑승)와 <b>기록 상태</b>(정상 · 오류 · 무기록)는 머리글을 눌러 거를 수 있어요. 거르면 머리글 아래에 고른 값이 (종료)처럼 보여요.</li>
+    <li>게임중인 레이스는 랩타임이 '측정중..'으로 보이고, 영상 상태는 정상 · 에러 수 / 전체 영상 수로 보여요.</li>
+    <li>잘못 남은 기록은 골라서 <b>기록 삭제</b>해요. 줄을 누르면 <b>레이스 기록 상세</b>가 열려요. 사용자 · 레이싱 · 심사 정보, 기록 정보(랩타임 · 속도 · 횡G · 반응 시간 · 부정 출발 · 부스터 · 구간별 기록), GPS 좌표 · 속도/브레이크 · 횡G 그래프, 영상(숨김/공개 · 다운로드 · 영상 종류 고르기)을 봐요.</li>
+    <li style="color:var(--note)"><b style="color:var(--note)">정하는 중</b> · 트랙 번호 붙이는 방식(예시: 1코스 1·2, 2코스 3·4, 3코스 5·6, ICN-L은 L, ICN-R은 R), 차량 번호 형식(예시 GR1-012), 준비중 · 시작 칩 색과 심사 상태 값(제주 화면에서 확인 못 함), 영상 종류(제주: 액션캠 원본 · MSS 편집 · 소리질러 편집 · 오버레이 원본 · 오버레이 편집 중 레이스마다 다름), 그래프 · 기록 값은 예시</li></ul></div>
+</div>
+<div class="ov" id="ov" onclick="closeR()"></div>
+<aside class="drawer wide rd" id="dw"><div class="dh"><h3>레이스 기록 상세</h3><span class="sp"></span><button class="cl" onclick="closeR()">닫기</button></div><div class="db" id="rb"></div></aside>
+<div class="toast" id="toast"></div>
+<script src="race.js"></script>
+<script>
+var ACT={'준비중':'c-gray','시작':'c-gray','게임중':'c-green','종료':'c-blue','무효':'c-red','무탑승':'c-gray'};
+var REC={'정상':'c-blue','오류':'c-red','무기록':'c-gray'};
+var F={act:'',rec:'',course:'',track:'',judge:''},OPEN=null;
+var NICK=['번개질주','코너장인','초록헬멧','주말드라이버','라임레이서','파란번호판','스핀아웃','은빛휠','드리프트곰','한빛중 인솔'];
+var R=[];(function(){var tr=[];COURSES.forEach(function(c){c.tracks.forEach(function(t){tr.push([c.c,t])})});
+ var act=['게임중','게임중','종료','종료','종료','종료','종료','무효','무효','무탑승','종료','종료'];
+ for(var i=0;i<12;i++){var a=act[i],t=tr[i%tr.length],ct=CAR_TYPES.filter(function(x){return x.course.indexOf(t[0])>=0})[0];
+  var rec=a==='게임중'||a==='무탑승'?'무기록':(i===8?'오류':'정상');var mm=String(42-i*2).padStart(2,'0');
+  R.push({no:i+1,dt:'2026-11-14 17:'+mm+':'+String(12+i*3).slice(-2),nick:NICK[i%NICK.length],ticket:'04128830'+(11920+i*7),use:'2611140839'+(78682-i),act:a,rec:rec,course:t[0],track:t[1],gr:carNo(ct.t,(ct.t==='GR2'?200:ct.t==='XGR'?0:100)+i*4+3),lap:a==='게임중'?'측정중..':a==='무탑승'?'-':(90+i*0.71).toFixed(3),vid:a==='게임중'||a==='무탑승'?'에러 0 / 2':(i%3===0?'에러 1 / 2':'정상 2 / 2'),judge:''});}})();
+var COLS=[['',null],['No.',null],['이용일시',null],['닉네임',null],['티켓 No',null],['이용 No',null],['액티비티 상태','act',Object.keys(ACT)],['기록 상태','rec',Object.keys(REC)],['코스','course',COURSES.map(function(c){return c.c})],['트랙','track',[].concat.apply([],COURSES.map(function(c){return c.tracks}))],['GR 번호',null],['랩타임',null],['영상 상태',null],['심사 상태','judge',['정상','실격']]];
+function head(){$('thr').innerHTML=COLS.map(function(c,i){if(i===0)return '<th><input type="checkbox" id="all" onchange="document.querySelectorAll(\'.ck\').forEach(function(x){x.checked=this.checked}.bind(this));chk()"></th>';
+  if(!c[1])return '<th>'+c[0]+'</th>';var v=F[c[1]];
+  return '<th class="f" onclick="tog(\''+c[1]+'\',event)">'+c[0]+'<span class="dd">▼</span>'+(v?'<br>('+v+')':'')+(OPEN===c[1]?'<div class="menu">'+['선택안함'].concat(c[2]).map(function(o){return '<div class="'+((o==='선택안함'&&!v)||o===v?'on':'')+'" onclick="setF(\''+c[1]+'\',\''+o+'\',event)">'+o+'</div>'}).join('')+'</div>':'')+'</th>'}).join('');}
+function tog(k,e){OPEN=OPEN===k?null:k;head();}
+function setF(k,o,e){e.stopPropagation();F[k]=o==='선택안함'?'':o;OPEN=null;head();run();}
+document.addEventListener('click',function(e){if(OPEN&&!e.target.closest('th.f')){OPEN=null;head();}});
+function chk(){$('del').disabled=!document.querySelectorAll('.ck:checked').length;}
+function run(){var kw=$('kw').value.trim().replace(/\s/g,'');var list=R.filter(function(r){return r.dt.slice(0,10)===$('d').value&&(!kw||r.ticket.indexOf(kw)>=0)&&(!F.act||r.act===F.act)&&(!F.rec||r.rec===F.rec)&&(!F.course||r.course===F.course)&&(!F.track||r.track===F.track)&&(!F.judge||r.judge===F.judge)});
+  $('tb').innerHTML=list.length?list.map(function(r){return '<tr class="row" onclick="openR('+(r.no-1)+')"><td onclick="event.stopPropagation()"><input type="checkbox" class="ck" onchange="chk()"></td><td class="num">'+r.no+'</td><td class="code">'+r.dt+'</td><td>'+r.nick+'</td><td class="code">'+r.ticket+'</td><td class="code">'+r.use+'</td><td><span class="pill '+ACT[r.act]+(r.act==='준비중'||r.act==='시작'?' ktxt':'')+'">'+r.act+'</span></td><td><span class="pill '+REC[r.rec]+'">'+r.rec+'</span></td><td>'+r.course+'</td><td class="kept">'+r.track+'</td><td class="code">'+r.gr+'</td><td class="num">'+r.lap+'</td><td>'+r.vid+'</td><td>'+(r.judge||'')+'</td></tr>'}).join(''):'<tr><td colspan="14" style="padding:40px;color:var(--muted)">데이터가 없어요</td></tr>';
+  $('tot').textContent='총 '+list.length+'개 항목';chk();}
+head();run();
+</script>
+<script src="race_record_detail.js"></script>
+</body>
+</html>

@@ -129,6 +129,17 @@
           <a data-id="exchangecoupon" data-file="exchangecoupon.html">교환쿠폰 사용현황</a>
         </nav>
       </div>
+      <div class="grp">
+        <div class="grphead"><span class="gi"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 16l1.5-5h11L19 16M4 16h16v3H4z"/><path d="M8 7l2-3h4l2 3"/></svg></span><span class="gt">레이스</span><span class="chev">⌄</span></div>
+        <nav class="nav" id="nav2">
+          <a data-id="boarding" data-file="race_boarding.html">승차장 관제</a>
+          <a data-id="judgereq" data-file="race_judge_req.html">레이스 심사 요청</a>
+          <a data-id="judgelist" data-file="race_judge_list.html">레이스 심사 목록</a>
+          <a data-id="records" data-file="race_records.html">레이스 기록 목록</a>
+          <a data-id="testrace" data-file="race_test.html">테스트 레이스</a>
+          <a data-id="grop" data-file="gr_operation.html">GR 운영 관리</a>
+        </nav>
+      </div>
     </div>
   </aside>
 
@@ -155,17 +166,23 @@
     {id:'autorefund',file:'autorefund.html',label:'티켓 자동 환불'},
     {id:'mapping',file:'mapping.html',label:'사후 매핑'},
     {id:'forcemapping',file:'forcemapping.html',label:'강제 매핑'},
-    {id:'exchangecoupon',file:'exchangecoupon.html',label:'교환쿠폰 사용현황'}
+    {id:'exchangecoupon',file:'exchangecoupon.html',label:'교환쿠폰 사용현황'},
+    {id:'boarding',file:'race_boarding.html',label:'승차장 관제'},
+    {id:'judgereq',file:'race_judge_req.html',label:'레이스 심사 요청'},
+    {id:'judgelist',file:'race_judge_list.html',label:'레이스 심사 목록'},
+    {id:'records',file:'race_records.html',label:'레이스 기록 목록'},
+    {id:'testrace',file:'race_test.html',label:'테스트 레이스'},
+    {id:'grop',file:'gr_operation.html',label:'GR 운영 관리'}
   ];
   var view=document.getElementById('view'), nav=document.getElementById('nav'), mtabs=document.getElementById('mtabs');
   items.forEach(function(it){var a=document.createElement('a');a.textContent=it.label;a.dataset.id=it.id;a.dataset.file=it.file;a.href='#'+it.id;mtabs.appendChild(a);});
   function select(id){
     var it=items.filter(function(x){return x.id===id})[0]||items[0];
     if(view.getAttribute('src')!==it.file) view.setAttribute('src',it.file);
-    document.querySelectorAll('#nav a, #mtabs a').forEach(function(a){a.classList.toggle('on',a.dataset.id===id)});
+    document.querySelectorAll('.nav a, #mtabs a').forEach(function(a){a.classList.toggle('on',a.dataset.id===id)});
     if(location.hash!=='#'+id) history.replaceState(null,'','#'+id);
   }
-  document.querySelectorAll('#nav a, #mtabs a').forEach(function(a){a.addEventListener('click',function(e){e.preventDefault();select(a.dataset.id);});});
+  document.querySelectorAll('.nav a, #mtabs a').forEach(function(a){a.addEventListener('click',function(e){e.preventDefault();select(a.dataset.id);});});
   var start=(location.hash||'').replace('#','');
   select(items.some(function(x){return x.id===start})?start:'booking');
   window.addEventListener('hashchange',function(){var h=location.hash.replace('#','');if(items.some(function(x){return x.id===h}))select(h);});

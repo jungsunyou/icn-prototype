@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta name="robots" content="noindex,nofollow">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>승차장 관제</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="common.css">
+<style>
+  .ktxt{color:var(--note)!important;background:var(--note-soft);outline:1px dashed var(--note);outline-offset:1px;border-radius:3px}
+  .top{display:flex;align-items:center;gap:8px}.top .sp{flex:1}
+  .secH{display:flex;align-items:center;gap:8px;margin:20px 0 10px;font-size:13.5px;font-weight:600}.secH .sp{flex:1}
+  .errs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+  .eb{border:1px solid var(--line);border-radius:6px;overflow:hidden}
+  .eb .h{display:flex;align-items:center;gap:8px;padding:8px 12px;font-size:13.5px;font-weight:500}.eb .h .n{margin-left:auto;font-family:var(--mono);font-size:12px;opacity:.5}
+  .eb .b{display:flex;flex-wrap:wrap;gap:6px;padding:10px 8px}
+  .car{min-width:58px;height:32px;border-radius:4px;color:#fff;font-family:var(--mono);font-weight:600;font-size:14px;display:inline-flex;align-items:center;justify-content:center;padding:0 8px}
+  .tgl{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)}
+  .sw{width:32px;height:18px;border-radius:9px;background:#C8C8C8;position:relative;cursor:pointer}.sw::after{content:"";position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;background:#fff;transition:.15s}.sw.on{background:var(--accent)}.sw.on::after{left:16px}
+  .srch{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--border);border-radius:6px;height:28px;padding:0 8px;font-size:12px;color:var(--muted)}.srch input{border:none;outline:none;width:80px;font-size:12px;font-family:var(--font)}
+  .zone{background:#FAFAFA;padding:10px 12px;font-size:13.5px;font-weight:600;margin-top:8px}.zone span{font-weight:400;letter-spacing:1px;margin-left:10px}
+  .cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;padding:14px}
+  .gc{border:1px solid var(--line);border-radius:4px;padding:10px;box-shadow:0 1px 2px rgba(0,0,0,.05)}
+  .gc .h{display:flex;align-items:baseline}.gc .no{font-size:38px;font-weight:800;letter-spacing:-1px;font-family:var(--mono)}.gc .rc{margin-left:auto;font-size:26px;font-weight:500;font-family:var(--mono)}
+  .gc .st{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-top:6px}
+  .ic{aspect-ratio:1/1;border:1px solid;border-radius:2px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:11px;gap:2px}
+  .ic svg{width:26px;height:26px}
+  .bat{font-family:var(--mono);line-height:1.05;text-align:center}.bat b{font-size:20px;display:block}.bat i{font-style:normal;font-size:22px;font-weight:700}
+  table.trk{width:auto;border:1px solid var(--line)}table.trk th{background:#FAFAFA;font-size:12px;height:40px}table.trk td{height:38px;border-left:1px solid var(--line)}
+  .sig{display:inline-flex;gap:10px}.sig button,.icb{border:none;background:none;cursor:pointer;padding:0;font-size:18px;line-height:1}
+  .eb{border-radius:4px}
+  .eb .h{background:linear-gradient(90deg,var(--t1),#fff)!important;padding:12px 16px;font-size:14px}
+  .eb .h svg{width:22px;height:22px}
+  .eb .h .n{opacity:.18;font-size:13px}
+  .eb .b{gap:6px;padding:10px 10px 14px;min-height:56px;align-content:flex-start}
+  .car{min-width:62px;height:34px;font-family:var(--font);font-weight:600;font-size:15px;letter-spacing:.3px}
+  .xbtn{display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 12px;border:1px solid var(--accent);border-radius:6px;background:#fff;color:var(--accent);font-size:12.5px;cursor:pointer;font-family:var(--font)}
+  .xbtn svg{width:14px;height:14px}
+  .cards{gap:16px}
+  .gc{border:0;box-shadow:0 1px 4px rgba(0,0,0,.12);border-radius:2px;padding:10px 10px 8px}
+  .gc .no{font-family:var(--font);font-size:40px;font-weight:800;letter-spacing:-1.5px;line-height:1}
+  .gc .rc{display:inline-flex;align-items:center;gap:4px;font-family:var(--font);font-size:28px;font-weight:500}
+  .gc .rc svg{width:18px;height:22px}
+  .ic{border-width:1px}.ic svg{width:34px;height:34px}
+  .ic .cnt{font-size:36px;font-weight:700;color:#fff;font-family:var(--font)}
+  .bat{background:#FFF5F5!important}.bat b{font-size:22px;font-weight:600;letter-spacing:-.5px}.bat i{font-size:28px;font-weight:600}.bat i small{font-size:12px}
+  body.full .app>h1,body.full .memo,body.full .top,body.full #errsWrap{display:none}
+  body.full .app{padding:0}body.full .card{border:0;border-radius:0;padding:0 0 0 0}
+  body.full .cards{grid-template-columns:repeat(auto-fill,minmax(230px,1fr))}
+  .gc .no{white-space:nowrap;font-size:clamp(24px,2.7vw,40px)}.gc .rc{font-size:clamp(18px,2vw,28px);white-space:nowrap}
+  .bat b{font-size:clamp(13px,1.45vw,22px)!important}.bat i{font-size:clamp(16px,1.9vw,28px)!important}
+  body.full .secH{margin:0;padding:10px 0;position:sticky;top:0;background:#fff;z-index:2}
+  .mw{position:fixed;inset:0;background:rgba(33,37,41,.35);display:flex;align-items:center;justify-content:center;z-index:60}
+  .mbox{background:#fff;border-radius:24px;padding:28px 32px 24px;width:min(560px,94vw)}
+  .mbox .mh2{display:flex;align-items:center;font-size:16.5px;font-weight:600}.mbox .mh2 .x2{margin-left:auto;border:none;background:none;font-size:20px;cursor:pointer;color:#212529}
+  .ctabs{display:flex;align-items:center;gap:14px;margin:22px 0 10px}.ctabs .sp{flex:1}
+  .ctab{min-width:38px;height:38px;border-radius:19px;border:none;background:none;color:#878A99;font-size:15px;cursor:pointer;font-family:var(--font);padding:0 10px}
+  .ctab.on{background:var(--accent);color:#fff}
+  .gs{border:1px solid var(--line);border-radius:8px;height:40px;width:150px;padding:0 12px;font-size:13.5px;font-family:var(--font);outline:none}
+  .ct{width:100%;border-collapse:collapse}.ct th{font-weight:500;height:44px;border-bottom:1px solid var(--line)}.ct td{height:44px;border-bottom:1px solid var(--line);cursor:pointer}.ct tr:hover td{background:#EFEFEF}
+  .cpg{display:flex;justify-content:center;gap:10px;margin-top:16px;align-items:center}.cpg span{min-width:30px;height:30px;display:inline-flex;align-items:center;justify-content:center;border-radius:4px;cursor:pointer;color:#212529}.cpg span.on{background:var(--accent);color:#fff}.cpg span.dis{color:#C8C8C8;cursor:default}
+  .cpi{display:flex;justify-content:center;gap:40px;font-size:13px;margin-top:10px}
+  .cf{background:#fff;border-radius:24px;padding:26px 32px 18px;width:min(460px,92vw);text-align:center}
+  .cf b{font-size:16.5px;font-weight:600}.cf input{width:100%;height:44px;border:1px solid var(--line);border-radius:10px;padding:0 12px;font-size:13.5px;font-family:var(--font);margin-top:22px;outline:none}
+  .cf .q{margin:18px 0 22px;font-size:15px}.cf .row{display:flex}.cf .row button{flex:1;border:none;background:none;font-size:15px;font-weight:600;cursor:pointer;height:40px;font-family:var(--font)}.cf .row button:disabled{color:#C8C8C8;cursor:default}
+</style>
+<body>
+<div class="app">
+  <h1>승차장 관제 <span class="ex">예시 데이터</span></h1>
+  <div class="card">
+    <div class="top"><span class="seg"><span class="on" onclick="seg(this);view('gr')">GR 상태</span><span onclick="seg(this);view('track')">트랙 상태</span></span><span class="sp"></span>
+      <button class="btn pri" id="manualCar" onclick="openCk()">수동 차량 체크인</button></div>
+    <section id="vGr">
+      <div id="errsWrap"><div class="secH">GR 오류 현황 (오류수/운영수)<span class="sp"></span><button class="xbtn" id="exp" onclick="OPEN=!OPEN;renderErr()"></button></div>
+      <div class="errs" id="errs"></div></div>
+      <div class="secH">GR 위치<span class="sp"></span><span class="tgl">오류만 보기 <span class="sw on" id="sw" onclick="this.classList.toggle('on');renderCards()"></span> 전체 보기</span>
+        <span class="srch">⌕ <input id="q" placeholder="GR 검색" oninput="renderCards()"></span><button class="xbtn" id="fs" onclick="full()"></button></div>
+      <div id="zones"></div>
+    </section>
+    <section id="vTrack" hidden>
+      <div class="tblwrap" style="margin-top:16px"><table class="trk"><thead><tr><th>코스</th><th>트랙</th><th style="min-width:150px">신호등</th><th>수동 트랙 체크인</th><th>누적 기록 오류<br>/ 총 레이스 수</th><th>트랙 센서 로그</th></tr></thead><tbody id="trk"></tbody></table></div>
+    </section>
+  </div>
+  <div class="memo">
+    <div class="mh">안내 · 구현 시 제외 가능</div>
+    <ul>
+      <li><b>GR 상태</b>는 차량(GR)의 오류를 한눈에 보는 화면이에요. 기록 오류 · 영상 오류 · GR 통신 오류 · 배터리 부족 칸에 해당 차량 번호가 떠요.</li>
+      <li><b>GR 위치</b>는 탑승 구간(BOARDING)과 승차장 진입 구간(BOARDING InterChange)에 있는 차량을 카드로 보여줘요. 카드에는 차량 번호 · 오늘 레이스 수 · 기록/영상/통신 상태 · 전압과 배터리가 보이고, 오류인 칸은 색이 채워져요. 오류만 보기 / 전체 보기로 바꿀 수 있어요.</li>
+      <li><b>수동 차량 체크인</b>을 누르면 차량 종류(GR1 · GR2 · XGR)별 차량 목록이 떠요. GR 검색으로 찾고, 차량을 누르면 티켓 No.(NFC ID)를 넣어 체크인해요.</li>
+      <li><b>트랙 상태</b>는 코스 · 트랙마다 신호등을 조작하고, 수동 트랙 체크인 · 누적 기록 오류 · 트랙 센서 로그를 봐요.</li>
+      <li><b>차량 종류</b>는 GR1 · GR2 · XGR, <b>코스</b>는 1 · 2 · 3 · ICN-L · ICN-R이에요. 1 · 2 · 3코스는 코스마다 트랙이 2개씩이고, XGR은 ICN-L · ICN-R 2개 트랙을 돌아요. 화면 구성과 기능은 제주와 같아요.</li>
+      <li style="color:var(--note)"><b style="color:var(--note)">정하는 중</b> · 트랙 번호 붙이는 방식(지금은 예시: 1코스 1·2, 2코스 3·4, 3코스 5·6, ICN-L은 L, ICN-R은 R), 차량 번호 형식(지금은 예시: GR1-012), GR1 · GR2가 어느 코스를 도는지</li>
+    </ul>
+  </div>
+</div>
+<div class="mw" id="mCk" hidden onclick="if(event.target===this)this.hidden=true"><div class="mbox">
+  <div class="mh2">차량 체크인<button class="x2" onclick="$('mCk').hidden=true">✕</button></div>
+  <div class="ctabs" id="ctabs"></div>
+  <table class="ct"><thead><tr><th>No.</th><th>GR 번호</th></tr></thead><tbody id="ctb"></tbody></table>
+  <div class="cpg" id="cpg"></div><div class="cpi"><span id="ctot"></span><span id="cpgi"></span></div>
+</div></div>
+<div class="mw" id="mCf" hidden style="z-index:61" onclick="if(event.target===this)this.hidden=true"><div class="cf">
+  <b>차량 체크인</b><input id="nfc" placeholder="티켓 No. (NFC ID) 입력" oninput="$('cfOk').disabled=!this.value.trim()">
+  <div class="q" id="cfQ"></div><div class="row"><button onclick="$('mCf').hidden=true">닫기</button><button id="cfOk" disabled onclick="ckDone()">확인</button></div>
+</div></div>
+<div class="toast" id="toast"></div>
+<script src="race.js"></script>
+<script>
+var ICON={rec:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M7 10h10M7 14h6M3 3l18 18"/></svg>',vid:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="6" width="13" height="12" rx="2"/><path d="M16 10l5-3v10l-5-3M3 3l18 18"/></svg>',com:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 12a7 7 0 0 1 14 0M8 12a4 4 0 0 1 8 0"/><circle cx="12" cy="13" r="1.2"/><path d="M12 14v6M3 3l18 18"/></svg>'};
+var EC={rec:['기록 오류','#43A047','#EDF6EE'],vid:['영상 오류','#03A9F4','#E6F6FE'],com:['GR 통신 오류','#673AB7','#F0EBF8'],bat:['배터리 부족','#F44336','#FEEDEC']};
+ICON.bat='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 15l1.5-6h9L18 15M5 15h14v3H5zM8 18v1.5M16 18v1.5M10 12h4"/></svg>';
+var I_EXP='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 4h6v6M10 20H4v-6"/></svg>',I_COL='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 4l-6 6M14 4v6h6M4 20l6-6M10 20v-6H4"/></svg>',I_FS='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>',I_FSX='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"/></svg>';
+var FLAG='<svg viewBox="0 0 16 20" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M2 19V2M2 2h11l-2 3 2 3H2"/><path d="M5 2v6M8 2v6M2 5h11" stroke-width=".8"/></svg>';
+var OPEN=false,FULL=false;
+var CARS=[];var seed=7;function rnd(){seed=(seed*9301+49297)%233280;return seed/233280;}
+CAR_TYPES.forEach(function(ct){var n=ct.t==='GR1'?20:ct.t==='GR2'?12:6;for(var i=0;i<n;i++){var e={rec:rnd()<.06,vid:rnd()<.15,com:rnd()<.3,bat:rnd()<.12};CARS.push({no:carNo(ct.t,(ct.t==='GR2'?200:ct.t==='XGR'?0:100)+i*3+1+Math.floor(rnd()*3)),type:ct,races:Math.floor(rnd()*20)+3,v:(51+rnd()*2.5).toFixed(1),b:Math.floor(rnd()*60)+38,err:e,zone:rnd()<.6?0:1});}});
+CARS.forEach(function(c){if(c.b<45)c.err.bat=true;});
+function renderErr(){$('exp').innerHTML=(OPEN?I_COL:I_EXP)+' 펼치기';
+  $('errs').innerHTML=Object.keys(EC).map(function(k){var list=CARS.filter(function(c){return c.err[k]});var x=EC[k];var show=OPEN?list:list.slice(0,6);
+  return '<div class="eb" style="border-color:'+x[2]+';--t1:'+x[2]+'"><div class="h"><span style="color:'+x[1]+';display:inline-flex">'+ICON[k]+'</span><span style="color:#212529">'+x[0]+'</span><span class="n" style="color:'+x[1]+'">'+list.length+'/0</span></div><div class="b">'+show.map(function(c){return '<span class="car" style="background:'+x[1]+'">'+c.no+'</span>'}).join('')+(!OPEN&&list.length>6?'<span class="car" style="background:'+x[1]+';min-width:46px">…</span>':'')+'</div></div>'}).join('');}
+function cardHTML(c){var box=function(k){var x=EC[k],on=c.err[k];
+    if(on&&k==='rec')return '<div class="ic" style="border-color:'+x[1]+';background:'+x[1]+'"><span class="cnt">1</span></div>';
+    return '<div class="ic" style="border-color:'+(on?x[1]:x[1]+'55')+';background:'+(on?x[1]:x[2])+';color:'+(on?'rgba(0,0,0,.28)':x[1]+'40')+'">'+ICON[k]+'</div>'};
+  return '<div class="gc"><div class="h"><span class="no">'+c.no+'</span><span class="rc">'+FLAG+' '+c.races+'</span></div><div class="st">'+box('rec')+box('vid')+box('com')+'<div class="ic bat" style="border-color:#F4433660"><b>'+c.v+'v</b><i>'+c.b+'<small>%</small></i></div></div></div>';}
+function renderCards(){var all=$('sw').classList.contains('on'),q=$('q').value.trim().toUpperCase();
+  $('zones').innerHTML=[['탑승 구간','BOARDING'],['승차장 진입 구간','BOARDING InterChange']].map(function(z,zi){var list=CARS.filter(function(c){return c.zone===zi&&(all||c.err.rec||c.err.vid||c.err.com||c.err.bat)&&(!q||c.no.indexOf(q)>=0)});
+    return '<div class="zone">'+z[0]+'<span>'+z[1]+'</span></div><div class="cards">'+(list.length?list.map(cardHTML).join(''):'<div class="muted" style="padding:20px">해당하는 GR이 없어요.</div>')+'</div>'}).join('');}
+function renderTrack(){var seed2=3;$('trk').innerHTML=COURSES.map(function(co){return co.tracks.map(function(t,i){var tot=Math.floor(150+Math.random()*230);return '<tr>'+(i===0?'<td rowspan="'+co.tracks.length+'" style="font-weight:600">'+co.c+'</td>':'')+'<td class="kept" style="font-weight:600">'+t+'</td><td><span class="sig"><button title="대기" onclick="sig()" style="color:#FF9800">◎</button><button title="정지" onclick="sig()" style="color:#878A99">⊗</button><button title="출발" onclick="sig()" style="color:#008000">●</button><button title="위험" onclick="sig()" style="color:#DA222B">●</button></span></td><td><button class="icb" onclick="toast(\'예시 화면이라 실제로 체크인되지 않아요.\')">☑</button></td><td class="num">0 / '+tot+'</td><td><button class="icb" onclick="toast(\'트랙 센서 로그가 열려요.\')">☰</button></td></tr>'}).join('')}).join('');}
+function full(){FULL=!FULL;document.body.classList.toggle('full',FULL);$('fs').innerHTML=(FULL?I_FSX+' 전체화면 닫기':I_FS+' 전체화면');window.scrollTo(0,0);}
+var CK={t:'GR1',p:1,q:'',car:''};
+function openCk(){CK={t:'GR1',p:1,q:'',car:''};renderCk();$('mCk').hidden=false;}
+function renderCk(){$('ctabs').innerHTML=CAR_TYPES.map(function(c){return '<button class="ctab'+(CK.t===c.t?' on':'')+'" onclick="CK.t=\''+c.t+'\';CK.p=1;renderCk()">'+c.t+'</button>'}).join('')+'<span class="sp"></span><input class="gs" id="gs" placeholder="GR 검색" value="'+CK.q+'" oninput="CK.q=this.value.trim().toUpperCase();CK.p=1;renderCkList()">';renderCkList();}
+function renderCkList(){var list=CARS.filter(function(c){return c.type.t===CK.t&&(!CK.q||c.no.indexOf(CK.q)>=0)});var pages=Math.max(1,Math.ceil(list.length/10));if(CK.p>pages)CK.p=pages;
+  var pg=list.slice((CK.p-1)*10,CK.p*10);$('ctb').innerHTML=pg.length?pg.map(function(c,i){return '<tr onclick="askCk(\''+c.no+'\')"><td>'+((CK.p-1)*10+i+1)+'</td><td class="code">'+c.no+'</td></tr>'}).join(''):'<tr><td colspan="2" class="muted">해당하는 GR이 없어요.</td></tr>';
+  var nav=function(lbl,p,dis){return '<span class="'+(dis?'dis':'')+'" '+(dis?'':'onclick="CK.p='+p+';renderCkList()"')+'>'+lbl+'</span>'};
+  var h=nav('«',1,CK.p===1)+nav('‹',CK.p-1,CK.p===1);for(var i=1;i<=pages;i++)h+='<span class="'+(i===CK.p?'on':'')+'" onclick="CK.p='+i+';renderCkList()">'+i+'</span>';h+=nav('›',CK.p+1,CK.p===pages)+nav('»',pages,CK.p===pages);
+  $('cpg').innerHTML=h;$('ctot').textContent='총 '+list.length+'개 항목';$('cpgi').textContent=pages+' 페이지 중 '+CK.p+' 페이지';}
+function askCk(no){CK.car=no;$('nfc').value='';$('cfOk').disabled=true;$('cfQ').textContent=no+' 차량을 체크인 하시겠습니까?';$('mCf').hidden=false;}
+function ckDone(){$('mCf').hidden=true;$('mCk').hidden=true;toast('<span style="color:#C9B8FF">예시 화면이라 실제로 체크인되지 않아요. 체크인 뒤 안내 문구는 제주 화면 확인이 필요해요.</span>');}
+function sig(){toast('예시 화면이라 실제 신호등은 바뀌지 않아요.');}
+function view(v){$('vGr').hidden=v!=='gr';$('vTrack').hidden=v!=='track';$('manualCar').hidden=v!=='gr';}
+renderErr();renderCards();renderTrack();$('fs').innerHTML=I_FS+' 전체화면';
+</script>
+</body>
+</html>
