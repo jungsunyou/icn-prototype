@@ -967,7 +967,6 @@ function oDrawerHTML(b){
         <td class="n" style="color:var(--negative)">${t.refund?t.refund.toLocaleString('ko-KR'):'-'}</td><td class="n" style="color:var(--primary)">${(t.paid-t.refund).toLocaleString('ko-KR')}</td></tr>`}).join('');
     const live=x.tickets.filter(t=>t.refund<t.paid);
     const printH=!live.length?'':`<div class="tkh"><b>발권 처리</b><span class="ml"></span>
-        <button class="btn sm kept" data-kept="레이서 분리는 ICN에서 쓸지 정하는 중이에요.">레이서 분리</button><button class="btn sm kept" data-kept="레이서 병합은 ICN에서 쓸지 정하는 중이에요.">레이서 병합</button>
         <button class="btn sm" data-tk="reprint">재발권하기</button><button class="btn sm p" data-tk="print">발권하기</button><button class="btn sm p" data-tk="cancel">발권 취소</button></div>
       <div class="tw"><table class="dt"><thead><tr><th></th><th>레이서</th><th>상품 주문 번호</th><th>티켓 No</th><th>짝</th><th>발권 상태</th><th>상품명</th><th>티켓</th><th>발권 일시</th><th>할인</th></tr></thead><tbody>
       ${live.slice(0,S.more['p'+r.id]||10).map((t,j,arr)=>{const nx=arr[j+1];return `<tr class="${t.pair&&nx&&nx.pair===t.pair?'pair-b':''}"><td><input type="checkbox" data-sel="${t.no}" ${S.sel.has(t.no)?'checked':''}></td><td><span class="ktxt">임시레이서${t.no.slice(-4)}</span></td><td class="num">${t.op}</td><td class="num">${t.printed?t.no:'-'}</td><td>${t.pair?'짝 '+t.pair:'-'}</td><td>${t.printed?'발권':'미발권'}</td><td class="wrap2">${p.name}<br>· ${t.role}</td><td>${t.printed?`<button class="lnk w" data-reprint1="${t.no}">재발권</button>`:'-'}</td><td class="num">${t.printedAt?b.date.slice(0,4)+'-'+t.printedAt.replace(' ',' '+wd(b.date)+' '):'-'}</td><td>${Math.max(0,lp(t)-t.paid)?'<span class="ktxt">단체 판매가</span>':'-'}</td></tr>`}).join('')}
@@ -1011,7 +1010,7 @@ function oDrawerHTML(b){
         ${b.memo?`<div class="kv2 kept" style="margin-top:10px;padding:6px 8px;border-radius:8px">${kv('메모',esc(b.memo))}</div>`:''}</section>
       <section class="dcard"><div class="h3r"><h3>주문 내역 및 이용 현황</h3><span class="ml"></span>${b.ord.canceled?'':'<button class="btn sm g" data-addorder>주문 추가</button>'}<button class="btn sm d" data-bulkrefund ${[...S.sel].some(no=>{const f=findTicket(b,no);return f&&f.t.refund<f.t.paid})?'':'disabled'}>환불 확정</button></div>
         ${groups}
-        <div class="note" style="margin-top:12px">· 인천은 로봉(NFC) 1인 1티켓이에요. 짝으로 들어온 운전자와 동승자는 함께 발권·환불돼요. 한 명만 골라도 짝이 같이 선택돼요.<br>· NFC 발권이 곧 이용 시작이에요. 단체를 미리 발권할지, 현장에 온 인원만 발권할지는 정하는 중이에요.<br>· 보라 점선은 제주 화면에 없거나 정하는 중인 것: 레이서 분리·병합 버튼, 할인 내역의 '단체 판매가', 예약자 메모, 발권 처리의 레이서 이름(임시레이서 표기)</div></section>
+        <div class="note" style="margin-top:12px">· 인천은 로봉(NFC) 1인 1티켓이에요. 짝으로 들어온 운전자와 동승자는 함께 발권·환불돼요. 한 명만 골라도 짝이 같이 선택돼요.<br>· NFC 발권이 곧 이용 시작이에요. 단체를 미리 발권할지, 현장에 온 인원만 발권할지는 정하는 중이에요.<br>· 제주의 레이서 분리·병합은 인천에 없어요(1인 1티켓, 10-08 결정).<br>· 보라 점선은 제주 화면에 없거나 정하는 중인 것: 할인 내역의 '단체 판매가', 예약자 메모, 발권 처리의 레이서 이름(임시레이서 표기)</div></section>
       ${paySec}
     </div></aside>`;
 }

@@ -102,9 +102,6 @@
 
     <div class="card">
       <h2>발권 처리<span class="sp"></span>
-        <button class="btn sm kept" onclick="toast('레이서 분리는 정하는 중이에요.')">레이서 분리</button>
-        <button class="btn sm kept" onclick="toast('레이서 병합은 정하는 중이에요.')">레이서 병합</button>
-        <span class="vsep"></span>
         <button class="btn sm pri" id="issBtn" disabled onclick="toast('예시 화면이라 실제로 발권되지 않아요.')">발권하기</button>
         <button class="btn sm pri" id="issCancel" disabled onclick="toast('예시 화면이라 실제로 취소되지 않아요.')">발권 취소</button>
       </h2>
@@ -119,12 +116,13 @@
         <li><b>예약자 정보</b>는 주문 구분과 닉네임만 보여줘요. 실명·전화번호·이메일은 보여주지 않아요.</li>
         <li><b>주문 내역</b>은 티켓 한 장이 한 줄이에요(직접 운전·주니어 운전·동승자·이용자·동반자녀). 체크해서 골라 <b>환불 확정</b>하거나, 주문 단위로 <b>전체 환불</b>해요.</li>
         <li><b>환불 대상 확인</b>의 '환불 확인'을 누르면 그 티켓의 PSU(JAM)를 얼마나 썼는지 자세히 펼쳐져요. 제공·이용·남음은 확정 데이터예요.</li>
+        <li>인천은 1인 1티켓이라 제주의 레이서 분리·병합은 없어요.</li>
         <li><b>발권 처리</b>에서는 티켓에 NFC ID를 매핑해 발권하고, 필요하면 발권을 취소해요. 다시 발권하면 '재발권'으로 표시돼요.</li>
         <li><b>금액 수정</b>은 고른 티켓의 결제 금액을 사유와 함께 바꿔요. 바뀐 차액은 <b>재결제</b>로 처리해요. 재결제는 기존 결제를 취소하고 지금 금액으로 다시 결제해요.</li>
         <li><b>거래 이력</b>은 그 주문의 결제·부분 취소·재결제 기록이에요. 처리 이력(크루 작업·메모)과는 따로 봐요.</li>
         <li><b>매출 금액</b>은 결제 금액에서 환불 금액을 뺀 값이에요.</li>
         <li><b>처리 이력</b>에는 취소·환불·발권 기록과 크루가 남긴 메모가 쌓여요. 처리자는 크루 이름으로 남아요.</li>
-        <li style="color:var(--note)"><b style="color:var(--note)">정하는 중</b> · 환불 금액 계산 규칙(미사용 PSU를 어떤 기준으로 나눌지), 금액 수정·재결제를 ICN에서 어디까지 허용할지, 레이서 분리·병합을 ICN에서도 쓸지</li>
+        <li style="color:var(--note)"><b style="color:var(--note)">정하는 중</b> · 환불 금액 계산 규칙(미사용 PSU를 어떤 기준으로 나눌지), 금액 수정·재결제를 ICN에서 어디까지 허용할지</li>
       </ul>
     </div>
   </div>
