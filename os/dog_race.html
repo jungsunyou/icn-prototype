@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta name="robots" content="noindex,nofollow">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>강아지레이스</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="common.css">
+<style>
+  .top{display:flex;align-items:center;gap:8px;margin-bottom:14px}.top .sp{flex:1}
+  .btn.ol{border-color:var(--accent);color:var(--accent);background:#fff}
+  .btn.grn{background:#2E7D32;border-color:#2E7D32;color:#fff}
+  .pills{display:flex;gap:6px}.pills button{border:none;border-radius:16px;height:32px;padding:0 14px;font-size:13.5px;cursor:pointer;font-family:var(--font);background:none;color:var(--muted)}
+  .pills button.on{background:var(--accent);color:#fff;font-weight:600}
+  .wrap{max-width:640px;margin:0 auto}
+  .phase{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:12px 0 14px}.phase i{height:4px;border-radius:2px;background:#E8E8E8}.phase i.on{background:var(--accent)}
+  .box{border:1px solid var(--line);border-radius:16px;padding:16px 20px;margin-bottom:14px;background:#fff}
+  .bt{font-weight:600;font-size:13.5px;margin-bottom:12px;display:flex;align-items:center;gap:6px}
+  .row{display:flex;gap:10px}.ipt{flex:1;display:flex;align-items:center;border:1px solid var(--border);border-radius:8px;height:38px;padding:0 10px;gap:8px}.ipt input{flex:1;border:none;outline:none;font-family:var(--font);font-size:13.5px}
+  .row .btn{height:38px}
+  .go{width:100%;height:56px;border:none;border-radius:8px;background:var(--accent);color:#fff;font-size:15px;font-weight:600;cursor:pointer;font-family:var(--font)}
+  .go:disabled{background:#86A8EC;cursor:not-allowed}.go.stop{background:var(--red)}.go.light{background:#F5F5F5;color:#212529}
+  .ctl{display:flex;gap:8px}.ctl .go{flex:1}
+  .who{text-align:center;font-size:15px;font-weight:600;margin-bottom:12px}.who small{display:block;font-size:12px;color:var(--muted);font-weight:400}
+  .cd{text-align:center;margin:6px 0 14px}.cd b{font-size:56px;font-family:var(--mono);color:var(--accent)}.cd div{color:var(--muted);font-size:12.5px}
+  .tm{text-align:center;font-family:var(--mono);font-size:44px;font-weight:600;margin:8px 0 16px}
+  .res{border-radius:16px;padding:20px;text-align:center;color:#fff;background:linear-gradient(135deg,#245EC3,#4A86E8);margin-bottom:14px}.res.touch{background:linear-gradient(135deg,#E07B00,#FFA726)}
+  .res b{display:block;font-family:var(--mono);font-size:38px}.res span{font-size:14px;opacity:.9}
+  .uitem{display:flex;align-items:center;justify-content:space-between;border:1px solid var(--line);border-radius:10px;padding:10px 14px;cursor:pointer;margin-bottom:8px}.uitem:hover{border-color:var(--accent)}
+  .uitem.used{opacity:.5;cursor:default}
+  .rh{display:flex;align-items:center;margin-bottom:10px}.rh .sp{flex:1}
+  .date{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--border);border-radius:8px;height:36px;padding:0 10px;font-size:13px}
+  .date input{border:none;outline:none;font-family:var(--font)}
+  table{width:100%}td.empty{height:110px;color:#BDBDBD;border:1px dashed var(--border)}
+  tr.cx td{color:var(--muted);text-decoration:line-through}tr.cx td.nostrike{text-decoration:none}
+  .ttop{position:fixed;left:50%;top:14px;transform:translateX(-50%);background:#fff;border-radius:14px;box-shadow:0 6px 20px rgba(0,0,0,.12);padding:10px 14px;display:flex;gap:10px;align-items:flex-start;z-index:70;min-width:260px}
+  .ttop .ic{width:18px;height:18px;border-radius:50%;background:#212529;color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-top:1px}
+  .ttop .x{border:none;background:none;cursor:pointer;margin-left:auto;font-size:15px}
+</style>
+<body>
+<div class="app">
+  <div class="top"><h1 style="margin:0">강아지레이스 <span class="ex">예시 데이터</span></h1><span class="sp"></span>
+    <button class="btn ol kept" onclick="toast('<span style=&quot;color:#C9B8FF&quot;>영상 테스트를 누른 뒤 동작은 제주 화면을 확인한 뒤 그려요.</span>')">▶ 영상 테스트</button>
+    <span id="topAct" class="kept" style="border-radius:8px;padding:2px"></span></div>
+  <div class="keptline" style="margin-bottom:12px"><b>정하는 중</b> · 인천에서 강아지레이스를 할지, 한다면 어떻게 할지 아직 정하지 않았어요. 화면 전체가 제주 구성을 옮긴 예시예요.</div>
+  <div class="card kept">
+    <div class="pills" id="races"></div>
+    <div class="wrap">
+      <div class="pills" style="margin-top:12px" id="subs"></div>
+      <section id="vOp"></section>
+      <section id="vRec" hidden></section>
+    </div>
+  </div>
+  <div class="memo">
+    <div class="mh">안내</div>
+    <ul>
+      <li>댕댕레이스(반려견)와 촉감레이스(사람)를 같은 방식으로 운영해요.</li>
+      <li>순서: 티켓 번호 등록 → 이름 등록 → 10초 카운트다운 → 레이스 → 기록.</li>
+      <li>위쪽 막대 4칸이 지금 단계를 보여줘요.</li>
+      <li>티켓 번호는 13자리를 넣거나 NFC로 태그해요.</li>
+      <li>레이스가 끝나면 <b>티켓 사용 처리</b>로 사용 처리할 반려견(참가자)을 골라요.</li>
+      <li>기록 관리에서 날짜별 기록을 보고, <b>티켓 취소 처리</b>로 여러 건을 골라 취소해요.</li>
+      <li>구성은 제주 실서비스, 단계별 화면은 2026-06 강아지레이스 프로토타입을 따랐어요.</li>
+    </ul>
+    <div style="margin-top:8px;color:var(--note)"><b style="color:var(--note)">정하는 중</b></div>
+    <ul style="color:var(--note)">
+      <li>인천에서 강아지레이스를 할지, 어떻게 할지 (화면 전체)</li>
+      <li>영상 테스트 버튼 동작</li>
+      <li>영상 상태 값</li>
+      <li>사용 처리 · 취소 뒤 안내 문구</li>
+      <li>촉감레이스 참가자 이름에 실명을 받을지 (개인정보 기준)</li>
+    </ul>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+function $(i){return document.getElementById(i);}
+function toast(m){var e=$('toast');e.innerHTML=m;e.classList.add('show');clearTimeout(e._t);e._t=setTimeout(function(){e.classList.remove('show')},2600);}
+function tTop(msg){var e=$('ttop');if(!e){e=document.createElement('div');e.id='ttop';e.className='ttop';document.body.appendChild(e);}var d=new Date(),h=d.getHours();
+  e.innerHTML='<span class="ic">i</span><div><div>'+msg+'</div><div class="muted" style="font-size:12px">2026년 11월 12일 '+(h<12?'오전 ':'오후 ')+((h%12)||12)+':'+('0'+d.getMinutes()).slice(-2)+'</div></div><button class="x" onclick="this.parentNode.hidden=true">✕</button>';e.hidden=false;clearTimeout(tTop._t);tTop._t=setTimeout(function(){e.hidden=true},3000);}
+function fmt(ms){var s=Math.floor(ms/1000),c=Math.floor(ms%1000/10);return ('0'+Math.floor(s/60)).slice(-2)+':'+('0'+s%60).slice(-2)+'.'+('0'+c).slice(-2);}
+function hm(){var d=new Date();return ('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2);}
+var RACES={dog:{n:'댕댕레이스',who:'반려견',ic:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="vertical-align:-2px"><circle cx="7" cy="9" r="2"/><circle cx="12" cy="6" r="2"/><circle cx="17" cy="9" r="2"/><path d="M8 17c0-3 2-5 4-5s4 2 4 5-2 3-4 3-4 0-4-3z"/></svg>'},touch:{n:'촉감레이스',who:'참가자',ic:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="vertical-align:-2px"><path d="M8 12V6a1.5 1.5 0 0 1 3 0v5M11 11V4.5a1.5 1.5 0 0 1 3 0V11M14 11V6a1.5 1.5 0 0 1 3 0v8a6 6 0 0 1-6 6c-3 0-4-2-6-5l-1-2a1.5 1.5 0 0 1 2.5-1.5L8 13"/></svg>'}};
+function mk(){return {phase:1,ticket:'',name:'',cd:10,t0:0,ms:0,timer:null,last:null,use:false,sel:[],cmode:false,recs:[]};}
+var ST={dog:mk(),touch:mk()},R='dog',SUB='op';
+ST.dog.recs=[{name:'뽀삐',ticket:'2611121418901',at:'2026-11-12 13:05',ms:12340,st:'정상',vid:'정상',used:true},{name:'콩이',ticket:'2611121418902',at:'2026-11-12 13:12',ms:10870,st:'정상',vid:'정상',used:false}];
+ST.touch.recs=[{name:'하늘콩',ticket:'2611121418911',at:'2026-11-12 14:20',ms:21550,st:'정상',vid:'정상',used:true}];
+function render(){var s=ST[R],k=RACES[R];
+  $('races').innerHTML=Object.keys(RACES).map(function(x){return '<button class="'+(x===R?'on':'')+'" onclick="R=\''+x+'\';render()">'+RACES[x].ic+' '+RACES[x].n+'</button>'}).join('');
+  $('subs').innerHTML=[['op','<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="vertical-align:-2px"><rect x="3" y="8" width="18" height="10" rx="4"/><path d="M8 11v4M6 13h4M15 12h.01M18 14h.01"/></svg> 운영 관리'],['rec','<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="vertical-align:-2px"><circle cx="12" cy="13" r="7"/><path d="M12 13V9M10 3h4"/></svg> 기록 관리']].map(function(x){return '<button class="'+(x[0]===SUB?'on':'')+'" onclick="SUB=\''+x[0]+'\';ST[R].cmode=false;ST[R].sel=[];render()">'+x[1]+'</button>'}).join('');
+  $('vOp').hidden=SUB!=='op';$('vRec').hidden=SUB!=='rec';
+  var canUse=s.recs.some(function(r){return !r.used&&r.st==='정상'});
+  if(SUB==='op')$('topAct').innerHTML='<button class="btn grn" '+(canUse?'':'disabled')+' onclick="ST[R].use=!ST[R].use;render()">▣ 티켓 사용 처리</button>';
+  else $('topAct').innerHTML=s.cmode?'<button class="btn" onclick="ST[R].cmode=false;ST[R].sel=[];render()">취소</button> <button class="btn danger" '+(s.sel.length?'':'disabled')+' onclick="doCancel()">취소 확정'+(s.sel.length?' ('+s.sel.length+')':'')+'</button>':'<button class="btn" '+(s.recs.some(function(r){return r.st==='정상'})?'':'disabled')+' onclick="ST[R].cmode=true;render()">▣ 티켓 취소 처리</button>';
+  if(SUB==='op')renderOp();else renderRec();}
+function renderOp(){var s=ST[R],k=RACES[R];var h='<div class="phase">'+[1,2,3,4].map(function(i){return '<i class="'+(i<=s.phase?'on':'')+'"></i>'}).join('')+'</div>';
+  if(s.phase===1)h+='<div class="box"><div class="bt"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="vertical-align:-2px"><path d="M4 7h16v3a2 2 0 0 0 0 4v3H4v-3a2 2 0 0 0 0-4z"/></svg> 티켓 번호 등록</div><div class="row"><label class="ipt"><input id="tk" maxlength="13" inputmode="numeric" placeholder="티켓번호를 입력해주세요" value="'+s.ticket+'" oninput="this.value=this.value.replace(/\\D/g,\'\');ST[R].ticket=this.value;$(\'tkb\').disabled=this.value.length!==13"><span title="NFC 태그" style="cursor:pointer;color:var(--muted)" onclick="nfc()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="vertical-align:-2px"><path d="M5 12a10 10 0 0 1 14 0M8 15a5.5 5.5 0 0 1 8 0"/><circle cx="12" cy="18" r="1"/></svg></span></label><button class="btn pri" id="tkb" '+(s.ticket.length===13?'':'disabled')+' onclick="regTicket()">＋ 등록</button></div></div>';
+  else h+='<div class="box"><div class="bt"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="vertical-align:-2px"><path d="M4 7h16v3a2 2 0 0 0 0 4v3H4v-3a2 2 0 0 0 0-4z"/></svg> 티켓 번호 등록</div><div class="row"><label class="ipt" style="background:#FAFAFA"><span class="code">'+s.ticket+'</span></label><span class="pill p-ok" style="align-self:center">등록됨</span></div></div>';
+  if(s.phase===2)h+='<div class="box"><div class="bt"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="vertical-align:-2px"><rect x="6" y="4" width="12" height="16" rx="2"/><path d="M9 9h6M9 13h6M9 17h4"/></svg> '+k.who+' 이름 등록</div><div class="row"><label class="ipt"><input id="nm" placeholder="'+k.who+' 이름 입력" onkeydown="if(event.key===\'Enter\')regName()"></label><button class="btn pri" onclick="regName()">등록</button></div></div>';
+  h+='<div class="box"><div class="bt"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="vertical-align:-2px"><path d="M5 21V4M5 4h12l-2 4 2 4H5"/></svg> 레이스 컨트롤</div>';
+  if(s.name&&s.phase>=2)h+='<div class="who">'+s.name+'<small class="code">'+s.ticket+'</small></div>';
+  if(s.phase===3&&s.cd>0)h+='<div class="cd"><b>'+s.cd+'</b><div>레이스 시작까지</div></div><div class="ctl"><button class="go light" onclick="cancelRace()">취소</button></div>';
+  else if(s.phase===3)h+='<div class="tm" id="tm">'+fmt(s.ms)+'</div><div class="ctl"><button class="go light" onclick="cancelRace()">취소</button><button class="go stop" onclick="stopRace()">■ 종료</button></div>';
+  else if(s.phase===4)h+='<div class="ctl"><button class="go" onclick="resetRace()">처음으로</button></div>';
+  else h+='<button class="go" '+(s.phase===2&&s.name?'':'disabled')+' onclick="startRace()">▶ 시작</button>';
+  h+='</div>';
+  if(s.phase===4&&s.last)h+='<div class="res'+(R==='touch'?' touch':'')+'"><b>'+fmt(s.last.ms)+'</b><span>'+s.last.name+'</span></div>';
+  if(s.use){var list=s.recs.filter(function(r){return r.st==='정상'});h+='<div class="box"><div class="bt"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="vertical-align:-2px"><path d="M4 7h16v3a2 2 0 0 0 0 4v3H4v-3a2 2 0 0 0 0-4z"/></svg> 사용 처리할 '+k.who+'을(를) 선택하세요</div>'+list.map(function(r){var i=s.recs.indexOf(r);return '<div class="uitem'+(r.used?' used':'')+'" '+(r.used?'':'onclick="useOne('+i+')"')+'><span><b>'+r.name+'</b> <span class="code muted" style="font-size:12px">'+r.ticket+'</span></span><span>'+(r.used?'<span class="pill p-blue">사용</span>':'<span class="code">'+fmt(r.ms)+'</span>')+'</span></div>'}).join('')+'</div>';}
+  $('vOp').innerHTML=h;}
+function nfc(){var t='26111214189'+String(20+ST[R].recs.length).padStart(2,'0');ST[R].ticket=t;toast('<span style="color:#C9B8FF">예시 화면이라 NFC 태그한 것처럼 번호를 넣었어요.</span>');render();}
+function regTicket(){var s=ST[R];if(s.ticket.length!==13)return;s.phase=2;s.name='';render();setTimeout(function(){$('nm')&&$('nm').focus()},50);}
+function regName(){var v=($('nm').value||'').trim();if(!v){toast(RACES[R].who+' 이름을 넣어 주세요.');return;}ST[R].name=v;render();}
+function startRace(){var s=ST[R];s.phase=3;s.cd=10;render();var key=R;s.timer=setInterval(function(){var x=ST[key];x.cd--;if(x.cd<=0){clearInterval(x.timer);x.t0=performance.now();x.timer=setInterval(function(){x.ms=performance.now()-x.t0;if(R===key&&$('tm'))$('tm').textContent=fmt(x.ms);},30);}if(R===key)render();},1000);}
+function stopRace(){var s=ST[R];clearInterval(s.timer);s.ms=performance.now()-s.t0;var rec={name:s.name,ticket:s.ticket,at:'2026-11-12 '+hm(),ms:s.ms,st:'정상',vid:'정상',used:false};s.recs.push(rec);s.last=rec;s.phase=4;render();}
+function cancelRace(){var s=ST[R];clearInterval(s.timer);s.phase=2;s.cd=10;s.ms=0;render();}
+function resetRace(){var s=ST[R];s.phase=1;s.ticket='';s.name='';s.ms=0;s.last=null;s.use=false;render();}
+function useOne(i){var s=ST[R];s.recs[i].used=true;if(!s.recs.some(function(r){return !r.used&&r.st==='정상'}))s.use=false;render();tTop('<span style="color:var(--note)">'+s.recs[i].name+' 티켓을 사용 처리했어요. (안내 문구는 정하는 중)</span>');}
+function renderRec(){var s=ST[R];var list=s.recs.filter(function(r){return r.at.slice(0,10)===($('rd')?$('rd').value:'2026-11-12')});
+  var h='<div class="box" style="margin-top:12px"><div class="rh"><div class="bt" style="margin:0">⟲ 기록 목록</div><span class="sp"></span><label class="date">▦ <input type="date" id="rd" value="'+($('rd')?$('rd').value:'2026-11-12')+'" onchange="renderRec()"></label></div>'+
+   '<table><thead><tr>'+(s.cmode?'<th></th>':'')+'<th>이름</th><th>티켓번호</th><th>탑승 시간</th><th>상태</th><th class="kept">영상 상태</th><th>기록</th></tr></thead><tbody>'+
+   (list.length?list.map(function(r){var i=s.recs.indexOf(r),cx=r.st==='취소';return '<tr class="'+(cx?'cx':'')+'">'+(s.cmode?'<td class="nostrike">'+(cx?'':'<input type="checkbox" '+(s.sel.indexOf(i)>=0?'checked':'')+' onchange="togSel('+i+',this.checked)">')+'</td>':'')+'<td>'+r.name+'</td><td class="code">'+r.ticket+'</td><td class="code">'+r.at.slice(11)+'</td><td class="nostrike"><span class="pill '+(cx?'p-red':'p-blue')+'">'+r.st+'</span></td><td class="nostrike kept">'+r.vid+'</td><td class="num">'+fmt(r.ms)+'</td></tr>'}).join(''):'<tr><td colspan="'+(s.cmode?7:6)+'" class="empty">아직 기록이 없습니다.</td></tr>')+'</tbody></table></div>';
+  $('vRec').innerHTML=h;}
+function togSel(i,on){var s=ST[R];var k=s.sel.indexOf(i);if(on&&k<0)s.sel.push(i);if(!on&&k>=0)s.sel.splice(k,1);render();}
+function doCancel(){var s=ST[R];var n=s.sel.length;s.sel.forEach(function(i){s.recs[i].st='취소'});s.sel=[];s.cmode=false;render();tTop('<span style="color:var(--note)">'+n+'건을 취소했어요. (안내 문구는 정하는 중)</span>');}
+render();
+</script>
+</body>
+</html>

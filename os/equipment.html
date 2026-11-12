@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta name="robots" content="noindex,nofollow">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>통합 장비 관리</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="common.css">
+<style>
+  .range{display:inline-flex;align-items:center;gap:10px;border:1px solid var(--border);border-radius:8px;height:40px;padding:0 12px;background:#fff;font-size:13.5px}
+  .range .q{border:none;border-radius:14px;height:26px;padding:0 12px;font-size:13px;background:#EEEEEE;color:var(--sub);cursor:pointer;font-family:var(--font)}
+  .range .q.on{background:var(--accent-soft);color:var(--accent)}
+  .lh{font-weight:500;margin:22px 0 6px}
+  table{width:100%}
+  th.f{cursor:pointer;position:relative;white-space:nowrap}th.f .dd{color:var(--muted);margin-left:4px;font-size:12px}
+  th.f small{display:block;font-size:11.5px;color:var(--accent);font-weight:400}
+  .fmenu{position:absolute;top:40px;left:50%;transform:translateX(-50%);background:#fff;border:1px solid var(--border);border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,.1);z-index:5;min-width:120px;text-align:left;font-weight:400}
+  .fmenu div{padding:7px 12px;cursor:pointer}.fmenu div.on{background:var(--accent-soft);color:var(--accent)}
+  .rp{display:inline-block;border-radius:12px;padding:3px 12px;font-size:12px;border:none;font-family:var(--font)}
+  .rp.req{background:var(--warn-soft);color:#B26A00;cursor:pointer}.rp.ing{background:var(--ok-soft);color:var(--ok);cursor:pointer}.rp.done{background:#EEF3FB;color:#5B7DB8}
+  tr.row{cursor:pointer}tr.row:hover td{background:#FAFAFA}tr.sel td{background:#F3F6FC}
+  .mw{position:fixed;inset:0;background:rgba(33,37,41,.35);display:flex;align-items:center;justify-content:center;z-index:60}
+  .pb{background:#fff;border-radius:22px;padding:26px 24px 20px;width:min(340px,92vw);text-align:center;font-size:13.5px;line-height:1.6}
+  .pb .t{font-size:14px;margin-bottom:14px}
+  .pbtns{display:flex;gap:8px;margin-top:20px}.pbtns .btn{flex:1;height:36px}.btn.light{background:#F5F5F5;border-color:#F5F5F5;color:#212529;font-weight:400}
+  .ov{position:fixed;inset:0;background:rgba(33,37,41,.35);z-index:40}
+  .dw{position:fixed;top:0;right:0;bottom:0;width:min(560px,94vw);background:#fff;z-index:45;display:flex;flex-direction:column;box-shadow:-6px 0 20px rgba(0,0,0,.08)}
+  .dw .dh{display:flex;align-items:center;padding:20px 22px 10px}.dw .dh b{font-size:16.5px;font-weight:600}.dw .dh .sp{flex:1}.dw .dh button{border:none;background:none;cursor:pointer;color:var(--sub);font-family:var(--font)}
+  .dw .db{flex:1;overflow:auto;padding:4px 22px 16px}
+  .kv2{display:grid;grid-template-columns:1fr 1fr}.kv2 div{padding:11px 10px;border-bottom:1px solid var(--line);font-size:13.5px}
+  .dw textarea{width:100%;box-sizing:border-box;min-height:200px;border:1px solid var(--border);border-radius:8px;padding:10px;font-family:var(--font);font-size:13.5px;resize:vertical}
+  .dw .df{padding:14px;display:flex;justify-content:center;border-top:1px solid var(--line)}
+  .ttop{position:fixed;left:50%;top:14px;transform:translateX(-50%);background:#fff;border-radius:14px;box-shadow:0 6px 20px rgba(0,0,0,.12);padding:10px 14px;display:flex;gap:10px;align-items:flex-start;z-index:70;min-width:260px}
+  .ttop .ic{width:18px;height:18px;border-radius:50%;background:#212529;color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-top:1px}
+  .ttop .x{border:none;background:none;cursor:pointer;margin-left:auto;font-size:15px}
+  td.empty{color:var(--muted);height:60px}
+  .rwrap{position:relative;display:inline-block}
+  .range{cursor:pointer}.range.open{border-color:var(--accent)}
+  .cal{position:absolute;top:46px;left:0;width:330px;background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:0 6px 20px rgba(0,0,0,.1);z-index:20;padding:14px 12px 6px}
+  .cal .mh2{display:flex;align-items:center;justify-content:space-between;padding:0 14px 10px;font-weight:600}.cal .mh2 button{border:none;background:none;font-size:18px;cursor:pointer;color:var(--sub)}
+  .cal .g{display:grid;grid-template-columns:repeat(7,1fr);row-gap:6px;text-align:center}
+  .cal .g span{height:34px;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:13px;cursor:pointer}
+  .cal .g .wd{font-family:var(--font);cursor:default}
+  .cal .g .red{color:var(--red)}.cal .g .out{color:#C8C8C8}
+  .cal .g .in{background:#C7D3EE}
+  .cal .g .end b,.cal .g .st b{width:32px;height:32px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:500}
+  .cal .ft{border-top:1px solid var(--line);margin-top:8px}
+  .cal .ft div{display:flex;justify-content:space-between;padding:10px 6px;font-size:13.5px;border-bottom:1px solid var(--line);cursor:pointer}.cal .ft div:last-child{border-bottom:none}
+  .cal .ft div.on{color:var(--accent)}
+</style>
+<body>
+<div class="app">
+  <h1>통합 장비 관리 <span class="ex">예시 데이터</span></h1>
+  <div class="card">
+    <div class="rwrap"><div class="range" id="rng" onclick="togCal(event)">▦ <span id="rLbl"></span><button class="q" id="q7" onclick="event.stopPropagation();setR(7)">7일</button><button class="q" id="q14" onclick="event.stopPropagation();setR(14)">14일</button><span style="color:var(--muted)">▾</span></div><div class="cal" id="cal" hidden onclick="event.stopPropagation()"></div></div>
+    <div class="lh">수리 요청 목록</div>
+    <div class="tblwrap"><table><thead id="th"></thead><tbody id="tb"></tbody></table></div>
+    <div class="dspager"><span id="tot"></span><span>1 페이지 중 1 페이지</span><span class="rpp">페이지당 행 수 : 20 ▾</span><span class="sp"></span><div class="pgs"><span>«</span><span>‹</span><span class="on">1</span><span>›</span><span>»</span></div></div>
+  </div>
+  <div class="memo">
+    <div class="mh">안내</div>
+    <ul>
+      <li>운영 관리에서 고장으로 수리요청한 장비가 여기에 쌓여요.</li>
+      <li>기간은 7일이 기본이고, 14일까지 볼 수 있어요.</li>
+      <li>7일 · 14일을 누르거나, 달력에서 시작일과 종료일을 골라요.</li>
+      <li><b>수리요청</b>을 누르면 수리중으로 바뀌어요.</li>
+      <li><b>수리중</b>을 누르면 "총 n건의 기구 수리가 완료되었습니까?"를 묻고, 확인하면 수리완료가 돼요.</li>
+      <li>바뀐 수리 상태는 운영 관리의 운영 장비에도 그대로 보여요.</li>
+      <li>같은 수리 상태끼리 여러 줄을 골라 한 번에 바꿀 수 있어요.</li>
+      <li>줄을 누르면 수리 현황이 열리고, 메모를 남길 수 있어요. (저장 뒤 안내는 없어요)</li>
+      <li>14일을 넘게 고르면 "날짜 선택 범위는 14일 이내여야 합니다."가 떠요.</li>
+      <li>머리글의 ≡를 누르면 값으로 거를 수 있어요.</li>
+    </ul>
+    <div style="margin-top:8px;color:var(--note)"><b style="color:var(--note)">정하는 중</b></div>
+    <ul style="color:var(--note)">
+      <li>장비 번호 형식, 액티비티별 기구 이름</li>
+    </ul>
+  </div>
+</div>
+<div class="mw" id="mw" hidden onclick="if(event.target===this)this.hidden=true"><div class="pb" id="pb"></div></div>
+<div class="ov" id="ov" hidden onclick="closeD()"></div>
+<aside class="dw" id="dw" hidden><div class="dh"><b>수리 현황</b><span class="sp"></span><button onclick="closeD()">닫기</button></div><div class="db" id="db"></div><div class="df"><button class="btn pri" style="width:96px" onclick="saveMemo()">저장</button></div></aside>
+<div class="toast" id="toast"></div>
+<script src="act_common.js"></script>
+<script>
+function $(i){return document.getElementById(i);}
+function toast(m){var e=$('toast');e.innerHTML=m;e.classList.add('show');clearTimeout(e._t);e._t=setTimeout(function(){e.classList.remove('show')},2600);}
+function tTop(msg){var e=$('ttop');if(!e){e=document.createElement('div');e.id='ttop';e.className='ttop';document.body.appendChild(e);}var d=new Date(),h=d.getHours();
+  e.innerHTML='<span class="ic">i</span><div><div>'+msg+'</div><div class="muted" style="font-size:12px">2026년 11월 12일 '+(h<12?'오전 ':'오후 ')+((h%12)||12)+':'+('0'+d.getMinutes()).slice(-2)+'</div></div><button class="x" onclick="this.parentNode.hidden=true">✕</button>';e.hidden=false;clearTimeout(tTop._t);tTop._t=setTimeout(function(){e.hidden=true},3000);}
+var TODAY=new Date(2026,10,12),D0=new Date(2026,10,5),D1=new Date(2026,10,12),PICKING='s',VM=new Date(2026,10,1),F={},OPEN=null,SEL=[],CUR=null;
+var RPN={req:'수리요청',ing:'수리중',done:'수리완료'};
+var COLS=[['','chk'],['액티비티','actn',1],['장비번호','no'],['기구','part',1],['수리상태','rpn',1],['요청자','reqBy',1],['요청일시','req'],['접수자','accBy',1],['접수일시','acc'],['처리자','doneBy',1],['처리일시','done']];
+function pd(t){return new Date(+t.slice(0,4),+t.slice(5,7)-1,+t.slice(8,10));}
+function rows(){return rLoad().map(function(r){var a=actById(r.act);return Object.assign({},r,{actn:a?a.n:r.act,rpn:RPN[r.rp]})}).filter(function(r){var d=pd(r.req);return d>=D0&&d<=D1;});}
+function days(a,b){return Math.round((b-a)/864e5)+1;}
+function kd(d){return d.getFullYear()+'년 '+(d.getMonth()+1)+'월 '+d.getDate()+'일';}
+function setR(n){D1=new Date(TODAY);D0=new Date(TODAY);D0.setDate(D0.getDate()-n);VM=new Date(D1.getFullYear(),D1.getMonth(),1);SEL=[];render();}
+function togCal(e){e.stopPropagation();var c=$('cal');c.hidden=!c.hidden;PICKING='s';renderCal();}
+document.addEventListener('click',function(){if(!$('cal').hidden){$('cal').hidden=true;render();}});
+function same(a,b){return a&&b&&a.getTime()===b.getTime();}
+function renderCal(){$('rng').classList.toggle('open',!$('cal').hidden);if($('cal').hidden)return;var y=VM.getFullYear(),m=VM.getMonth();var first=new Date(y,m,1),start=new Date(first);start.setDate(1-first.getDay());
+  var h='<div class="mh2"><button onclick="VM=new Date('+y+','+(m-1)+',1);renderCal()">‹</button><span>'+y+'년 '+(m+1)+'월</span><button onclick="VM=new Date('+y+','+(m+1)+',1);renderCal()">›</button></div><div class="g">'+'일월화수목금토'.split('').map(function(w,i){return '<span class="wd'+(i===0||i===6?' red':'')+'">'+w+'</span>'}).join('');
+  for(var i=0;i<42;i++){var d=new Date(start);d.setDate(start.getDate()+i);var out=d.getMonth()!==m,dw=d.getDay();var inR=D1&&d>=D0&&d<=D1;var c=(out?'out':(dw===0||dw===6?'red':''))+(inR&&!same(d,D1)&&!(same(d,D0)&&!D1)?' in':'')+(same(d,D1)?' end':'')+(!D1&&same(d,D0)?' st':'');h+='<span class="'+c+'" onclick="pickDay('+d.getFullYear()+','+d.getMonth()+','+d.getDate()+')">'+((same(d,D1)||(!D1&&same(d,D0)))?'<b>'+d.getDate()+'</b>':d.getDate())+'</span>';}
+  h+='</div><div class="ft"><div class="'+(PICKING==='s'?'on':'')+'" onclick="PICKING=\'s\';renderCal()"><span>시작</span><span>'+kd(D0)+'</span></div><div class="'+(PICKING==='e'?'on':'')+'" onclick="PICKING=\'e\';renderCal()"><span>종료</span><span>'+(D1?kd(D1):'-')+'</span></div></div>';$('cal').innerHTML=h;}
+function pickDay(y,m,d){var x=new Date(y,m,d);if(PICKING==='s'){D0=x;D1=null;PICKING='e';}else{if(x<D0){D0=x;D1=null;PICKING='e';}else if(days(D0,x)>15){tTop('날짜 선택 범위는 14일 이내여야 합니다.');return;}else{D1=x;PICKING='s';SEL=[];render();}}renderCal();}
+function render(){if(!D1)return;var n=days(D0,D1),toEnd=same(D1,TODAY);$('q7').classList.toggle('on',toEnd&&n===8);$('q14').classList.toggle('on',toEnd&&n===15);$('rLbl').textContent=same(D0,D1)&&toEnd?kd(D1)+' (오늘)':kd(D0)+' - '+kd(D1);renderCal();
+  var all=rows();
+  $('th').innerHTML='<tr>'+COLS.map(function(c){if(c[1]==='chk')return '<th style="width:44px"></th>';if(!c[2])return '<th>'+c[0]+'</th>';var v=F[c[1]];var opts=[];all.forEach(function(r){var x=r[c[1]]||'-';if(opts.indexOf(x)<0)opts.push(x)});
+    return '<th class="f" onclick="tog(\''+c[1]+'\',event)">'+c[0]+'<span class="dd">≡</span>'+(v?'<small>('+v+')</small>':'')+(OPEN===c[1]?'<div class="fmenu">'+['전체'].concat(opts).map(function(o){return '<div class="'+((o==='전체'&&!v)||o===v?'on':'')+'" onclick="setF(\''+c[1]+'\',\''+o+'\',event)">'+o+'</div>'}).join('')+'</div>':'')+'</th>'}).join('')+'</tr>';
+  var list=all.filter(function(r){return Object.keys(F).every(function(k){return !F[k]||(r[k]||'-')===F[k]})}).sort(function(a,b){return b.id-a.id});
+  $('tb').innerHTML=list.length?list.map(function(r){var on=SEL.indexOf(r.id)>=0;var btn=r.rp==='done'?'<span class="rp done">수리완료</span>':'<button class="rp '+r.rp+'" onclick="event.stopPropagation();step('+r.id+')">'+r.rpn+'</button>';
+    return '<tr class="row'+(on?' sel':'')+'" onclick="openD('+r.id+')"><td onclick="event.stopPropagation()"><input type="checkbox" '+(on?'checked':'')+' onchange="pick('+r.id+',this.checked)"></td><td>'+r.actn+'</td><td><span class="code kept" style="padding:1px 4px">'+r.no+'</span></td><td>'+r.part+'</td><td>'+btn+'</td><td>'+r.reqBy+'</td><td class="code">'+r.req+'</td><td>'+(r.accBy||'-')+'</td><td class="code">'+(r.acc||'-')+'</td><td>'+(r.doneBy||'-')+'</td><td class="code">'+(r.done||'-')+'</td></tr>'}).join(''):'<tr><td colspan="11" class="empty">수리 요청이 없어요</td></tr>';
+  $('tot').textContent='총 '+list.length+'개 항목';}
+function tog(k,e){OPEN=OPEN===k?null:k;render();}
+function setF(k,o,e){e.stopPropagation();F[k]=o==='전체'?'':o;OPEN=null;render();}
+document.addEventListener('click',function(e){if(OPEN&&!e.target.closest('th.f')){OPEN=null;render();}});
+function byId(id){return rLoad().filter(function(r){return r.id===id})[0];}
+function pick(id,on){var r=byId(id);if(on){var first=SEL.length?byId(SEL[0]):null;if(first&&first.rp!==r.rp){toast('동일한 수리상태의 기구만 선택해주세요');render();return;}SEL.push(id);}else SEL=SEL.filter(function(x){return x!==id});render();}
+function targets(id){var r=byId(id);if(SEL.indexOf(id)>=0&&SEL.length>1)return SEL.slice();return [id];}
+function step(id){var r=byId(id),ids=targets(id);
+  if(r.rp==='req'){var L=rLoad();L.forEach(function(x){if(ids.indexOf(x.id)>=0&&x.rp==='req'){x.rp='ing';x.accBy='크루 (나)';x.acc=nowStr();}});rSave(L);SEL=[];render();toast('수리상태가 변경됐습니다.');return;}
+  if(r.rp==='ing'){$('pb').innerHTML='<div class="t">수리 완료</div>총 '+ids.length+'건의 기구 수리가 완료되었습니까?<div class="pbtns"><button class="btn light" onclick="$(\'mw\').hidden=true">닫기</button><button class="btn pri" onclick="done(['+ids.join(',')+'])">확인</button></div>';$('mw').hidden=false;}}
+function done(ids){var L=rLoad();L.forEach(function(x){if(ids.indexOf(x.id)>=0&&x.rp==='ing'){x.rp='done';x.doneBy='크루 (나)';x.done=nowStr();}});rSave(L);SEL=[];$('mw').hidden=true;render();if(CUR)openD(CUR);}
+function openD(id){CUR=id;var r=byId(id),a=actById(r.act);
+  $('db').innerHTML='<div class="kv2">'+[['액티비티',a?a.n:r.act],['장비번호','<span class="code kept" style="padding:1px 4px">'+r.no+'</span>'],['기구',r.part],['수리상태','<span class="rp '+r.rp+'" style="cursor:default">'+RPN[r.rp]+'</span>'],['요청자',r.reqBy],['요청일시',r.req],['접수자',r.accBy||'-'],['접수일시',r.acc||'-'],['처리자',r.doneBy||'-'],['처리일시',r.done||'-']].map(function(x){return '<div>'+x[0]+'</div><div>'+x[1]+'</div>'}).join('')+'</div><div style="margin:20px 10px 8px">메모</div><textarea id="memo">'+(r.memo||'').replace(/</g,'&lt;')+'</textarea>';
+  $('ov').hidden=false;$('dw').hidden=false;}
+function closeD(){CUR=null;$('ov').hidden=true;$('dw').hidden=true;}
+function saveMemo(){var L=rLoad();L.forEach(function(x){if(x.id===CUR)x.memo=$('memo').value;});rSave(L);}
+render();
+</script>
+</body>
+</html>

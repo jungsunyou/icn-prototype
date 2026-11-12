@@ -26,6 +26,16 @@
   .hi{padding:12px 14px;border-top:1px solid var(--line)}
   .hi .m{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--sub)}.hi .m .cno{font-family:var(--mono);color:var(--fg)}
   .hi .t{font-size:13.5px;font-weight:500;margin-top:6px}
+  .grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+  .mc{border:1px solid var(--line);border-radius:6px;padding:12px}.mch{display:flex;align-items:center;gap:6px;font-size:13.5px;font-weight:500;margin-bottom:10px}.mch .n{margin-left:auto;font-family:var(--mono);font-size:12px;border-radius:6px;padding:1px 7px}
+  .vh{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px}.vt{font-size:12px;background:#F1F1EF;border-radius:6px;padding:2px 8px;color:var(--sub)}
+  .tg{font-size:12px;border-radius:10px;padding:2px 9px}.t-ing{background:var(--ok-soft);color:var(--ok)}.t-done{background:var(--accent-soft);color:var(--accent)}.t-wait{background:var(--warn-soft);color:#B26A00}
+  .vs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}.vs div{background:#F7F7F6;border-radius:8px;padding:10px 12px}.vs small{display:block;font-size:12px;color:var(--muted)}.vs b{font-size:15px}
+  .tl .ti{position:relative;padding:0 0 16px 22px;border-left:2px solid #EEE;margin-left:5px}.tl .ti:last-child{border-left-color:transparent;padding-bottom:0}
+  .tl .nd{position:absolute;left:-8px;top:3px;width:14px;height:14px;border-radius:50%;background:#D5D5D5;border:3px solid #fff;box-shadow:0 0 0 1px #E2E2E2}.tl .ti.cur .nd{background:var(--accent)}.tl .ti.done .nd{background:var(--ok)}
+  .tl .tr{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:4px}.tl .to{margin-left:auto;font-size:12px;color:var(--muted)}
+  .pc{display:inline-block;background:#F3F3F1;font-size:12px;border-radius:6px;padding:2px 8px;margin:2px 5px 2px 0}
+  .tl .tx{font-size:13.5px}.tl .tm{font-size:12px;color:var(--muted);margin-top:4px;display:flex;gap:12px;flex-wrap:wrap}
 </style>
 <body>
 <div class="app">
@@ -38,13 +48,25 @@
     <section id="v-mh" hidden></section>
   </div>
   <div class="memo">
-    <div class="mh">안내 · 구현 시 제외 가능</div>
+    <div class="mh">안내</div>
     <ul>
-      <li><b>GR 상태</b>는 차량 종류(GR1 · GR2 · XGR)별 운영 대수와 정비 중인 차량을 보여줘요. 펼치기를 누르면 모든 차량 번호가 보여요.</li>
-      <li><b>운영 히스토리</b>는 차량을 운영에서 빼거나(운영제외) 다시 넣은(조치완료) 기록이에요. 날짜 · 히스토리 구분 · GR 번호로 찾아요.</li>
-      <li><b>정비 관리</b>는 GR 번호로 차량을 찾아 정비 내용을 남기는 곳이에요.</li>
-      <li><b>정비 히스토리</b>는 정비 기록과 담당, 그때까지의 누적 거리 · 누적 레이스를 보여줘요. CSV로 내려받을 수 있어요.</li>
-      <li style="color:var(--note)"><b style="color:var(--note)">정하는 중</b> · 차량 번호 형식(지금은 예시: GR1-012), 차량 종류별 대수(예시), 정비 관리에서 차량을 찾은 뒤의 화면(제주 화면 확인 필요)</li>
+      <li>GR 상태: 차량 종류(GR1 · GR2 · XGR)별 운영 대수와 정비 중인 차량이에요.</li>
+      <li>펼치기를 누르면 모든 차량 번호가 보여요.</li>
+      <li>운영 히스토리: 운영제외 · 조치완료 기록이에요.</li>
+      <li>날짜 · 구분 · GR 번호로 찾아요.</li>
+      <li>정비 관리: GR 번호로 찾거나 정비 현황에서 차량을 누르면 정비 이력이 보여요.</li>
+      <li>정비 현황은 정비 대기 · 정비 중 · 오늘 완료로 나눠요.</li>
+      <li>정비 이력: 부위 · 내용 · 담당 · 확인 결과 · 사진 수를 날짜순으로 보여줘요.</li>
+      <li>GR 상태에서 차량 번호를 눌러도 정비 이력으로 가요.</li>
+      <li>정비 관리의 검색 뒤 화면은 GR 정비 관리 프로토타입(2026-07)을 옮긴 거예요. 제주 실서비스에는 검색만 있어요.</li>
+      <li>정비 히스토리: 담당 · 누적 거리 · 누적 레이스를 보여줘요. CSV로 받아요.</li>
+    </ul>
+    <div style="margin-top:8px;color:var(--note)"><b style="color:var(--note)">정하는 중</b></div>
+    <ul style="color:var(--note)">
+      <li>차량 번호 형식 (예시: GR1-012)</li>
+      <li>차량 종류별 대수 (예시)</li>
+      <li>정비 이력 입력 방법 (운영방 메시지로 넣을지, 화면에서 직접 넣을지)</li>
+      <li>정비 현황의 '대기' 기준</li>
     </ul>
   </div>
 </div>
@@ -55,7 +77,7 @@ var POOL={GR1:[],GR2:[],XGR:[],MNT:[]};
 for(var i=1;i<=46;i++)POOL.GR1.push(carNo('GR1',100+i));for(var j=1;j<=22;j++)POOL.GR2.push(carNo('GR2',200+j));for(var k=1;k<=8;k++)POOL.XGR.push(carNo('XGR',k));
 ['GR1-147','GR1-149','GR2-223','GR1-150','XGR-09','GR2-224'].forEach(function(n){POOL.MNT.push(n)});
 var OPEN=false;
-function chipBox(title,list,color,cnt,icon){var show=OPEN?list:list.slice(0,5);return '<div class="gt"><div class="h">'+icon+' '+title+'<span class="n" style="background:'+(color==='#878A99'?'#F1F1F1':color+'1A')+';color:'+color+'">'+cnt+'</span></div><div class="cars">'+show.map(function(c){return '<span class="car" style="background:'+color+'">'+c+'</span>'}).join('')+(!OPEN&&list.length>5?'<span class="car more">+'+(list.length-5)+'</span>':'')+'</div></div>';}
+function chipBox(title,list,color,cnt,icon){var show=OPEN?list:list.slice(0,5);return '<div class="gt"><div class="h">'+icon+' '+title+'<span class="n" style="background:'+(color==='#878A99'?'#F1F1F1':color+'1A')+';color:'+color+'">'+cnt+'</span></div><div class="cars">'+show.map(function(c){return '<span class="car" style="background:'+color+';cursor:pointer" title="정비 이력 보기" onclick="goMm(\''+c+'\')">'+c+'</span>'}).join('')+(!OPEN&&list.length>5?'<span class="car more">+'+(list.length-5)+'</span>':'')+'</div></div>';}
 function renderSt(){var op=POOL.GR1.length+POOL.GR2.length+POOL.XGR.length;
   $('v-st').innerHTML='<div class="gbox"><div class="gbh">GR 운영 현황 (운영 '+op+' / 정비 '+POOL.MNT.length+')<span class="sp"></span><button class="btn sm" onclick="OPEN=!OPEN;renderSt()">'+(OPEN?'접기':'펼치기')+'</button></div><div class="grid4">'+
   chipBox('GR1',POOL.GR1,'#245EC3',POOL.GR1.length,'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 16l1.5-5h11L19 16M4 16h16v3H4zM7 19v1M17 19v1"/></svg>')+chipBox('GR2',POOL.GR2,'#FF9800',POOL.GR2.length,'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 16l1.5-5h11L19 16M4 16h16v3H4zM7 19v1M17 19v1"/></svg>')+chipBox('XGR',POOL.XGR,'#DA222B',POOL.XGR.length,'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 16l1.5-5h11L19 16M4 16h16v3H4zM7 19v1M17 19v1"/></svg>')+chipBox('정비중',POOL.MNT,'#878A99',POOL.MNT.length,'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 6a4 4 0 0 0 5 5l-8 8-3-3 8-8a4 4 0 0 0-2-2z"/></svg>')+'</div></div>';}
@@ -64,9 +86,38 @@ function renderOh(){var kind=($('oh-k')||{}).value||'',q=(($('oh-q')||{}).value|
   var list=OH.filter(function(h){return (!kind||h[2]===kind)&&(!q||h[1].indexOf(q)>=0)});
   if(!$('oh-k')){$('v-oh').innerHTML='<div class="bar"><label class="fld">▦ <input type="date" value="2026-11-14"></label><label class="fld">히스토리 구분 | <select id="oh-k" onchange="renderOh()"><option value="">히스토리 구분을 선택하세요</option><option>운영제외</option><option>조치완료</option></select></label><label class="fld">⌕ <input id="oh-q" placeholder="GR번호를 입력하세요 (ex) GR1-012" oninput="renderOh()" style="width:220px"></label></div><div class="hist" id="oh-l"></div>';}
   $('oh-l').innerHTML='<div class="hh">전체 운영 히스토리</div>'+(list.length?list.map(function(h){return '<div class="hi"><div class="m"><span class="code">'+h[0]+'</span><span class="cno">'+h[1]+'</span><span class="pill '+(h[2]==='운영제외'?'p-red':'p-ok')+'">'+h[2]+'</span></div><div class="t">'+h[3]+'</div></div>'}).join(''):'<div class="hi muted">기록이 없어요.</div>');}
-function renderMm(){$('v-mm').innerHTML='<div class="bar"><label class="fld">⌕ <input placeholder="GR번호를 입력하세요 (ex) GR1-012" style="width:240px" onkeydown="if(event.key===\'Enter\')toast(\'차량을 찾은 뒤 화면은 제주 화면 확인 후 그려요.\')"></label></div><div class="keptline" style="margin-top:14px"><b>정하는 중</b> · GR 번호로 차량을 찾은 뒤 정비 내용을 입력하는 화면은 제주 실제 화면을 확인한 뒤 그려요.</div>';}
+/* 정비 관리 — 제주 실서비스는 GR 검색만 있음. 찾은 뒤 화면은 GR 정비 관리 프로토타입(2026-07, 데스크탑 GR_단체예약/2026-07_gr_operation2.html)을 옮김 */
+var MTAG={정비중:'t-ing',완료:'t-done',대기:'t-wait'};
+var CARS={
+ 'XGR-09':{st:'정비중',h:[{d:'2026-11-14',st:'정비중',p:['앞범퍼','앞좌/우프레임','푸쉬로드'],a:'앞범퍼 교환 · 앞우프레임 용접 · 볼트/조인트 교환 · 판금',o:'크루 바다',v:'시운전 이상무',x:'편제동 판금 전 좌105/우23 → 후 좌62/우67',ph:2},{d:'2026-10-20',st:'완료',p:['고프로'],a:'고프로 재부팅 · C타입 케이블 접촉 불량 조치',o:'크루 하늘',v:'영상테스트 이상무',ph:0},{d:'2026-09-11',st:'완료',p:['뒷범퍼','프레임'],a:'뒷범퍼 판금 · 프레임 용접',o:'크루 바다',v:'시운전 이상무',ph:1}]},
+ 'GR1-147':{st:'정비중',h:[{d:'2026-11-14',st:'정비중',p:['고프로','랜케이블'],a:'고프로 배터리 교체 · 라우터 랜케이블 접촉 불량 조치',o:'크루 하늘',v:'영상테스트 이상무',ph:0},{d:'2026-08-30',st:'완료',p:['고프로'],a:'고프로 충전선 접촉 불량 · 고무패킹 고정',o:'크루 하늘',v:'영상테스트 이상무',ph:0}]},
+ 'GR1-149':{st:'정비중',h:[{d:'2026-11-13',st:'정비중',p:['뒷범퍼','프레임'],a:'뒷범퍼 판금 · 뒷범퍼 프레임 판금 용접',o:'크루 바다',v:'',ph:1}]},
+ 'GR2-223':{st:'정비중',h:[{d:'2026-11-14',st:'정비중',p:['가이드센서'],a:'가이드센서 브라켓 교체',o:'크루 산',v:'',ph:0}]},
+ 'GR1-150':{st:'정비중',h:[{d:'2026-11-14',st:'정비중',p:['이머전시 버튼'],a:'이머전시 버튼 교체',o:'크루 산',v:'',ph:0}]},
+ 'GR2-224':{st:'정비중',h:[{d:'2026-11-14',st:'정비중',p:['구동부'],a:'구동부 소음 점검',o:'크루 바다',v:'',ph:0}]},
+ 'GR1-129':{st:'대기',h:[{d:'2026-11-14',st:'대기',p:['앞범퍼'],a:'앞범퍼 소음 — 점검 대기',o:'-',v:'',ph:0}]},
+ 'GR2-215':{st:'대기',h:[{d:'2026-11-14',st:'대기',p:['머드가드'],a:'앞좌 머드가드 이물질 — 점검 대기',o:'-',v:'',ph:0}]},
+ 'GR2-206':{st:'완료',h:[{d:'2026-11-14',st:'완료',p:['허브베어링'],a:'앞 허브베어링 교환 · 시운전 1회',o:'크루 산',v:'시운전 이상무',ph:0},{d:'2026-10-02',st:'완료',p:['가이드센서'],a:'가이드센서 전압 조정 6.2V → 6.5V',o:'크루 하늘',v:'시운전 이상무',ph:0}]},
+ 'GR1-153':{st:'완료',h:[{d:'2026-11-14',st:'완료',p:[],a:'정비완료 운영복귀',o:'크루 바다',v:'',ph:0}]},
+ 'XGR-02':{st:'완료',h:[{d:'2026-11-14',st:'완료',p:['조향'],a:'조향 유격 조정',o:'크루 바다',v:'시운전 이상무',ph:0}]}
+};
+var MSEL='XGR-09';
+function renderMm(){var g={대기:[],정비중:[],완료:[]};Object.keys(CARS).forEach(function(n){g[CARS[n].st].push(n)});
+  var card=function(t,k,col,ic){return '<div class="mc"><div class="mch">'+ic+' '+t+'<span class="n" style="background:'+col+'1A;color:'+col+'">'+g[k].length+'</span></div><div class="cars">'+g[k].map(function(n){return '<span class="car" style="background:'+col+';cursor:pointer" onclick="pickCar(\''+n+'\')">'+n+'</span>'}).join('')+'</div></div>'};
+  $('v-mm').innerHTML='<div class="bar"><label class="fld" style="flex:1;max-width:520px">⌕ <input id="mq" placeholder="GR번호를 입력하세요 (ex) GR1-012" style="flex:1" onkeydown="if(event.key===\'Enter\')pickCar(this.value)"></label><button class="btn pri sm" onclick="pickCar($(\'mq\').value)">검색</button></div>'+
+   '<div class="muted" style="font-size:12px;margin:6px 2px 0">차량 번호를 검색하거나 아래 현황에서 차량을 누르면 정비 이력이 보여요.</div>'+
+   '<div class="gbox"><div class="gbh">정비 현황 ('+g.정비중.length+' 정비중 / '+g.대기.length+' 대기 / '+g.완료.length+' 오늘 완료)</div><div class="grid3">'+card('정비 대기','대기','#FF9800','<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/></svg>')+card('정비 중','정비중','#008000','<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 6a4 4 0 0 0 5 5l-8 8-3-3 8-8a4 4 0 0 0-2-2z"/></svg>')+card('오늘 완료','완료','#245EC3','<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8"/><path d="M8.5 12l2.5 2.5 4.5-5"/></svg>')+'</div></div><div id="mres"></div>';
+  showCar(MSEL);}
+function pickCar(n){n=(n||'').trim().toUpperCase();if(!n)return;MSEL=n;if($('mq'))$('mq').value=n;showCar(n);}
+function showCar(n){var el=$('mres');if(!el)return;var c=CARS[n];
+  if(!c){el.innerHTML='<div class="gbox muted" style="text-align:center;padding:30px">'+n+' — 정비 이력이 없어요. (예: XGR-09, GR1-147, GR2-206)</div>';return;}
+  var ty=n.split('-')[0];var cnt={};c.h.forEach(function(h){h.p.forEach(function(p){cnt[p]=(cnt[p]||0)+1})});var top=Object.keys(cnt).sort(function(a,b){return cnt[b]-cnt[a]})[0];
+  el.innerHTML='<div class="gbox"><div class="vh"><b class="code" style="font-size:18px">'+n+'</b><span class="vt">'+ty+'</span><span class="tg '+MTAG[c.st]+'">현재 '+c.st+'</span></div>'+
+   '<div class="vs"><div><small>누적 정비</small><b>'+c.h.length+'건</b></div><div><small>최근 정비일</small><b class="code">'+c.h[0].d+'</b></div><div><small>자주 정비한 부위</small><b>'+(top?top+' ('+cnt[top]+')':'-')+'</b></div></div>'+
+   '<div style="font-weight:600;margin:4px 0 10px">정비 이력</div><div class="tl">'+c.h.map(function(h,i){return '<div class="ti'+(i===0&&h.st==='정비중'?' cur':h.st==='완료'?' done':'')+'"><span class="nd"></span><div class="tr"><span class="code" style="font-weight:600">'+h.d+'</span><span class="tg '+MTAG[h.st]+'">'+h.st+'</span><span class="to">담당 '+h.o+'</span></div>'+(h.p.length?'<div>'+h.p.map(function(p){return '<span class="pc">'+p+'</span>'}).join('')+'</div>':'')+'<div class="tx">'+h.a+'</div><div class="tm">'+(h.x?'<span>측정 '+h.x+'</span>':'')+(h.v?'<span style="color:var(--ok)">확인 · '+h.v+'</span>':'')+(h.ph?'<span>사진 '+h.ph+'장</span>':'')+'</div></div>'}).join('')+'</div></div>';}
 var MH=[['2026-11-14 토 18:16','GR2-212','크루 하늘','54,037.16 km','38,819회','212 / 고프로 화면 오류 / 고프로 배터리 교환'],['2026-11-14 토 16:07','XGR-04','크루 바다','19,156.84 km','12,554회','04 / 앞범퍼 파손 / 정비고 제외'],['2026-11-14 토 15:58','GR1-172','크루 바다','58,145.26 km','45,640회','172 / 구동부 소음 점검 / 정비고 제외'],['2026-11-14 토 15:50','GR2-206','크루 산','58,132.85 km','41,764회','206 / 구동부 소음 점검 / 앞 허브베어링 교환 시운전 1회 이상 무']];
 function renderMh(){$('v-mh').innerHTML='<div class="bar"><label class="fld">▦ <input type="date" value="2026-11-14"></label><label class="fld">⌕ <input placeholder="GR번호 또는 원문을 입력하세요 (ex) GR1-012" style="width:260px"></label></div><div class="hist"><div class="hh">전체 정비 히스토리<span class="sp"></span><button class="btn sm pri" onclick="toast(\'예시 화면이라 파일을 내려받지 않아요.\')">CSV 다운로드</button></div>'+MH.map(function(h){return '<div class="hi"><div class="m"><span class="code">'+h[0]+'</span><span class="cno">'+h[1]+'</span><span>담당 '+h[2]+'</span><span>누적 거리 '+h[3]+'</span><span>누적 레이스 '+h[4]+'</span></div><div class="t">'+h[5]+'</div></div>'}).join('')+'</div>';}
+function goMm(n){var sp=document.querySelectorAll('#tabs span');seg(sp[2]);tab('mm');pickCar(n);}
 function tab(t){['st','oh','mm','mh'].forEach(function(x){$('v-'+x).hidden=x!==t});}
 renderSt();renderOh();renderMm();renderMh();
 </script>

@@ -34,13 +34,19 @@
     <button class="btn pri go" id="go" disabled onclick="byTrack()">요청</button>
   </div>
   <div class="memo" style="max-width:480px;margin-left:auto;margin-right:auto">
-    <div class="mh">안내 · 구현 시 제외 가능</div>
+    <div class="mh">안내</div>
     <ul>
-      <li><b>트랙</b>을 고르고 <b>요청</b>을 누르면, 그 트랙에서 진행 중인 레이스 목록이 떠요. 심사할 레이스의 <b>확인</b>을 누르면 다시 한 번 묻고, 확인하면 심사 요청이 완료돼요.</li>
-      <li>진행 중인 레이스가 없으면 "진행중인 레이스가 없습니다."라고 알려줘요. (예시: 4번 · R 트랙)</li>
-      <li><b>GR 번호</b>로 검색하면 그 차량을 탄 레이스 목록이 떠요. 같은 방식으로 골라 요청해요.</li>
-      <li>요청한 레이스는 <b>레이스 심사 목록</b>에 올라가고, 열면 '접수' 상태예요.</li>
-      <li style="color:var(--note)"><b style="color:var(--note)">정하는 중</b> · 트랙 번호 붙이는 방식(예시: 1코스 1·2, 2코스 3·4, 3코스 5·6, ICN-L은 L, ICN-R은 R), 차량 번호 형식(예시 GR1-012), GR 검색 결과가 없을 때 문구</li>
+      <li>트랙을 고르고 <b>요청</b>을 누르면 진행 중인 레이스가 떠요.</li>
+      <li>심사할 레이스의 <b>확인</b>을 누르고, 한 번 더 확인하면 요청이 끝나요.</li>
+      <li>진행 중인 레이스가 없으면 "진행중인 레이스가 없습니다."가 떠요. (예시: 4 · R 트랙)</li>
+      <li>GR 번호로 검색해도 같은 방식으로 요청해요.</li>
+      <li>요청한 레이스는 레이스 심사 목록에 '접수'로 올라가요.</li>
+    </ul>
+    <div style="margin-top:8px;color:var(--note)"><b style="color:var(--note)">정하는 중</b></div>
+    <ul style="color:var(--note)">
+      <li>트랙 번호 붙이는 방식 (예시: 1코스 1·2, 2코스 3·4, 3코스 5·6, L, R)</li>
+      <li>차량 번호 형식 (예시: GR1-012)</li>
+      <li>GR 검색 결과가 없을 때 문구</li>
     </ul>
   </div>
 </div>

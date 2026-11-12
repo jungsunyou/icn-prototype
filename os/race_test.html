@@ -44,9 +44,20 @@
     <div class="tblwrap"><table><thead><tr><th>일시</th><th>이름<span class="dd">▼</span></th><th>이용 No</th><th>액티비티 상태<span class="dd">▼</span></th><th>기록 상태<span class="dd">▼</span></th><th>코스<span class="dd">▼</span></th><th>트랙<span class="dd">▼</span></th><th>GR 번호</th><th>랩타임<span class="dd">▼</span></th><th>반응 시간</th><th>최고 속도</th><th>평균 속도</th><th>최고 G</th></tr></thead><tbody id="tb"></tbody></table></div>
     <div class="dspager"><span id="tot">총 0개 항목</span><span>1 페이지 중 1 페이지</span><span class="rpp">페이지당 행 수 : <select style="border:none;background:none;font-size:13.5px;font-family:var(--font)"><option>20</option><option>50</option><option>100</option></select></span><span class="sp"></span><div class="pgs"><span>«</span><span>‹</span><span class="on">1</span><span>›</span><span>»</span></div></div>
   </div>
-  <div class="memo"><div class="mh">안내 · 구현 시 제외 가능</div><ul><li>운영 전 차량 · 트랙 점검용으로 탄 테스트 레이스 기록을 봐요. 이름은 테스트한 크루예요.</li><li>랩타임 · 반응 시간 · 최고/평균 속도 · 최고 G를 바로 비교할 수 있어요.</li>
-      <li>줄을 누르면 <b>테스트 레이스 상세</b>가 열려요. 테스터 정보(이름 · 운영자 티켓 No), 테스트 주행 정보(주행 일시 · 이용 No · GR 번호 · 코스/트랙 · 부정 출발 여부 · 반응 시간 · 랩타임 · 최고/평균 속도 · 최고 횡G), 부스터 획득 정보(획득/사용/웜업 · 구간별 기록), 그래프, 영상을 봐요.</li>
-    <li style="color:var(--note)"><b style="color:var(--note)">정하는 중</b> · 트랙 번호 붙이는 방식(예시: 1코스 1·2, 2코스 3·4, 3코스 5·6, ICN-L · ICN-R), 차량 번호 형식(지금은 예시: GR1-012). 기록 값과 검색 유형 목록(티켓 No 외)은 예시예요.</li></ul></div>
+  <div class="memo"><div class="mh">안내</div>
+  <ul>
+    <li>운영 전 점검용으로 탄 테스트 레이스 기록이에요.</li>
+    <li>이름은 테스트한 크루예요.</li>
+    <li>랩타임 · 반응 시간 · 속도 · 최고 G를 바로 비교해요.</li>
+    <li>줄을 누르면 테스트 레이스 상세가 열려요.</li>
+    <li>상세에는 테스터 정보, 주행 정보, 부스터 획득 정보, 그래프, 영상이 있어요.</li>
+  </ul>
+  <div style="margin-top:8px;color:var(--note)"><b style="color:var(--note)">정하는 중</b></div>
+  <ul style="color:var(--note)">
+    <li>트랙 번호 붙이는 방식 (예시)</li>
+    <li>차량 번호 형식 (예시: GR1-012)</li>
+    <li>기록 값과 검색 유형 (예시)</li>
+  </ul></div>
 </div>
 <div class="ov" id="ov" onclick="closeR()"></div>
 <aside class="drawer wide rd" id="dw"><div class="dh"><h3>테스트 레이스 상세</h3><span class="sp"></span><button class="cl" onclick="closeR()">닫기</button></div><div class="db" id="rb"></div></aside>

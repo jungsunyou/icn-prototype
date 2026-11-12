@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta name="robots" content="noindex,nofollow">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>운영자 티켓 발급</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="common.css">
+<link rel="stylesheet" href="park.css">
+<style>.lay{display:grid;grid-template-columns:280px minmax(0,1fr);gap:16px;align-items:start}@media(max-width:900px){.lay{grid-template-columns:1fr}}</style>
+<body>
+<div class="app">
+  <div class="top"><h1>운영자 티켓 발급 <span class="ex">예시 데이터</span></h1></div>
+  <div class="lay">
+    <div class="card"><div class="ch"><b>티켓 발급하기</b></div>
+      <label class="fld kept" style="width:100%;box-sizing:border-box"><span class="k">티켓 종류 |</span><select id="ty" style="flex:1" onchange="chg()"><option value="">티켓 종류 선택</option><option>운영자 체크인 (CHECK-IN)</option><option>비정상 체크아웃</option><option>탑승 구간 (BOARDING)</option><option>종점 구간 (UPHILL STANDBY)</option><option>회차 구간 (UPHILL)</option><option>회차종료 구간 (UPHILL SLOW DOWN)</option><option>하차장진입 구간 (LANDING IC)</option><option>하차 구간 (LANDING)</option><option>하차장퇴장 구간 (GARAGE)</option><option>승차장진입 구간 (BOARDING IC)</option><option>안개모드 ON</option><option>안개모드 OFF</option><option>업힐 수동회차모드</option><option>다운힐 수동회차모드</option><option>VMU 재시작/업데이트</option></select></label>
+      <label class="fld kept" id="opw" hidden style="width:100%;box-sizing:border-box;margin-top:8px"><span class="k">운영자 |</span><select id="op" style="flex:1" onchange="chg()"><option value="">운영자 선택</option><option value="이바다|bada.lee@981park.example">이바다 (bada.lee@981park.example)</option><option value="박산|san.park@981park.example">박산 (san.park@981park.example)</option><option value="김하늘|haneul.kim@981park.example">김하늘 (haneul.kim@981park.example)</option></select></label>
+      <div style="display:flex;justify-content:flex-end;margin-top:14px"><button class="btn pri" id="go" disabled onclick="ask()">발급하기</button></div></div>
+    <div class="card"><div class="ch"><b>발급 이력</b></div>
+      <div class="ch"><label class="fld">▦ <input type="date" id="d" value="2026-11-12" onchange="render()"></label></div>
+      <div class="tblwrap"><table><thead><tr><th>No.</th><th>티켓 종류 ▾</th><th>운영자</th><th>운영자 계정</th><th>발급자</th><th>발급일</th></tr></thead><tbody id="tb"></tbody></table></div></div>
+  </div>
+  <div class="memo">
+    <div class="mh">안내</div>
+    <ul>
+      <li>운영자가 레이스 구간 이동 · 체크인 · 모드 전환에 쓰는 티켓을 발급해요.</li>
+      <li>티켓 종류를 골라야 발급하기가 켜져요.</li>
+      <li>발급 이력은 날짜별로 봐요.</li>
+      <li>운영자 체크인 티켓만 운영자를 정하고, 나머지(구간 · 모드 티켓)는 '공통'으로 발급돼요.</li>
+    </ul>
+    <div style="margin-top:8px;color:var(--note)"><b style="color:var(--note)">정하는 중</b></div>
+    <ul style="color:var(--note)">
+      <li>인천 운영자 티켓 종류 (지금은 제주 15가지 — 인천 레이스 구간이 정해지면 바꿈)</li>
+      <li>운영자 체크인 티켓에서 운영자를 고르는 방법</li>
+      <li>발급 뒤 안내 문구 · 티켓 번호를 어디에 보여줄지</li>
+    </ul>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+<script src="park.js"></script>
+<script>
+var H=[{ty:'운영자 체크인 (CHECK-IN)',op:'이바다',id:'bada.lee@981park.example',by:'최별 (SA)',at:'2026-11-12 09:05'},{ty:'비정상 체크아웃',op:'공통',id:'-',by:'최별 (SA)',at:'2026-11-12 09:05'},{ty:'탑승 구간 (BOARDING)',op:'공통',id:'-',by:'박산',at:'2026-11-12 10:11'}];
+function kdt(t){var h=+t.slice(11,13),m=t.slice(14,16);return '2026년 11월 '+(+t.slice(8,10))+'일 '+(h<12?'오전 ':'오후 ')+((h%12)||12)+':'+m;}
+function render(){var L=H.filter(function(h){return h.at.slice(0,10)===$('d').value});
+  $('tb').innerHTML=L.length?L.map(function(h,i){return '<tr><td>'+(i+1)+'</td><td class="kept">'+h.ty+'</td><td>'+h.op+'</td><td>'+h.id+'</td><td>'+h.by+'</td><td>'+kdt(h.at)+'</td></tr>'}).join(''):'<tr><td colspan="6" class="empty" style="border:1px dashed var(--border)">데이터가 없습니다.</td></tr>';}
+function chg(){var t=$('ty').value,ci=t.indexOf('CHECK-IN')>=0;$('opw').hidden=!ci;$('go').disabled=!t||(ci&&!$('op').value);}
+function ask(){var t=$('ty').value;pop('<div class="t">운영자 티켓 발급</div>'+t+' 티켓을 발급하시겠습니까?<div class="pbtns"><button class="btn light" onclick="closeM()">취소</button><button class="btn pri" onclick="doIt()">확인</button></div>');}
+function doIt(){var t=$('ty').value,ci=t.indexOf('CHECK-IN')>=0,o=ci?$('op').value.split('|'):['공통','-'];var d=new Date();H.push({ty:t,op:o[0],id:o[1],by:'최별 (SA)',at:'2026-11-12 '+('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2)});closeM();$('ty').value='';$('op').value='';chg();render();toast('<span style="color:#C9B8FF">발급했어요. (안내 문구는 정하는 중)</span>');}
+render();
+</script>
+</body>
+</html>

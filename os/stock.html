@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta name="robots" content="noindex,nofollow">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>재고 관리</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="common.css">
+<link rel="stylesheet" href="park.css">
+<style>.sgl{position:absolute;top:42px;left:0;right:0;background:#fff;border:1px solid var(--line);border-radius:10px;box-shadow:0 6px 18px rgba(0,0,0,.1);z-index:5;max-height:260px;overflow:auto}.sgl div{padding:9px 14px;cursor:pointer;display:flex;flex-direction:column}.sgl div:hover{background:#F5F7FB}.sgl b{font-weight:500}.sgl .code{color:var(--muted);font-size:12px}.xb{border:none;background:none;cursor:pointer;color:var(--muted);font-size:15px}.inr td input,.inr td select{width:100%;box-sizing:border-box;height:30px;border:1px solid var(--border);border-radius:6px;padding:0 6px;font-family:var(--font);font-size:12.5px}.inr .lab{font-size:11px;color:var(--red)}.inr .lab.ok{color:var(--muted)}</style>
+<body>
+<div class="app">
+  <div class="top"><h1>재고 현황 <span class="ex">예시 데이터</span></h1><span class="sp"></span><button class="btn pri" onclick="openIn()">⌂ 입고 처리</button></div>
+  <div class="card">
+    <div class="ch"><b>재고 목록</b><span class="sp"></span><label class="fld" style="width:300px">⌕ <input id="q" placeholder="부품명, 부품번호" oninput="render()"></label></div>
+    <div class="tblwrap"><table><thead><tr><th>부품번호</th><th>부품명</th><th>카테고리 ▾</th><th>현재수량</th><th>최소 재고량</th><th>최종 점검일</th></tr></thead><tbody id="tb"></tbody></table></div><div id="pg1"></div>
+  </div>
+  <div class="card" style="margin-top:16px">
+    <div class="ch"><b>부족한 재고</b></div>
+    <div class="tblwrap"><table><thead><tr><th>부품명</th><th>부품번호</th><th>현재 수량</th><th>최소 재고량</th><th>부족한 수량</th></tr></thead><tbody id="tb2"></tbody></table></div><div id="pg2"></div>
+  </div>
+  <div class="memo">
+    <div class="mh">안내</div>
+    <ul>
+      <li>부품별 현재 수량과 최소 재고량을 봐요. 부품명 · 부품번호로 찾아요.</li>
+      <li>현재 수량이 최소 재고량보다 적으면 아래 '부족한 재고'에 올라가요.</li>
+      <li>줄을 누르면 재고 상세가 열려요. 위치별 재고 · 단가 · 제조사를 보고 수정해요.</li>
+      <li><b>입고 처리</b>: 부품명 · 부품코드를 치면 맞는 부품이 바로 떠요. 골라서 목록에 넣어요.</li>
+      <li>넣은 줄마다 수량 · 구매처 · 보관 장소 · 입고일을 모두 채워야 입고가 켜져요. ✕로 줄을 빼요.</li>
+      <li>확정하면 재고가 늘고, 입고 이력에 입고 처리자 · 처리일이 남아요.</li>
+    </ul>
+    <div style="margin-top:8px;color:var(--note)"><b style="color:var(--note)">정하는 중</b></div>
+    <ul style="color:var(--note)">
+      <li>인천 보관 위치 (지금은 제주 A창고 · B창고 · 정비고)</li>
+      <li>인천 부품 목록 · 카테고리 (지금은 GR 부품 예시)</li>
+      <li>입고 확정 · 수정 저장 뒤 안내 문구</li>
+    </ul>
+  </div>
+</div>
+<div class="ov" id="ov" hidden onclick="closeD()"></div>
+<aside class="dw" id="dw" hidden><div class="dh"><span class="sp"></span><button id="edb" style="color:var(--accent)">수정하기</button><button onclick="closeD()">닫기</button></div><div class="db" id="db"></div></aside>
+<div class="toast" id="toast"></div>
+<script src="park.js"></script>
+<script>
+var S=sLoad(),EDIT=false,CUR=null;
+function render(){var q=$('q').value.trim();var L=S.parts.filter(function(p){return !q||(p.no+p.name).indexOf(q)>=0});
+  $('tb').innerHTML=L.length?L.map(function(p){return '<tr class="row" onclick="openD(\''+p.no+'\')"><td class="code">'+p.no+'</td><td>'+esc(p.name)+'</td><td>'+p.cat+'</td><td class="num">'+qty(p)+'</td><td class="num">'+p.min+'</td><td class="code">'+p.chk+'</td></tr>'}).join(''):'<tr><td colspan="6" class="empty">재고가 없어요</td></tr>';
+  $('pg1').innerHTML=pager(L.length,10);var low=S.parts.filter(function(p){return qty(p)<p.min});
+  $('tb2').innerHTML=low.length?low.map(function(p){return '<tr class="row" onclick="openD(\''+p.no+'\')"><td>'+esc(p.name)+'</td><td class="code">'+p.no+'</td><td class="num">'+qty(p)+'</td><td class="num">'+p.min+'</td><td class="num" style="color:var(--red)">'+(p.min-qty(p))+'</td></tr>'}).join(''):'<tr><td colspan="5" class="empty">부족한 재고가 없습니다.</td></tr>';
+  $('pg2').innerHTML=pager(low.length,10);}
+function openD(no){CUR=no;EDIT=false;drawD();$('ov').hidden=false;$('dw').hidden=false;}
+function closeD(){$('ov').hidden=true;$('dw').hidden=true;}
+function drawD(){var p=S.parts.filter(function(x){return x.no===CUR})[0],low=qty(p)<p.min;
+  var f=function(k,v,id){return '<div>'+k+'</div><div>'+(EDIT&&id?'<input id="'+id+'" value="'+esc(v)+'">':esc(v))+'</div>'};
+  $('edb').textContent=EDIT?'저장':'수정하기';$('edb').onclick=EDIT?saveD:function(){EDIT=true;drawD();};
+  $('db').innerHTML='<div style="font-size:18px;font-weight:700">'+esc(p.name)+' '+(low?'<span style="color:var(--orange);font-size:13px">부족</span>':'')+'</div><div class="muted" style="margin:4px 0 14px">부품번호 <span class="code" style="color:var(--fg)">'+p.no+'</span></div><div class="kv3">'+
+   f('부품 단가',EDIT?p.price:won(p.price),'e_price')+f('제조사',p.maker,'e_maker')+f('카테고리',p.cat)+'<div>현재수량</div><div class="num">'+qty(p)+'</div>'+f('최소 재고량',p.min,'e_min')+f('최대 재고량',p.max,'e_max')+
+   '<div>위치별 재고</div><div class="kept" style="border-radius:6px">'+LOCS.map(function(l){return '<div style="display:flex;justify-content:space-between;padding:2px 0"><span>'+l+'</span>'+(EDIT?'<input id="e_loc_'+l+'" value="'+p.loc[l]+'" style="width:80px">':'<span class="num">'+p.loc[l]+' EA</span>')+'</div>'}).join('')+'</div>'+
+   f('관리자',p.mgr)+f('최종 점검일',p.chk)+'</div>';}
+function saveD(){var p=S.parts.filter(function(x){return x.no===CUR})[0];var chg=false;
+  [['price','e_price'],['maker','e_maker'],['min','e_min'],['max','e_max']].forEach(function(a){var v=$(a[1]).value.trim();if(String(p[a[0]])!==v){chg=true;}});LOCS.forEach(function(l){if(String(p.loc[l])!==$('e_loc_'+l).value.trim())chg=true;});
+  if(!chg){pop('변경된 내용이 없습니다.<div class="pbtns"><button class="btn pri" onclick="closeM()">확인</button></div>');return;}
+  pop('변경된 내용으로 저장하시겠습니까?<div class="pbtns"><button class="btn light" onclick="closeM()">No</button><button class="btn pri" onclick="doSave()">Yes</button></div>');}
+function doSave(){var p=S.parts.filter(function(x){return x.no===CUR})[0];p.price=+$('e_price').value||p.price;p.maker=$('e_maker').value.trim();p.min=+$('e_min').value;p.max=+$('e_max').value;
+  LOCS.forEach(function(l){var nv=+$('e_loc_'+l).value||0;if(nv!==p.loc[l]){S.moves.unshift({no:p.no,name:p.name,from:l,to:l,qty:nv-p.loc[l],sys:'재고 수정',why:'재고 상세 수정',at:nowStr(),type:'이동'});}p.loc[l]=nv;});
+  p.chk=nowStr().replace(' 목 ',' ');sSave(S);closeM();EDIT=false;drawD();render();}
+/* 입고 처리 */
+var IN=[];
+function openIn(){IN=[];drawIn();}
+function drawIn(){var ok=IN.length&&IN.every(rowOk);
+  pop('<div style="display:flex;align-items:center;gap:10px;margin-bottom:12px"><div class="t" style="margin:0">입고 품목</div><span style="flex:1"></span><div style="position:relative;width:340px"><label class="fld" style="width:100%;box-sizing:border-box">⌕ <input id="sq" placeholder="부품명, 부품코드" style="flex:1" oninput="sug(this.value)" autocomplete="off"></label><div id="sgl" class="sgl" hidden></div></div></div>'+
+   '<div class="tblwrap"><table class="inr"><thead><tr><th>부품코드</th><th>부품명</th><th>입고 수량</th><th>구매처</th><th>보관 장소</th><th>입고일</th><th></th></tr></thead><tbody>'+
+   (IN.length?IN.map(function(r,i){return '<tr><td class="code">'+r.no+'</td><td>'+esc(r.name)+'</td><td><input type="number" min="1" placeholder="수량" value="'+r.qty+'" oninput="IN['+i+'].qty=this.value;tick()" style="width:70px"></td><td><input placeholder="구매처" value="'+esc(r.vendor)+'" oninput="IN['+i+'].vendor=this.value;tick()" style="width:90px"></td><td><select class="kept" onchange="IN['+i+'].loc=this.value;tick()"><option value="">보관 장소</option>'+LOCS.map(function(l){return '<option'+(r.loc===l?' selected':'')+'>'+l+'</option>'}).join('')+'</select></td><td><input type="date" value="'+r.date+'" onchange="IN['+i+'].date=this.value;tick()"></td><td><button class="xb" onclick="IN.splice('+i+',1);drawIn()">✕</button></td></tr>'}).join(''):'<tr><td colspan="7" class="empty" style="border:1px dashed var(--border)">입고 처리 품목이 없습니다.</td></tr>')+'</tbody></table></div>'+
+   '<div class="pbtns" style="justify-content:flex-end"><button class="btn light" style="flex:0 0 160px;height:44px" onclick="closeM()">취소</button><button class="btn pri" id="inOk" style="flex:0 0 160px;height:44px" '+(ok?'':'disabled')+' onclick="doIn()">입고</button></div>',900);}
+function sug(q){q=q.trim();var el=$('sgl');if(!q){el.hidden=true;return;}var L=S.parts.filter(function(p){return (p.no+' '+p.name).toLowerCase().indexOf(q.toLowerCase())>=0&&!IN.some(function(r){return r.no===p.no})}).slice(0,6);
+  el.innerHTML=L.length?L.map(function(p){return '<div onclick="addIn(\''+p.no+'\')"><b>'+esc(p.name)+'</b><span class="code">'+p.no+'</span></div>'}).join(''):'<div class="muted">맞는 부품이 없어요</div>';el.hidden=false;}
+function addIn(no){var p=S.parts.filter(function(x){return x.no===no})[0];IN.push({no:p.no,name:p.name,qty:'',vendor:'',loc:'',date:''});drawIn();$('sq').focus();}
+function rowOk(r){return +r.qty>0&&r.vendor.trim()&&r.loc&&r.date;}
+function tick(){$('inOk').disabled=!(IN.length&&IN.every(rowOk));}
+function doIn(){var n=0;IN.forEach(function(r){var p=S.parts.filter(function(x){return x.no===r.no})[0];p.loc[r.loc]=(+p.loc[r.loc]||0)+(+r.qty);S.ins.unshift({name:p.name,no:p.no,vendor:r.vendor.trim(),price:p.price,qty:+r.qty,at:nowStr(),by:'크루 (나)'});n++;});
+  sSave(S);closeM();render();toast('<span style="color:#C9B8FF">'+n+'건을 입고했어요. (안내 문구는 정하는 중)</span>');}
+render();
+</script>
+</body>
+</html>

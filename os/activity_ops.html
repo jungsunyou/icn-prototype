@@ -1,0 +1,354 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta name="robots" content="noindex,nofollow">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>운영 관리</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="common.css">
+<style>
+  .top{display:flex;align-items:center;gap:8px;margin-bottom:14px}.top .sp{flex:1}
+  .spaces{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+  .spaces .lbl{font-size:12px;color:var(--muted);margin-right:2px}
+  .chipbtn{border:1px solid var(--border);background:#fff;border-radius:16px;height:30px;padding:0 14px;font-size:13px;color:var(--sub);cursor:pointer;font-family:var(--font)}
+  .chipbtn.on{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+  .acts{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+  .acts button{border:none;background:none;border-radius:16px;height:32px;padding:0 14px;font-size:13.5px;color:var(--muted);cursor:pointer;font-family:var(--font)}
+  .acts button.on{background:var(--accent);color:#fff;font-weight:600}
+  .acts button small{font-family:var(--mono);font-size:11px;opacity:.75;margin-left:4px}
+  .sub{display:flex;gap:6px;margin-bottom:16px}
+  .sub button{border:none;border-radius:16px;height:32px;padding:0 14px;font-size:13.5px;cursor:pointer;font-family:var(--font);background:#F5F5F5;color:var(--muted);display:inline-flex;align-items:center;gap:6px}
+  .sub button.on{background:var(--accent);color:#fff;font-weight:600}
+  .grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.35fr) minmax(0,1.3fr);gap:18px;align-items:start}
+  .ch{display:flex;align-items:center;gap:6px;margin-bottom:10px;flex-wrap:wrap}.ch b{font-size:15px;font-weight:600}.ch .sp{flex:1}
+  .btn.ol{border-color:var(--accent);color:var(--accent);background:#fff;height:28px;padding:0 10px;font-size:12px}
+  .btn.ps{height:28px;padding:0 10px;font-size:12px}
+  .btn.end{border-color:var(--accent);color:var(--accent);background:#fff;height:28px;padding:0 10px;font-size:12px}
+  .mchip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--accent);color:var(--accent);background:var(--accent-soft);border-radius:16px;height:28px;padding:0 12px;font-size:12.5px;font-weight:600;margin-bottom:8px}
+  .mchip i{width:6px;height:6px;border-radius:50%;background:var(--accent)}
+  table{width:100%}
+  td.empty{color:var(--muted);height:60px}
+  .eseg{display:inline-flex;gap:2px}.eseg span{min-width:34px;height:26px;padding:0 6px;border-radius:5px;display:inline-flex;align-items:center;justify-content:center;font-size:12px;cursor:pointer;color:var(--muted)}
+  .eseg span.on.s-run{background:var(--accent);color:#fff;font-weight:600}.eseg span.on.s-chg{background:var(--orange);color:#fff;font-weight:600}.eseg span.on.s-bad{background:var(--red);color:#fff;font-weight:600}
+  .rp{display:inline-block;border-radius:12px;padding:2px 10px;font-size:12px}
+  .rp.done{background:#EEF3FB;color:#5B7DB8}.rp.ing{background:var(--ok-soft);color:var(--ok)}.rp.req{background:var(--warn-soft);color:#B26A00}
+  .eqwrap{max-height:640px;overflow:auto}
+  th.f{cursor:pointer;position:relative}th.f .dd{font-size:9px;color:var(--muted);margin-left:3px}
+  .fmenu{position:absolute;top:44px;left:10px;background:#fff;border:1px solid var(--border);border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,.1);z-index:5;min-width:110px;text-align:left;font-weight:400}
+  .fmenu div{padding:7px 12px;cursor:pointer}.fmenu div.on{background:var(--accent-soft);color:var(--accent)}
+  .mw{position:fixed;inset:0;background:rgba(33,37,41,.35);display:flex;align-items:center;justify-content:center;z-index:60}
+  .pb{background:#fff;border-radius:22px;padding:26px 24px 20px;width:min(300px,92vw);text-align:center;font-size:13.5px;line-height:1.6}
+  .pb.wide{width:min(360px,92vw)}
+  .pb .t{font-size:14px;margin-bottom:16px}
+  .pb input{width:100%;box-sizing:border-box;height:36px;border:1px solid var(--border);border-radius:8px;padding:0 10px;font-family:var(--font);font-size:13px}
+  .pbtns{display:flex;gap:8px;margin-top:18px}.pbtns .btn{flex:1;height:36px}.btn.light{background:#F5F5F5;border-color:#F5F5F5;color:#212529;font-weight:400}
+  .err{color:var(--red);font-size:12px;margin-top:6px;text-align:left}
+  .nfc{display:flex;flex-direction:column;align-items:center;gap:18px;padding:16px 0 4px}
+  .rings{position:relative;width:150px;height:150px}.rings span{position:absolute;inset:0;border:1px solid #9CC0F5;border-radius:50%;animation:ring 1.8s infinite}
+  .rings span:nth-child(2){animation-delay:.6s}.rings span:nth-child(3){animation-delay:1.2s}
+  .rings b{position:absolute;inset:38px;border-radius:50%;border:1.5px solid #4A8BEA;display:flex;align-items:center;justify-content:center;font-size:30px;background:#fff}
+  @keyframes ring{0%{transform:scale(.5);opacity:1}100%{transform:scale(1);opacity:0}}
+  .plist{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;max-height:260px;overflow:auto;margin-top:4px}
+  .plist button{height:32px;border:1px solid var(--border);background:#fff;border-radius:6px;font-family:var(--mono);font-size:11.5px;cursor:pointer}
+  .plist button.on{border-color:var(--accent);background:var(--accent);color:#fff}
+  .plist button:disabled{background:#F5F5F5;color:#C8C8C8;cursor:not-allowed}
+  .chk{display:grid;grid-template-columns:1fr 1fr;gap:6px;text-align:left;margin-top:4px}
+  .chk label{display:flex;align-items:center;gap:6px;border:1px solid var(--border);border-radius:6px;padding:6px 8px;font-size:12.5px;cursor:pointer}
+  .chk label.dis{color:#C8C8C8;cursor:not-allowed}
+  .cellbtn{border:1px dashed var(--border);background:#fff;border-radius:6px;height:26px;padding:0 8px;font-size:12px;color:var(--muted);cursor:pointer;font-family:var(--font)}
+  .ttop{position:fixed;left:50%;top:14px;transform:translateX(-50%);background:#fff;border-radius:14px;box-shadow:0 6px 20px rgba(0,0,0,.12);padding:10px 14px;display:flex;gap:10px;align-items:flex-start;z-index:70;min-width:260px}
+  .ttop .ic{width:18px;height:18px;border-radius:50%;background:#212529;color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-top:1px}
+  .bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+  .fld{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--border);border-radius:8px;height:36px;padding:0 10px;font-size:13px;background:#fff}
+  .fld select,.fld input{border:none;outline:none;font-family:var(--font);font-size:13px;background:none}
+  .fld .k{color:var(--muted)}
+  /* AI 상태 반영 (정하는 중) */
+  .ai-fab{position:fixed;right:24px;bottom:24px;z-index:50;border:1.5px dashed var(--note);background:#F4F1FF;color:var(--note);border-radius:24px;height:44px;padding:0 18px;font-weight:600;font-family:var(--font);cursor:pointer;box-shadow:0 4px 14px rgba(106,90,205,.2)}
+  .ai{position:fixed;right:24px;bottom:80px;width:min(440px,calc(100vw - 32px));height:min(680px,calc(100vh - 110px));background:#fff;border:1.5px dashed var(--note);border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,.15);z-index:55;display:flex;flex-direction:column;overflow:hidden}
+  .ai .ah{padding:12px 14px;background:#F4F1FF;color:var(--note);font-weight:700;display:flex;align-items:center;gap:8px}.ai .ah .sp{flex:1}.ai .ah button{border:none;background:none;cursor:pointer;color:var(--note);font-size:16px}
+  .ai .ab{flex:1;overflow:auto;padding:12px;display:flex;flex-direction:column;gap:8px;background:#FCFBFF}
+  .msg{max-width:85%;padding:8px 11px;border-radius:12px;font-size:13px;line-height:1.5;white-space:pre-wrap}
+  .msg.me{align-self:flex-end;background:var(--accent);color:#fff;border-bottom-right-radius:4px}
+  .msg.bot{align-self:flex-start;background:#fff;border:1px solid #E6E1FA;border-bottom-left-radius:4px}
+  .prop{border:1px solid #E6E1FA;border-radius:10px;padding:8px 10px;margin-top:6px;background:#fff}
+  .prop .r{display:flex;justify-content:space-between;gap:8px;font-size:12.5px;padding:2px 0}
+  .prop .acts2{display:flex;gap:6px;margin-top:8px}.prop .acts2 .btn{height:28px;font-size:12px;padding:0 10px;flex:1}
+  .ai .af{display:flex;gap:6px;padding:10px;border-top:1px solid #EEE}.ai .af input{flex:1;height:36px;border:1px solid var(--border);border-radius:8px;padding:0 10px;font-family:var(--font)}
+  .sugs{display:flex;gap:6px;flex-wrap:wrap;padding:0 10px 8px}.sugs span{font-size:11.5px;border:1px solid #E6E1FA;border-radius:12px;padding:3px 8px;cursor:pointer;color:var(--note);background:#fff}
+  .mchip.idle{border-color:#9AA0A6;color:#485056;background:#EEEEEE}.mchip.idle i{background:#485056}
+  .xbtn{border:none;background:none;cursor:pointer;color:var(--muted);font-size:16px}
+  .eqpick .row{display:flex;align-items:center;justify-content:space-between;font-size:13px;margin-bottom:6px}
+  .eqpick .row .k{color:var(--sub);display:flex;align-items:center;gap:6px}
+  .rchips{display:flex;gap:4px}.rchips span{font-size:11.5px;border-radius:10px;padding:2px 8px;background:#E8E8E8;cursor:pointer}.rchips span.on{background:var(--accent-soft);color:var(--accent)}
+  .elist{max-height:270px;overflow:auto;margin-top:8px;text-align:left;display:flex;flex-direction:column;gap:3px}
+  .elist div{display:flex;align-items:center;gap:10px;padding:6px 10px;border-radius:6px;background:#FAFAFA;cursor:pointer;font-size:13px}
+  .elist div.on{background:var(--accent);color:#fff;font-weight:600}.elist div.dis{color:#C8C8C8;cursor:not-allowed}
+  .elist div small{margin-left:auto;font-size:11px}
+  .ttop .x{border:none;background:none;cursor:pointer;margin-left:auto;font-size:15px}
+  .ck{display:inline-flex;align-items:center;gap:4px;font-size:12px}.ck i{width:7px;height:7px;border-radius:50%}
+  .autobox{margin-top:12px}
+  .px{position:absolute;right:16px;top:14px;border:none;background:none;font-size:16px;cursor:pointer}
+  .pb{position:relative}
+  .bchips{display:flex;gap:6px;justify-content:center;flex-wrap:wrap}
+  .bchip{border:1px solid var(--border);background:#F5F5F5;border-radius:16px;height:30px;padding:0 12px;font-size:12.5px;cursor:pointer;font-family:var(--font);color:var(--sub)}
+  .bchip.on{border-color:var(--orange);background:var(--warn-soft);color:#B26A00;font-weight:600}
+  .bchip:disabled{opacity:.4;cursor:not-allowed}
+  .ai .af textarea{flex:1;border:1px solid var(--border);border-radius:8px;padding:8px 10px;font-family:var(--font);font-size:13px;resize:none}
+  .board{padding:10px 12px;border-bottom:1px solid #EEE;background:#fff}
+  .board .bt{font-weight:600;font-size:13px;margin-bottom:8px}.board .bt .muted{font-weight:400;font-size:11.5px}
+  .bgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+  .bd{border:1px solid #EEE;border-radius:10px;padding:7px}.bh{display:flex;align-items:center;font-size:12px;font-weight:600;color:var(--sub);margin-bottom:6px}
+  .bc{margin-left:auto;border-radius:10px;padding:0 7px;font-size:11px}
+  .bl{display:flex;flex-wrap:wrap;gap:4px}.bp{font-family:var(--mono);font-size:11px;color:#fff;border-radius:6px;padding:2px 6px;cursor:pointer}
+  .c-req{background:var(--orange);color:#fff}.c-ing{background:var(--ok);color:#fff}.c-done{background:var(--accent);color:#fff}
+  .bc.c-req{background:var(--warn-soft);color:#B26A00}.bc.c-ing{background:var(--ok-soft);color:var(--ok)}.bc.c-done{background:var(--accent-soft);color:var(--accent)}
+  .lk{color:var(--accent);cursor:pointer;text-decoration:underline}
+  .hist{min-width:300px}.hist .hh{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px}.hist .hh b{font-size:15px}
+  .vt{font-size:11.5px;background:#F1F1EF;border-radius:6px;padding:1px 7px;color:var(--sub)}
+  .hb{font-size:11.5px;border-radius:10px;padding:1px 8px}.hb.run{background:var(--accent-soft);color:var(--accent)}.hb.chg{background:var(--warn-soft);color:#B26A00}.hb.bad{background:var(--red-soft);color:var(--red)}
+  .hs{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:10px}.hs div{background:#F7F7F6;border-radius:8px;padding:6px 8px}.hs small{display:block;font-size:10.5px;color:var(--muted)}.hs b{font-size:12.5px}
+  .tl .ti{position:relative;padding:0 0 12px 18px;border-left:2px solid #EEE;margin-left:4px}.tl .ti:last-child{border-left-color:transparent;padding-bottom:0}
+  .tl .nd{position:absolute;left:-7px;top:3px;width:12px;height:12px;border-radius:50%;background:#D5D5D5;border:2px solid #fff;box-shadow:0 0 0 1px #E2E2E2}.tl .ti.cur .nd{background:var(--accent)}
+  .tl .tr{display:flex;align-items:center;gap:6px;flex-wrap:wrap}.tl .td{font-weight:600;font-size:12px}.tl .to{margin-left:auto;font-size:11px;color:var(--muted)}
+  .tg{font-size:10.5px;border-radius:6px;padding:1px 6px}.t-req{background:var(--warn-soft);color:#B26A00}.t-ing{background:var(--ok-soft);color:var(--ok)}.t-done{background:var(--accent-soft);color:var(--accent)}.t-log{background:#F1F1EF;color:var(--sub)}
+  .pc{display:inline-block;background:#F3F3F1;font-size:11px;border-radius:6px;padding:1px 6px;margin:3px 4px 0 0}
+  .tl .tx{font-size:12.5px;margin-top:2px}.tl .tm{font-size:11px;color:var(--muted);margin-top:2px}
+  @media(max-width:1100px){.grid{grid-template-columns:1fr}}
+</style>
+<body>
+<div class="app">
+  <div class="top"><h1 style="margin:0">운영 관리 <span class="ex">예시 데이터</span></h1><span class="sp"></span>
+    <button class="btn pri" id="useBtn" onclick="useMode()">▣ 티켓 사용 처리</button></div>
+  <div class="card">
+    <div class="spaces kept" style="padding:6px 8px;border-radius:10px"><span class="lbl">공간</span><span id="spaces"></span></div>
+    <div class="acts" id="acts"></div>
+    <div class="sub"><button id="tOps" class="on" onclick="tab('ops')">🎮 운영 관리</button><button id="tRec" onclick="tab('rec')">⏱ 기록 관리</button></div>
+
+    <section id="vOps">
+      <div class="grid">
+        <div>
+          <div class="card">
+            <div class="ch"><b>대기 고객</b><span class="sp"></span><button class="btn ol" onclick="openManual('wait')">⊕ 수동 추가</button><button class="btn pri ps" onclick="openNfc('wait')">👤 인원 추가</button></div>
+            <table><thead><tr><th>No</th><th>닉네임</th><th>대기 시간</th></tr></thead><tbody id="wTb"></tbody></table>
+          </div>
+          <div class="keptline autobox"><label style="display:flex;align-items:center;gap:8px;cursor:pointer"><input type="checkbox" id="auto" checked onchange="AUTO=this.checked;render()"><span><b>정하는 중</b> · 대기 고객 자동으로 매치에 넣기 (인천)</span></label>
+            <div style="margin-top:6px;color:var(--sub)">게임이 끝나면 대기 순서대로 다음 매치에 넣어요.<br>장비는 운영 중인 것부터 연결해요. (제주에는 없어요)</div></div>
+        </div>
+        <div class="card">
+          <div class="ch"><b>매치 정보</b><span class="sp"></span><button class="btn ol" onclick="openManual('match')">⊕ 수동 추가</button><button class="btn pri ps" onclick="openNfc('match')">👤 인원 추가</button><span id="gameBtn"></span></div>
+          <div id="mchip"></div>
+          <table><thead id="mTh"></thead><tbody id="mTb"></tbody></table>
+        </div>
+        <div class="card">
+          <div class="ch"><b>운영 장비</b><span class="sp"></span><span class="muted" id="eqSum" style="font-size:12px"></span></div>
+          <div class="eqwrap"><table><thead><tr><th class="f" onclick="togF(event)">장비 번호<br><span style="font-size:12px;color:var(--muted)" id="fLbl">(모두보기)</span><span class="dd">▼</span><span id="fMenu"></span></th><th>장비 상태</th><th>수리 상태</th></tr></thead><tbody id="eTb"></tbody></table></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="vRec" hidden>
+      <div class="bar">
+        <label class="fld">▦ <input type="date" id="rDate" value="2026-11-12" onchange="renderRec()"></label>
+        <label class="fld"><span class="k">매치 |</span><select id="rMatch" onchange="renderRec()"></select></label>
+        <label class="fld">⌕ <select id="rK" onchange="renderRec()"><option value="ticket">티켓 No</option><option value="nick">닉네임</option></select><input id="rQ" placeholder="검색조건에 맞는 검색어를 입력하세요" oninput="renderRec()" style="width:240px"></label>
+      </div>
+      <div style="font-weight:600;margin-bottom:6px">게임 목록</div>
+      <div class="tblwrap"><table><thead id="rTh"></thead><tbody id="rTb"></tbody></table></div>
+      <div class="keptline" style="margin-top:12px"><b>정하는 중</b> · 보라색 칸(랭킹 · 스코어 · 킬 · 데스 · 랩타임)은 액티비티별 기록 칸이 확정되면 반영해요. 지금은 하레나 · 왕의동굴에 킬 · 데스, 디지털레이스에 랩타임을 넣어 둔 안이에요.</div>
+    </section>
+  </div>
+
+  <div class="memo">
+    <div class="mh">안내</div>
+    <ul>
+      <li>공간 → 액티비티를 고르고, 운영 관리 / 기록 관리를 바꿔 봐요.</li>
+      <li><b>수동 추가</b>: 티켓 번호 13자리 입력. <b>인원 추가</b>: NFC 태그.</li>
+      <li>매치에 넣으면 장비를 골라 연결하고, 상태는 대기중이 돼요.</li>
+      <li>✕를 누르면 장비 연결을 풀고 매치에서 빠져요.</li>
+      <li>게임 시작 → 게임중, 게임 종료 → 확인 후 기록이 생겨요.</li>
+      <li><b>티켓 사용 처리</b>: 사용 처리가 안 된 티켓을 크루가 직접 처리해요. 누르면 매치 정보에 체크박스가 생겨요.</li>
+      <li>장비 상태는 직접 바꾸거나 <b>AI 상태 반영</b>에 운영방 메시지를 붙여 넣으면 바뀌어요.</li>
+      <li>장비 번호를 누르면 그 장비의 수리 이력이 보여요.</li>
+      <li>고장 → 고장 기구 · 메모 → 확인하면 "[고장] 상태로 변경되었습니다."가 뜨고 <b>수리요청</b>이 돼요.</li>
+      <li>수리요청 · 수리중 장비는 운영 · 충전으로 바꿀 수 없어요.</li>
+      <li>수리는 통합 장비 관리에서 처리해요.</li>
+    </ul>
+    <div style="margin-top:8px;color:var(--note)"><b style="color:var(--note)">정하는 중</b></div>
+    <ul style="color:var(--note)">
+      <li>공간 → 액티비티 2단 선택</li>
+      <li>장비 번호 형식, 액티비티별 고장 기구 이름</li>
+      <li>운영 · 충전으로 바꿀 때 안내 문구 (지금은 고장과 같은 형식)</li>
+      <li>대기 → 매치 자동 넣기 (인천)</li>
+      <li>기록 점수 칸 (랭킹 · 스코어 · 킬 · 데스 · 랩타임)</li>
+      <li>사용 처리 뒤 안내 문구, 빈 매치에서 게임 시작</li>
+      <li>AI 상태 반영 창 모양과 알아듣는 문장 범위 (GR 정비 관리 방식 적용)</li>
+    </ul>
+  </div>
+</div>
+
+<div class="mw" id="mw" hidden onclick="if(event.target===this)closeM()"><div class="pb" id="pb"></div></div>
+<div class="toast" id="toast"></div>
+<button class="ai-fab" onclick="toggleAi()">✦ AI 상태 반영 <span style="font-size:10px">정하는 중</span></button>
+<div class="ai" id="ai" hidden>
+  <div class="ah">✦ AI 상태 반영 <span style="font-size:11px;font-weight:400">· 운영방 메시지로 상태 반영 (정하는 중 · 예시)</span><span class="sp"></span><button onclick="toggleAi()">✕</button></div>
+  <div class="board" id="aiBoard"></div>
+  <div class="ab" id="aiB"></div>
+  <div class="sugs" id="aiS"></div>
+  <div class="af"><textarea id="aiQ" rows="2" placeholder="운영방 메시지를 붙여 넣으세요 (예: 12 / 방아쇠 안 눌림 / 운영 제외)" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();aiSend()}"></textarea><button class="btn pri" style="height:36px" onclick="aiSend()">보내기</button></div>
+</div>
+
+<script src="act_common.js"></script>
+<script>
+function $(i){return document.getElementById(i);}
+function toast(m){var e=$('toast');e.innerHTML=m;e.classList.add('show');clearTimeout(e._t);e._t=setTimeout(function(){e.classList.remove('show')},2600);}
+function tTop(msg){var e=$('ttop');if(!e){e=document.createElement('div');e.id='ttop';e.className='ttop';document.body.appendChild(e);}var d=new Date(),h=d.getHours();
+  e.innerHTML='<span class="ic">i</span><div><div>'+msg+'</div><div class="muted" style="font-size:12px">2026년 11월 12일 '+(h<12?'오전 ':'오후 ')+((h%12)||12)+':'+('0'+d.getMinutes()).slice(-2)+'</div></div><button class="x" onclick="this.parentNode.hidden=true">✕</button>';e.hidden=false;clearTimeout(tTop._t);tTop._t=setTimeout(function(){e.hidden=true},3000);}
+function hm(d){return ('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2);}
+
+var NICKS=['번개질주','코너장인','초록헬멧','주말드라이버','라임레이서','파란번호판','스핀아웃','은빛휠','드리프트곰','별빛사수','큐브탐험가','노을러너','하늘콩','바람개비','민트곰','달빛토끼','초코라떼','파도타기'];
+var S={},AUTO=true;
+function initAct(a){if(S[a.id])return S[a.id];var eq=[];for(var i=1;i<=a.cnt;i++){var st='run',rp='done';if(i%11===2){st='bad';rp='ing';}else if(i%9===7){st='chg';}eq.push({no:eqNo(a,i),st:st,rp:rp,ck:st==='run'&&i%13!==5});}
+  var RL=rLoad();eq.forEach(function(e){var r=repairOf(RL,a.id,e.no);if(r){e.rp=r.rp;if(r.rp!=='done')e.st='bad';}else if(e.rp!=='done'){e.rp='done';}});
+  var o={eq:eq,wait:[],match:[],game:null,mno:2020+a.cnt,recs:[],nick:0};o.wait.push(mkP(o,13),mkP(o,6),mkP(o,0));S[a.id]=o;return o;}
+function mkP(o,minAgo,ticket){var n=NICKS[(o.nick++)%NICKS.length];return {nick:n,ticket:ticket||('26111214189'+String(10+o.nick).padStart(2,'0')),at:new Date(Date.now()-(minAgo||0)*60000),eq:'',st:'대기중',used:o.nick%3!==0};}
+var SP=1,ACT='harena',TAB='ops',F='',FOPEN=false,MODE=null,PICK=null;
+function cur(){for(var i=0;i<SPACES.length;i++)for(var j=0;j<SPACES[i].acts.length;j++)if(SPACES[i].acts[j].id===ACT)return SPACES[i].acts[j];}
+function mname(a,o){return a.code+' '+o.mno;}
+function renderTop(){$('spaces').innerHTML=SPACES.map(function(x,i){return '<button class="chipbtn'+(i===SP?' on':'')+'" onclick="pickSp('+i+')">'+x.s+'</button>'}).join(' ');
+  $('acts').innerHTML=SPACES[SP].acts.map(function(a){return '<button class="'+(a.id===ACT?'on':'')+'" onclick="pickAct(\''+a.id+'\')">'+a.n+'<small>'+a.cnt+'</small></button>'}).join('');}
+function pickSp(i){SP=i;ACT=SPACES[i].acts[0].id;F='';render();if(!$('ai').hidden)renderBoard();}
+function pickAct(id){ACT=id;F='';render();if(!$('ai').hidden)renderBoard();}
+function tab(t){TAB=t;$('vOps').hidden=t!=='ops';$('vRec').hidden=t!=='rec';$('tOps').classList.toggle('on',t==='ops');$('tRec').classList.toggle('on',t==='rec');if(t==='rec')renderRec();}
+function waitTxt(p){var m=Math.round((Date.now()-p.at)/60000);return m<1?'1분 미만':m+'분';}
+function syncRp(a,o){var RL=rLoad();o.eq.forEach(function(e){var r=repairOf(RL,a.id,e.no);if(r)e.rp=r.rp;});}
+function render(){var a=cur(),o=initAct(a);syncRp(a,o);renderTop();$('auto').checked=AUTO;
+  $('wTb').innerHTML=o.wait.length?o.wait.map(function(p,i){return '<tr><td>'+(i+1)+'</td><td>'+p.nick+'</td><td>'+waitTxt(p)+'</td></tr>'}).join(''):'<tr><td colspan="3" class="empty">대기 고객이 없어요</td></tr>';
+  var g=o.game;if(USE){$('gameBtn').innerHTML='<button class="btn ps" onclick="useMode()">취소</button><button class="btn pri ps" '+(USEL.length?'':'disabled')+' onclick="doUse()">사용 처리'+(USEL.length?' ('+USEL.length+')':'')+'</button>';}else $('gameBtn').innerHTML=g?'<button class="btn end" onclick="askEnd()">⊘ 게임 종료</button>':'<button class="btn pri ps" onclick="startGame()">▶ 게임 시작</button>';
+  $('useBtn').classList.toggle('kept',false);$('useBtn').textContent=USE?'▣ 사용 처리 중':'▣ 티켓 사용 처리';
+  $('mchip').innerHTML='<span class="mchip'+(g?'':' idle')+'"><i></i>'+mname(a,o)+(g?' ('+g.t+')':'')+'</span>';
+  $('mTh').innerHTML='<tr>'+(USE?'<th><input type="checkbox" id="uAll" onchange="useAll(this.checked)"></th>':'')+'<th>No</th><th>닉네임</th><th>장비 번호</th><th>상태</th>'+(g?'':'<th>취소</th>')+'</tr>';
+  $('mTb').innerHTML=o.match.length?o.match.map(function(p,i){return '<tr>'+(USE?'<td>'+(p.used?'<span class="pill p-blue">사용</span>':'<input type="checkbox" class="uck" data-i="'+i+'" '+(USEL.indexOf(i)>=0?'checked':'')+' onchange="useTog('+i+',this.checked)">')+'</td>':'')+'<td>'+(i+1)+'</td><td>'+p.nick+'</td><td class="code">'+(p.eq||'-')+'</td><td><span class="pill '+(p.st==='게임중'?'p-blue':'p-warn')+'">'+p.st+'</span></td>'+(g?'':'<td><button class="xbtn" onclick="askCancel('+i+')">✕</button></td>')+'</tr>'}).join(''):'<tr><td colspan="'+((g?4:5)+(USE?1:0))+'" class="empty">매치에 넣은 고객이 없어요</td></tr>';
+  var list=o.eq.filter(function(e){return !F||e.st===F});
+  $('eTb').innerHTML=list.map(function(e){var seg=[['run','운영','s-run'],['chg','충전','s-chg'],['bad','고장','s-bad']].map(function(x){return '<span class="'+x[2]+(e.st===x[0]?' on':'')+'" onclick="setSt(\''+e.no+'\',\''+x[0]+'\')">'+x[1]+'</span>'}).join('');
+    var rp={done:['done','수리완료'],ing:['ing','수리중'],req:['req','수리요청']}[e.rp];
+    return '<tr><td><span class="code kept" style="padding:1px 4px;cursor:pointer;text-decoration:underline dotted" title="수리 이력 보기" onclick="showHist(\''+a.id+'\',\''+e.no+'\')">'+e.no+'</span></td><td><span class="eseg">'+seg+'</span></td><td><span class="rp '+rp[0]+'">'+rp[1]+'</span></td></tr>'}).join('')||'<tr><td colspan="3" class="empty">해당하는 장비가 없어요</td></tr>';
+  var c={run:0,chg:0,bad:0};o.eq.forEach(function(e){c[e.st]++});$('eqSum').textContent='운영 '+c.run+' · 충전 '+c.chg+' · 고장 '+c.bad;
+  $('fLbl').textContent='('+(F?{run:'운영',chg:'충전',bad:'고장'}[F]:'모두보기')+')';
+  $('fMenu').innerHTML=FOPEN?'<div class="fmenu">'+[['','모두보기'],['run','운영'],['chg','충전'],['bad','고장']].map(function(x){return '<div class="'+(F===x[0]?'on':'')+'" onclick="setF(event,\''+x[0]+'\')">'+x[1]+'</div>'}).join('')+'</div>':'';
+  if(TAB==='rec')renderRec();}
+function togF(e){FOPEN=!FOPEN;render();}
+function setF(e,v){e.stopPropagation();F=v;FOPEN=false;render();}
+document.addEventListener('click',function(e){if(FOPEN&&!e.target.closest('th.f')){FOPEN=false;render();}});
+
+/* 팝업 */
+function pop(h,wide){$('pb').className='pb'+(wide?' wide':'');$('pb').innerHTML=h;$('mw').hidden=false;}
+function closeM(){$('mw').hidden=true;}
+function openManual(where){MODE=where;pop('<div class="t">티켓 번호 입력</div><input id="tk" inputmode="numeric" maxlength="13" placeholder="티켓 번호를 입력하세요 (13자리)" oninput="this.value=this.value.replace(/\\D/g,\'\');$(\'tkOk\').disabled=this.value.length!==13"><div class="pbtns"><button class="btn light" onclick="closeM()">닫기</button><button class="btn pri" id="tkOk" disabled onclick="gotTicket($(\'tk\').value)">확인</button></div>');setTimeout(function(){$('tk')&&$('tk').focus()},50);}
+function openNfc(where){MODE=where;pop('<div class="nfc"><div class="rings"><span></span><span></span><span></span><b>✊</b></div><div>티켓을 태그해주세요</div><button class="btn kept" style="height:30px;font-size:12px" onclick="gotTicket()">예시: 태그한 것으로 넣기</button></div>');}
+function gotTicket(tk){var o=initAct(cur());if(tk&&o.wait.concat(o.match).some(function(p){return p.ticket===tk})){toast('이미 들어 있는 티켓이에요.');return;}
+  var p=mkP(o,0,tk);
+  if(MODE==='wait'){o.wait.push(p);closeM();render();tTop('대기 목록에 추가되었습니다.');return;}
+  if(o.game){o.wait.push(p);closeM();render();tTop('대기 목록에 추가되었습니다.');toast('<span style="color:#C9B8FF">게임 중에는 매치에 넣을 수 없어서 대기에 넣었어요. (정하는 중)</span>');return;}
+  PICK={p:p,sel:'',rng:0};openPick();}
+function ranges(a){var r=[['모두보기',1,a.cnt]];if(a.cnt>30)for(var s=1;s<=a.cnt;s+=30)r.push([s+'~'+Math.min(a.cnt,s+29)+'번',s,Math.min(a.cnt,s+29)]);return r;}
+function openPick(){var a=cur(),o=initAct(a),rg=ranges(a),R=rg[PICK.rng];var used=o.match.map(function(p){return p.eq});
+  var items=o.eq.filter(function(e,i){return i+1>=R[1]&&i+1<=R[2]});
+  pop('<div class="t">'+(a.gun?'총기':'장비')+' 선택</div><div class="eqpick"><div class="row"><span class="k">🎫 티켓 번호</span><span class="code">'+PICK.p.ticket+'</span></div><div class="row"><span class="k">⚙ 장비 번호</span><span class="rchips">'+rg.map(function(x,i){return '<span class="'+(i===PICK.rng?'on':'')+'" onclick="PICK.rng='+i+';openPick()">'+x[0]+'</span>'}).join('')+'</span></div>'+
+    '<div class="elist">'+items.map(function(e){var dis=e.st!=='run'||used.indexOf(e.no)>=0;var why=used.indexOf(e.no)>=0?'사용 중':e.st!=='run'?{chg:'충전',bad:'고장'}[e.st]:'';return '<div class="'+(PICK.sel===e.no?'on':'')+(dis?' dis':'')+'" '+(dis?'':'onclick="PICK.sel=\''+e.no+'\';openPick()"')+'>⚙ <span class="code">'+e.no+'</span><small>'+why+'</small></div>'}).join('')+'</div></div>'+
+    '<div class="pbtns" style="justify-content:center"><button class="btn pri" style="flex:0 0 90px" '+(PICK.sel?'':'disabled')+' onclick="doPick()">확인</button></div>',true);}
+function doPick(){var o=initAct(cur());PICK.p.eq=PICK.sel;PICK.p.st='대기중';o.match.push(PICK.p);PICK=null;closeM();render();}
+function askCancel(i){var a=cur(),o=initAct(a),p=o.match[i];pop('<div class="t">'+mname(a,o)+'</div>'+p.eq+'번 장비를 맵핑해제 하시겠습니까?<div class="pbtns"><button class="btn light" onclick="closeM()">닫기</button><button class="btn pri" onclick="doCancel('+i+')">확인</button></div>',true);}
+function doCancel(i){var o=initAct(cur());var p=o.match.splice(i,1)[0];closeM();render();tTop(p.nick+'님의 맵핑이 해제되었습니다.');}
+function startGame(){var o=initAct(cur());if(!o.match.length){toast('<span style="color:#C9B8FF">매치에 고객을 먼저 넣어 주세요. (비었을 때 동작은 정하는 중)</span>');return;}o.game={t:hm(new Date())};o.match.forEach(function(p){p.st='게임중'});render();}
+function askEnd(){var a=cur(),o=initAct(a);pop('<div class="t">'+mname(a,o)+'  ('+o.game.t+')</div>해당 매치의 게임을 종료하시겠습니까?<div class="pbtns"><button class="btn light" onclick="closeM()">닫기</button><button class="btn pri" onclick="endGame()">게임 종료</button></div>',true);}
+function endGame(){var a=cur(),o=initAct(a);var label=mname(a,o)+'  ('+o.game.t+')';
+  o.match.forEach(function(p,i){o.recs.push({match:label,used:p.used,nick:p.nick,ticket:p.ticket,eq:p.eq||'-',rank:i+1,score:Math.max(10,230-i*47-(p.nick.length*3)),kill:Math.max(0,8-i*2),death:2+i*2,lap:(62.4+i*1.83).toFixed(3)});});
+  o.match=[];o.game=null;o.mno+=1;closeM();tTop(label+'가 종료되었습니다.');
+  if(AUTO&&o.wait.length){var free=o.eq.filter(function(e){return e.st==='run'});var n=0;while(o.wait.length&&n<free.length&&n<Math.min(12,a.cnt)){var p=o.wait.shift();p.eq=free[n].no;p.st='대기중';o.match.push(p);n++;}
+    if(n)setTimeout(function(){toast('<span style="color:#C9B8FF">대기 고객 '+n+'명을 다음 매치에 자동으로 넣었어요. (정하는 중)</span>')},400);}
+  render();}
+
+/* 티켓 사용 처리: 오류로 사용 처리가 안 된 티켓을 크루가 수동 처리 */
+var USE=false,USEL=[];
+function useMode(){USE=!USE;USEL=[];var o=initAct(cur());if(USE&&!o.match.length){USE=false;toast('매치 정보에 고객이 없어요.');}render();}
+function useTog(i,on){var k=USEL.indexOf(i);if(on&&k<0)USEL.push(i);if(!on&&k>=0)USEL.splice(k,1);render();}
+function useAll(on){var o=initAct(cur());USEL=on?o.match.map(function(p,i){return p.used?-1:i}).filter(function(i){return i>=0}):[];render();}
+function doUse(){var o=initAct(cur());var n=USEL.length;USEL.forEach(function(i){o.match[i].used=true;});USE=false;USEL=[];render();tTop('<span style="color:var(--note)">'+n+'명의 티켓을 사용 처리했어요. (안내 문구는 정하는 중)</span>');}
+/* 고장 접수 */
+var BADSEL=[],BADMEMO='';
+function setSt(no,st){var o=initAct(cur());var e=o.eq.filter(function(x){return x.no===no})[0];if(e.st===st)return;
+  if(st==='bad'){BADSEL=[];BADMEMO='';openBad(no);return;}
+  if(e.rp==='req'||e.rp==='ing'){tTop('수리요청 장비는 상태 변경이 불가합니다.');return;}
+  e.st=st;logSt(cur().id,no,st==='run'?'운영 전환':'충전 전환');render();if(!$('ai').hidden)renderBoard();tTop('<span style="color:var(--note)">['+(st==='run'?'운영':'충전')+'] 상태로 변경되었습니다.</span>');}
+function openBad(no){var a=cur();var unk=BADSEL.indexOf('판단불가')>=0,anyPart=BADSEL.some(function(x){return x!=='판단불가'});
+  var chip=function(x,dis,kept){var on=BADSEL.indexOf(x)>=0;return '<button class="bchip'+(on?' on':'')+(kept?' kept':'')+'" '+(dis?'disabled':'')+' onclick="togBad(\''+no+'\',\''+x+'\')">'+(x==='판단불가'?'? ':'')+x+'</button>';};
+  pop('<button class="px" onclick="closeM()">✕</button><div class="t">고장 기구 선택</div><div class="muted" style="font-size:12px;margin:-8px 0 12px">'+no+'</div><div class="bchips">'+a.parts.map(function(x){return chip(x,unk,true)}).join('')+chip('판단불가',anyPart)+'</div>'+
+  '<input id="bmemo" placeholder="메모를 입력하세요" value="'+BADMEMO.replace(/"/g,'&quot;')+'" oninput="BADMEMO=this.value" style="margin-top:14px">'+
+  '<div class="pbtns"><button class="btn" style="height:36px;flex:1" onclick="BADSEL=[];openBad(\''+no+'\')">선택 해제</button><button class="btn pri" '+(BADSEL.length?'':'disabled')+' onclick="saveBad(\''+no+'\')">확인</button></div>',true);}
+function togBad(no,x){if(x==='판단불가'){BADSEL=BADSEL.indexOf(x)>=0?[]:['판단불가'];}else{BADSEL=BADSEL.filter(function(y){return y!=='판단불가'});var k=BADSEL.indexOf(x);if(k>=0)BADSEL.splice(k,1);else BADSEL.push(x);}openBad(no);}
+function addRepair(act,no,parts,memo){var RL=rLoad();var id=RL.reduce(function(m,r){return Math.max(m,r.id)},0);parts.forEach(function(pt){RL.push({id:++id,act:act,no:no,part:pt==='판단불가'?'-':pt,memo:memo||'',rp:'req',reqBy:'크루 (나)',req:nowStr(),accBy:'',acc:'',doneBy:'',done:''});});rSave(RL);}
+function saveBad(no){var a=cur();var e=initAct(a).eq.filter(function(x){return x.no===no})[0];e.st='bad';e.rp='req';addRepair(a.id,no,BADSEL,BADMEMO);closeM();render();if(!$('ai').hidden)renderBoard();tTop('[고장] 상태로 변경되었습니다.');}
+
+/* 기록 관리: 공통 칸 + 하레나·왕의동굴 킬·데스, 디지털레이스 랩타임 */
+function recCols(a){var c=[['닉네임','nick'],['티켓 No','ticket','code'],['장비 번호','eq','code'],['사용 처리','use'],['기록 상태','rs'],['랭킹','rank','num'],['스코어','score','num']];if(a.rec==='kd')c.push(['킬','kill','num'],['데스','death','num']);if(a.rec==='race')c.push(['랩타임','lap','num']);return c;}
+var KEPTC=['rank','score','kill','death','lap'];
+function renderRec(){var a=cur(),o=initAct(a),C=recCols(a);var matches=[];o.recs.forEach(function(r){if(matches.indexOf(r.match)<0)matches.push(r.match)});
+  var sel=$('rMatch');var prev=sel.value;sel.innerHTML=matches.length?matches.slice().reverse().map(function(m){return '<option>'+m+'</option>'}).join(''):'<option value="">매치가 없어요</option>';if(matches.indexOf(prev)>=0)sel.value=prev;
+  $('rTh').innerHTML='<tr>'+C.map(function(c){return '<th'+(KEPTC.indexOf(c[1])>=0?' class="kept"':'')+'>'+c[0]+'</th>'}).join('')+'</tr>';
+  var q=$('rQ').value.trim();var k=$('rK').value;var list=o.recs.filter(function(r){return r.match===sel.value&&(!q||String(r[k]).indexOf(k==='ticket'?q.replace(/\s/g,''):q)>=0)});
+  $('rTb').innerHTML=list.length?list.map(function(r){return '<tr>'+C.map(function(c){var v=c[1]==='use'?(r.used?'<span class="pill p-blue">사용</span>':'<span class="pill p-gray">미사용</span>'):c[1]==='rs'?'<span class="pill p-blue">정상</span>':r[c[1]];return '<td class="'+(c[2]||'')+(KEPTC.indexOf(c[1])>=0?' kept':'')+'">'+v+'</td>'}).join('')+'</tr>'}).join(''):'<tr><td colspan="'+C.length+'" class="empty">기록이 없어요. 운영 관리에서 게임을 시작하고 종료해 보세요.</td></tr>';}
+
+/* AI 상태 반영 (정하는 중) — GR 정비 관리 방식:
+   운영방 메시지(한 줄에 장비 하나: "번호 / 증상 / 조치")를 읽어 상태를 바로 반영하고, 장비별 수리 이력을 남긴다.
+   액티비티 이름을 빼면 앞 줄(없으면 지금 보고 있는 액티비티)로 본다. 문장 이해 규칙은 예시 */
+var LKEY='icnActLog';
+function lLoad(){try{var v=JSON.parse(localStorage.getItem(LKEY)||'null');if(Array.isArray(v))return v;}catch(e){}return [];}
+function logSt(act,no,kind,by){var L=lLoad();L.push({act:act,no:no,kind:kind,by:by||'크루 (나)',date:nowStr()});try{localStorage.setItem(LKEY,JSON.stringify(L));}catch(e){}}
+var AI_SUG=['하레나 12 / 방아쇠 안 눌림 / 운영 제외','12 조끼 센서 오류\n15 정비완료 운영복귀','벡토 3 충전','오늘 수리 현황 알려줘'];
+function toggleAi(force){var e=$('ai');e.hidden=force===true?false:!e.hidden;if(!e.hidden&&!$('aiB').children.length){bot('운영방에 올리던 메시지를 그대로 붙여 넣으세요. 한 줄에 장비 하나씩 읽어서 바로 반영해요.\n예) 12 / 방아쇠 안 눌림 / 운영 제외');$('aiS').innerHTML=AI_SUG.map(function(s){return '<span onclick="$(\'aiQ\').value=this.dataset.v;aiSend()" data-v="'+s.replace(/"/g,'&quot;')+'">'+s.replace(/\n/g,' ⏎ ')+'</span>'}).join('');}
+  if(!e.hidden){renderBoard();$('aiQ').focus();}}
+function bot(h){var d=document.createElement('div');d.className='msg bot';d.innerHTML=h;$('aiB').appendChild(d);$('aiB').scrollTop=1e6;return d;}
+function me(t){var d=document.createElement('div');d.className='msg me';d.textContent=t;$('aiB').appendChild(d);$('aiB').scrollTop=1e6;}
+var AL={'하레나':'harena','비바리움':'harena','큐브 벡토':'cvecto','큐브벡토':'cvecto','벡토':'vecto','노바슬론':'nova','노바':'nova','놀이판':'nolli','왕의동굴':'cave','큐브비전':'cvision','육각형':'chex','높은':'chigh','fg':'fgdr','디지털레이스':'tdr'};
+function findActIn(t){var keys=Object.keys(AL).sort(function(a,b){return b.length-a.length});for(var i=0;i<keys.length;i++)if(t.toLowerCase().indexOf(keys[i])>=0)return {a:actById(AL[keys[i]]),k:keys[i]};return null;}
+/* 정비 현황 (GR 정비 관리의 대기 / 정비 중 / 오늘 완료) */
+function renderBoard(){var a=cur(),RL=rLoad();var latest={};RL.forEach(function(r){if(r.act!==a.id)return;if(!latest[r.no]||r.id>latest[r.no].id)latest[r.no]=r;});
+  var req=[],ing=[],done=[];Object.keys(latest).forEach(function(no){var r=latest[no];if(r.rp==='req')req.push(no);else if(r.rp==='ing')ing.push(no);else if(r.done&&r.done.indexOf('2026-11-12')===0)done.push(no);});
+  var box=function(t,cls,list){return '<div class="bd"><div class="bh">'+t+'<span class="bc '+cls+'">'+list.length+'</span></div><div class="bl">'+(list.length?list.sort().map(function(no){return '<span class="bp '+cls+'" onclick="showHist(\''+a.id+'\',\''+no+'\')">'+no.split('-')[1]+'</span>'}).join(''):'<span class="muted" style="font-size:11.5px">없음</span>')+'</div></div>'};
+  $('aiBoard').innerHTML='<div class="bt">'+a.n+' 수리 현황 <span class="muted">('+ing.length+' 수리중 / '+req.length+' 수리요청 / '+done.length+' 오늘 완료)</span></div><div class="bgrid">'+box('수리요청','c-req',req)+box('수리중','c-ing',ing)+box('오늘 완료','c-done',done)+'</div>';}
+/* 장비 수리 이력 (GR 정비 관리의 정비 이력 타임라인) */
+var RPN2={req:'수리요청',ing:'수리중',done:'수리완료'};
+function showHist(actId,no){toggleAi(true);var a=actById(actId),o=initAct(a),e=o.eq.filter(function(x){return x.no===no})[0];var RL=rLoad().filter(function(r){return r.act===actId&&r.no===no});var LG=lLoad().filter(function(l){return l.act===actId&&l.no===no});
+  var items=RL.map(function(r){return {date:r.done||r.acc||r.req,st:r.rp,parts:r.part==='-'?[]:[r.part],tx:r.memo||(r.part==='-'?'판단불가':r.part+' 고장'),owner:r.doneBy||r.accBy||r.reqBy,meta:'요청 '+r.req.slice(5)+(r.acc?' · 접수 '+r.acc.slice(5):'')+(r.done?' · 완료 '+r.done.slice(5):'')}}).concat(LG.map(function(l){return {date:l.date,st:'log',kind:l.kind,parts:[],tx:l.kind,owner:l.by,meta:''}}));
+  items.sort(function(x,y){return x.date<y.date?1:-1});
+  var cnt={};RL.forEach(function(r){if(r.part!=='-')cnt[r.part]=(cnt[r.part]||0)+1});var top=Object.keys(cnt).sort(function(x,y){return cnt[y]-cnt[x]})[0];
+  var stLbl={run:'운영',chg:'충전',bad:'고장'}[e.st];
+  var h='<div class="hist"><div class="hh"><b class="code">'+no+'</b><span class="vt">'+a.n+'</span><span class="hb '+e.st+'">현재 '+stLbl+(e.rp!=='done'?' · '+RPN2[e.rp]:'')+'</span></div>'+
+    '<div class="hs"><div><small>누적 수리</small><b>'+RL.length+'건</b></div><div><small>최근 수리</small><b>'+(RL.length?RL.map(function(r){return r.req}).sort().pop().slice(5,10):'-')+'</b></div><div><small>자주 고장 난 곳</small><b>'+(top?top+' ('+cnt[top]+')':'-')+'</b></div></div>'+
+    (items.length?'<div class="tl">'+items.map(function(it,i){var tg=it.st==='log'?'<span class="tg t-log">'+it.kind+'</span>':'<span class="tg t-'+it.st+'">'+RPN2[it.st]+'</span>';return '<div class="ti '+(i===0?'cur':'')+'"><span class="nd"></span><div class="tr"><span class="td">'+it.date.slice(5)+'</span>'+tg+'<span class="to">담당 '+it.owner+'</span></div>'+(it.parts.length?'<div>'+it.parts.map(function(p){return '<span class="pc">'+p+'</span>'}).join('')+'</div>':'')+(it.st!=='log'?'<div class="tx">'+it.tx+'</div>':'')+(it.meta?'<div class="tm">'+it.meta+'</div>':'')+'</div>'}).join('')+'</div>':'<div class="muted" style="padding:8px 0">수리 이력이 없어요.</div>')+'</div>';
+  bot(h);}
+/* 운영방 메시지 한 줄씩 반영 */
+function aiSend(){var t=$('aiQ').value.trim();if(!t)return;$('aiQ').value='';me(t);
+  setTimeout(function(){
+    if(/현황|알려|목록|어떤/.test(t)&&!/\d/.test(t)){renderBoard();bot('위쪽 수리 현황을 새로 고쳤어요. 번호를 누르면 그 장비의 수리 이력이 보여요.');return;}
+    var lastAct=cur(),out=[];
+    t.split(/\n+/).forEach(function(line){line=line.trim();if(!line)return;var fa=findActIn(line);var a=fa?fa.a:lastAct;lastAct=a;var o=initAct(a);
+      var rest=fa?line.replace(new RegExp(fa.k,'i'),''):line;var m=rest.match(/(\d{1,2})\s*번?/);if(!m){out.push({line:line,err:'장비 번호를 못 찾았어요'});return;}
+      var no=eqNo(a,+m[1]);var e=o.eq.filter(function(x){return x.no===no})[0];if(!e){out.push({line:line,err:a.n+'에 '+no+' 장비가 없어요'});return;}
+      var seg=rest.replace(m[0],'').split('/').map(function(s){return s.trim()}).filter(Boolean);var sym=seg[0]||'';
+      var parts=a.parts.filter(function(p){return line.indexOf(p)>=0});
+      if(/완료|복귀|끝/.test(line)){var RL=rLoad(),r=repairOf(RL,a.id,no);if(r&&r.rp!=='done'){if(!r.acc){r.accBy='크루 (나)';r.acc=nowStr();}r.rp='done';r.doneBy='크루 (나)';r.done=nowStr();if(sym&&!/완료|복귀/.test(sym))r.memo=(r.memo?r.memo+' / ':'')+sym;rSave(RL);}e.rp='done';e.st='run';logSt(a.id,no,'운영 복귀');out.push({a:a,no:no,res:'수리완료 → 운영'});return;}
+      if(/고장|파손|오류|안\s?돼|안\s?눌|제외|이상|불량|소음/.test(line)){if(e.rp==='req'||e.rp==='ing'){out.push({a:a,no:no,err:'이미 '+RPN2[e.rp]+' 상태예요'});return;}
+        e.st='bad';e.rp='req';addRepair(a.id,no,parts.length?parts:['판단불가'],seg.join(' / ')||sym);out.push({a:a,no:no,res:'고장 → 수리요청'+(parts.length?' · '+parts.join(', '):' · 판단불가')});return;}
+      var st=/충전/.test(line)?'chg':/운영|투입/.test(line)?'run':null;if(!st){out.push({a:a,no:no,err:'바꿀 상태를 못 찾았어요 (운영 · 충전 · 고장 · 완료)'});return;}
+      if(e.rp==='req'||e.rp==='ing'){out.push({a:a,no:no,err:'수리요청 장비는 상태 변경이 불가합니다.'});return;}
+      e.st=st;logSt(a.id,no,st==='run'?'운영 전환':'충전 전환');out.push({a:a,no:no,res:(st==='run'?'운영':'충전')+'으로 변경'});});
+    var ok=out.filter(function(x){return !x.err}).length;
+    if(ok&&lastAct.id!==ACT){for(var i=0;i<SPACES.length;i++)for(var j=0;j<SPACES[i].acts.length;j++)if(SPACES[i].acts[j].id===lastAct.id){SP=i;ACT=lastAct.id;}}
+    render();renderBoard();
+    bot('메시지 '+out.length+'줄 중 '+ok+'줄을 반영했어요.<div class="prop">'+out.map(function(x){return '<div class="r">'+(x.no?'<a class="code lk" onclick="showHist(\''+x.a.id+'\',\''+x.no+'\')">'+x.no+'</a>':'<span class="muted">'+x.line.slice(0,16)+'</span>')+(x.err?'<span style="color:var(--red)">'+x.err+'</span>':'<b>'+x.res+'</b>')+'</div>'}).join('')+'</div><div class="muted" style="font-size:11.5px;margin-top:4px">번호를 누르면 수리 이력이 보여요.</div>');},300);}
+
+render();setInterval(function(){if($('mw').hidden)render();},30000);
+</script>
+</body>
+</html>

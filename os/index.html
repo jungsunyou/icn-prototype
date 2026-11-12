@@ -140,6 +140,32 @@
           <a data-id="grop" data-file="gr_operation.html">GR 운영 관리</a>
         </nav>
       </div>
+      <div class="grp">
+        <div class="grphead"><span class="gi"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="7" cy="7" r="3"/><rect x="14" y="4" width="6" height="6" rx="1"/><path d="M4 20l3-6 3 6zM14 14h6v6h-6z"/></svg></span><span class="gt">액티비티</span><span class="chev">⌄</span></div>
+        <nav class="nav" id="nav3">
+          <a data-id="equipment" data-file="equipment.html">통합 장비 관리</a>
+          <a data-id="activityops" data-file="activity_ops.html">운영 관리</a>
+          <a data-id="dograce" data-file="dog_race.html" style="color:#6a5acd">강아지레이스 <span style="font-size:10px;border:1px dashed #6a5acd;border-radius:4px;padding:0 4px">정하는 중</span></a>
+        </nav>
+      </div>
+      <div class="grp">
+        <div class="grphead"><span class="gi"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 6a4 4 0 0 0 5 5l-8 8-3-3 8-8a4 4 0 0 0-2-2z"/></svg></span><span class="gt">파크 운영 관리</span><span class="chev">⌄</span></div>
+        <nav class="nav" id="nav4">
+          <a data-id="opaccount" data-file="op_account.html">운영자 계정 관리</a>
+          <a data-id="opstatus" data-file="op_status.html">액티비티 운영 상태 관리</a>
+          <a data-id="opschedule" data-file="op_schedule.html">책임자 스케줄 관리</a>
+          <a data-id="opticket" data-file="op_ticket.html">운영자 티켓 발급</a>
+          <a data-id="opdisplay" data-file="op_display.html" style="color:#6a5acd">디스플레이 제어 <span style="font-size:10px;border:1px dashed #6a5acd;border-radius:4px;padding:0 4px">정하는 중</span></a>
+        </nav>
+      </div>
+      <div class="grp">
+        <div class="grphead"><span class="gi"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="5" width="16" height="4" rx="1"/><path d="M5 9v10h14V9M10 13h4"/></svg></span><span class="gt">재고 관리</span><span class="chev">⌄</span></div>
+        <nav class="nav" id="nav5">
+          <a data-id="stock" data-file="stock.html">재고 관리</a>
+          <a data-id="stockhistory" data-file="stock_history.html">재고 변경 이력</a>
+          <a data-id="stockin" data-file="stock_in.html">입고 이력</a>
+        </nav>
+      </div>
     </div>
   </aside>
 
@@ -172,7 +198,18 @@
     {id:'boarding',file:'race_boarding.html',label:'승차장 관제'},
     {id:'judgereq',file:'race_judge_req.html',label:'레이스 심사 요청'},
     {id:'testrace',file:'race_test.html',label:'테스트 레이스'},
-    {id:'grop',file:'gr_operation.html',label:'GR 운영 관리'}
+    {id:'grop',file:'gr_operation.html',label:'GR 운영 관리'},
+    {id:'equipment',file:'equipment.html',label:'통합 장비 관리'},
+    {id:'activityops',file:'activity_ops.html',label:'운영 관리'},
+    {id:'dograce',file:'dog_race.html',label:'강아지레이스'},
+    {id:'opaccount',file:'op_account.html',label:'운영자 계정 관리'},
+    {id:'opstatus',file:'op_status.html',label:'액티비티 운영 상태 관리'},
+    {id:'opschedule',file:'op_schedule.html',label:'책임자 스케줄 관리'},
+    {id:'opticket',file:'op_ticket.html',label:'운영자 티켓 발급'},
+    {id:'opdisplay',file:'op_display.html',label:'디스플레이 제어'},
+    {id:'stock',file:'stock.html',label:'재고 관리'},
+    {id:'stockhistory',file:'stock_history.html',label:'재고 변경 이력'},
+    {id:'stockin',file:'stock_in.html',label:'입고 이력'}
   ];
   var view=document.getElementById('view'), nav=document.getElementById('nav'), mtabs=document.getElementById('mtabs');
   items.forEach(function(it){var a=document.createElement('a');a.textContent=it.label;a.dataset.id=it.id;a.dataset.file=it.file;a.href='#'+it.id;mtabs.appendChild(a);});

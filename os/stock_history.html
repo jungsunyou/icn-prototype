@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta name="robots" content="noindex,nofollow">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>재고 변경 이력</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="common.css">
+<link rel="stylesheet" href="park.css">
+<body>
+<div class="app">
+  <div class="crumb" style="font-size:12px;color:var(--muted)">재고 관리 › 재고 변경 이력</div>
+  <div class="top"><h1>재고 변경 이력 <span class="ex">예시 데이터</span></h1></div>
+  <div class="card">
+    <div class="ch"><label class="fld">▦ <input type="date" id="d0" value="2026-10-13" onchange="render()"> - <input type="date" id="d1" value="2026-11-12" onchange="render()"></label><label class="fld" style="width:300px">⌕ <input id="q" placeholder="부품명, 부품번호" oninput="render()"></label></div>
+    <div class="pills" id="tabs" style="margin:6px 0 8px"></div>
+    <div class="tblwrap"><table><thead id="th"></thead><tbody id="tb"></tbody></table></div><div id="pg"></div>
+  </div>
+  <div class="memo">
+    <div class="mh">안내</div>
+    <ul>
+      <li>재고가 바뀐 기록을 봐요. 기간과 부품명 · 부품번호로 찾아요.</li>
+      <li><b>이동</b>: 보관 장소를 옮기거나 재고 상세에서 수량을 고친 기록.</li>
+      <li><b>사용</b>: 정비 등으로 부품을 쓴 기록.</li>
+    </ul>
+    <div style="margin-top:8px;color:var(--note)"><b style="color:var(--note)">정하는 중</b></div>
+    <ul style="color:var(--note)">
+      <li>사용 탭의 칸 구성 (지금은 이동 탭과 같은 칸)</li>
+      <li>'System 처리 내역'에 남길 값</li>
+    </ul>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+<script src="park.js"></script>
+<script>
+var S=sLoad(),TAB='이동';
+function render(){$('tabs').innerHTML=['이동','사용'].map(function(t){return '<button class="'+(t===TAB?'on':'')+'" onclick="TAB=\''+t+'\';render()">'+t+'</button>'}).join('');
+  $('th').innerHTML='<tr><th>부품번호</th><th>부품명</th><th>보관장소(기존)</th><th>보관장소(변경)</th><th>수량</th><th>System 처리 내역</th><th>사유</th><th>처리일시</th></tr>';
+  var q=$('q').value.trim(),d0=$('d0').value,d1=$('d1').value;var L=S.moves.filter(function(m){var d=m.at.slice(0,10);return m.type===TAB&&d>=d0&&d<=d1&&(!q||(m.no+m.name).indexOf(q)>=0)});
+  $('tb').innerHTML=L.length?L.map(function(m){return '<tr><td class="code">'+m.no+'</td><td>'+esc(m.name)+'</td><td>'+m.from+'</td><td>'+m.to+'</td><td class="num">'+(m.qty>0&&m.type==='이동'&&m.from===m.to?'+':'')+m.qty+'</td><td class="kept">'+m.sys+'</td><td>'+esc(m.why)+'</td><td class="code">'+m.at+'</td></tr>'}).join(''):'<tr><td colspan="8" class="empty">이력이 없어요</td></tr>';
+  $('pg').innerHTML=pager(L.length);}
+render();
+</script>
+</body>
+</html>

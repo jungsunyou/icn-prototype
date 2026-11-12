@@ -380,14 +380,7 @@ function bookingTab(){
     </table></div>
     <div class="pag"><button class="on">1</button></div>
   </section>
-  <div class="note"><b>안내 · 구현 시 제외</b> 예약 탭은 제주 화면과 같아요. 인천에서 바뀐 곳만 적어요.
-    <ul>
-      <li>수량 칸에 인원과 함께 차감될 레이스 차량 대수를 보여줘요.</li>
-      <li>레이스 상품은 운전자, 주니어 운전자, 동승자 수를 나눠 넣어요. 동승자는 운전자(주니어 포함) 수까지만, 주니어 운전자는 동승자가 있어야 넣을 수 있어요.</li>
-      <li>"견적 진행" 카드는 제주에서 실제로는 전체 건수를 보여주고 있어요. 인천에서는 무엇을 셀지 정해야 해요.</li>
-      <li>커스텀 입금 금액·입금 단가·수수료 단가는 제주와 같아요. 단가는 한 상품 행의 모든 인원(운전자, 주니어 운전자, 동승자)에 똑같이 적용돼요.</li>
-      <li>상품 가격(64,000원, 동승 40,000원)과 거래처, 예약 데이터는 모두 예시예요.</li>
-    </ul></div>`;
+  <div class="note"><b>안내</b><ul><li>예약 탭은 제주 화면과 같아요. 인천에서 바뀐 곳만 적어요.</li><li>수량 칸에 인원과 차감될 레이스 차량 대수를 함께 보여줘요.</li><li>레이스 상품은 운전자 · 주니어 운전자 · 동승자 수를 나눠 넣어요.</li><li>동승자는 운전자(주니어 포함) 수까지 넣을 수 있어요.</li><li>주니어 운전자는 동승자가 있어야 넣을 수 있어요.</li><li>커스텀 입금 금액 · 입금 단가 · 수수료 단가는 제주와 같아요.</li><li>단가는 한 상품 행의 모든 인원에 똑같이 적용돼요.</li><li>상품 가격(64,000원, 동승 40,000원)과 거래처 · 예약 데이터는 예시예요.</li></ul><div style="margin-top:8px;color:var(--note)"><b style="color:var(--note)">정하는 중</b></div><ul style="color:var(--note)"><li>'견적 진행' 카드에서 무엇을 셀지 (제주는 전체 건수)</li></ul></div>`;
 }
 
 /* ---------- 예약 상세 Drawer ---------- */
@@ -521,7 +514,7 @@ function dashboardTab(){
   const panel=S.dtab==='domestic'?`<div class="grid2"><div class="stat"><small>내국인 단체</small><div class="num">${won(sumPay(dom))}</div><div class="sub">${sumPpl(dom).toLocaleString('ko-KR')}명 · ${dom.length}건</div></div><div class="stat"><small>외국인 단체</small><div class="num">${won(sumPay(fr))}</div><div class="sub">${sumPpl(fr).toLocaleString('ko-KR')}명 · ${fr.length}건</div></div></div><div class="sub">지역이 "국외"인 예약을 외국인 단체로 셌어요.</div>`
     :S.dtab==='extra'?`<div class="grid2"><div class="stat"><small>단체 수수료 합계</small><div class="num">${won(tot.com)}</div></div><div class="stat" style="background:var(--note);border-color:var(--note-line);color:var(--note-fg)"><small style="color:var(--note-fg)">학식(F&B) · 답사</small><div style="font-size:13px;margin-top:6px">제주는 학식과 답사 매출을 따로 봐요. 인천 단체에 식사·답사 상품이 생길지 정해지면 넣어요.</div></div></div>`
     :`<div class="note">${S.dtab==='channel'?'제주는 제휴호텔·제휴렌터카 채널로 나눠 봐요. 인천 단체 유입 채널이 정해지면 같은 모양으로 그려요.':'인천은 첫해라 연도별 비교가 없어요. 내년부터 같은 달끼리 비교해요.'}</div>`;
-  return `<div class="note"><b>안내 · 구현 시 제외</b> 대시보드는 제주에서도 아직 목업이에요(개발 화면에서만 보임, 저장 API 없음). 여기서는 시안에 들어 있는 예약 데이터로 계산했고, 인천에서 정해지지 않은 지표는 보라색으로 남겨 두었어요.</div>
+  return `<div class="note"><b>안내</b><ul><li>대시보드는 제주에서도 아직 목업이에요. 개발 화면에만 있고 저장 기능은 없어요.</li><li>시안의 예약 데이터로 계산했어요.</li></ul><div style="margin-top:8px;color:var(--note)"><b style="color:var(--note)">정하는 중</b></div><ul style="color:var(--note)"><li>인천에서 정해지지 않은 지표 (보라색)</li></ul></div>
   <div class="stats">
     <div class="stat"><small>총 이용 인원</small><div class="num">${tot.ppl.toLocaleString('ko-KR')}명</div><div class="sub">목표 ${gp.toLocaleString('ko-KR')}명 대비 ${gp?Math.round(tot.ppl/gp*100):0}%</div></div>
     <div class="stat"><small>총 결제금액</small><div class="num">${fmtMan(tot.amt)}</div><div class="sub">목표 ${fmtMan(ga)} 대비 ${ga?Math.round(tot.amt/ga*100):0}%</div></div>
@@ -590,10 +583,7 @@ function vendorTab(){
     <td><span style="display:inline-flex;align-items:center;gap:8px;font-weight:500"><span style="width:26px;height:26px;border-radius:50%;background:var(--primary-tint);color:var(--primary);display:inline-flex;align-items:center;justify-content:center;font-size:12px">${esc(a.name[0])}</span>${esc(a.name)}</span></td>
     <td>${PTYPE[a.type]}</td><td>${chip(...PSTATUS[a.status])}</td><td>${a.region||'-'}</td><td>${esc(a.representative)||'-'}</td><td>${esc(c.name)||'-'}${a.contacts.length>1?` <span class="sub" style="display:inline">외 ${a.contacts.length-1}명</span>`:''}</td><td class="num">${esc(c.phone)||'-'}</td><td>${esc(c.email)||'-'}</td></tr>`}).join(''):`<tr><td colspan="9" class="empty">검색된 거래처가 없습니다.</td></tr>`}</tbody></table></div>
   <div class="pag"><button class="on">1</button></div></section>
-  <div class="note"><b>안내 · 구현 시 제외</b> 거래처 탭은 제주 화면과 같아요.
-    <ul><li>상품별 수수료는 제주와 같은 방식이에요. 거래처 기본 수수료를 두고, 단체 상품마다 개별 수수료를 따로 정할 수 있어요.</li><li>목록에는 인천 단체 전용 상품만 나와요. 단체 상품 구성이 정해지면 목록이 늘어나요. 동승자는 따로 설정하지 않고 레이스 포함 패키지의 수수료를 그대로 따라요.</li>
-    <li>"이번 달 거래액"은 제주에서 아직 0으로 고정돼 있어요. 여기서는 이번 달 예약 금액 합계로 그렸어요.</li>
-    <li>단체 상품 가격과 거래처 수수료는 아직 정해지지 않아 예시 값이에요.</li></ul></div>`;
+  <div class="note"><b>안내</b><ul><li>거래처 탭은 제주 화면과 같아요.</li><li>거래처 기본 수수료를 두고, 단체 상품마다 수수료를 따로 정할 수 있어요.</li><li>목록에는 인천 단체 전용 상품만 나와요.</li><li>동승자는 레이스 포함 패키지의 수수료를 그대로 따라요.</li><li>'이번 달 거래액'은 이번 달 예약 금액 합계로 그렸어요. (제주는 0으로 고정)</li></ul><div style="margin-top:8px;color:var(--note)"><b style="color:var(--note)">정하는 중</b></div><ul style="color:var(--note)"><li>단체 상품 구성 · 가격과 거래처 수수료 (지금은 예시)</li></ul></div>`;
 }
 function prodComm(a,key,price){const o=a.products.find(x=>x.prd===key);const m=o?o.method:a.method,v=o?o.value:a.value;const c=m==='FIXED'?num(v):price*num(v)/100;return{src:o?'개별':'기본',m,v,c,dep:Math.max(price-c,0)}}
 function pDrawerHTML(a){
@@ -693,7 +683,7 @@ function calendarTab(){
           ${day.slice(0,2).map(b=>`<div style="font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"><span style="color:${GTYPE[b.type][1]}">●</span> ${esc(b.groupName)}</div>`).join('')}${day.length>2?`<div class="sub" style="margin:0">+${day.length-2}건</div>`:''}`:''}
         </div>`}).join('')}
     </div></div></section>
-  <div class="note"><b>안내 · 구현 시 제외</b> 캘린더는 제주 화면과 같아요. 인천에서는 날짜 칸과 월 요약에 인원과 함께 레이스 차량 대수를 보여줘요. 날짜를 누르면 그날 예약 목록이 열려요.</div>`;
+  <div class="note"><b>안내</b><ul><li>캘린더는 제주 화면과 같아요.</li><li>날짜 칸과 월 요약에 인원과 레이스 차량 대수를 보여줘요.</li><li>날짜를 누르면 그날 예약 목록이 열려요.</li></ul></div>`;
 }
 function cDrawerHTML(ds){
   const day=calBooks().filter(b=>b.date===ds).sort((a,b)=>a.time.localeCompare(b.time));
@@ -756,7 +746,7 @@ function surveyTab(){
     <td style="font-weight:500">${esc(s.groupName)}</td><td>${esc(agencyName(s.agency))||'-'}</td><td>${esc(s.visitor)} <span class="sub num" style="display:inline">(${esc(s.phone)})</span></td><td>${esc(s.staff)}</td><td>${s.processed||'-'}</td>
     <td>${s.type?chip(...GTYPE[s.type]):'-'}</td><td>${s.region||'-'}</td><td style="color:var(--muted)">${esc(s.memo)||''}</td><td>${s.status==='PENDING'?`<button class="btn sm" data-s2r="${s.id}">접수전환</button>`:''}</td></tr>`).join(''):`<tr><td colspan="15" class="empty">검색된 답사 내역이 없습니다.</td></tr>`}</tbody></table></div>
   <div class="pag"><button class="on">1</button></div></section>
-  <div class="note"><b>안내 · 구현 시 제외</b> 답사 탭은 제주 화면과 같아요. 방문시간(09:00~17:00)은 제주 운영시간 기준이라 인천 운영시간이 정해지면 맞춰요. 제주에서 숨겨 둔 "답사티켓 제공(예약번호)" 칸은 넣지 않았어요.</div>`;
+  <div class="note"><b>안내</b><ul><li>답사 탭은 제주 화면과 같아요.</li><li>제주에서 숨겨 둔 '답사티켓 제공(예약번호)' 칸은 넣지 않았어요.</li></ul><div style="margin-top:8px;color:var(--note)"><b style="color:var(--note)">정하는 중</b></div><ul style="color:var(--note)"><li>방문시간 (지금은 제주 운영시간 09:00~17:00)</li></ul></div>`;
 }
 function receiptTab(){
   const rc=S.receipts,f=S.rf;const [ws,we]=weekRange(TODAY);
@@ -779,8 +769,7 @@ function receiptTab(){
     <td>${chip(PROC[r.processStatus],r.processStatus==='PENDING'?'var(--warning)':'var(--muted)')}</td><td>${chip(...RCSTAT[r.status])}</td><td style="color:var(--muted)">${esc(r.memo)||''}</td>
     <td>${['PENDING','ESTIMATED'].includes(r.status)?`<button class="btn sm" data-r2b="${r.id}">예약전환</button>`:''}</td></tr>`).join(''):`<tr><td colspan="16" class="empty">검색된 접수 내역이 없습니다.</td></tr>`}</tbody></table></div>
   <div class="pag"><button class="on">1</button></div></section>
-  <div class="note"><b>안내 · 구현 시 제외</b> 접수 탭은 제주 화면과 같아요. 인천에서 바뀐 곳은 "예약전환" 팝업이에요. 상품을 넣을 때 운전자, 주니어 운전자, 동승자 수를 나눠 넣어요.
-    <ul><li>처리상태의 "문자발송", "메일안내"는 표시용이에요. 실제 문자·메일 발송 기능은 제주에도 없어요.</li><li>이용시간(09:00~18:00)은 제주 기준이라 인천 운영시간이 정해지면 맞춰요.</li></ul></div>`;
+  <div class="note"><b>안내</b><ul><li>접수 탭은 제주 화면과 같아요.</li><li>인천에서는 '예약전환' 팝업에서 운전자 · 주니어 운전자 · 동승자 수를 나눠 넣어요.</li><li>처리상태의 '문자발송' · '메일안내'는 표시용이에요. 실제 발송 기능은 제주에도 없어요.</li></ul><div style="margin-top:8px;color:var(--note)"><b style="color:var(--note)">정하는 중</b></div><ul style="color:var(--note)"><li>이용시간 (지금은 제주 기준 09:00~18:00)</li></ul></div>`;
 }
 function sDrawerHTML(s){
   const ir=(l,v)=>`<div class="ir"><span>${l}</span><span>${v}</span></div>`,ag=AGENCIES.find(a=>a.id==s.agency);
@@ -937,9 +926,7 @@ function orderTab(){
     <td class="n">${won(c.pay)}</td><td class="n">${won(c.dep)}</td><td class="n">${won(c.com)}</td><td class="n">${won(s.paid-s.refund)}</td>
     <td>${chip(...OSTAT[s.os])}</td><td>${chip(...PSTAT[s.pay])}</td><td>${chip(...SSTAT[b.ord.settle])}</td><td>${b.ord.tax?chip('발행요청','var(--primary)'):'<span style="color:var(--muted)">미발행</span>'}</td></tr>`}).join(''):`<tr><td colspan="14" class="empty">조건에 맞는 주문이 없어요.</td></tr>`}</tbody></table></div>
   <div class="pag"><button class="on">1</button></div></section>
-  <div class="note"><b>안내 · 구현 시 제외</b> 목록은 제주 화면과 같아요.
-    <ul><li>"정산 대기" 카드는 제주에서 0원으로 고정돼 있어요. 여기서는 정산 완료 전인 결제 금액 합계로 그렸어요.</li>
-    <li>행을 누르면 주문/결제 상세가 열려요. 인천에서 바뀐 곳(발권, 환불)은 상세 안에 표시했어요.</li></ul></div>`;
+  <div class="note"><b>안내</b><ul><li>목록은 제주 화면과 같아요.</li><li>'정산 대기' 카드는 정산 완료 전 결제 금액 합계로 그렸어요. (제주는 0원 고정)</li><li>행을 누르면 주문/결제 상세가 열려요.</li><li>인천에서 바뀐 곳(발권, 환불)은 상세 안에 표시했어요.</li></ul></div>`;
 }
 
 function oDrawerHTML(b){
@@ -1010,7 +997,7 @@ function oDrawerHTML(b){
         ${b.memo?`<div class="kv2 kept" style="margin-top:10px;padding:6px 8px;border-radius:8px">${kv('메모',esc(b.memo))}</div>`:''}</section>
       <section class="dcard"><div class="h3r"><h3>주문 내역 및 이용 현황</h3><span class="ml"></span>${b.ord.canceled?'':'<button class="btn sm g" data-addorder>주문 추가</button>'}<button class="btn sm d" data-bulkrefund ${[...S.sel].some(no=>{const f=findTicket(b,no);return f&&f.t.refund<f.t.paid})?'':'disabled'}>환불 확정</button></div>
         ${groups}
-        <div class="note" style="margin-top:12px">· 인천은 로봉(NFC) 1인 1티켓이에요. 짝으로 들어온 운전자와 동승자는 함께 발권·환불돼요. 한 명만 골라도 짝이 같이 선택돼요.<br>· NFC 발권이 곧 이용 시작이에요. 단체를 미리 발권할지, 현장에 온 인원만 발권할지는 정하는 중이에요.<br>· 제주의 레이서 분리·병합은 인천에 없어요(1인 1티켓, 10-08 결정).<br>· 보라 점선은 제주 화면에 없거나 정하는 중인 것: 할인 내역의 '단체 판매가', 예약자 메모, 발권 처리의 레이서 이름(임시레이서 표기)</div></section>
+        <div class="note" style="margin-top:12px"><ul style="margin:0;padding-left:18px"><li>인천은 로봉(NFC) 1인 1티켓이에요.</li><li>짝인 운전자와 동승자는 함께 발권 · 환불돼요.</li><li>한 명만 골라도 짝이 같이 선택돼요.</li><li>NFC 발권이 곧 이용 시작이에요.</li><li>레이서 분리 · 병합은 없어요. (1인 1티켓, 10-08 결정)</li></ul><div style="margin-top:8px;color:var(--note)"><b style="color:var(--note)">정하는 중</b></div><ul style="color:var(--note);margin:0;padding-left:18px"><li>단체를 미리 발권할지, 온 인원만 발권할지</li><li>할인 내역의 '단체 판매가'</li><li>예약자 메모</li><li>발권 처리의 레이서 이름 (임시레이서 표기)</li></ul></div></section>
       ${paySec}
     </div></aside>`;
 }

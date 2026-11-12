@@ -38,15 +38,26 @@
   </div>
 
   <div class="memo">
-    <div class="mh">안내 · 구현 시 제외 가능</div>
+    <div class="mh">안내</div>
     <ul>
-      <li><b>강제 매핑</b>은 티켓에 연결된 회원을 크루가 직접 연결하거나 끊는 화면이에요. 고객 인증 없이 처리하는 점이 사후 매핑과 달라요.</li>
-      <li>티켓 번호를 입력하거나 NFC 아이콘으로 태그하면 <b>티켓 매핑 정보</b>가 보여요.</li>
-      <li>이전 닉네임은 매핑 전 임시 닉네임, 매핑 회원 닉네임은 지금 연결 요청된 회원의 닉네임이에요. 실명·전화번호는 보여주지 않아요.</li>
-      <li><b>해제</b>는 티켓과 회원의 연결을 끊고, <b>매핑</b>은 티켓을 회원에 강제로 연결해요. 회원 ID를 직접 입력하거나 회원을 고르는 단계는 없어요.</li>
-      <li><b>매핑 요청 유형</b>은 FIRST(발권 시), MAPPING(사후 매핑), FORCE_MAPPING(강제 매핑), UNMAPPING(매핑 해제) 중 하나예요. <b>매핑 요청 상태</b>는 REQUEST(요청), ACCEPT(승인), REJECT(거절) 중 하나예요.</li>
-      <li>없는 티켓 번호를 넣으면 '티켓이 존재하지 않습니다.'라고 알려줘요.</li>
-      <li style="color:var(--note)"><b style="color:var(--note)">정하는 중</b> · 해제·매핑을 눌렀을 때 확인 창이 뜨는지, 처리 뒤 줄 값(해제 → UNMAPPING·ACCEPT·매핑 회원 비움, 매핑 → FORCE_MAPPING·ACCEPT로 추정), 매핑할 회원을 무엇으로 정하는지(지금은 표에 있던 회원으로 연결). 보라 점선은 확인하지 못한 것: 처리 뒤 바뀐 값, '티켓이 존재하지 않습니다.' 안내의 모양, REQUEST·REJECT·UNMAPPING 칩 색</li>
+      <li>티켓에 연결된 회원을 크루가 직접 연결하거나 끊어요.</li>
+      <li>고객 인증 없이 처리하는 점이 사후 매핑과 달라요.</li>
+      <li>티켓 번호를 넣거나 NFC로 태그하면 매핑 정보가 보여요.</li>
+      <li>이전 닉네임은 매핑 전 임시 닉네임이에요.</li>
+      <li>실명 · 전화번호는 보여주지 않아요.</li>
+      <li><b>해제</b>는 연결을 끊고, <b>매핑</b>은 강제로 연결해요.</li>
+      <li>회원 ID를 넣거나 회원을 고르는 단계는 없어요.</li>
+      <li>요청 유형: FIRST · MAPPING · FORCE_MAPPING · UNMAPPING</li>
+      <li>요청 상태: REQUEST · ACCEPT · REJECT</li>
+      <li>없는 티켓이면 '티켓이 존재하지 않습니다.'라고 알려줘요.</li>
+    </ul>
+    <div style="margin-top:8px;color:var(--note)"><b style="color:var(--note)">정하는 중</b></div>
+    <ul style="color:var(--note)">
+      <li>해제 · 매핑 때 확인 창이 뜨는지</li>
+      <li>처리 뒤 바뀌는 값 (해제 → UNMAPPING · ACCEPT, 매핑 → FORCE_MAPPING · ACCEPT로 추정)</li>
+      <li>매핑할 회원을 정하는 방법 (지금은 표의 회원)</li>
+      <li>'티켓이 존재하지 않습니다.' 안내 모양</li>
+      <li>REQUEST · REJECT · UNMAPPING 칩 색</li>
     </ul>
   </div>
 </div>

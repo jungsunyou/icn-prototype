@@ -46,12 +46,25 @@
     <div class="tblwrap"><table><thead><tr id="thr"></tr></thead><tbody id="tb"></tbody></table></div>
     <div class="dspager"><span id="tot">총 0개 항목</span><span>1 페이지 중 1 페이지</span><span class="rpp">페이지당 행 수 : <select style="border:none;background:none;font-size:13.5px;font-family:var(--font)"><option>20</option><option>50</option><option>100</option></select></span><span class="sp"></span><div class="pgs"><span>«</span><span>‹</span><span class="on">1</span><span>›</span><span>»</span></div></div>
   </div>
-  <div class="memo"><div class="mh">안내 · 구현 시 제외 가능</div><ul>
+  <div class="memo"><div class="mh">안내</div>
+  <ul>
     <li>레이스 기록이 한 줄씩 쌓여요. 날짜와 티켓 No로 찾아요.</li>
-    <li><b>액티비티 상태</b>(준비중 · 시작 · 게임중 · 종료 · 무효 · 무탑승)와 <b>기록 상태</b>(정상 · 오류 · 무기록)는 머리글을 눌러 거를 수 있어요. 거르면 머리글 아래에 고른 값이 (종료)처럼 보여요.</li>
-    <li>게임중인 레이스는 랩타임이 '측정중..'으로 보이고, 영상 상태는 정상 · 에러 수 / 전체 영상 수로 보여요.</li>
-    <li>잘못 남은 기록은 골라서 <b>기록 삭제</b>해요. 줄을 누르면 <b>레이스 기록 상세</b>가 열려요. 사용자 · 레이싱 · 심사 정보, 기록 정보(랩타임 · 속도 · 횡G · 반응 시간 · 부정 출발 · 부스터 · 구간별 기록), GPS 좌표 · 속도/브레이크 · 횡G 그래프, 영상(숨김/공개 · 다운로드 · 영상 종류 고르기)을 봐요.</li>
-    <li style="color:var(--note)"><b style="color:var(--note)">정하는 중</b> · 트랙 번호 붙이는 방식(예시: 1코스 1·2, 2코스 3·4, 3코스 5·6, ICN-L은 L, ICN-R은 R), 차량 번호 형식(예시 GR1-012), 준비중 · 시작 칩 색과 심사 상태 값(제주 화면에서 확인 못 함), 영상 종류(제주: 액션캠 원본 · MSS 편집 · 소리질러 편집 · 오버레이 원본 · 오버레이 편집 중 레이스마다 다름), 그래프 · 기록 값은 예시</li></ul></div>
+    <li>액티비티 상태와 기록 상태는 머리글을 눌러 걸러요.</li>
+    <li>거르면 머리글 아래에 (종료)처럼 고른 값이 보여요.</li>
+    <li>게임중이면 랩타임이 '측정중..'으로 보여요.</li>
+    <li>영상 상태는 정상 · 에러 수 / 전체 수예요.</li>
+    <li>잘못 남은 기록은 골라서 <b>기록 삭제</b>해요.</li>
+    <li>줄을 누르면 레이스 기록 상세가 열려요.</li>
+    <li>상세에서 기록 정보, 그래프, 영상(숨김/공개 · 다운로드)을 봐요.</li>
+  </ul>
+  <div style="margin-top:8px;color:var(--note)"><b style="color:var(--note)">정하는 중</b></div>
+  <ul style="color:var(--note)">
+    <li>트랙 번호 붙이는 방식 (예시: 1코스 1·2, 2코스 3·4, 3코스 5·6, L, R)</li>
+    <li>차량 번호 형식 (예시: GR1-012)</li>
+    <li>준비중 · 시작 칩 색, 심사 상태 값</li>
+    <li>영상 종류 (제주는 레이스마다 다름)</li>
+    <li>그래프와 기록 값 (예시)</li>
+  </ul></div>
 </div>
 <div class="ov" id="ov" onclick="closeR()"></div>
 <aside class="drawer wide rd" id="dw"><div class="dh"><h3>레이스 기록 상세</h3><span class="sp"></span><button class="cl" onclick="closeR()">닫기</button></div><div class="db" id="rb"></div></aside>

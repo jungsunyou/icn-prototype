@@ -48,13 +48,23 @@
     <div class="tblwrap"><table><thead><tr><th>No.</th><th>이용 일시</th><th>닉네임</th><th>액티비티 상태<span class="dd">▼</span></th><th>기록 상태<span class="dd">▼</span></th><th>미디어 상태<br>(없음)<span class="dd">▼</span></th><th>코스<span class="dd">▼</span></th><th>트랙<span class="dd">▼</span></th><th>GR 번호</th><th>요청 일시</th></tr></thead><tbody id="tb"></tbody></table></div>
     <div class="dspager"><span id="tot">총 0개 항목</span><span>1 페이지 중 1 페이지</span><span class="rpp">페이지당 행 수 : <select style="border:none;background:none;font-size:13.5px;font-family:var(--font)"><option>20</option><option>50</option><option>100</option></select></span><span class="sp"></span><div class="pgs"><span>«</span><span>‹</span><span class="on">1</span><span>›</span><span>»</span></div></div>
   </div>
-  <div class="memo"><div class="mh">안내 · 구현 시 제외 가능</div><ul>
-    <li>레이스 심사 요청에서 올린 레이스가 여기에 쌓여요. 날짜와 GR 번호로 찾아요. (같은 브라우저에서 심사 요청을 하면 이 목록 맨 위에 추가돼요.)</li>
-    <li>줄을 누르면 <b>레이스 심사</b> 창이 열려요. 처음에는 <b>접수</b> 상태예요. [접수]를 누르면 <b>심사중</b>이 되고 정상 판정 / 실격 판정을 고를 수 있어요.</li>
-    <li><b>정상 판정하기</b>를 고르면 [심사 완료]가 나와요. <b>실격 판정하기</b>는 실격 사유를 골라야 [심사 완료]가 나와요. 심사 완료를 누르면 "심사가 완료되었습니다." 안내가 뜨고 정상 또는 실격으로 보여요.</li>
-    <li>심사가 끝난 뒤 <b>재심사하기</b>를 누르면 다시 심사중으로 돌아가요.</li>
-    <li>심사 정보에는 요청 · 접수 · 판정한 크루와 시각이 남아요.</li>
-    <li style="color:var(--note)"><b style="color:var(--note)">정하는 중</b> · 트랙 번호 붙이는 방식(예시: 1코스 1·2, 2코스 3·4, 3코스 5·6, ICN-L은 L, ICN-R은 R), 차량 번호 형식(예시 GR1-012), 실격 사유 목록(지금은 제주와 같음)</li></ul></div>
+  <div class="memo"><div class="mh">안내</div>
+  <ul>
+    <li>심사 요청한 레이스가 여기에 쌓여요.</li>
+    <li>날짜와 GR 번호로 찾아요.</li>
+    <li>줄을 누르면 레이스 심사 창이 열려요. 처음은 접수 상태예요.</li>
+    <li>[접수]를 누르면 심사중이 되고 정상 / 실격을 고를 수 있어요.</li>
+    <li>실격은 실격 사유를 골라야 [심사 완료]가 나와요.</li>
+    <li>심사 완료하면 "심사가 완료되었습니다." 안내가 떠요.</li>
+    <li><b>재심사하기</b>를 누르면 다시 심사중으로 돌아가요.</li>
+    <li>심사 정보에 요청 · 접수 · 판정한 크루와 시각이 남아요.</li>
+  </ul>
+  <div style="margin-top:8px;color:var(--note)"><b style="color:var(--note)">정하는 중</b></div>
+  <ul style="color:var(--note)">
+    <li>트랙 번호 붙이는 방식 (예시: 1코스 1·2, 2코스 3·4, 3코스 5·6, L, R)</li>
+    <li>차량 번호 형식 (예시: GR1-012)</li>
+    <li>실격 사유 목록 (지금은 제주와 같음)</li>
+  </ul></div>
 </div>
 <div class="ov" id="ov" onclick="closeJ()"></div>
 <aside class="drawer wide jd" id="dw"><div class="dh"><h3>레이스 심사</h3><span class="sp"></span><button class="cl" onclick="closeJ()">닫기</button></div><div class="db" id="jb"></div></aside>

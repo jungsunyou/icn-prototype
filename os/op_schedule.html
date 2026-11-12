@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta name="robots" content="noindex,nofollow">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>책임자 스케줄 관리</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="common.css">
+<link rel="stylesheet" href="park.css">
+<style>.sch th,.sch td{text-align:left}.sch td select{width:100%;border:none;background:none;font-family:var(--font);font-size:13px;padding:4px 0}.sch td.past select{color:#BDBDBD}.sch th.today{color:var(--accent)}
+.sch td.chg{background:var(--accent-soft)}.addr{display:flex;align-items:center;justify-content:space-between;color:var(--accent);cursor:pointer;min-width:230px}.addr b{font-size:18px;font-weight:400}.del{border:none;background:none;color:var(--red);font-size:18px;cursor:pointer;line-height:1}.rl{display:flex;align-items:center;justify-content:space-between;padding:7px 4px;border-bottom:1px solid var(--line)}.rl button{border:none;background:none;cursor:pointer;color:var(--muted)}</style>
+<body>
+<div class="app">
+  <div class="top"><h1>책임자 스케줄 관리 <span class="ex">예시 데이터</span></h1></div>
+  <div class="card">
+    <div class="ch"><span class="fld"><span class="k">▦ 날짜 선택 (주간) |</span><button class="btn sm light" style="height:24px;padding:0 6px" onclick="mv(-7)">‹</button><span id="wk"></span><button class="btn sm light" style="height:24px;padding:0 6px" onclick="mv(7)">›</button></span><span class="sp"></span>
+      <span id="acts"></span></div>
+    <div class="tblwrap"><table class="sch"><thead id="th"></thead><tbody id="tb"></tbody></table></div>
+  </div>
+  <div class="memo">
+    <div class="mh">안내</div>
+    <ul>
+      <li>역할마다 날짜별 책임자를 정해요. 한 주씩 봐요.</li>
+      <li>칸을 눌러 책임자를 고르면 저장하기가 켜져요.</li>
+      <li>지난 날짜는 흐리게 보이고 바꿀 수 없어요.</li>
+      <li><b>역할편집</b>을 누르면 역할 옆에 ⊖가 생겨요. 누르면 "[역할] 역할을 제거하시겠습니까?"를 묻고, 확인하면 지워져요.</li>
+      <li>맨 아래 <b>추가하기 ⊕</b>를 누르면 '새역할 + 번호'가 바로 생기고, 책임자 칸은 '없음'으로 시작해요.</li>
+      <li>편집 중에는 위쪽이 [취소] [편집완료]로 바뀌고 책임자 칸은 잠겨요.</li>
+      <li>책임자는 운영자 계정에 있는 크루 중에서 골라요.</li>
+    </ul>
+    <div style="margin-top:8px;color:var(--note)"><b style="color:var(--note)">정하는 중</b></div>
+    <ul style="color:var(--note)">
+      <li>인천 역할 목록 (지금은 제주 역할, 아레나 → 하레나로 바꾼 예시)</li>
+      <li>저장 뒤 안내 문구</li>
+    </ul>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+<script src="park.js"></script>
+<script>
+var ROLES=['파크운영총괄책임자','파크안전책임자','의무책임자','Activity Service Unit 총괄책임자','승차','하차','트랙/종점','인포','체크인/하레나','랩/메타','F&B','GARAGE','Mechanic 총괄책임자','출자책임자','입차책임자','영업마케팅','인력관리','기술지원'];
+var CREW=['크루 하늘','크루 바다','크루 산','크루 별','크루 달','크루 숲','크루 강','크루 들'];
+var W0=new Date(2026,10,8),TODAY=new Date(2026,10,12),DATA={},DIRTY={};
+function key(r,d){return r+'|'+d.toISOString().slice(0,10);}
+function val(r,d){var k=key(r,d);if(DATA[k]===undefined&&r.indexOf('새역할')===0)DATA[k]='없음';if(DATA[k]===undefined)DATA[k]=CREW[(ROLES.indexOf(r)+d.getDate())%CREW.length];return DATA[k];}
+function days(){var a=[];for(var i=0;i<7;i++){var d=new Date(W0);d.setDate(W0.getDate()+i);a.push(d);}return a;}
+function lbl(d){return (d.getMonth()+1)+'월 '+d.getDate()+'일 ('+'일월화수목금토'[d.getDay()]+')';}
+var ED=false,TMP=[];
+function render(){var D=days();$('wk').textContent=D[0].getFullYear()+'년 '+lbl(D[0]).replace(/ \(.\)/,'')+' - '+lbl(D[6]).replace(/ \(.\)/,'');
+  var R=ED?TMP:ROLES,dirty=Object.keys(DIRTY).length;
+  $('acts').innerHTML=ED?'<button class="btn" onclick="cancelEd()">ⓧ 취소</button> <button class="btn pri" onclick="doneEd()">✓ 편집완료</button> <button class="btn" disabled>저장하기</button>':'<button class="btn ol" onclick="startEd()">✎ 역할편집</button> <button class="btn pri" '+(dirty?'':'disabled')+' onclick="askSave()">저장하기</button>';
+  $('th').innerHTML='<tr><th class="kept">역할</th>'+D.map(function(d){return '<th class="'+(d.getTime()===TODAY.getTime()?'today':'')+'">'+lbl(d)+'</th>'}).join('')+'</tr>';
+  $('tb').innerHTML=R.map(function(r,ri){return '<tr><td class="kept" style="min-width:230px"><span style="display:flex;align-items:center;justify-content:space-between;gap:8px">'+esc(r)+(ED?'<button class="del" title="역할 삭제" onclick="askDel('+ri+')">⊖</button>':'')+'</span></td>'+D.map(function(d){var k=key(r,d),past=d<TODAY;return '<td class="'+(past||ED?'past':'')+(DIRTY[k]?' chg':'')+'"><select '+(past||ED?'disabled':'')+' onchange="setV(\''+k+'\',this.value)">'+['없음'].concat(CREW).map(function(c){return '<option'+(c===val(r,d)?' selected':'')+'>'+c+'</option>'}).join('')+'</select></td>'}).join('')+'</tr>'}).join('')+
+   (ED?'<tr><td><span class="addr" onclick="addRole()"><span>추가하기</span><b>⊕</b></span></td><td colspan="7"></td></tr>':'');}
+function askDel(i){pop('<div style="text-align:center;padding:10px 0 4px">['+esc(TMP[i])+'] 역할을<br>제거하시겠습니까?</div><div class="pbtns"><button class="btn light" onclick="closeM()">취소</button><button class="btn pri" onclick="TMP.splice('+i+',1);closeM();render()">확인</button></div>');}
+function addRole(){var n=TMP.length+1;while(TMP.indexOf('새역할'+n)>=0)n++;var name='새역할'+n;TMP.push(name);days().forEach(function(d){DATA[key(name,d)]='없음';});render();}
+function startEd(){if(Object.keys(DIRTY).length){toast('저장하지 않은 변경이 있어요. 먼저 저장해 주세요.');return;}ED=true;TMP=ROLES.slice();render();}
+function cancelEd(){ED=false;TMP=[];render();}
+function doneEd(){pop('<div class="t">역할편집</div>바꾼 역할을 저장하시겠습니까?<div class="pbtns"><button class="btn light" onclick="closeM()">아니요</button><button class="btn pri" onclick="ROLES=TMP.slice();ED=false;closeM();render()">예</button></div>');}
+function mv(n){if(Object.keys(DIRTY).length){toast('저장하지 않은 변경이 있어요. 먼저 저장해 주세요.');return;}W0.setDate(W0.getDate()+n);render();}
+function setV(k,v){DATA[k]=v;DIRTY[k]=1;render();}
+function askSave(){pop('<div class="t">저장</div>변경한 '+Object.keys(DIRTY).length+'칸을 저장하시겠습니까?<div class="pbtns"><button class="btn light" onclick="closeM()">취소</button><button class="btn pri" onclick="DIRTY={};closeM();render();toast(\'<span style=&quot;color:#C9B8FF&quot;>저장했어요. (안내 문구는 정하는 중)</span>\')">확인</button></div>');}
+render();
+</script>
+</body>
+</html>

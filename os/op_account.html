@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta name="robots" content="noindex,nofollow">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>운영자 계정 관리</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="common.css">
+<link rel="stylesheet" href="park.css">
+<style>.dacts{display:flex;gap:24px}.dacts button{border:none;background:none;cursor:pointer;font-family:var(--font);font-size:15px;color:var(--sub)}.dacts .lk{color:var(--accent);font-weight:600}.dacts .lk:disabled{color:#BDBDBD;cursor:not-allowed}
+.dcard{background:#fff;border:1px solid var(--line);border-radius:16px;padding:30px 28px}.av{text-align:center;margin-bottom:28px}.kf{display:grid;grid-template-columns:120px 1fr;row-gap:10px;align-items:center}.kf input{width:100%;box-sizing:border-box;height:40px;border:1px solid var(--border);border-radius:8px;padding:0 12px;font-family:var(--font);font-size:13.5px}
+.rchips{display:flex;flex-wrap:wrap;gap:6px}.rchips span{background:#F1F1F1;color:#9E9E9E;border-radius:14px;padding:4px 12px;font-size:12.5px;cursor:pointer}.rchips span.on{background:var(--accent-soft);color:var(--accent);font-weight:600}</style>
+<body>
+<div class="app">
+  <div class="top"><h1>운영자 계정 관리 <span class="ex">예시 데이터</span></h1></div>
+  <div class="card">
+    <div class="ch"><label class="fld" style="width:280px">⌕ <input id="q" placeholder="사용자 검색" oninput="render()"></label><span class="sp"></span><button class="btn pri" onclick="openAdd()">사용자 추가</button></div>
+    <div class="ch"><b>계정 관리</b></div>
+    <table><thead><tr><th>No</th><th>이름</th><th>계정</th><th>연락처</th><th>역할</th><th class="kept">인증</th></tr></thead><tbody id="tb"></tbody></table>
+    <div id="pg"></div>
+  </div>
+  <div class="memo">
+    <div class="mh">안내</div>
+    <ul>
+      <li>OS에 로그인하는 운영자(크루) 계정을 관리해요.</li>
+      <li>이름 · 계정 · 연락처로 찾아요.</li>
+      <li><b>사용자 추가</b> → 이름 · 전화번호 · 계정 입력, 역할/권한 칩 선택 → 위쪽 <b>계정 생성</b> → 인증 메일 발송.</li>
+      <li>운영자 정보(이름 · 연락처 · 계정)는 가리지 않고 보여줘요.</li>
+      <li>인증 전 계정은 '미인증'으로 보여요.</li>
+      <li>줄을 누르면 사용자 정보를 보고, 편집할 수 있어요.</li>
+    </ul>
+    <div style="margin-top:8px;color:var(--note)"><b style="color:var(--note)">정하는 중</b></div>
+    <ul style="color:var(--note)">
+      <li>인천 역할/권한 목록 (지금은 제주와 같음)</li>
+      <li>인증 여부 칸 (제주 목록에는 없음)</li>
+      <li>인증 메일 다시 보내기 · 계정 잠금</li>
+    </ul>
+  </div>
+</div>
+<div class="ov" id="ov" hidden onclick="closeD()"></div>
+<aside class="dw" id="dw" hidden style="width:min(640px,96vw);background:#FAFAFA"><div class="dh"><b id="dt">사용자 추가</b><span class="sp"></span><span id="dacts" class="dacts"></span></div><div class="db" id="db"></div></aside>
+<div class="toast" id="toast"></div>
+<script src="park.js"></script>
+<script>
+var ROLES=['최고 관리자','상위 관리자','하위 관리자','어시스턴트','인포 데스크','영업/마케팅','크루','관제','PIT','시설관리','차량 재고 담당','배터리 관리자','회계 담당','인사 담당','식음업장','멀티 파트 관리자','랩 데스크','스토어'];
+var U=[{name:'admin',id:'admin@981park.example',tel:'010-1234-5678',roles:['최고 관리자'],ok:true},{name:'김하늘',id:'haneul.kim@981park.example',tel:'010-2345-6789',roles:['상위 관리자'],ok:true},{name:'이바다',id:'bada.lee@981park.example',tel:'010-3456-7890',roles:['크루','관제'],ok:true},{name:'박산',id:'san.park@981park.example',tel:'010-4567-8901',roles:['PIT','차량 재고 담당'],ok:true},{name:'최별 (SA)',id:'byeol.choi@981park.example',tel:'010-5678-9012',roles:['어시스턴트','인포 데스크'],ok:false}];
+function render(){var q=$('q').value.trim();var L=U.filter(function(u){return !q||(u.name+u.id+u.tel).indexOf(q)>=0});
+  $('tb').innerHTML=L.length?L.map(function(u,i){return '<tr class="row" onclick="openView('+U.indexOf(u)+')"><td>'+(i+1)+'</td><td>'+esc(u.name)+'</td><td>'+esc(u.id)+'</td><td class="code">'+esc(u.tel)+'</td><td>'+u.roles.join(', ')+'</td><td class="kept">'+(u.ok?'<span class="pill p-blue">인증</span>':'<span class="pill p-gray">미인증</span>')+'</td></tr>'}).join(''):'<tr><td colspan="6" class="empty">데이터가 없습니다.</td></tr>';
+  $('pg').innerHTML=pager(L.length);}
+var SEL=[];
+function roleChips(){return '<div class="rchips">'+ROLES.map(function(r){return '<span class="'+(SEL.indexOf(r)>=0?'on':'')+'" onclick="togR(\''+r+'\',this)">'+r+'</span>'}).join('')+'</div>';}
+function togR(r,el){var k=SEL.indexOf(r);if(k>=0)SEL.splice(k,1);else SEL.push(r);el.classList.toggle('on');chkF();}
+function openD(t,acts){$('dt').textContent=t;$('dacts').innerHTML=acts;$('ov').hidden=false;$('dw').hidden=false;}
+function closeD(){$('ov').hidden=true;$('dw').hidden=true;}
+var AV='<div class="av"><svg viewBox="0 0 64 64" width="120" height="120"><circle cx="32" cy="32" r="30" fill="#fff" stroke="#9E9E9E" stroke-width="3"/><circle cx="32" cy="25" r="10" fill="#9E9E9E"/><path d="M12 52c3-10 11-14 20-14s17 4 20 14" fill="#9E9E9E"/></svg></div>';
+function form(u){SEL=u.roles.slice();return '<div class="dcard">'+AV+'<div class="kf"><div>이름</div><div><input id="fn" value="'+esc(u.name)+'" placeholder="이름을 입력하세요" oninput="chkF()"></div><div>전화번호</div><div><input id="ft" value="'+esc(u.tel)+'" placeholder="010-0000-0000 (숫자만 입력하세요)" oninput="this.value=this.value.replace(/[^0-9-]/g,\'\');chkF()"></div><div>계정</div><div><input id="fi" value="'+esc(u.id)+'" placeholder="이메일을 입력하세요" oninput="chkF()"></div><div>역할/권한</div><div>'+roleChips()+'</div></div></div>';}
+function chkF(){var ok=$('fn').value.trim()&&$('ft').value.replace(/\D/g,'').length>=10&&/@/.test($('fi').value)&&SEL.length;var b=$('fs');if(b)b.disabled=!ok;}
+function openAdd(){openD('사용자 추가','<button class="lk" id="fs" disabled onclick="askCreate()">계정 생성</button><button onclick="closeD()">닫기</button>');$('db').innerHTML=form({name:'',tel:'',id:'',roles:[]});}
+function askCreate(){pop('<div class="t">계정 생성</div>'+esc($('fi').value)+' 계정을 생성하시겠습니까?<div class="pbtns"><button class="btn light" onclick="closeM()">취소</button><button class="btn pri" onclick="doCreate()">확인</button></div>');}
+function doCreate(){U.push({name:$('fn').value.trim(),tel:$('ft').value.trim(),id:$('fi').value.trim(),roles:SEL.slice(),ok:false});
+  pop('<div class="t">인증 메일 발송</div>'+esc($('fi').value)+'로 인증 메일을 보냈습니다.<br><span class="muted" style="font-size:12.5px">메일에서 인증을 마치면 로그인할 수 있어요.</span><div class="pbtns"><button class="btn pri" onclick="closeM();closeD();render()">확인</button></div>');}
+function openView(i){var u=U[i];openD('사용자 정보','<button class="lk" onclick="openEdit('+i+')">편집</button><button onclick="closeD()">닫기</button>');
+  $('db').innerHTML='<div class="dcard">'+AV+'<div class="kf"><div>이름</div><div>'+esc(u.name)+'</div><div>전화번호</div><div class="code">'+esc(u.tel)+'</div><div>계정</div><div>'+esc(u.id)+'</div><div>역할/권한</div><div class="rchips">'+u.roles.map(function(r){return '<span class="on">'+r+'</span>'}).join('')+'</div><div class="kept">인증</div><div class="kept">'+(u.ok?'인증 완료':'미인증 · 인증 메일 발송됨')+'</div></div></div>';}
+function openEdit(i){var u=U[i];openD('사용자 정보 편집','<button class="lk" id="fs" onclick="saveEdit('+i+')">저장</button><button onclick="openView('+i+')">취소</button>');$('db').innerHTML=form(u);}
+function saveEdit(i){var u=U[i];u.name=$('fn').value.trim();u.tel=$('ft').value.trim();u.id=$('fi').value.trim();if(SEL.length)u.roles=SEL.slice();render();openView(i);toast('<span style="color:#C9B8FF">저장했어요. (안내 문구는 정하는 중)</span>');}
+render();
+</script>
+</body>
+</html>

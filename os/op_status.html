@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta name="robots" content="noindex,nofollow">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>액티비티 운영 상태 관리</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="common.css">
+<link rel="stylesheet" href="park.css">
+<style>.lay{display:grid;grid-template-columns:240px minmax(0,1fr);gap:16px;align-items:start}.st{display:flex;align-items:center;justify-content:space-between;padding:6px 0}@media(max-width:900px){.lay{grid-template-columns:1fr}}
+.frm{display:grid;grid-template-columns:110px 1fr;row-gap:12px;align-items:center;text-align:left}.frm input{height:34px;border:1px solid var(--border);border-radius:6px;padding:0 8px;font-family:var(--font);width:100%;box-sizing:border-box}.frm .hint{grid-column:2;color:var(--red);font-size:12px;margin-top:-8px}.tb{flex:1;border:none;background:none;font-size:15px;font-weight:600;cursor:pointer;font-family:var(--font);height:40px}.tb.pri{color:var(--accent)}.tb:disabled{color:#C8C8C8;cursor:not-allowed}</style>
+<body>
+<div class="app">
+  <div class="top"><h1>액티비티 운영 상태 관리 <span class="ex">예시 데이터</span></h1></div>
+  <div class="lay">
+    <div class="card"><div class="ch"><b>운영 상태</b></div><div id="sts" class="kept" style="border-radius:8px;padding:4px 6px"></div></div>
+    <div class="card"><div class="ch"><b>운영 상태 이력 변경</b></div>
+      <div class="ch"><label class="fld">▦ <input type="date" id="d" value="2026-11-12" onchange="renderH()"></label></div>
+      <div class="tblwrap"><table><thead><tr><th>장소 ▾</th><th>변경 상태 ▾</th><th>변경 시간</th><th>고객 안내 사유 ▾</th><th>내부 사유 ▾</th><th>처리자 ▾</th><th>처리 일시</th></tr></thead><tbody id="tb"></tbody></table></div>
+    </div>
+  </div>
+  <div class="memo">
+    <div class="mh">안내</div>
+    <ul>
+      <li>장소별로 운영 / 중단을 바꾸고, 바꾼 이력을 날짜별로 봐요.</li>
+      <li>운영 · 중단 칩을 누르면 운영 상태 변경 창이 떠요.</li>
+      <li>변경 시간 · 고객 안내 사유 · 실제 사유를 넣고 저장해요.</li>
+      <li>변경 시간을 기준으로 그 장소가 포함된 상품의 환불가를 계산해요. (인포데스크 › 티켓 자동 환불의 주문 취소 기준 시간)</li>
+      <li>고객 안내 사유는 입력한 내용 그대로 고객에게 보여요.</li>
+    </ul>
+    <div style="margin-top:8px;color:var(--note)"><b style="color:var(--note)">정하는 중</b></div>
+    <ul style="color:var(--note)">
+      <li>인천 장소 목록과 단위 (지금은 레이스981 + 공간별 액티비티 예시)</li>
+      <li>저장 뒤 안내 문구</li>
+    </ul>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+<script src="park.js"></script>
+<script>
+var PLACES=['레이스981','FG 디지털레이스','벡토','하레나: 비바리움','노바슬론','디지털레이스','놀이판','큐브 벡토','큐브높은콘텐츠','큐브비전','큐브 육각형','왕의동굴'];
+var ST={};PLACES.forEach(function(p){ST[p]='run'});ST['노바슬론']='stop';
+var H=[{p:'노바슬론',st:'stop',t:'2026-11-12 11:30',cs:'장비 점검',is:'센서 교체',by:'크루 바다',at:'2026-11-12 목 11:24'},{p:'레이스981',st:'run',t:'2026-11-12 10:40',cs:'우천 종료',is:'노면 건조 확인',by:'크루 하늘',at:'2026-11-12 목 10:38'},{p:'레이스981',st:'stop',t:'2026-11-12 09:50',cs:'우천',is:'강수량 기준 초과',by:'크루 하늘',at:'2026-11-12 목 09:47'}];
+function renderS(){$('sts').innerHTML=PLACES.map(function(p){return '<div class="st"><span>'+p+'</span><button class="chipst '+ST[p]+'" onclick="ask(\''+p+'\')">'+(ST[p]==='run'?'운영':'중단')+'</button></div>'}).join('');}
+function renderH(){var d=$('d').value;var L=H.filter(function(h){return h.at.slice(0,10)===d});
+  $('tb').innerHTML=L.length?L.map(function(h){return '<tr><td>'+h.p+'</td><td><span class="pill '+(h.st==='run'?'p-ok':'p-red')+'">'+(h.st==='run'?'재개':'중단')+'</span></td><td class="code">'+h.t.slice(11)+'</td><td>'+esc(h.cs)+'</td><td>'+esc(h.is)+'</td><td>'+h.by+'</td><td class="code">'+h.at+'</td></tr>'}).join(''):'<tr><td colspan="7" class="empty">이력이 없어요</td></tr>';}
+function ask(p){var to=ST[p]==='run'?'stop':'run';var d=new Date(),now='2026.11.12 '+('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2);
+  pop('<div class="t">운영 상태 변경</div><div class="frm"><span>변경 상태</span><b style="font-size:16px;color:'+(to==='stop'?'var(--red)':'var(--ok)')+'">'+(to==='stop'?'중단':'재개')+'</b><span>현재 시간</span><span>'+now+'</span><span>장소</span><span>'+p+'</span>'+
+   '<span>변경 시간</span><span style="display:flex;align-items:center;gap:8px"><input id="ch" maxlength="2" inputmode="numeric" placeholder="00" style="width:56px;text-align:center" oninput="this.value=this.value.replace(/\\D/g,\'\');ck()"> 시 <input id="cm" maxlength="2" inputmode="numeric" placeholder="00" style="width:56px;text-align:center" oninput="this.value=this.value.replace(/\\D/g,\'\');ck()"> 분</span><span class="hint">* 입력한 시간을 기준으로 해당 장소가 포함된 상품의 환불가가 계산됩니다.</span>'+
+   '<span>고객 안내 사유</span><input id="cs" oninput="ck()"><span class="hint">* 입력한 내용 그대로 고객에게 노출됩니다.</span><span>실제 사유</span><input id="is" oninput="ck()"></div>'+
+   '<div class="pbtns"><button class="tb" onclick="closeM()">닫기</button><button class="tb pri" id="sv" disabled onclick="save(\''+p+'\',\''+to+'\')">저장</button></div>',560);}
+function ck(){var h=+$('ch').value,m=+$('cm').value;$('sv').disabled=!($('ch').value&&$('cm').value&&h<24&&m<60&&$('cs').value.trim()&&$('is').value.trim());}
+function save(p,to){ST[p]=to;H.unshift({p:p,st:to,t:'2026-11-12 '+('0'+$('ch').value).slice(-2)+':'+('0'+$('cm').value).slice(-2),cs:$('cs').value.trim(),is:$('is').value.trim(),by:'크루 (나)',at:nowStr()});closeM();renderS();renderH();toast('<span style="color:#C9B8FF">'+p+' 운영 상태를 '+(to==='stop'?'중단':'재개')+'으로 바꿨어요. (안내 문구는 정하는 중)</span>');}
+renderS();renderH();
+</script>
+</body>
+</html>
