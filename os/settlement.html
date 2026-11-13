@@ -77,7 +77,7 @@
       </div>
     </div>
     <div class="listhd">주문 목록 <span class="muted" style="font-size:12px;font-weight:400">(환불 금액 제외)</span><span class="sp"></span>
-      <button class="btn sm pri" onclick="toast('예시 화면이라 파일을 내려받지 않아요. 지금 보이는 목록이 CSV로 저장돼요.')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg> CSV 다운로드</button>
+      <button class="btn sm pri" onclick="toast('예시 화면이라 파일을 내려받지 않습니다. 지금 보이는 목록이 CSV로 저장됩니다.')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg> CSV 다운로드</button>
     </div>
     <div class="chs" id="chs"></div>
     <div class="pmbox" id="pmbox" hidden>
@@ -94,16 +94,16 @@
   <div class="memo">
     <div class="mh">안내</div>
     <ul>
-      <li>채널별 금액은 그날 주문의 매출 금액 합계예요.</li>
-      <li>매출 금액 = 결제 금액 − 환불 금액이에요.</li>
-      <li>채널을 누르면 그 채널 주문과 결제 수단별 합계가 보여요.</li>
-      <li>'전체'를 누르면 모든 채널이 다시 보여요.</li>
-      <li>검색 일시 기준은 예약(이용일)과 주문(결제일) 중에서 골라요.</li>
-      <li>예약번호 · 주문번호 · 상품명으로 찾아요. 이름 · 전화번호로는 찾지 않아요.</li>
-      <li>줄을 누르면 예약 상세가 열려요. 환불 · 금액 수정 · 재결제도 할 수 있어요.</li>
-      <li>분할 결제는 결제 수단별로 나눠서 합계에 들어가요.</li>
-      <li>노쇼 금액은 제주와 같은 기준으로 계산해요.</li>
-      <li>CSV 다운로드는 지금 보이는 목록을 내려받아요.</li>
+      <li>채널별 금액은 그날 주문의 매출 금액 합계입니다.</li>
+      <li>매출 금액 = 결제 금액 − 환불 금액입니다.</li>
+      <li>채널을 누르면 그 채널 주문과 결제 수단별 합계가 보입니다.</li>
+      <li>'전체'를 누르면 모든 채널이 다시 보입니다.</li>
+      <li>검색 일시 기준은 예약(이용일)과 주문(결제일) 중에서 고릅니다.</li>
+      <li>예약번호 · 주문번호 · 상품명으로 찾습니다. 이름 · 전화번호로는 찾지 않습니다.</li>
+      <li>줄을 누르면 예약 상세가 열립니다. 환불 · 금액 수정 · 재결제도 할 수 있습니다.</li>
+      <li>분할 결제는 결제 수단별로 나눠서 합계에 들어갑니다.</li>
+      <li>노쇼 금액은 제주와 같은 기준으로 계산합니다.</li>
+      <li>CSV 다운로드는 지금 보이는 목록을 내려받습니다.</li>
     </ul>
     <div style="margin-top:8px;color:var(--note)"><b style="color:var(--note)">정하는 중</b></div>
     <ul style="color:var(--note)">
@@ -120,7 +120,7 @@
   <div class="dh"><h3>예약 상세 정보</h3><span class="sub" id="dwNo"></span><span class="sp"></span>
     <div class="acts">
       <button class="btn pri" onclick="openHist()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3.5 12a8.5 8.5 0 1 0 2.5-6"/><path d="M3 4v4h4M12 8v4l3 2"/></svg> 처리 이력</button>
-      <button class="btn danger" onclick="toast('예시 화면이라 실제로 환불되지 않아요.')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5.5" width="18" height="13" rx="2"/><path d="M3 10h18M4 4l16 16"/></svg> 전체 환불</button>
+      <button class="btn danger" onclick="toast('예시 화면이라 실제로 환불되지 않습니다.')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5.5" width="18" height="13" rx="2"/><path d="M3 10h18M4 4l16 16"/></svg> 전체 환불</button>
       <button class="x" onclick="closeDw()">닫기</button>
     </div></div>
   <div class="db">
@@ -130,14 +130,14 @@
     </div>
 
     <div class="card">
-      <h2>주문 내역 및 이용 현황<span class="sp"></span><button class="btn sm danger" id="refBtn" disabled onclick="toast('예시 화면이라 실제로 환불되지 않아요.')">환불 확정</button><button class="btn sm pri" onclick="openEdit()">금액 수정</button></h2>
+      <h2>주문 내역 및 이용 현황<span class="sp"></span><button class="btn sm danger" id="refBtn" disabled onclick="toast('예시 화면이라 실제로 환불되지 않습니다.')">환불 확정</button><button class="btn sm pri" onclick="openEdit()">금액 수정</button></h2>
       <div id="dwOrders"></div>
     </div>
 
     <div class="card">
       <h2>발권 처리<span class="sp"></span>
-        <button class="btn sm pri" id="issBtn" disabled onclick="toast('예시 화면이라 실제로 발권되지 않아요.')">발권하기</button>
-        <button class="btn sm pri" id="issCancel" disabled onclick="toast('예시 화면이라 실제로 취소되지 않아요.')">발권 취소</button>
+        <button class="btn sm pri" id="issBtn" disabled onclick="toast('예시 화면이라 실제로 발권되지 않습니다.')">발권하기</button>
+        <button class="btn sm pri" id="issCancel" disabled onclick="toast('예시 화면이라 실제로 취소되지 않습니다.')">발권 취소</button>
       </h2>
       <div class="tblwrap">
         <table><thead><tr><th><input type="checkbox" onchange="document.querySelectorAll('.tck').forEach(function(c){c.checked=this.checked}.bind(this));issCheck()"></th><th>레이서</th><th>상품 주문 번호</th><th>티켓 No</th><th>발권 상태</th><th>상품명</th><th>티켓</th><th>발권 일시</th><th>할인</th></tr></thead><tbody id="dwTk"></tbody></table>
@@ -147,18 +147,18 @@
     <div class="memo">
       <div class="mh">안내</div>
       <ul>
-        <li>예약자 정보는 주문 구분과 닉네임만 보여줘요.</li>
-        <li>주문 내역은 티켓 한 장이 한 줄이에요.</li>
-        <li>티켓을 골라 <b>환불 확정</b>하거나, 주문 단위로 <b>전체 환불</b>해요.</li>
-        <li>'환불 확인'을 누르면 그 티켓의 PSU(JAM) 사용 내역이 펼쳐져요.</li>
-        <li>제공 · 이용 · 남음은 확정 데이터예요.</li>
-        <li>인천은 1인 1티켓이라 레이서 분리 · 병합은 없어요.</li>
-        <li>발권 처리에서 NFC ID를 연결해 발권해요. 다시 발권하면 '재발권'으로 보여요.</li>
-        <li><b>금액 수정</b>은 사유와 함께 결제 금액을 바꿔요. 차액은 <b>재결제</b>로 처리해요.</li>
-        <li>재결제는 기존 결제를 취소하고 새 금액으로 다시 결제해요.</li>
-        <li>거래 이력은 결제 · 부분 취소 · 재결제 기록이에요.</li>
-        <li>처리 이력에는 취소 · 환불 · 발권 기록과 크루 메모가 쌓여요.</li>
-        <li>매출 금액 = 결제 금액 − 환불 금액이에요.</li>
+        <li>예약자 정보는 주문 구분과 닉네임만 보여줍니다.</li>
+        <li>주문 내역은 티켓 한 장이 한 줄입니다.</li>
+        <li>티켓을 골라 <b>환불 확정</b>하거나, 주문 단위로 <b>전체 환불</b>합니다.</li>
+        <li>'환불 확인'을 누르면 그 티켓의 PSU(JAM) 사용 내역이 펼쳐집니다.</li>
+        <li>제공 · 이용 · 남음은 확정 데이터입니다.</li>
+        <li>인천은 1인 1티켓이라 레이서 분리 · 병합은 없습니다.</li>
+        <li>발권 처리에서 NFC ID를 연결해 발권합니다. 다시 발권하면 '재발권'으로 보입니다.</li>
+        <li><b>금액 수정</b>은 사유와 함께 결제 금액을 바꿉니다. 차액은 <b>재결제</b>로 처리합니다.</li>
+        <li>재결제는 기존 결제를 취소하고 새 금액으로 다시 결제합니다.</li>
+        <li>거래 이력은 결제 · 부분 취소 · 재결제 기록입니다.</li>
+        <li>처리 이력에는 취소 · 환불 · 발권 기록과 크루 메모가 쌓입니다.</li>
+        <li>매출 금액 = 결제 금액 − 환불 금액입니다.</li>
       </ul>
       <div style="margin-top:8px;color:var(--note)"><b style="color:var(--note)">정하는 중</b></div>
       <ul style="color:var(--note)">
@@ -179,7 +179,7 @@
 <div class="modal" id="memo" hidden onclick="if(event.target===this)this.hidden=true">
   <div class="box">
     <div style="display:flex;align-items:center;gap:8px"><b style="font-size:13.5px">주문번호</b><select class="sel" id="memoOrder" style="flex:1"></select></div>
-    <div style="margin-top:12px;font-size:13.5px">추가할 내용을 작성해 주세요.</div>
+    <div style="margin-top:12px;font-size:13.5px">추가할 내용을 작성해 주시기 바랍니다.</div>
     <textarea class="ipt" id="memoTxt"></textarea>
     <div style="display:flex;justify-content:flex-end;gap:6px;margin-top:10px"><button class="btn sm" onclick="document.getElementById('memo').hidden=true">취소</button><button class="btn sm pri" onclick="saveMemo()">저장</button></div>
   </div>
@@ -193,7 +193,7 @@
 <div class="modal" id="mEdit" hidden onclick="if(event.target===this)this.hidden=true">
   <div class="box" style="width:min(460px,94vw)">
     <b>금액 수정</b>
-    <div class="muted" style="font-size:12px;margin-top:4px">고른 티켓의 결제 금액을 바꿔요. 바뀐 차액은 재결제로 처리해요.</div>
+    <div class="muted" style="font-size:12px;margin-top:4px">고른 티켓의 결제 금액을 바꿉니다. 바뀐 차액은 재결제로 처리합니다.</div>
     <div id="editRows" style="margin-top:10px"></div>
     <textarea class="ipt" id="editWhy" placeholder="수정 사유를 입력하세요" style="width:100%;min-height:70px;margin-top:8px"></textarea>
     <div style="display:flex;justify-content:flex-end;gap:6px;margin-top:10px"><button class="btn sm" onclick="document.getElementById('mEdit').hidden=true">취소</button><button class="btn sm pri" onclick="saveEdit()">저장</button></div>
@@ -209,7 +209,7 @@
       <div style="font-size:13.5px">결제 방식</div>
       <div><span class="seg" id="rpMode"><span class="on" onclick="rpSet('single')">단일 결제</span><span onclick="rpSet('split')">분할 결제</span></span></div>
       <div style="font-size:13.5px" id="rpByL">결제 수단</div>
-      <div id="rpSingle"><select class="sel" id="rpBy" onchange="rpCheck()"><option value="">결제 수단을 선택해 주세요</option><option>카드</option><option>현금</option><option>통장입금</option><option>PG</option></select></div>
+      <div id="rpSingle"><select class="sel" id="rpBy" onchange="rpCheck()"><option value="">결제 수단을 선택해주세요</option><option>카드</option><option>현금</option><option>통장입금</option><option>PG</option></select></div>
     </div>
     <div id="rpSplit" hidden style="margin-left:92px;margin-top:-26px">
       <div id="rpRows"></div>
@@ -217,7 +217,7 @@
         <button class="btn" style="border-color:var(--accent);color:var(--accent);min-width:150px" onclick="rpAdd()">+ 결제수단 추가</button>
         <span id="rpLeft" style="background:var(--warn-soft);color:var(--warn);border-radius:11px;padding:8px 14px;font-size:13.5px;font-weight:600"></span>
       </div>
-      <div style="font-size:12px;color:var(--muted);margin-top:8px">분할 결제는 현금·통장입금·PG만 선택할 수 있어요.</div>
+      <div style="font-size:12px;color:var(--muted);margin-top:8px">분할 결제는 현금·통장입금·PG만 선택할 수 있습니다.</div>
     </div>
     <div style="display:flex;gap:10px;margin-top:22px;border-top:1px solid var(--line);padding-top:18px">
       <button class="btn" style="flex:1;padding:12px" onclick="document.getElementById('mRepay').hidden=true">취소</button>
@@ -280,9 +280,9 @@ function run(){
   if(SORT.k)list.sort(function(x,y){var a=SORT.k in x?x[SORT.k]:amt(x)[SORT.k],b=SORT.k in y?y[SORT.k]:amt(y)[SORT.k];return (a>b?1:a<b?-1:0)*SORT.dir;});
   var pb=document.getElementById('pmbox');pb.hidden=CH==='전체';
   if(CH!=='전체'){var m=payMethods(list);document.getElementById('pmTitle').innerHTML=CH+' 결제 수단 내역 <span class="ktxt" style="font-size:12px;font-weight:400">(결제 금액 기준)</span>';
-    var ks=Object.keys(m);document.getElementById('pms').innerHTML=ks.length?ks.map(function(k){return '<div class="pm"><div class="pn">'+k+'</div><div class="pv">'+won(m[k])+'</div></div>'}).join(''):'<div class="muted" style="font-size:12px">이 채널은 결제 내역이 없어요.</div>';}
+    var ks=Object.keys(m);document.getElementById('pms').innerHTML=ks.length?ks.map(function(k){return '<div class="pm"><div class="pn">'+k+'</div><div class="pv">'+won(m[k])+'</div></div>'}).join(''):'<div class="muted" style="font-size:12px">이 채널은 결제 내역이 없습니다.</div>';}
   document.getElementById('tb').innerHTML=list.length?list.map(function(r){var i=ROWS.indexOf(r),a=amt(r),is=issSum(r);
-    return '<tr class="row" onclick="openDw('+i+')"><td class="code">'+r.order+'</td><td class="code">'+r.resv+'</td><td>'+r.ch+'</td><td>'+(r.div||'-')+'</td><td><span class="pill '+(is==='미발권'?'p-gray':'p-blue')+'">'+is+'</span></td><td class="pn2">'+prodName(r)+'<br><span class="ktxt" style="font-size:12px">'+roleLine(r)+'</span></td><td class="code">'+r.rd+'</td><td class="num">'+r.items.length+'</td><td class="num">'+a.pay.toLocaleString('ko-KR')+'</td><td class="num">'+a.ref.toLocaleString('ko-KR')+'</td><td class="num">'+a.sale.toLocaleString('ko-KR')+'</td><td class="code">'+r.od+'</td></tr>'}).join(''):'<tr><td colspan="12" class="empty">검색 결과가 없어요</td></tr>';
+    return '<tr class="row" onclick="openDw('+i+')"><td class="code">'+r.order+'</td><td class="code">'+r.resv+'</td><td>'+r.ch+'</td><td>'+(r.div||'-')+'</td><td><span class="pill '+(is==='미발권'?'p-gray':'p-blue')+'">'+is+'</span></td><td class="pn2">'+prodName(r)+'<br><span class="ktxt" style="font-size:12px">'+roleLine(r)+'</span></td><td class="code">'+r.rd+'</td><td class="num">'+r.items.length+'</td><td class="num">'+a.pay.toLocaleString('ko-KR')+'</td><td class="num">'+a.ref.toLocaleString('ko-KR')+'</td><td class="num">'+a.sale.toLocaleString('ko-KR')+'</td><td class="code">'+r.od+'</td></tr>'}).join(''):'<tr><td colspan="12" class="empty">검색 결과가 없습니다</td></tr>';
   document.getElementById('tot').textContent='총 '+list.length+'개 항목';
 }
 var cur=null;
@@ -293,7 +293,7 @@ function openDw(i){var r=ROWS[i];cur=i;
   if(!HIST[i]){HIST[i]=[];r.items.forEach(function(x){if(x.iss==='발권')HIST[i].push([r.order,x.ticket,'결제 완료','-','발권 ('+x.role+')','크루 하늘',r.rd.slice(0,10)+' 10:40']);if(x.st==='환불')HIST[i].push([r.order,x.ticket||'-','취소','환불','환불 요청 '+won(x.price-x.dc)+' 환불','크루 바다',r.rd.slice(0,10)+' 12:12']);});}
   document.getElementById('ov').classList.add('show');document.getElementById('dw').classList.add('show');}
 function renderTk(){var r=ROWS[cur];
-  document.getElementById('dwTk').innerHTML=r.items.map(function(x,k){var t=x.ticket?x.ticket.split(' '):null;return '<tr><td><input type="checkbox" class="tck" onchange="issCheck()"></td><td>'+r.nick+(k?' ('+x.role+')':'')+'</td><td class="code">'+r.order.slice(-5)+'-'+(k+1)+'</td><td class="code" style="line-height:1.5">'+(t?t[0]+'<br>'+t.slice(1).join(''):'-')+'</td><td>'+x.iss+'</td><td class="wrap">'+PK[x.pk].name+' · '+x.role+'</td><td>'+(x.iss==='발권'?'<button class="btn sm warn" style="min-width:96px" onclick="toast(\'예시 화면이라 실제로 재발권되지 않아요.\')">재발권</button>':'-')+'</td><td class="code">'+(x.iss==='발권'?r.rd.slice(0,10)+' 10:4'+k:'-')+'</td><td>'+(x.dc?x.dcName:'-')+'</td></tr>'}).join('');issCheck();}
+  document.getElementById('dwTk').innerHTML=r.items.map(function(x,k){var t=x.ticket?x.ticket.split(' '):null;return '<tr><td><input type="checkbox" class="tck" onchange="issCheck()"></td><td>'+r.nick+(k?' ('+x.role+')':'')+'</td><td class="code">'+r.order.slice(-5)+'-'+(k+1)+'</td><td class="code" style="line-height:1.5">'+(t?t[0]+'<br>'+t.slice(1).join(''):'-')+'</td><td>'+x.iss+'</td><td class="wrap">'+PK[x.pk].name+' · '+x.role+'</td><td>'+(x.iss==='발권'?'<button class="btn sm warn" style="min-width:96px" onclick="toast(\'예시 화면이라 실제로 재발권되지 않습니다.\')">재발권</button>':'-')+'</td><td class="code">'+(x.iss==='발권'?r.rd.slice(0,10)+' 10:4'+k:'-')+'</td><td>'+(x.dc?x.dcName:'-')+'</td></tr>'}).join('');issCheck();}
 function issCheck(){var n=document.querySelectorAll('.tck:checked').length;document.getElementById('issBtn').disabled=!n;document.getElementById('issCancel').disabled=!n;}
 function refCheck(){document.getElementById('refBtn').disabled=!picked().length;}
 function psuTable(x){var ps=PK[x.pk].psu;
@@ -303,15 +303,15 @@ function renderOrders(){var r=ROWS[cur];var sumP=0,sumD=0,sumPay=0,sumR=0;
   var rows=r.items.map(function(x,k){var pay=payOf(x);sumP+=x.price;sumD+=x.dc;sumPay+=pay;var ref=x.st==='환불'?pay:0;sumR+=ref;
     var c=x.st==='환불'?'p-red':x.iss==='발권'?'p-blue':'p-gray';
     return '<tr><td><input type="checkbox" class="ick" data-k="'+k+'" onchange="refCheck()"'+(x.st==='환불'?' disabled':'')+'></td><td><span class="pill '+c+'">'+(x.st==='환불'?'환불':x.iss)+'</span></td><td class="oi">'+r.order.slice(-5)+'-'+(k+1)+'<br>'+r.ch+'<br>'+r.pay+'</td><td class="code">'+(x.ticket?x.ticket.replace(/ /g,''):'-')+'</td><td class="wrap">'+PK[x.pk].name+'<br>· '+x.role+'</td><td class="wrap">'+r.rd+'</td><td class="num">'+x.price.toLocaleString('ko-KR')+'</td><td>'+(x.dc?x.dcName:'-')+'</td><td class="num">'+x.dc.toLocaleString('ko-KR')+'</td><td class="num"><span class="u">'+pay.toLocaleString('ko-KR')+'</span>'+(x.edited?'<br><span class="pill p-warn">수정됨</span>':'')+'</td><td><button class="btn sm pri" onclick="var e=document.getElementById(\'psu'+k+'\');e.hidden=!e.hidden">환불 확인</button><div id="psu'+k+'" hidden style="margin-top:8px">'+psuTable(x)+'</div></td><td class="num" style="color:var(--red)">'+(ref?ref.toLocaleString('ko-KR'):'-')+'</td><td class="num" style="color:var(--accent)">'+(pay-ref).toLocaleString('ko-KR')+'</td></tr>';}).join('');
-  document.getElementById('dwOrders').innerHTML='<div class="ord"><div class="oh"><input type="radio" checked> 주문번호 '+r.order.slice(-6)+' ('+r.items.length+'건)<span class="sp"></span><button class="btn sm pri" onclick="openTx()">거래 이력</button><button class="btn sm warn" onclick="openRepay()">재결제</button><button class="btn sm danger" onclick="toast(\'예시 화면이라 실제로 환불되지 않아요.\')">전체 환불</button><button class="caret" onclick="var t=document.getElementById(\'ordTbl\');t.hidden=!t.hidden;this.textContent=t.hidden?\'⌄\':\'⌃\'">⌃</button></div><div class="tblwrap" id="ordTbl"><table><thead><tr><th></th><th>상태</th><th>주문 정보</th><th>티켓 번호</th><th>상품명</th><th>이용 일시</th><th>상품 가격</th><th>할인 내역</th><th>할인 금액</th><th>결제 금액</th><th>환불 대상 확인</th><th>환불 금액</th><th>매출 금액</th></tr></thead><tbody><tr><td></td><td></td><td></td><td></td><td></td><td></td><td class="num">'+sumP.toLocaleString('ko-KR')+'</td><td></td><td class="num">'+sumD.toLocaleString('ko-KR')+'</td><td class="num">'+sumPay.toLocaleString('ko-KR')+'</td><td>-</td><td class="num" style="color:var(--red)">'+(sumR?sumR.toLocaleString('ko-KR'):'-')+'</td><td class="num" style="color:var(--accent)">'+(sumPay-sumR).toLocaleString('ko-KR')+'</td></tr>'+rows+'</tbody></table></div></div>';refCheck();}
+  document.getElementById('dwOrders').innerHTML='<div class="ord"><div class="oh"><input type="radio" checked> 주문번호 '+r.order.slice(-6)+' ('+r.items.length+'건)<span class="sp"></span><button class="btn sm pri" onclick="openTx()">거래 이력</button><button class="btn sm warn" onclick="openRepay()">재결제</button><button class="btn sm danger" onclick="toast(\'예시 화면이라 실제로 환불되지 않습니다.\')">전체 환불</button><button class="caret" onclick="var t=document.getElementById(\'ordTbl\');t.hidden=!t.hidden;this.textContent=t.hidden?\'⌄\':\'⌃\'">⌃</button></div><div class="tblwrap" id="ordTbl"><table><thead><tr><th></th><th>상태</th><th>주문 정보</th><th>티켓 번호</th><th>상품명</th><th>이용 일시</th><th>상품 가격</th><th>할인 내역</th><th>할인 금액</th><th>결제 금액</th><th>환불 대상 확인</th><th>환불 금액</th><th>매출 금액</th></tr></thead><tbody><tr><td></td><td></td><td></td><td></td><td></td><td></td><td class="num">'+sumP.toLocaleString('ko-KR')+'</td><td></td><td class="num">'+sumD.toLocaleString('ko-KR')+'</td><td class="num">'+sumPay.toLocaleString('ko-KR')+'</td><td>-</td><td class="num" style="color:var(--red)">'+(sumR?sumR.toLocaleString('ko-KR'):'-')+'</td><td class="num" style="color:var(--accent)">'+(sumPay-sumR).toLocaleString('ko-KR')+'</td></tr>'+rows+'</tbody></table></div></div>';refCheck();}
 function picked(){return Array.from(document.querySelectorAll('.ick:checked')).map(function(c){return +c.dataset.k});}
-function openEdit(){var ks=picked();if(!ks.length){toast('금액을 수정할 티켓을 먼저 골라 주세요.');return;}var r=ROWS[cur];
+function openEdit(){var ks=picked();if(!ks.length){toast('금액을 수정할 티켓을 먼저 골라 주시기 바랍니다.');return;}var r=ROWS[cur];
   document.getElementById('editRows').innerHTML=ks.map(function(k){var x=r.items[k];return '<div style="display:flex;align-items:center;gap:8px;margin:6px 0;font-size:12px"><span style="flex:1">'+PK[x.pk].name+' · '+x.role+' <span class="muted">('+won(payOf(x))+')</span></span><input class="ipt" data-k="'+k+'" style="width:120px;text-align:right" value="'+payOf(x)+'"></div>'}).join('');
   document.getElementById('editWhy').value='';document.getElementById('mEdit').hidden=false;}
-function saveEdit(){var why=document.getElementById('editWhy').value.trim();if(!why){toast('수정 사유를 입력해 주세요.');return;}var r=ROWS[cur],diff=0;
+function saveEdit(){var why=document.getElementById('editWhy').value.trim();if(!why){toast('수정 사유를 입력해 주시기 바랍니다.');return;}var r=ROWS[cur],diff=0;
   document.querySelectorAll('#editRows input').forEach(function(e){var x=r.items[+e.dataset.k],v=+e.value.replace(/[^0-9]/g,'')||0,old=payOf(x);if(v!==old){diff+=v-old;x.pay=v;x.edited=true;}});
   HIST[cur].push([r.order,'-','결제 완료','-','금액 수정 '+(diff>=0?'+':'')+won(diff).replace('₩-','-₩')+' · '+why,'크루 (나)','2026-11-14 '+new Date().toTimeString().slice(0,5)]);
-  r.pending=(r.pending||0)+diff;document.getElementById('mEdit').hidden=true;renderOrders();toast(diff?'금액을 수정했어요. 차액은 재결제로 처리해요.':'바뀐 금액이 없어요.');}
+  r.pending=(r.pending||0)+diff;document.getElementById('mEdit').hidden=true;renderOrders();toast(diff?'금액을 수정했습니다. 차액은 재결제로 처리합니다.':'바뀐 금액이 없습니다.');}
 function baseTx(r){return r.tx||(r.tx=[[r.od,'결제',r.pay,r.items.reduce(function(a,x){return a+x.price-x.dc},0),r.ch==='INFO DESK'?'크루 하늘':'시스템']]);}
 function openTx(){var r=ROWS[cur];var tx=baseTx(r);
   r.items.forEach(function(x){if(x.st==='환불'&&!tx.some(function(t){return t[1]==='부분 취소'&&t[3]===-(x.price-x.dc)}))tx.push(['2026-11-14 12:12','부분 취소',r.pay,-(x.price-x.dc),'크루 바다'])});
@@ -326,7 +326,7 @@ function openRepay(){var r=ROWS[cur];RP={mode:'single',rows:[{by:'',v:''},{by:''
 function rpSet(m){RP.mode=m;var sp=document.querySelectorAll('#rpMode span');sp[0].classList.toggle('on',m==='single');sp[1].classList.toggle('on',m==='split');
   document.getElementById('rpSingle').hidden=m!=='single';document.getElementById('rpByL').style.visibility=m==='single'?'visible':'hidden';document.getElementById('rpSplit').hidden=m!=='split';rpRender();}
 function rpLeft(){return RP.amt-RP.rows.reduce(function(a,x){return a+(+String(x.v).replace(/[^0-9]/g,'')||0)},0);}
-function rpRender(){document.getElementById('rpRows').innerHTML=RP.rows.map(function(x,i){return '<div style="display:flex;gap:8px;align-items:center;margin-bottom:8px"><select class="sel" style="flex:1" onchange="RP.rows['+i+'].by=this.value;rpCheck()"><option value="">결제 수단을 선택해 주세요</option>'+['현금','통장입금','PG'].map(function(o){return '<option'+(x.by===o?' selected':'')+'>'+o+'</option>'}).join('')+'</select><input class="ipt" style="flex:1;text-align:right" placeholder="금액 입력" value="'+(x.v?(+x.v).toLocaleString('ko-KR'):'')+'" oninput="RP.rows['+i+'].v=this.value.replace(/[^0-9]/g,\'\');rpCheck()"><button class="mlink" style="color:var(--ok);white-space:nowrap" onclick="rpFill('+i+')">⇥ 잔액</button><button class="mlink" style="color:var(--red);white-space:nowrap" onclick="RP.rows.splice('+i+',1);rpRender()">🗑 삭제</button></div>'}).join('');rpCheck();}
+function rpRender(){document.getElementById('rpRows').innerHTML=RP.rows.map(function(x,i){return '<div style="display:flex;gap:8px;align-items:center;margin-bottom:8px"><select class="sel" style="flex:1" onchange="RP.rows['+i+'].by=this.value;rpCheck()"><option value="">결제 수단을 선택해주세요</option>'+['현금','통장입금','PG'].map(function(o){return '<option'+(x.by===o?' selected':'')+'>'+o+'</option>'}).join('')+'</select><input class="ipt" style="flex:1;text-align:right" placeholder="금액 입력" value="'+(x.v?(+x.v).toLocaleString('ko-KR'):'')+'" oninput="RP.rows['+i+'].v=this.value.replace(/[^0-9]/g,\'\');rpCheck()"><button class="mlink" style="color:var(--ok);white-space:nowrap" onclick="rpFill('+i+')">⇥ 잔액</button><button class="mlink" style="color:var(--red);white-space:nowrap" onclick="RP.rows.splice('+i+',1);rpRender()">🗑 삭제</button></div>'}).join('');rpCheck();}
 function rpAdd(){RP.rows.push({by:'',v:''});rpRender();}
 function rpFill(i){var cur=+RP.rows[i].v||0;RP.rows[i].v=String(Math.max(0,cur+rpLeft()));rpRender();}
 function rpCheck(){var ok;if(RP.mode==='single'){ok=!!document.getElementById('rpBy').value;}
@@ -337,15 +337,15 @@ function doRepay(){var r=ROWS[cur],t='2026-11-14 '+new Date().toTimeString().sli
   var parts=RP.mode==='single'?[{by:document.getElementById('rpBy').value,v:RP.amt}]:RP.rows.map(function(x){return {by:x.by,v:+x.v}});
   parts.forEach(function(p){r.tx.push([t,'재결제',p.by,p.v,'크루 (나)'])});
   HIST[cur].push([r.order,'-','결제 완료','-','재결제 '+won(RP.amt)+' ('+parts.map(function(p){return p.by}).join(' + ')+')','크루 (나)',t]);
-  document.getElementById('mRepay').hidden=true;toast('예시 화면이라 실제로 결제되지 않아요. 거래 이력에만 남겼어요.');}
+  document.getElementById('mRepay').hidden=true;toast('예시 화면이라 실제로 결제되지 않습니다. 거래 이력에만 남겼습니다.');}
 function closeDw(){['ov','dw','dwH'].forEach(function(id){document.getElementById(id).classList.remove('show')});}
-function renderHist(){var h=HIST[cur]||[];document.getElementById('hist').innerHTML=h.length?h.map(function(a){return '<tr><td class="code">'+a[0]+'</td><td class="code">'+a[1]+'</td><td>'+a[2]+'</td><td>'+a[3]+'</td><td class="wrap">'+a[4]+'</td><td>'+a[5]+'</td><td class="code">'+a[6]+'</td></tr>'}).join(''):'<tr><td colspan="7" class="empty">처리 이력이 없어요</td></tr>';}
+function renderHist(){var h=HIST[cur]||[];document.getElementById('hist').innerHTML=h.length?h.map(function(a){return '<tr><td class="code">'+a[0]+'</td><td class="code">'+a[1]+'</td><td>'+a[2]+'</td><td>'+a[3]+'</td><td class="wrap">'+a[4]+'</td><td>'+a[5]+'</td><td class="code">'+a[6]+'</td></tr>'}).join(''):'<tr><td colspan="7" class="empty">처리 이력이 없습니다</td></tr>';}
 function openHist(){renderHist();document.getElementById('dwH').classList.add('show');}
 function closeHist(){document.getElementById('dwH').classList.remove('show');}
 function openMemo(){var r=ROWS[cur];document.getElementById('memoOrder').innerHTML='<option>'+r.order+'</option>';document.getElementById('memoTxt').value='';document.getElementById('memo').hidden=false;}
-function saveMemo(){var t=document.getElementById('memoTxt').value.trim();if(!t){toast('추가할 내용을 입력해 주세요.');return;}
+function saveMemo(){var t=document.getElementById('memoTxt').value.trim();if(!t){toast('추가할 내용을 입력해 주시기 바랍니다.');return;}
   HIST[cur].push([document.getElementById('memoOrder').value,'-','-','-',t,'크루 (나)','2026-11-14 '+new Date().toTimeString().slice(0,5)]);
-  document.getElementById('memo').hidden=true;renderHist();toast('메모를 추가했어요.');}
+  document.getElementById('memo').hidden=true;renderHist();toast('메모를 추가했습니다.');}
 run();
 </script>
 </body>

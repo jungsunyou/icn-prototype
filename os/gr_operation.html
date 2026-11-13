@@ -50,16 +50,16 @@
   <div class="memo">
     <div class="mh">안내</div>
     <ul>
-      <li>GR 상태: 차량 종류(GR1 · GR2 · XGR)별 운영 대수와 정비 중인 차량이에요.</li>
-      <li>펼치기를 누르면 모든 차량 번호가 보여요.</li>
-      <li>운영 히스토리: 운영제외 · 조치완료 기록이에요.</li>
-      <li>날짜 · 구분 · GR 번호로 찾아요.</li>
-      <li>정비 관리: GR 번호로 찾거나 정비 현황에서 차량을 누르면 정비 이력이 보여요.</li>
-      <li>정비 현황은 정비 대기 · 정비 중 · 오늘 완료로 나눠요.</li>
-      <li>정비 이력: 부위 · 내용 · 담당 · 확인 결과 · 사진 수를 날짜순으로 보여줘요.</li>
-      <li>GR 상태에서 차량 번호를 눌러도 정비 이력으로 가요.</li>
-      <li>정비 관리의 검색 뒤 화면은 GR 정비 관리 프로토타입(2026-07)을 옮긴 거예요. 제주 실서비스에는 검색만 있어요.</li>
-      <li>정비 히스토리: 담당 · 누적 거리 · 누적 레이스를 보여줘요. CSV로 받아요.</li>
+      <li>GR 상태: 차량 종류(GR1 · GR2 · XGR)별 운영 대수와 정비 중인 차량입니다.</li>
+      <li>펼치기를 누르면 모든 차량 번호가 보입니다.</li>
+      <li>운영 히스토리: 운영제외 · 조치완료 기록입니다.</li>
+      <li>날짜 · 구분 · GR 번호로 찾습니다.</li>
+      <li>정비 관리: GR 번호로 찾거나 정비 현황에서 차량을 누르면 정비 이력이 보입니다.</li>
+      <li>정비 현황은 정비 대기 · 정비 중 · 오늘 완료로 나눕니다.</li>
+      <li>정비 이력: 부위 · 내용 · 담당 · 확인 결과 · 사진 수를 날짜순으로 보여줍니다.</li>
+      <li>GR 상태에서 차량 번호를 눌러도 정비 이력으로 갑니다.</li>
+      <li>정비 관리의 검색 뒤 화면은 GR 정비 관리 프로토타입(2026-07)을 옮긴 것입니다. 제주 실서비스에는 검색만 있습니다.</li>
+      <li>정비 히스토리: 담당 · 누적 거리 · 누적 레이스를 보여줍니다. CSV로 받습니다.</li>
     </ul>
     <div style="margin-top:8px;color:var(--note)"><b style="color:var(--note)">정하는 중</b></div>
     <ul style="color:var(--note)">
@@ -85,7 +85,7 @@ var OH=[['2026-11-14 토 16:09','GR2-212','운영제외','212 / 고프로 화면
 function renderOh(){var kind=($('oh-k')||{}).value||'',q=(($('oh-q')||{}).value||'').trim().toUpperCase();
   var list=OH.filter(function(h){return (!kind||h[2]===kind)&&(!q||h[1].indexOf(q)>=0)});
   if(!$('oh-k')){$('v-oh').innerHTML='<div class="bar"><label class="fld">▦ <input type="date" value="2026-11-14"></label><label class="fld">히스토리 구분 | <select id="oh-k" onchange="renderOh()"><option value="">히스토리 구분을 선택하세요</option><option>운영제외</option><option>조치완료</option></select></label><label class="fld">⌕ <input id="oh-q" placeholder="GR번호를 입력하세요 (ex) GR1-012" oninput="renderOh()" style="width:220px"></label></div><div class="hist" id="oh-l"></div>';}
-  $('oh-l').innerHTML='<div class="hh">전체 운영 히스토리</div>'+(list.length?list.map(function(h){return '<div class="hi"><div class="m"><span class="code">'+h[0]+'</span><span class="cno">'+h[1]+'</span><span class="pill '+(h[2]==='운영제외'?'p-red':'p-ok')+'">'+h[2]+'</span></div><div class="t">'+h[3]+'</div></div>'}).join(''):'<div class="hi muted">기록이 없어요.</div>');}
+  $('oh-l').innerHTML='<div class="hh">전체 운영 히스토리</div>'+(list.length?list.map(function(h){return '<div class="hi"><div class="m"><span class="code">'+h[0]+'</span><span class="cno">'+h[1]+'</span><span class="pill '+(h[2]==='운영제외'?'p-red':'p-ok')+'">'+h[2]+'</span></div><div class="t">'+h[3]+'</div></div>'}).join(''):'<div class="hi muted">기록이 없습니다.</div>');}
 /* 정비 관리 — 제주 실서비스는 GR 검색만 있음. 찾은 뒤 화면은 GR 정비 관리 프로토타입(2026-07, 데스크탑 GR_단체예약/2026-07_gr_operation2.html)을 옮김 */
 var MTAG={정비중:'t-ing',완료:'t-done',대기:'t-wait'};
 var CARS={
@@ -105,18 +105,18 @@ var MSEL='XGR-09';
 function renderMm(){var g={대기:[],정비중:[],완료:[]};Object.keys(CARS).forEach(function(n){g[CARS[n].st].push(n)});
   var card=function(t,k,col,ic){return '<div class="mc"><div class="mch">'+ic+' '+t+'<span class="n" style="background:'+col+'1A;color:'+col+'">'+g[k].length+'</span></div><div class="cars">'+g[k].map(function(n){return '<span class="car" style="background:'+col+';cursor:pointer" onclick="pickCar(\''+n+'\')">'+n+'</span>'}).join('')+'</div></div>'};
   $('v-mm').innerHTML='<div class="bar"><label class="fld" style="flex:1;max-width:520px">⌕ <input id="mq" placeholder="GR번호를 입력하세요 (ex) GR1-012" style="flex:1" onkeydown="if(event.key===\'Enter\')pickCar(this.value)"></label><button class="btn pri sm" onclick="pickCar($(\'mq\').value)">검색</button></div>'+
-   '<div class="muted" style="font-size:12px;margin:6px 2px 0">차량 번호를 검색하거나 아래 현황에서 차량을 누르면 정비 이력이 보여요.</div>'+
+   '<div class="muted" style="font-size:12px;margin:6px 2px 0">차량 번호를 검색하거나 아래 현황에서 차량을 누르면 정비 이력이 보입니다.</div>'+
    '<div class="gbox"><div class="gbh">정비 현황 ('+g.정비중.length+' 정비중 / '+g.대기.length+' 대기 / '+g.완료.length+' 오늘 완료)</div><div class="grid3">'+card('정비 대기','대기','#FF9800','<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/></svg>')+card('정비 중','정비중','#008000','<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 6a4 4 0 0 0 5 5l-8 8-3-3 8-8a4 4 0 0 0-2-2z"/></svg>')+card('오늘 완료','완료','#245EC3','<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8"/><path d="M8.5 12l2.5 2.5 4.5-5"/></svg>')+'</div></div><div id="mres"></div>';
   showCar(MSEL);}
 function pickCar(n){n=(n||'').trim().toUpperCase();if(!n)return;MSEL=n;if($('mq'))$('mq').value=n;showCar(n);}
 function showCar(n){var el=$('mres');if(!el)return;var c=CARS[n];
-  if(!c){el.innerHTML='<div class="gbox muted" style="text-align:center;padding:30px">'+n+' — 정비 이력이 없어요. (예: XGR-09, GR1-147, GR2-206)</div>';return;}
+  if(!c){el.innerHTML='<div class="gbox muted" style="text-align:center;padding:30px">'+n+' — 정비 이력이 없습니다. (예: XGR-09, GR1-147, GR2-206)</div>';return;}
   var ty=n.split('-')[0];var cnt={};c.h.forEach(function(h){h.p.forEach(function(p){cnt[p]=(cnt[p]||0)+1})});var top=Object.keys(cnt).sort(function(a,b){return cnt[b]-cnt[a]})[0];
   el.innerHTML='<div class="gbox"><div class="vh"><b class="code" style="font-size:18px">'+n+'</b><span class="vt">'+ty+'</span><span class="tg '+MTAG[c.st]+'">현재 '+c.st+'</span></div>'+
    '<div class="vs"><div><small>누적 정비</small><b>'+c.h.length+'건</b></div><div><small>최근 정비일</small><b class="code">'+c.h[0].d+'</b></div><div><small>자주 정비한 부위</small><b>'+(top?top+' ('+cnt[top]+')':'-')+'</b></div></div>'+
    '<div style="font-weight:600;margin:4px 0 10px">정비 이력</div><div class="tl">'+c.h.map(function(h,i){return '<div class="ti'+(i===0&&h.st==='정비중'?' cur':h.st==='완료'?' done':'')+'"><span class="nd"></span><div class="tr"><span class="code" style="font-weight:600">'+h.d+'</span><span class="tg '+MTAG[h.st]+'">'+h.st+'</span><span class="to">담당 '+h.o+'</span></div>'+(h.p.length?'<div>'+h.p.map(function(p){return '<span class="pc">'+p+'</span>'}).join('')+'</div>':'')+'<div class="tx">'+h.a+'</div><div class="tm">'+(h.x?'<span>측정 '+h.x+'</span>':'')+(h.v?'<span style="color:var(--ok)">확인 · '+h.v+'</span>':'')+(h.ph?'<span>사진 '+h.ph+'장</span>':'')+'</div></div>'}).join('')+'</div></div>';}
 var MH=[['2026-11-14 토 18:16','GR2-212','크루 하늘','54,037.16 km','38,819회','212 / 고프로 화면 오류 / 고프로 배터리 교환'],['2026-11-14 토 16:07','XGR-04','크루 바다','19,156.84 km','12,554회','04 / 앞범퍼 파손 / 정비고 제외'],['2026-11-14 토 15:58','GR1-172','크루 바다','58,145.26 km','45,640회','172 / 구동부 소음 점검 / 정비고 제외'],['2026-11-14 토 15:50','GR2-206','크루 산','58,132.85 km','41,764회','206 / 구동부 소음 점검 / 앞 허브베어링 교환 시운전 1회 이상 무']];
-function renderMh(){$('v-mh').innerHTML='<div class="bar"><label class="fld">▦ <input type="date" value="2026-11-14"></label><label class="fld">⌕ <input placeholder="GR번호 또는 원문을 입력하세요 (ex) GR1-012" style="width:260px"></label></div><div class="hist"><div class="hh">전체 정비 히스토리<span class="sp"></span><button class="btn sm pri" onclick="toast(\'예시 화면이라 파일을 내려받지 않아요.\')">CSV 다운로드</button></div>'+MH.map(function(h){return '<div class="hi"><div class="m"><span class="code">'+h[0]+'</span><span class="cno">'+h[1]+'</span><span>담당 '+h[2]+'</span><span>누적 거리 '+h[3]+'</span><span>누적 레이스 '+h[4]+'</span></div><div class="t">'+h[5]+'</div></div>'}).join('')+'</div>';}
+function renderMh(){$('v-mh').innerHTML='<div class="bar"><label class="fld">▦ <input type="date" value="2026-11-14"></label><label class="fld">⌕ <input placeholder="GR번호 또는 원문을 입력하세요 (ex) GR1-012" style="width:260px"></label></div><div class="hist"><div class="hh">전체 정비 히스토리<span class="sp"></span><button class="btn sm pri" onclick="toast(\'예시 화면이라 파일을 내려받지 않습니다.\')">CSV 다운로드</button></div>'+MH.map(function(h){return '<div class="hi"><div class="m"><span class="code">'+h[0]+'</span><span class="cno">'+h[1]+'</span><span>담당 '+h[2]+'</span><span>누적 거리 '+h[3]+'</span><span>누적 레이스 '+h[4]+'</span></div><div class="t">'+h[5]+'</div></div>'}).join('')+'</div>';}
 function goMm(n){var sp=document.querySelectorAll('#tabs span');seg(sp[2]);tab('mm');pickCar(n);}
 function tab(t){['st','oh','mm','mh'].forEach(function(x){$('v-'+x).hidden=x!==t});}
 renderSt();renderOh();renderMm();renderMh();

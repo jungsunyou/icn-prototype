@@ -254,6 +254,23 @@ tr.row:hover td,tr.click:hover td{background:rgba(33,37,41,.05) !important}
   .keep .kh::before{content:"정하는 중";font-size:9.5px;background:var(--note);color:#fff;border-radius:5px;padding:2px 6px}
   .keep p{margin:3px 0;color:var(--fg)}
   .tbd{color:var(--note);font-weight:600}
+  .toggle{cursor:pointer;border:none;background:none;padding:0;font-family:inherit;color:var(--fg)}
+  .toggle.off .sw{background:var(--off)}.toggle.off .sw::after{right:auto;left:2px}
+
+  .mdl{position:fixed;inset:0;background:rgba(33,37,41,.38);display:flex;align-items:center;justify-content:center;z-index:70;padding:16px}
+  .mdl[hidden]{display:none}
+  .mdl .box{background:var(--surface);border-radius:12px;box-shadow:0 12px 40px rgba(10,14,22,.25);width:min(400px,100%);padding:20px 20px 16px;font-size:13px;line-height:1.6}
+  .mdl .t{font-weight:700;font-size:15px;margin-bottom:8px}
+  .mdl .use{margin:8px 0 0;padding-left:18px}
+  .mdl .bt{display:flex;justify-content:flex-end;gap:8px;margin-top:16px}
+  .btn.delbtn{color:#c62828 !important;border-color:#e5a3a3 !important;background:transparent !important}
+  .btn.dangerbtn{background:#c62828 !important;border-color:#c62828 !important;color:#fff !important}
+  .ktxt{color:var(--note) !important;background:var(--note-soft);border-radius:4px;padding:0 3px}
+  .dtoast{position:fixed;left:50%;top:18px;transform:translateX(-50%);background:#212529;color:#fff;border-radius:8px;padding:9px 16px;font-size:13px;z-index:80;opacity:0;transition:opacity .2s;pointer-events:none}
+  .dtoast.show{opacity:1}
+
+  .idmsg{font-size:11.5px;margin-top:5px;min-height:15px}.idmsg .bad{color:#c62828;font-weight:600}.idmsg .good{color:var(--on);font-weight:600}.idmsg .tbdmsg{color:var(--note);background:var(--note-soft);border-radius:4px;padding:1px 5px}
+  .btn:disabled{opacity:.45;cursor:not-allowed}
 </style>
 
 <div class="app">
@@ -265,10 +282,10 @@ tr.row:hover td,tr.click:hover td{background:rgba(33,37,41,.05) !important}
     <button class="btn pri" onclick="openPsu(null)">+ PSU 등록</button>
   </div>
 
-  <div class="note"><span>PSU는 상품을 만들 때 쓰는 가장 작은 단위예요. 레이스 JAM, 일반 JAM처럼 하나하나가 모두 PSU예요. 여기서는 <b>이름과 정가</b>만 정해요. 액티비티를 1번 이용할 때 JAM을 몇 개 쓰는지는 <b>액티비티 차감 관리</b> 화면에서 정해요. 화면의 값은 모두 예시예요.</span></div>
+  <div class="note"><span>PSU는 상품을 만들 때 쓰는 가장 작은 단위입니다. 레이스 JAM, 일반 JAM처럼 하나하나가 모두 PSU입니다. 여기서는 <b>이름과 정가</b>만 정합니다. 액티비티를 1번 이용할 때 JAM을 몇 개 쓰는지는 <b>액티비티 차감 관리</b> 화면에서 정합니다. 화면의 값은 모두 예시입니다.</span></div>
 
   <div class="filters">
-    <div class="f search"><label>검색</label><input class="ipt" placeholder="PSU 코드나 노출명을 입력해 주세요"></div>
+    <div class="f search"><label>검색</label><input class="ipt" placeholder="PSU ID나 노출명을 입력해 주세요"></div>
     <div class="f" style="justify-content:flex-end"><button class="btn pri sm" style="height:34px">검색</button></div>
     <div class="f"><label>상태</label><select class="sel"><option>전체</option><option>활성</option><option>판매중지</option></select></div>
   </div>
@@ -277,7 +294,7 @@ tr.row:hover td,tr.click:hover td{background:rgba(33,37,41,.05) !important}
     <div class="ph">PSU 목록 <span class="cnt">· 3건</span></div>
     <div class="tblwrap">
       <table>
-        <thead><tr><th>상태</th><th>PSU 코드</th><th>노출명</th><th class="r">정가</th><th>버전</th><th>수정일시</th><th></th></tr></thead>
+        <thead><tr><th>상태</th><th>PSU ID</th><th>노출명</th><th class="r">정가</th><th>버전</th><th>수정일시</th><th></th></tr></thead>
         <tbody id="rows">
           <tr class="row" data-code="RACE" data-name="레이스 JAM" data-price="25,000" data-st="on"></tr>
           <tr class="row" data-code="GENERAL" data-name="일반 JAM" data-price="2,375" data-st="on"></tr>
@@ -289,18 +306,20 @@ tr.row:hover td,tr.click:hover td{background:rgba(33,37,41,.05) !important}
   </div>
 </div>
 
+<div class="mdl" id="mdl" hidden onclick="if(event.target===this)closeMdl()"><div class="box" id="mdlBox"></div></div>
+<div class="dtoast" id="dtoast"></div>
 <!-- 등록·편집 드로어 -->
 <div class="ov" id="ov" onclick="closePsu()"></div>
 <aside class="drawer" id="dw">
   <div class="dh"><h3 id="dwTitle">PSU 편집</h3><span class="code" id="dwCode"></span><span class="verbadge" id="dwVer">v1</span><span class="sp"></span><button class="x" onclick="closePsu()">✕</button></div>
   <div class="db">
-    <div class="fld"><div class="fl">노출명 <span class="req">*</span></div><div class="row3"><input class="ipt" id="fName" placeholder="KR 예) 레이스 JAM"><input class="ipt" placeholder="EN"><input class="ipt" placeholder="中"></div></div>
+    <div class="fld"><div class="fl">노출명 <span class="req">*</span></div><div class="row3"><input class="ipt" id="fName" placeholder="KR 예) 레이스 JAM" oninput="if(!$('fId').hidden)chkId()"><input class="ipt" placeholder="EN"><input class="ipt" placeholder="中"></div></div>
 
     <div class="fld"><div class="fl">정가 <span class="req">*</span></div><div class="won"><input class="ipt" id="fPrice"><span class="u">원 / 1개</span></div></div>
 
-    <div class="fld"><div class="fl">PSU 코드</div><div class="autoval code" id="fCode">RACE</div></div>
+    <div class="fld"><div class="fl">PSU ID <span class="req">*</span></div><input class="ipt" id="fId" style="font-family:var(--mono);max-width:240px" placeholder="예) RACE" oninput="chkId()"><div class="autoval code" id="fCode" hidden></div><div class="idmsg" id="idMsg"></div></div>
 
-    <div class="fld"><div class="fl">상태</div><span class="toggle"><span class="sw"></span> 활성</span></div>
+    <div class="fld"><div class="fl">상태</div><button type="button" class="toggle" id="fSt" onclick="setSt(this.classList.contains('off'))"><span class="sw"></span> <span id="fStT">활성</span></button></div>
 
     <div class="fld"><div class="fl">버전 · 등록 정보</div>
       <div class="metagrid">
@@ -314,17 +333,25 @@ tr.row:hover td,tr.click:hover td{background:rgba(33,37,41,.05) !important}
     <div class="memo">
       <div class="mh">안내</div>
       <ul>
-        <li>PSU는 유형을 고르지 않아요. 이름과 정가만 넣어요.</li>
-        <li>노출명은 한국어가 꼭 있어야 해요. 다른 언어가 비면 영어로 보여줘요.</li>
-        <li>정가는 1개 기준이에요. 상품 구성과 정산을 나누는 기준이 돼요.</li>
-        <li>고객이 내는 판매가는 상품 관리 · 가격 정책 관리에서 정해요.</li>
-        <li>1회 이용에 쓰는 JAM 수는 액티비티 차감 관리에서 정해요.</li>
-        <li>PSU 코드는 저장하면 자동으로 만들어지고, 바뀌지 않아요.</li>
-        <li>수정은 이름과 정가만 돼요. 저장하면 버전이 하나 올라가요.</li>
+        <li>PSU는 유형을 고르지 않습니다. 이름과 정가만 넣습니다.</li>
+        <li>노출명은 한국어가 꼭 있어야 합니다. 다른 언어가 비면 영어로 보여줍니다.</li>
+        <li>정가는 1개 기준입니다. 상품 구성과 정산을 나누는 기준이 됩니다.</li>
+        <li>고객이 내는 판매가는 상품 관리 · 가격 정책 관리에서 정합니다.</li>
+        <li>1회 이용에 쓰는 JAM 수는 액티비티 차감 관리에서 정합니다.</li>
+        <li>PSU ID는 등록할 때 직접 입력합니다.</li>
+        <li>이미 있는 PSU ID는 쓸 수 없습니다. 판매중지된 PSU의 ID도 마찬가지입니다.</li>
+        <li>PSU ID는 저장한 뒤에는 바꿀 수 없습니다.</li>
+        <li>PSU는 삭제하지 않습니다. 더 안 쓰면 판매중지로 바꿉니다.</li>
+        <li>수정은 이름과 정가만 됩니다. 저장하면 버전이 하나 올라갑니다.</li>
+      </ul>
+      <div style="margin-top:8px;color:var(--note)"><b style="color:var(--note)">정하는 중</b></div>
+      <ul style="color:var(--note)">
+        <li>PSU ID 형식 (지금 예시: 영문 대문자 · 숫자 · 하이픈, 20자까지)</li>
+        <li>중복 · 형식 안내 문구</li>
       </ul>
     </div>
   </div>
-  <div class="dfoot"><span class="vnote" id="vnote">저장하면 버전이 하나 올라가요</span><span class="sp"></span><button class="btn ghost sm" onclick="closePsu()">취소</button><button class="btn pri sm" onclick="closePsu()">저장</button></div>
+  <div class="dfoot"><span class="vnote" id="vnote">저장하면 버전이 하나 올라갑니다</span><span class="sp"></span><button class="btn ghost sm" onclick="closePsu()">취소</button><button class="btn pri sm" id="saveBtn" onclick="savePsu()">저장</button></div>
 </aside>
 
 <script>
@@ -337,7 +364,7 @@ var META={
 var TBD='<span class="tbd">미정</span>';
 
 var rows=document.getElementById('rows');
-Array.prototype.forEach.call(rows.children,function(tr){
+function paint(tr){
   var d=tr.dataset, m=META[d.code]||{ver:1,up:'—'};
   tr.innerHTML=
     '<td><span class="st '+(d.st==='on'?'on':'off')+'"><span class="d"></span>'+(d.st==='on'?'활성':'판매중지')+'</span></td>'+
@@ -347,7 +374,8 @@ Array.prototype.forEach.call(rows.children,function(tr){
     '<td class="ver">v'+m.ver+'</td>'+
     '<td class="ver">'+m.up+'</td>'+
     '<td><button class="mini" onclick="event.stopPropagation();openPsu(this.closest(\'tr\'))">편집</button></td>';
-});
+}
+Array.prototype.forEach.call(rows.children,paint);
 rows.addEventListener('click',function(e){
   if(e.target.closest('button')) return;
   var tr=e.target.closest('tr.row'); if(tr) openPsu(tr);
@@ -362,21 +390,45 @@ function openPsu(tr){
     $('fName').value=d.name;
     $('fPrice').value=d.price;
     $('fPrice').placeholder=d.price?'':'미정';
-    $('fCode').textContent=d.code;
+    $('fCode').textContent=d.code; $('fCode').hidden=false; $('fId').hidden=true; $('idMsg').innerHTML='';
+    $('saveBtn').disabled=false; CUR=tr; setSt(d.st==='on');
     $('dwVer').textContent='v'+m.ver;
     $('mVer').textContent='v'+m.ver; $('mBy').textContent=m.by; $('mCr').textContent=m.cr; $('mUp').textContent=m.up;
-    $('vnote').textContent='저장하면 버전이 하나 올라가요';
+    $('vnote').textContent='저장하면 버전이 하나 올라갑니다';
   }else{
     $('dwTitle').textContent='PSU 등록';
     $('dwCode').textContent='· 신규';
     $('fName').value=''; $('fPrice').value=''; $('fPrice').placeholder='';
-    $('fCode').textContent='저장하면 자동으로 만들어져요';
+    $('fCode').hidden=true; $('fId').hidden=false; $('fId').value=''; $('idMsg').innerHTML='';
+    $('saveBtn').disabled=true; CUR=null; setSt(true);
     $('dwVer').textContent='신규';
-    $('mVer').textContent='—'; $('mBy').textContent='파수꾼'; $('mCr').textContent='저장할 때 기록돼요'; $('mUp').textContent='—';
-    $('vnote').textContent='저장하면 v1로 등록돼요';
+    $('mVer').textContent='—'; $('mBy').textContent='파수꾼'; $('mCr').textContent='저장할 때 기록됩니다'; $('mUp').textContent='—';
+    $('vnote').textContent='저장하면 v1로 등록됩니다';
   }
   $('ov').classList.add('show'); $('dw').classList.add('show');
 }
+// PSU ID 중복 확인 — 판매중지 포함, 대소문자 구분 없이
+function ids(){return Array.prototype.map.call(rows.children,function(tr){return tr.dataset.code.toUpperCase();});}
+function chkId(){var el=$('fId'),v=el.value.toUpperCase().replace(/\s/g,'');el.value=v;var m=$('idMsg'),ok=false;
+  if(!v){m.innerHTML='';}
+  else if(ids().indexOf(v)>=0){m.innerHTML='<span class="bad">이미 있는 PSU ID입니다. 다른 ID를 입력해 주시기 바랍니다.</span>';}
+  else if(!/^[A-Z0-9-]{1,20}$/.test(v)){m.innerHTML='<span class="tbdmsg">영문 대문자 · 숫자 · 하이픈만, 20자까지 쓸 수 있습니다.</span>';}
+  else{m.innerHTML='<span class="good">쓸 수 있는 PSU ID입니다.</span>';ok=true;}
+  $('saveBtn').disabled=!ok||!$('fName').value.trim();return ok;}
+function savePsu(){
+  if(!$('fId').hidden){var v=$('fId').value;if(!chkId())return;
+    var tr=document.createElement('tr');tr.className='row';tr.dataset.code=v;tr.dataset.name=$('fName').value.trim();tr.dataset.price=$('fPrice').value.trim();tr.dataset.st=$('fSt').classList.contains('off')?'off':'on';
+    META[v]={ver:1,by:'파수꾼',cr:'2026-11-13',up:'2026-11-13 '+new Date().toTimeString().slice(0,5)};rows.appendChild(tr);paint(tr);
+    document.querySelector('.ph .cnt').textContent='· '+rows.children.length+'건';}
+  else if(CUR){CUR.dataset.st=$('fSt').classList.contains('off')?'off':'on';CUR.dataset.name=$('fName').value.trim()||CUR.dataset.name;CUR.dataset.price=$('fPrice').value.trim();
+    var m=META[CUR.dataset.code];if(m){m.ver++;m.up='2026-11-13 '+new Date().toTimeString().slice(0,5);}paint(CUR);}
+  closePsu();}
+function openMdl(h){document.getElementById('mdlBox').innerHTML=h;document.getElementById('mdl').hidden=false;}
+function closeMdl(){document.getElementById('mdl').hidden=true;}
+function dToast(t){var el=document.getElementById('dtoast');el.innerHTML=t;el.classList.add('show');clearTimeout(el._t);el._t=setTimeout(function(){el.classList.remove('show')},2200);}
+function setSt(on){var b=document.getElementById('fSt');b.classList.toggle('off',!on);document.getElementById('fStT').textContent=on?'활성':'판매중지';}
+function stChip(on){return '<span class="st '+(on?'on':'off')+'"><span class="d"></span>'+(on?'활성':'판매중지')+'</span>';}
+var CUR=null;
 function closePsu(){$('ov').classList.remove('show');$('dw').classList.remove('show');}
 </script>
 

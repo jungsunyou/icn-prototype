@@ -13,7 +13,7 @@
 <body>
 <div class="app">
   <div class="top kept" style="border-radius:10px;padding:4px 8px"><h1 style="color:var(--note)">디스플레이 제어 <span class="ex">정하는 중</span></h1></div>
-  <div class="keptline" style="margin-bottom:12px"><b>정하는 중</b> · 인천 파크에 어떤 디스플레이를 두고 무엇을 보낼지 아직 정하지 않았어요. 화면 전체가 제주 '복도 디스플레이 컨트롤'을 옮긴 예시예요.</div>
+  <div class="keptline" style="margin-bottom:12px"><b>정하는 중</b> · 인천 파크에 어떤 디스플레이를 두고 무엇을 보낼지 아직 정하지 않았습니다. 화면 전체가 제주 '복도 디스플레이 컨트롤'을 옮긴 예시입니다.</div>
   <div class="lay kept" style="border-radius:16px;padding:4px">
     <div class="card"><div class="ch"><b>디스플레이 현황</b></div><div class="dg" id="dg"></div></div>
     <div class="card"><div class="ch"><b>디스플레이 제어</b></div>
@@ -28,9 +28,9 @@
   <div class="memo kept">
     <div class="mh">안내 (화면 전체 정하는 중)</div>
     <ul style="color:var(--note)">
-      <li>디스플레이를 고르고 팀 · 캐릭터 · 닉네임을 보내요.</li>
+      <li>디스플레이를 고르고 팀 · 캐릭터 · 닉네임을 보냅니다.</li>
       <li>선택 모드: 개별(하나씩) · 열(같은 열 전체) · 전체.</li>
-      <li>디스플레이를 하나 이상 고르고 전송 데이터를 넣어야 전송이 켜져요.</li>
+      <li>디스플레이를 하나 이상 고르고 전송 데이터를 넣어야 전송이 켜집니다.</li>
     </ul>
     <div style="margin-top:8px;color:var(--note)"><b style="color:var(--note)">정하는 중</b></div>
     <ul style="color:var(--note)">
@@ -48,7 +48,7 @@ function render(){$('rad').innerHTML=['개별','열','전체'].map(function(m){r
   $('sel').textContent=SEL.length?SEL.map(function(i){return DS[i].n}).join(', '):'선택된 디스플레이가 없습니다.';ck();}
 function pick(i){if(MODE==='전체')return;if(MODE==='열'){var c=DS[i].c;SEL=DS.map(function(x,j){return x.c===c?j:-1}).filter(function(j){return j>=0});}else{var k=SEL.indexOf(i);if(k>=0)SEL.splice(k,1);else SEL.push(i);}render();}
 function ck(){$('go').disabled=!(SEL.length&&$('tm').value&&$('cr').value&&$('nk').value.trim());}
-function send(){toast('<span style="color:#C9B8FF">예시 화면이라 실제로 전송되지 않아요.</span>');}
+function send(){toast('<span style="color:#C9B8FF">예시 화면이라 실제로 전송되지 않습니다.</span>');}
 render();
 </script>
 </body>

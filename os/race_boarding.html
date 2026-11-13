@@ -85,15 +85,15 @@
   <div class="memo">
     <div class="mh">안내</div>
     <ul>
-      <li>GR 상태: 기록 · 영상 · 통신 오류와 배터리 부족 차량이 칸마다 떠요.</li>
-      <li>GR 위치: 탑승 구간과 승차장 진입 구간의 차량을 카드로 보여줘요.</li>
-      <li>카드에는 차량 번호 · 오늘 레이스 수 · 상태 · 전압 · 배터리가 있어요.</li>
-      <li>오류인 칸은 색이 채워져요. 오류만 보기 / 전체 보기로 바꿔요.</li>
-      <li><b>수동 차량 체크인</b>: 차량을 고르고 티켓 No.(NFC ID)를 넣어 체크인해요.</li>
-      <li>트랙 상태: 신호등 조작, 수동 트랙 체크인, 누적 기록 오류, 센서 로그를 봐요.</li>
-      <li>차량은 GR1 · GR2 · XGR, 코스는 1 · 2 · 3 · ICN-L · ICN-R이에요.</li>
-      <li>1 · 2 · 3코스는 트랙이 2개씩, XGR은 ICN-L · ICN-R을 돌아요.</li>
-      <li>화면 구성과 기능은 제주와 같아요.</li>
+      <li>GR 상태: 기록 · 영상 · 통신 오류와 배터리 부족 차량이 칸마다 뜹니다.</li>
+      <li>GR 위치: 탑승 구간과 승차장 진입 구간의 차량을 카드로 보여줍니다.</li>
+      <li>카드에는 차량 번호 · 오늘 레이스 수 · 상태 · 전압 · 배터리가 있습니다.</li>
+      <li>오류인 칸은 색이 채워집니다. 오류만 보기 / 전체 보기로 바꿉니다.</li>
+      <li><b>수동 차량 체크인</b>: 차량을 고르고 티켓 No.(NFC ID)를 넣어 체크인합니다.</li>
+      <li>트랙 상태: 신호등 조작, 수동 트랙 체크인, 누적 기록 오류, 센서 로그를 봅니다.</li>
+      <li>차량은 GR1 · GR2 · XGR, 코스는 1 · 2 · 3 · ICN-L · ICN-R입니다.</li>
+      <li>1 · 2 · 3코스는 트랙이 2개씩, XGR은 ICN-L · ICN-R을 돕니다.</li>
+      <li>화면 구성과 기능은 제주와 같습니다.</li>
     </ul>
     <div style="margin-top:8px;color:var(--note)"><b style="color:var(--note)">정하는 중</b></div>
     <ul style="color:var(--note)">
@@ -134,20 +134,20 @@ function cardHTML(c){var box=function(k){var x=EC[k],on=c.err[k];
   return '<div class="gc"><div class="h"><span class="no">'+c.no+'</span><span class="rc">'+FLAG+' '+c.races+'</span></div><div class="st">'+box('rec')+box('vid')+box('com')+'<div class="ic bat" style="border-color:#F4433660"><b>'+c.v+'v</b><i>'+c.b+'<small>%</small></i></div></div></div>';}
 function renderCards(){var all=$('sw').classList.contains('on'),q=$('q').value.trim().toUpperCase();
   $('zones').innerHTML=[['탑승 구간','BOARDING'],['승차장 진입 구간','BOARDING InterChange']].map(function(z,zi){var list=CARS.filter(function(c){return c.zone===zi&&(all||c.err.rec||c.err.vid||c.err.com||c.err.bat)&&(!q||c.no.indexOf(q)>=0)});
-    return '<div class="zone">'+z[0]+'<span>'+z[1]+'</span></div><div class="cards">'+(list.length?list.map(cardHTML).join(''):'<div class="muted" style="padding:20px">해당하는 GR이 없어요.</div>')+'</div>'}).join('');}
-function renderTrack(){var seed2=3;$('trk').innerHTML=COURSES.map(function(co){return co.tracks.map(function(t,i){var tot=Math.floor(150+Math.random()*230);return '<tr>'+(i===0?'<td rowspan="'+co.tracks.length+'" style="font-weight:600">'+co.c+'</td>':'')+'<td class="kept" style="font-weight:600">'+t+'</td><td><span class="sig"><button title="대기" onclick="sig()" style="color:#FF9800">◎</button><button title="정지" onclick="sig()" style="color:#878A99">⊗</button><button title="출발" onclick="sig()" style="color:#008000">●</button><button title="위험" onclick="sig()" style="color:#DA222B">●</button></span></td><td><button class="icb" onclick="toast(\'예시 화면이라 실제로 체크인되지 않아요.\')">☑</button></td><td class="num">0 / '+tot+'</td><td><button class="icb" onclick="toast(\'트랙 센서 로그가 열려요.\')">☰</button></td></tr>'}).join('')}).join('');}
+    return '<div class="zone">'+z[0]+'<span>'+z[1]+'</span></div><div class="cards">'+(list.length?list.map(cardHTML).join(''):'<div class="muted" style="padding:20px">해당하는 GR이 없습니다.</div>')+'</div>'}).join('');}
+function renderTrack(){var seed2=3;$('trk').innerHTML=COURSES.map(function(co){return co.tracks.map(function(t,i){var tot=Math.floor(150+Math.random()*230);return '<tr>'+(i===0?'<td rowspan="'+co.tracks.length+'" style="font-weight:600">'+co.c+'</td>':'')+'<td class="kept" style="font-weight:600">'+t+'</td><td><span class="sig"><button title="대기" onclick="sig()" style="color:#FF9800">◎</button><button title="정지" onclick="sig()" style="color:#878A99">⊗</button><button title="출발" onclick="sig()" style="color:#008000">●</button><button title="위험" onclick="sig()" style="color:#DA222B">●</button></span></td><td><button class="icb" onclick="toast(\'예시 화면이라 실제로 체크인되지 않습니다.\')">☑</button></td><td class="num">0 / '+tot+'</td><td><button class="icb" onclick="toast(\'트랙 센서 로그가 열립니다.\')">☰</button></td></tr>'}).join('')}).join('');}
 function full(){FULL=!FULL;document.body.classList.toggle('full',FULL);$('fs').innerHTML=(FULL?I_FSX+' 전체화면 닫기':I_FS+' 전체화면');window.scrollTo(0,0);}
 var CK={t:'GR1',p:1,q:'',car:''};
 function openCk(){CK={t:'GR1',p:1,q:'',car:''};renderCk();$('mCk').hidden=false;}
 function renderCk(){$('ctabs').innerHTML=CAR_TYPES.map(function(c){return '<button class="ctab'+(CK.t===c.t?' on':'')+'" onclick="CK.t=\''+c.t+'\';CK.p=1;renderCk()">'+c.t+'</button>'}).join('')+'<span class="sp"></span><input class="gs" id="gs" placeholder="GR 검색" value="'+CK.q+'" oninput="CK.q=this.value.trim().toUpperCase();CK.p=1;renderCkList()">';renderCkList();}
 function renderCkList(){var list=CARS.filter(function(c){return c.type.t===CK.t&&(!CK.q||c.no.indexOf(CK.q)>=0)});var pages=Math.max(1,Math.ceil(list.length/10));if(CK.p>pages)CK.p=pages;
-  var pg=list.slice((CK.p-1)*10,CK.p*10);$('ctb').innerHTML=pg.length?pg.map(function(c,i){return '<tr onclick="askCk(\''+c.no+'\')"><td>'+((CK.p-1)*10+i+1)+'</td><td class="code">'+c.no+'</td></tr>'}).join(''):'<tr><td colspan="2" class="muted">해당하는 GR이 없어요.</td></tr>';
+  var pg=list.slice((CK.p-1)*10,CK.p*10);$('ctb').innerHTML=pg.length?pg.map(function(c,i){return '<tr onclick="askCk(\''+c.no+'\')"><td>'+((CK.p-1)*10+i+1)+'</td><td class="code">'+c.no+'</td></tr>'}).join(''):'<tr><td colspan="2" class="muted">해당하는 GR이 없습니다.</td></tr>';
   var nav=function(lbl,p,dis){return '<span class="'+(dis?'dis':'')+'" '+(dis?'':'onclick="CK.p='+p+';renderCkList()"')+'>'+lbl+'</span>'};
   var h=nav('«',1,CK.p===1)+nav('‹',CK.p-1,CK.p===1);for(var i=1;i<=pages;i++)h+='<span class="'+(i===CK.p?'on':'')+'" onclick="CK.p='+i+';renderCkList()">'+i+'</span>';h+=nav('›',CK.p+1,CK.p===pages)+nav('»',pages,CK.p===pages);
   $('cpg').innerHTML=h;$('ctot').textContent='총 '+list.length+'개 항목';$('cpgi').textContent=pages+' 페이지 중 '+CK.p+' 페이지';}
 function askCk(no){CK.car=no;$('nfc').value='';$('cfOk').disabled=true;$('cfQ').textContent=no+' 차량을 체크인 하시겠습니까?';$('mCf').hidden=false;}
-function ckDone(){$('mCf').hidden=true;$('mCk').hidden=true;toast('<span style="color:#C9B8FF">예시 화면이라 실제로 체크인되지 않아요. 체크인 뒤 안내 문구는 제주 화면 확인이 필요해요.</span>');}
-function sig(){toast('예시 화면이라 실제 신호등은 바뀌지 않아요.');}
+function ckDone(){$('mCf').hidden=true;$('mCk').hidden=true;toast('<span style="color:#C9B8FF">예시 화면이라 실제로 체크인되지 않습니다. 체크인 뒤 안내 문구는 제주 화면 확인이 필요합니다.</span>');}
+function sig(){toast('예시 화면이라 실제 신호등은 바뀌지 않습니다.');}
 function view(v){$('vGr').hidden=v!=='gr';$('vTrack').hidden=v!=='track';$('manualCar').hidden=v!=='gr';}
 renderErr();renderCards();renderTrack();$('fs').innerHTML=I_FS+' 전체화면';
 </script>

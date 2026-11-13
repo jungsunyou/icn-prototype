@@ -42,20 +42,20 @@
   <div class="card">
     <div class="bar"><label class="datef">▦ <input type="date" id="d" value="2026-11-14" onchange="run()"></label>
       <div class="sbox">⌕ <select id="st"><option>티켓 No</option></select><input id="kw" placeholder="검색조건에 맞는 검색어를 입력하세요" oninput="run()"></div></div>
-    <div class="listhd">기록 목록<span class="sp"></span><button class="btn sm pri" onclick="toast('예시 화면이라 파일을 내려받지 않아요.')">CSV 다운로드</button><button class="btn sm pri" id="del" disabled onclick="toast('예시 화면이라 실제로 지우지 않아요.')">기록 삭제</button></div>
+    <div class="listhd">기록 목록<span class="sp"></span><button class="btn sm pri" onclick="toast('예시 화면이라 파일을 내려받지 않습니다.')">CSV 다운로드</button><button class="btn sm pri" id="del" disabled onclick="toast('예시 화면이라 실제로 지우지 않습니다.')">기록 삭제</button></div>
     <div class="tblwrap"><table><thead><tr id="thr"></tr></thead><tbody id="tb"></tbody></table></div>
     <div class="dspager"><span id="tot">총 0개 항목</span><span>1 페이지 중 1 페이지</span><span class="rpp">페이지당 행 수 : <select style="border:none;background:none;font-size:13.5px;font-family:var(--font)"><option>20</option><option>50</option><option>100</option></select></span><span class="sp"></span><div class="pgs"><span>«</span><span>‹</span><span class="on">1</span><span>›</span><span>»</span></div></div>
   </div>
   <div class="memo"><div class="mh">안내</div>
   <ul>
-    <li>레이스 기록이 한 줄씩 쌓여요. 날짜와 티켓 No로 찾아요.</li>
-    <li>액티비티 상태와 기록 상태는 머리글을 눌러 걸러요.</li>
-    <li>거르면 머리글 아래에 (종료)처럼 고른 값이 보여요.</li>
-    <li>게임중이면 랩타임이 '측정중..'으로 보여요.</li>
-    <li>영상 상태는 정상 · 에러 수 / 전체 수예요.</li>
-    <li>잘못 남은 기록은 골라서 <b>기록 삭제</b>해요.</li>
-    <li>줄을 누르면 레이스 기록 상세가 열려요.</li>
-    <li>상세에서 기록 정보, 그래프, 영상(숨김/공개 · 다운로드)을 봐요.</li>
+    <li>레이스 기록이 한 줄씩 쌓입니다. 날짜와 티켓 No로 찾습니다.</li>
+    <li>액티비티 상태와 기록 상태는 머리글을 눌러 거릅니다.</li>
+    <li>거르면 머리글 아래에 (종료)처럼 고른 값이 보입니다.</li>
+    <li>게임중이면 랩타임이 '측정중..'으로 보입니다.</li>
+    <li>영상 상태는 정상 · 에러 수 / 전체 수입니다.</li>
+    <li>잘못 남은 기록은 골라서 <b>기록 삭제</b>합니다.</li>
+    <li>줄을 누르면 레이스 기록 상세가 열립니다.</li>
+    <li>상세에서 기록 정보, 그래프, 영상(숨김/공개 · 다운로드)을 봅니다.</li>
   </ul>
   <div style="margin-top:8px;color:var(--note)"><b style="color:var(--note)">정하는 중</b></div>
   <ul style="color:var(--note)">
@@ -89,7 +89,7 @@ function setF(k,o,e){e.stopPropagation();F[k]=o==='선택안함'?'':o;OPEN=null;
 document.addEventListener('click',function(e){if(OPEN&&!e.target.closest('th.f')){OPEN=null;head();}});
 function chk(){$('del').disabled=!document.querySelectorAll('.ck:checked').length;}
 function run(){var kw=$('kw').value.trim().replace(/\s/g,'');var list=R.filter(function(r){return r.dt.slice(0,10)===$('d').value&&(!kw||r.ticket.indexOf(kw)>=0)&&(!F.act||r.act===F.act)&&(!F.rec||r.rec===F.rec)&&(!F.course||r.course===F.course)&&(!F.track||r.track===F.track)&&(!F.judge||r.judge===F.judge)});
-  $('tb').innerHTML=list.length?list.map(function(r){return '<tr class="row" onclick="openR('+(r.no-1)+')"><td onclick="event.stopPropagation()"><input type="checkbox" class="ck" onchange="chk()"></td><td class="num">'+r.no+'</td><td class="code">'+r.dt+'</td><td>'+r.nick+'</td><td class="code">'+r.ticket+'</td><td class="code">'+r.use+'</td><td><span class="pill '+ACT[r.act]+(r.act==='준비중'||r.act==='시작'?' ktxt':'')+'">'+r.act+'</span></td><td><span class="pill '+REC[r.rec]+'">'+r.rec+'</span></td><td>'+r.course+'</td><td class="kept">'+r.track+'</td><td class="code">'+r.gr+'</td><td class="num">'+r.lap+'</td><td>'+r.vid+'</td><td>'+(r.judge||'')+'</td></tr>'}).join(''):'<tr><td colspan="14" style="padding:40px;color:var(--muted)">데이터가 없어요</td></tr>';
+  $('tb').innerHTML=list.length?list.map(function(r){return '<tr class="row" onclick="openR('+(r.no-1)+')"><td onclick="event.stopPropagation()"><input type="checkbox" class="ck" onchange="chk()"></td><td class="num">'+r.no+'</td><td class="code">'+r.dt+'</td><td>'+r.nick+'</td><td class="code">'+r.ticket+'</td><td class="code">'+r.use+'</td><td><span class="pill '+ACT[r.act]+(r.act==='준비중'||r.act==='시작'?' ktxt':'')+'">'+r.act+'</span></td><td><span class="pill '+REC[r.rec]+'">'+r.rec+'</span></td><td>'+r.course+'</td><td class="kept">'+r.track+'</td><td class="code">'+r.gr+'</td><td class="num">'+r.lap+'</td><td>'+r.vid+'</td><td>'+(r.judge||'')+'</td></tr>'}).join(''):'<tr><td colspan="14" style="padding:40px;color:var(--muted)">데이터가 없습니다</td></tr>';
   $('tot').textContent='총 '+list.length+'개 항목';chk();}
 head();run();
 </script>

@@ -307,14 +307,14 @@ tr.row:hover td,tr.click:hover td{background:rgba(33,37,41,.05) !important}
   <!-- 상품 가격 -->
   <section class="tabpane on" data-p="list">
     <div class="filters">
-      <div class="f search"><label>검색</label><input class="ipt" id="q" placeholder="상품명 · 상품 코드" oninput="pg=1;renderList()"></div>
+      <div class="f search"><label>검색</label><input class="ipt" id="q" placeholder="상품명 · 상품 ID" oninput="pg=1;renderList()"></div>
       <div class="f"><label>기준가</label><select class="sel" id="fSet" onchange="pg=1;renderList()"><option value="">전체</option><option value="set">설정됨</option><option value="unset">미설정</option></select></div>
     </div>
     <div class="panel">
       <div class="ph">상품 가격 <span class="cnt" id="listCnt"></span></div>
       <div class="tblwrap">
         <table style="min-width:880px">
-          <thead><tr><th>상품 코드</th><th>상품명</th><th class="r">기준가 · 평시</th><th class="r">성수</th><th class="r">비수</th><th>버전</th><th>수정일시</th></tr></thead>
+          <thead><tr><th>상품 ID</th><th>상품명</th><th class="r">기준가 · 평시</th><th class="r">성수</th><th class="r">비수</th><th>버전</th><th>수정일시</th></tr></thead>
           <tbody id="listBody"></tbody>
         </table>
       </div>
@@ -324,7 +324,7 @@ tr.row:hover td,tr.click:hover td{background:rgba(33,37,41,.05) !important}
       <div class="ph">동승자 추가 금액 <span class="chip k">정하는 중</span></div>
       <div class="pb">
         <div class="fieldrow kept" style="padding:0;box-shadow:none;background:none"><span class="fl">기본(평시)</span><input class="ipt n" placeholder="—" disabled><span class="u">원</span></div>
-        <div class="keptline" style="margin-top:10px">가격 정책에서 정할 예정이에요. 주문 DDL이 나온 뒤 전체적으로 다시 봐요. 기획서 참고값: 평시 +40,000 · 성수 +46,000 · 비수 +34,000 · 앱 평시 +36,000</div>
+        <div class="keptline" style="margin-top:10px">가격 정책에서 정할 예정입니다. 주문 DDL이 나온 뒤 전체적으로 다시 봅니다. 기획서 참고값: 평시 +40,000 · 성수 +46,000 · 비수 +34,000 · 앱 평시 +36,000</div>
       </div>
     </div>
   </section>
@@ -368,7 +368,7 @@ tr.row:hover td,tr.click:hover td{background:rgba(33,37,41,.05) !important}
         <div class="cal" id="cal"></div>
       </div>
       <div class="panel detail">
-        <div class="ph" id="dTtl">날짜를 선택하세요</div>
+        <div class="ph" id="dTtl">날짜를 선택하시기 바랍니다</div>
         <div class="pb" id="dBody"></div>
       </div>
     </div>
@@ -393,7 +393,7 @@ tr.row:hover td,tr.click:hover td{background:rgba(33,37,41,.05) !important}
 
   <!-- 계산 규칙 -->
   <section class="tabpane" data-p="rule">
-    <div class="keptbanner">계산 규칙은 아직 정하는 중이에요. 이 탭 전체가 킵 영역이라 구현 범위가 정해지면 다시 볼게요.</div>
+    <div class="keptbanner">계산 규칙은 아직 정하는 중입니다. 이 탭 전체가 킵 영역이라 구현 범위가 정해지면 다시 보겠습니다.</div>
     <div class="panel keptpanel">
       <div class="ph">공통 규칙</div>
       <div class="fieldrow kept"><span class="fl">할인 상한</span><input class="ipt pct" placeholder="—" disabled><span class="u">%</span><span class="chip k">킵</span></div>
@@ -405,32 +405,33 @@ tr.row:hover td,tr.click:hover td{background:rgba(33,37,41,.05) !important}
   <div class="panel notep" style="margin-top:14px">
     <div class="ph">안내</div>
     <div class="guide">
-      <p class="gh">이렇게 정해져 있어요 (확정)</p>
+      <p class="gh">이렇게 정해져 있습니다 (확정)</p>
       <ul>
-        <li><b>담당</b> — 가격 설정은 마케팅이 맡아요. (PD-005)</li>
-        <li><b>정가</b> — 상품 관리에서 넣어요. 이 화면에는 보이지 않아요.</li>
-        <li><b>고객 화면</b> — 정가 · 판매가 · 할인율만 보여요.</li>
-        <li><b>기준가</b> — 평시 판매가예요. 성수 · 비수 가격은 자동으로 계산돼요.</li>
-        <li><b>시즌</b> — 평시 · 성수 +15% · 비수 −15%로 시작해요. 모든 상품에 같아요.</li>
-        <li><b>채널</b> — 현장이 기준이에요. 앱은 10% 할인, OTA는 현장과 같아요.</li>
-        <li><b>바로 적용</b> — 저장하면 바로 반영돼요. 결제된 주문은 바뀌지 않아요. (PD-004)</li>
-        <li><b>버전</b> — 가격을 바꾸면 상품 버전이 올라가요. (PD-006)</li>
-        <li><b>공휴일</b> — 가격을 따로 두지 않고 표시만 해요. (PD-022)</li>
-        <li><b>날짜별 가격 고정</b> — 쓰지 않아요. (PD-036)</li>
-        <li><b>할인</b> — 신분 · 지역 · 크루 할인은 프로모션 관리에서 정해요.</li>
+        <li><b>담당</b> — 가격 설정은 마케팅이 맡습니다. (PD-005)</li>
+        <li><b>정가</b> — 상품 관리에서 넣습니다. 이 화면에는 보이지 않습니다.</li>
+        <li><b>상품 삭제</b> — 상품 관리에서 상품을 지우면 여기 가격 정책도 같이 지워집니다.</li>
+        <li><b>고객 화면</b> — 정가 · 판매가 · 할인율만 보입니다.</li>
+        <li><b>기준가</b> — 평시 판매가입니다. 성수 · 비수 가격은 자동으로 계산됩니다.</li>
+        <li><b>시즌</b> — 평시 · 성수 +15% · 비수 −15%로 시작합니다. 모든 상품에 같습니다.</li>
+        <li><b>채널</b> — 현장이 기준입니다. 앱은 10% 할인, OTA는 현장과 같습니다.</li>
+        <li><b>바로 적용</b> — 저장하면 바로 반영됩니다. 결제된 주문은 바뀌지 않습니다. (PD-004)</li>
+        <li><b>버전</b> — 가격을 바꾸면 상품 버전이 올라갑니다. (PD-006)</li>
+        <li><b>공휴일</b> — 가격을 따로 두지 않고 표시만 합니다. (PD-022)</li>
+        <li><b>날짜별 가격 고정</b> — 쓰지 않습니다. (PD-036)</li>
+        <li><b>할인</b> — 신분 · 지역 · 크루 할인은 프로모션 관리에서 정합니다.</li>
       </ul>
       <p class="gh">화면 사용법</p>
       <ul>
-        <li><b>상품 목록</b> — 상품이 자동으로 들어와요. 기준가만 넣으면 돼요.</li>
-        <li><b>상품 편집</b> — 기준가를 넣으면 시즌 · 채널별 판매가가 보여요.</li>
-        <li><b>동승자</b> — 상품 옵션이 아니에요. 주문에서 처리해요.</li>
-        <li><b>가격 캘린더</b> — 상품을 고르면 날짜별 가격이 보여요.</li>
-        <li>날짜를 누르면 현장 · 앱 · OTA 가격이 보여요.</li>
-        <li><b>예시 값</b> — 상품 · 시즌 기간 · 캘린더 날짜는 예시예요.</li>
+        <li><b>상품 목록</b> — 상품이 자동으로 들어옵니다. 기준가만 넣으면 됩니다.</li>
+        <li><b>상품 편집</b> — 기준가를 넣으면 시즌 · 채널별 판매가가 보입니다.</li>
+        <li><b>동승자</b> — 상품 옵션이 아닙니다. 주문에서 처리합니다.</li>
+        <li><b>가격 캘린더</b> — 상품을 고르면 날짜별 가격이 보입니다.</li>
+        <li>날짜를 누르면 현장 · 앱 · OTA 가격이 보입니다.</li>
+        <li><b>예시 값</b> — 상품 · 시즌 기간 · 캘린더 날짜는 예시입니다.</li>
       </ul>
       <p class="gh">아직 정하는 중 (킵)</p>
       <ul>
-        <li><b>추가구매</b> — 구성과 가격 (목록 3개는 예시). 패키지를 산 사람만 사요.</li>
+        <li><b>추가구매</b> — 구성과 가격 (목록 3개는 예시). 패키지를 산 사람만 삽니다.</li>
         <li><b>추가구매 시즌 적용</b> — 성수 · 비수 조정을 적용할지 (PD-003 재확인)</li>
         <li><b>포뮬러 G</b> — 상품 구성, 횟수권 · 시간권 여부</li>
         <li><b>기준가를 안 넣은 상품</b> — 판매를 막을지</li>
@@ -440,9 +441,9 @@ tr.row:hover td,tr.click:hover td{background:rgba(33,37,41,.05) !important}
         <li><b>가격이 정해지는 순서</b> — 가안: ① 기준가 → 시즌 ② 채널(앱 −10%) → 옵션 ③ 프로모션 → 신분·지역 할인 ④ 할인 상한 → 원가 하한 → 100원 반올림</li>
         <li><b>시즌 가격 + 할인</b> — 함께 적용할 때 계산 규칙</li>
         <li><b>채널 구조</b> — 현장 채널을 나눌지, 채널 추가 방법, OTA 수수료 반영 (PD-035)</li>
-        <li><b>동승자 추가 금액</b> — 주문 설계가 나온 뒤 함께 정해요.</li>
-        <li><b>시간대 · 요일 가격</b> — 오픈 때는 쓰지 않아요. 후속 과제예요.</li>
-        <li><b>얼리버드</b> — 이번 범위에서 제외했어요.</li>
+        <li><b>동승자 추가 금액</b> — 주문 설계가 나온 뒤 함께 정합니다.</li>
+        <li><b>시간대 · 요일 가격</b> — 오픈 때는 쓰지 않습니다. 후속 과제입니다.</li>
+        <li><b>얼리버드</b> — 이번 범위에서 제외했습니다.</li>
       </ul>
     </div>
   </div>
@@ -455,7 +456,7 @@ tr.row:hover td,tr.click:hover td{background:rgba(33,37,41,.05) !important}
     <div class="sec">
       <p class="sl">상품</p>
       <div class="kv">
-        <span class="k">상품 코드</span><span class="code" id="dwCode"></span>
+        <span class="k">상품 ID</span><span class="code" id="dwCode"></span>
       </div>
     </div>
     <div class="sec">
@@ -524,7 +525,7 @@ function renderList(){
     return '<tr class="row" onclick="openDw('+o.i+')">'+head+
       '<td class="r">'+base+'</td><td class="r num">'+hi+'</td><td class="r num">'+lo+'</td>'+
       '<td class="num">v'+p.ver+'</td><td class="muted" style="font-size:12px">'+p.up+'</td></tr>';
-  }).join('')||'<tr><td colspan="7" class="muted" style="text-align:center;padding:24px">조건에 맞는 상품이 없어요</td></tr>';
+  }).join('')||'<tr><td colspan="7" class="muted" style="text-align:center;padding:24px">조건에 맞는 상품이 없습니다</td></tr>';
   var h='<span>'+pg+' / '+pages+' 페이지</span><span style="flex:1"></span>';
   for(var k=1;k<=pages;k++) h+='<button class="pg'+(k===pg?' on':'')+'" onclick="pg='+k+';renderList()">'+k+'</button>';
   document.getElementById('pager').innerHTML=h;

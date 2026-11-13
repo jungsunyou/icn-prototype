@@ -55,7 +55,7 @@
       <h2>영상 확인</h2>
       <div class="tinfo kept" id="tinfo"></div>
       <div id="vbox"></div>
-      <div class="note">* 영상과 동일한 고객인 경우에만 사후 매핑을 진행하세요.</div>
+      <div class="note">* 영상과 동일한 고객인 경우에만 사후 매핑을 진행하시기 바랍니다.</div>
       <div class="acts">
         <button class="btn pri" id="vOk" onclick="matchOk()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.7 2.7L16 9.8"/></svg> 확인</button>
         <button class="btn dark" onclick="reset(false)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M9 9l6 6M15 9l-6 6"/></svg> 취소</button>
@@ -75,7 +75,7 @@
       <button class="btn pri sendbtn" id="send" disabled onclick="send()">인증용 링크 발송</button>
       <div class="codebox kept" id="codebox" hidden>
         인증 코드는 <b id="code"></b> 입니다.
-        <div style="font-size:12px;margin-top:6px">고객이 받은 링크로 앱에 들어가 이 6자리 코드를 입력하면 매핑이 끝나요.</div>
+        <div style="font-size:12px;margin-top:6px">고객이 받은 링크로 앱에 들어가 이 6자리 코드를 입력하면 매핑이 끝납니다.</div>
       </div>
     </div>
   </div>
@@ -83,16 +83,16 @@
   <div class="memo">
     <div class="mh">안내</div>
     <ul>
-      <li>계정 연결 없이 레이스를 탄 기록 · 영상을 나중에 고객 계정에 연결해요.</li>
-      <li>티켓 번호를 넣거나 태그하면 레이스 영상이 보여요.</li>
-      <li>영상이 없으면 빈 상자로 알려줘요.</li>
-      <li>크루는 영상 속 사람과 앞의 고객이 같은지 확인해요.</li>
-      <li>같으면 <b>확인</b>, 다르면 <b>취소</b>예요. 취소하면 처음으로 돌아가요.</li>
-      <li>확인하면 오른쪽에 고객 인증이 열려요.</li>
-      <li>전화번호 · 이메일 중 하나 이상 넣어요.</li>
-      <li>매핑유형을 고르고 <b>인증용 링크 발송</b>을 눌러요.</li>
-      <li>고객은 링크로 앱에 들어가 인증 코드를 넣어요.</li>
-      <li>연락처는 고객이 앱 가입 때 쓴 것과 같아야 해요.</li>
+      <li>계정 연결 없이 레이스를 탄 기록 · 영상을 나중에 고객 계정에 연결합니다.</li>
+      <li>티켓 번호를 넣거나 태그하면 레이스 영상이 보입니다.</li>
+      <li>영상이 없으면 빈 상자로 알려줍니다.</li>
+      <li>크루는 영상 속 사람과 앞의 고객이 같은지 확인합니다.</li>
+      <li>같으면 <b>확인</b>, 다르면 <b>취소</b>입니다. 취소하면 처음으로 돌아갑니다.</li>
+      <li>확인하면 오른쪽에 고객 인증이 열립니다.</li>
+      <li>전화번호 · 이메일 중 하나 이상 넣습니다.</li>
+      <li>매핑유형을 고르고 <b>인증용 링크 발송</b>을 누릅니다.</li>
+      <li>고객은 링크로 앱에 들어가 인증 코드를 넣습니다.</li>
+      <li>연락처는 고객이 앱 가입 때 쓴 것과 같아야 합니다.</li>
     </ul>
     <div style="margin-top:8px;color:var(--note)"><b style="color:var(--note)">정하는 중</b></div>
     <ul style="color:var(--note)">
@@ -114,16 +114,16 @@ function $(i){return document.getElementById(i);}
 function toast(m){var e=$('toast');e.textContent=m;e.classList.add('show');clearTimeout(e._t);e._t=setTimeout(function(){e.classList.remove('show')},2400);}
 function layout(two){$('grid').className='grid '+(two?'two':'one');}
 function reset(all){['cVideo','cAuth','err'].forEach(function(i){$(i).hidden=true});if(all)$('kw').value='';$('vOk').disabled=false;$('ph').value='';$('em').value='';$('mt').selectedIndex=0;$('codebox').hidden=true;$('edit').hidden=true;lock(false);chk();layout(false);}
-function find(){reset(false);var k=$('kw').value.replace(/\D/g,'');if(!k){toast('티켓 번호를 입력해 주세요.');return;}
-  var t=T[k];if(!t){$('err').textContent='티켓을 찾을 수 없어요. 티켓 번호를 다시 확인해 주세요.';$('err').hidden=false;return;}
-  if(t.mapped){$('err').textContent='이미 고객 계정이 연결된 티켓이에요. 사후 매핑할 수 없어요.';$('err').hidden=false;return;}
+function find(){reset(false);var k=$('kw').value.replace(/\D/g,'');if(!k){toast('티켓 번호를 입력해 주시기 바랍니다.');return;}
+  var t=T[k];if(!t){$('err').textContent='티켓을 찾을 수 없습니다. 티켓 번호를 다시 확인해 주시기 바랍니다.';$('err').hidden=false;return;}
+  if(t.mapped){$('err').textContent='이미 고객 계정이 연결된 티켓입니다. 사후 매핑할 수 없습니다.';$('err').hidden=false;return;}
   $('tinfo').innerHTML='<div class="k">티켓 No</div><div class="code">'+k.replace(/(\d{4})(\d{4})(\d{4})/,'$1 $2 $3')+'</div><div class="k">상품</div><div>'+t.prod+'</div><div class="k">닉네임</div><div>'+t.nick+'</div>';
-  $('vbox').innerHTML=t.video?'<div class="video"><div class="play" onclick="toast(\'예시 화면이라 영상이 재생되지 않아요.\')"><svg viewBox="0 0 24 24" width="22" height="22" fill="#fff"><path d="M8 5v14l11-7z"/></svg></div><span class="cap ktxt">'+t.race+'</span></div>':'<div class="novid"><b>등록된 영상이 없습니다.</b><span>해당 티켓 번호로 등록된 영상이 없습니다.</span></div>';
+  $('vbox').innerHTML=t.video?'<div class="video"><div class="play" onclick="toast(\'예시 화면이라 영상이 재생되지 않습니다.\')"><svg viewBox="0 0 24 24" width="22" height="22" fill="#fff"><path d="M8 5v14l11-7z"/></svg></div><span class="cap ktxt">'+t.race+'</span></div>':'<div class="novid"><b>등록된 영상이 없습니다.</b><span>해당 티켓 번호로 등록된 영상이 없습니다.</span></div>';
   $('cVideo').hidden=false;}
 function matchOk(){$('vOk').disabled=true;$('cAuth').hidden=false;layout(true);}
 function chk(){$('send').disabled=!($('ph').value.trim()||$('em').value.trim());}
 function lock(on){['cc','ph','em','mt'].forEach(function(i){$(i).disabled=on});$('send').hidden=on;}
-function send(){var c=String(Math.floor(100000+Math.random()*900000));$('code').textContent=c;$('codebox').hidden=false;$('edit').hidden=false;lock(true);toast('예시 화면이라 실제로 보내지 않아요.');}
+function send(){var c=String(Math.floor(100000+Math.random()*900000));$('code').textContent=c;$('codebox').hidden=false;$('edit').hidden=false;lock(true);toast('예시 화면이라 실제로 보내지 않습니다.');}
 function editAuth(){lock(false);$('codebox').hidden=true;$('edit').hidden=true;chk();}
 </script>
 </body>

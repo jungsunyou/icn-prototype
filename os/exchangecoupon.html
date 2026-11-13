@@ -52,15 +52,15 @@
   <div class="memo">
     <div class="mh">안내</div>
     <ul>
-      <li>크루가 고객의 교환쿠폰을 찾아 사용 처리하는 화면이에요.</li>
-      <li>잘못 처리한 쿠폰은 미사용으로 되돌려요.</li>
-      <li>날짜와 프로모션을 골라요. 교환 유형 프로모션만 나와요.</li>
-      <li>닉네임을 넣고 고객을 고르면 그 고객의 쿠폰만 보여요.</li>
-      <li>닉네임은 겹치지 않아서 닉네임만 보여줘요. 실명 · 전화번호로는 찾지 않아요.</li>
-      <li><b>사용처리</b> → 확인 창 → 사용으로 바뀌고 버튼이 <b>미사용처리</b>가 돼요.</li>
-      <li>미사용처리하면 다시 미사용이 돼요. 처리하면 위쪽에 완료 안내가 떠요.</li>
-      <li>사용 처리하면 사용 일시가 남아요.</li>
-      <li>JAM 교환(트레이니 · 마스터)은 쿠폰이 없어서 나오지 않아요.</li>
+      <li>크루가 고객의 교환쿠폰을 찾아 사용 처리하는 화면입니다.</li>
+      <li>잘못 처리한 쿠폰은 미사용으로 되돌립니다.</li>
+      <li>날짜와 프로모션을 고릅니다. 교환 유형 프로모션만 나옵니다.</li>
+      <li>닉네임을 넣고 고객을 고르면 그 고객의 쿠폰만 보입니다.</li>
+      <li>닉네임은 겹치지 않아서 닉네임만 보여줍니다. 실명 · 전화번호로는 찾지 않습니다.</li>
+      <li><b>사용처리</b> → 확인 창 → 사용으로 바뀌고 버튼이 <b>미사용처리</b>가 됩니다.</li>
+      <li>미사용처리하면 다시 미사용이 됩니다. 처리하면 위쪽에 완료 안내가 뜹니다.</li>
+      <li>사용 처리하면 사용 일시가 남습니다.</li>
+      <li>JAM 교환(트레이니 · 마스터)은 쿠폰이 없어서 나오지 않습니다.</li>
     </ul>
     <div style="margin-top:8px;color:var(--note)"><b style="color:var(--note)">정하는 중</b></div>
     <ul style="color:var(--note)">
@@ -87,11 +87,11 @@ function fmt(t){if(!t)return '-';var d=new Date(t.slice(0,10)+'T00:00:00');retur
 function nowStr(){var n=new Date();return '2026-11-14 '+n.toTimeString().slice(0,5);}
 function tTop(m){var n=new Date(),h=n.getHours(),mi=('0'+n.getMinutes()).slice(-2);$('tM').textContent=m;$('tS').textContent='2026년 11월 14일 '+(h<12?'오전 ':'오후 ')+((h%12)||12)+':'+mi;$('ttop').hidden=false;clearTimeout(tTop._t);tTop._t=setTimeout(function(){$('ttop').hidden=true},3000);}
 function suggest(){var q=$('nk').value.trim();NICK='';var ns=[...new Set(C.map(function(c){return c.nick}))].filter(function(n){return q&&n.indexOf(q)>=0});
-  $('ac').innerHTML=ns.length?ns.map(function(n){return '<div onclick="pickNick(\''+n+'\')">'+n+'</div>'}).join(''):'<div style="color:var(--muted);cursor:default">맞는 고객이 없어요</div>';$('ac').hidden=!q;$('ac').classList.add('kept');if(!q)run();}
+  $('ac').innerHTML=ns.length?ns.map(function(n){return '<div onclick="pickNick(\''+n+'\')">'+n+'</div>'}).join(''):'<div style="color:var(--muted);cursor:default">맞는 고객이 없습니다</div>';$('ac').hidden=!q;$('ac').classList.add('kept');if(!q)run();}
 function pickNick(n){NICK=n;$('nk').value=n;$('ac').hidden=true;run();}
 function run(){var d=$('d').value,p=$('pr').value;
   var list=C.filter(function(c){return (c.ia.slice(0,10)===d||c.ua.slice(0,10)===d)&&(!p||c.pr===p)&&(!NICK||c.nick===NICK)});
-  $('tb').innerHTML=list.length?list.map(function(c){var i=C.indexOf(c);return '<tr><td class="code">'+c.code+'</td><td><span class="pill '+(c.used?'p-blue':'p-gray')+'">'+(c.used?'사용':'미사용')+'</span></td><td class="code">'+fmt(c.ua)+'</td><td class="code">'+fmt(c.ia)+'</td><td>'+(c.used?'<button class="btn sm warn" onclick="ask('+i+')">미사용처리</button>':'<button class="btn sm pri" onclick="ask('+i+')">사용처리</button>')+'</td></tr>'}).join(''):'<tr><td colspan="5" style="padding:40px;text-align:center;color:var(--muted)">검색 결과가 없어요</td></tr>';
+  $('tb').innerHTML=list.length?list.map(function(c){var i=C.indexOf(c);return '<tr><td class="code">'+c.code+'</td><td><span class="pill '+(c.used?'p-blue':'p-gray')+'">'+(c.used?'사용':'미사용')+'</span></td><td class="code">'+fmt(c.ua)+'</td><td class="code">'+fmt(c.ia)+'</td><td>'+(c.used?'<button class="btn sm warn" onclick="ask('+i+')">미사용처리</button>':'<button class="btn sm pri" onclick="ask('+i+')">사용처리</button>')+'</td></tr>'}).join(''):'<tr><td colspan="5" style="padding:40px;text-align:center;color:var(--muted)">검색 결과가 없습니다</td></tr>';
   $('tot').textContent='총 '+list.length+'개 항목';}
 function ask(i){var c=C[i],w=c.used?'미사용':'사용';$('mT').textContent='쿠폰 '+w+' 처리';$('mB').textContent=c.code+' 쿠폰을 '+w+' 처리하시겠습니까?';
   $('mGo').onclick=function(){c.used=!c.used;c.ua=c.used?nowStr():'';$('mdl').hidden=true;run();tTop('쿠폰 '+w+' 처리가 완료되었습니다.');};$('mdl').hidden=false;}

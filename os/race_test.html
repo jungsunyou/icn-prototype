@@ -40,17 +40,17 @@
   <div class="card">
     <div class="bar"><label class="datef">▦ <input type="date" id="d" value="2026-11-14" onchange="run()"></label>
       <div class="sbox">⌕ <select id="st"><option>티켓 No</option><option>이름</option><option>GR 번호</option></select><input id="kw" placeholder="검색조건에 맞는 검색어를 입력하세요" oninput="run()"></div></div>
-    <div class="listhd">테스트 레이스 목록<span class="sp"></span><button class="btn sm pri" onclick="toast('예시 화면이라 파일을 내려받지 않아요.')">CSV 다운로드</button></div>
+    <div class="listhd">테스트 레이스 목록<span class="sp"></span><button class="btn sm pri" onclick="toast('예시 화면이라 파일을 내려받지 않습니다.')">CSV 다운로드</button></div>
     <div class="tblwrap"><table><thead><tr><th>일시</th><th>이름<span class="dd">▼</span></th><th>이용 No</th><th>액티비티 상태<span class="dd">▼</span></th><th>기록 상태<span class="dd">▼</span></th><th>코스<span class="dd">▼</span></th><th>트랙<span class="dd">▼</span></th><th>GR 번호</th><th>랩타임<span class="dd">▼</span></th><th>반응 시간</th><th>최고 속도</th><th>평균 속도</th><th>최고 G</th></tr></thead><tbody id="tb"></tbody></table></div>
     <div class="dspager"><span id="tot">총 0개 항목</span><span>1 페이지 중 1 페이지</span><span class="rpp">페이지당 행 수 : <select style="border:none;background:none;font-size:13.5px;font-family:var(--font)"><option>20</option><option>50</option><option>100</option></select></span><span class="sp"></span><div class="pgs"><span>«</span><span>‹</span><span class="on">1</span><span>›</span><span>»</span></div></div>
   </div>
   <div class="memo"><div class="mh">안내</div>
   <ul>
-    <li>운영 전 점검용으로 탄 테스트 레이스 기록이에요.</li>
-    <li>이름은 테스트한 크루예요.</li>
-    <li>랩타임 · 반응 시간 · 속도 · 최고 G를 바로 비교해요.</li>
-    <li>줄을 누르면 테스트 레이스 상세가 열려요.</li>
-    <li>상세에는 테스터 정보, 주행 정보, 부스터 획득 정보, 그래프, 영상이 있어요.</li>
+    <li>운영 전 점검용으로 탄 테스트 레이스 기록입니다.</li>
+    <li>이름은 테스트한 크루입니다.</li>
+    <li>랩타임 · 반응 시간 · 속도 · 최고 G를 바로 비교합니다.</li>
+    <li>줄을 누르면 테스트 레이스 상세가 열립니다.</li>
+    <li>상세에는 테스터 정보, 주행 정보, 부스터 획득 정보, 그래프, 영상이 있습니다.</li>
   </ul>
   <div style="margin-top:8px;color:var(--note)"><b style="color:var(--note)">정하는 중</b></div>
   <ul style="color:var(--note)">
@@ -71,7 +71,7 @@ function rowsFor(n,date){var T=tracks(),out=[];for(var i=0;i<n;i++){var t=T[(i*3
 var CREW=['크루 하늘','크루 바다','크루 산'];var R=rowsFor(5,'2026-11-14').map(function(r,i){r.crew=CREW[i%3];r.lap=(88+i*1.37).toFixed(3);r.react=(0.42+i*0.03).toFixed(2);r.max=(38+i*0.8).toFixed(1);r.avg=(29+i*0.6).toFixed(1);r.g=(0.81+i*0.02).toFixed(2);r.act='종료';r.nick=r.crew;return r;});
 var ACT={'준비중':'c-gray','시작':'c-gray','게임중':'c-green','종료':'c-blue','무효':'c-red','무탑승':'c-gray'},REC={'정상':'c-blue','오류':'c-red','무기록':'c-gray'};
 function run(){var kw=$('kw').value.trim();var list=R.filter(function(r){return r.dt.slice(0,10)===$('d').value&&(!kw||(r.crew+r.gr+r.ticket).indexOf(kw)>=0)});
- $('tb').innerHTML=list.length?list.map(function(r){return '<tr class="row" onclick="openR('+R.indexOf(r)+')"><td class="code">'+r.dt+'</td><td>'+r.crew+'</td><td class="code">'+r.use+'</td><td><span class="pill p-blue">종료</span></td><td><span class="pill '+(r.rec==='오류'?'p-red':'p-blue')+'">'+r.rec+'</span></td><td>'+r.course+'</td><td class="kept">'+r.track+'</td><td class="code">'+r.gr+'</td><td class="num">'+r.lap+'</td><td class="num">'+r.react+'</td><td class="num">'+r.max+'</td><td class="num">'+r.avg+'</td><td class="num">'+r.g+'</td></tr>'}).join(''):'<tr><td colspan="13" style="padding:40px;color:var(--muted)">데이터가 없어요</td></tr>';$('tot').textContent='총 '+list.length+'개 항목';}
+ $('tb').innerHTML=list.length?list.map(function(r){return '<tr class="row" onclick="openR('+R.indexOf(r)+')"><td class="code">'+r.dt+'</td><td>'+r.crew+'</td><td class="code">'+r.use+'</td><td><span class="pill p-blue">종료</span></td><td><span class="pill '+(r.rec==='오류'?'p-red':'p-blue')+'">'+r.rec+'</span></td><td>'+r.course+'</td><td class="kept">'+r.track+'</td><td class="code">'+r.gr+'</td><td class="num">'+r.lap+'</td><td class="num">'+r.react+'</td><td class="num">'+r.max+'</td><td class="num">'+r.avg+'</td><td class="num">'+r.g+'</td></tr>'}).join(''):'<tr><td colspan="13" style="padding:40px;color:var(--muted)">데이터가 없습니다</td></tr>';$('tot').textContent='총 '+list.length+'개 항목';}
 run();
 </script>
 <script>window.TEST_MODE=true;</script>

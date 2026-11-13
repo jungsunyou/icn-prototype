@@ -132,7 +132,7 @@
             <table><thead><tr><th>No</th><th>닉네임</th><th>대기 시간</th></tr></thead><tbody id="wTb"></tbody></table>
           </div>
           <div class="keptline autobox"><label style="display:flex;align-items:center;gap:8px;cursor:pointer"><input type="checkbox" id="auto" checked onchange="AUTO=this.checked;render()"><span><b>정하는 중</b> · 대기 고객 자동으로 매치에 넣기 (인천)</span></label>
-            <div style="margin-top:6px;color:var(--sub)">게임이 끝나면 대기 순서대로 다음 매치에 넣어요.<br>장비는 운영 중인 것부터 연결해요. (제주에는 없어요)</div></div>
+            <div style="margin-top:6px;color:var(--sub)">게임이 끝나면 대기 순서대로 다음 매치에 넣습니다.<br>장비는 운영 중인 것부터 연결합니다. (제주에는 없습니다)</div></div>
         </div>
         <div class="card">
           <div class="ch"><b>매치 정보</b><span class="sp"></span><button class="btn ol" onclick="openManual('match')">⊕ 수동 추가</button><button class="btn pri ps" onclick="openNfc('match')">👤 인원 추가</button><span id="gameBtn"></span></div>
@@ -154,24 +154,24 @@
       </div>
       <div style="font-weight:600;margin-bottom:6px">게임 목록</div>
       <div class="tblwrap"><table><thead id="rTh"></thead><tbody id="rTb"></tbody></table></div>
-      <div class="keptline" style="margin-top:12px"><b>정하는 중</b> · 보라색 칸(랭킹 · 스코어 · 킬 · 데스 · 랩타임)은 액티비티별 기록 칸이 확정되면 반영해요. 지금은 하레나 · 왕의동굴에 킬 · 데스, 디지털레이스에 랩타임을 넣어 둔 안이에요.</div>
+      <div class="keptline" style="margin-top:12px"><b>정하는 중</b> · 보라색 칸(랭킹 · 스코어 · 킬 · 데스 · 랩타임)은 액티비티별 기록 칸이 확정되면 반영합니다. 지금은 하레나 · 왕의동굴에 킬 · 데스, 디지털레이스에 랩타임을 넣어 둔 안입니다.</div>
     </section>
   </div>
 
   <div class="memo">
     <div class="mh">안내</div>
     <ul>
-      <li>공간 → 액티비티를 고르고, 운영 관리 / 기록 관리를 바꿔 봐요.</li>
+      <li>공간 → 액티비티를 고르고, 운영 관리 / 기록 관리를 바꿔 봅니다.</li>
       <li><b>수동 추가</b>: 티켓 번호 13자리 입력. <b>인원 추가</b>: NFC 태그.</li>
-      <li>매치에 넣으면 장비를 골라 연결하고, 상태는 대기중이 돼요.</li>
-      <li>✕를 누르면 장비 연결을 풀고 매치에서 빠져요.</li>
-      <li>게임 시작 → 게임중, 게임 종료 → 확인 후 기록이 생겨요.</li>
-      <li><b>티켓 사용 처리</b>: 사용 처리가 안 된 티켓을 크루가 직접 처리해요. 누르면 매치 정보에 체크박스가 생겨요.</li>
-      <li>장비 상태는 직접 바꾸거나 <b>AI 상태 반영</b>에 운영방 메시지를 붙여 넣으면 바뀌어요.</li>
-      <li>장비 번호를 누르면 그 장비의 수리 이력이 보여요.</li>
-      <li>고장 → 고장 기구 · 메모 → 확인하면 "[고장] 상태로 변경되었습니다."가 뜨고 <b>수리요청</b>이 돼요.</li>
-      <li>수리요청 · 수리중 장비는 운영 · 충전으로 바꿀 수 없어요.</li>
-      <li>수리는 통합 장비 관리에서 처리해요.</li>
+      <li>매치에 넣으면 장비를 골라 연결하고, 상태는 대기중이 됩니다.</li>
+      <li>✕를 누르면 장비 연결을 풀고 매치에서 빠집니다.</li>
+      <li>게임 시작 → 게임중, 게임 종료 → 확인 후 기록이 생깁니다.</li>
+      <li><b>티켓 사용 처리</b>: 사용 처리가 안 된 티켓을 크루가 직접 처리합니다. 누르면 매치 정보에 체크박스가 생깁니다.</li>
+      <li>장비 상태는 직접 바꾸거나 <b>AI 상태 반영</b>에 운영방 메시지를 붙여 넣으면 바뀝니다.</li>
+      <li>장비 번호를 누르면 그 장비의 수리 이력이 보입니다.</li>
+      <li>고장 → 고장 기구 · 메모 → 확인하면 "[고장] 상태로 변경되었습니다."가 뜨고 <b>수리요청</b>이 됩니다.</li>
+      <li>수리요청 · 수리중 장비는 운영 · 충전으로 바꿀 수 없습니다.</li>
+      <li>수리는 통합 장비 관리에서 처리합니다.</li>
     </ul>
     <div style="margin-top:8px;color:var(--note)"><b style="color:var(--note)">정하는 중</b></div>
     <ul style="color:var(--note)">
@@ -222,16 +222,16 @@ function tab(t){TAB=t;$('vOps').hidden=t!=='ops';$('vRec').hidden=t!=='rec';$('t
 function waitTxt(p){var m=Math.round((Date.now()-p.at)/60000);return m<1?'1분 미만':m+'분';}
 function syncRp(a,o){var RL=rLoad();o.eq.forEach(function(e){var r=repairOf(RL,a.id,e.no);if(r)e.rp=r.rp;});}
 function render(){var a=cur(),o=initAct(a);syncRp(a,o);renderTop();$('auto').checked=AUTO;
-  $('wTb').innerHTML=o.wait.length?o.wait.map(function(p,i){return '<tr><td>'+(i+1)+'</td><td>'+p.nick+'</td><td>'+waitTxt(p)+'</td></tr>'}).join(''):'<tr><td colspan="3" class="empty">대기 고객이 없어요</td></tr>';
+  $('wTb').innerHTML=o.wait.length?o.wait.map(function(p,i){return '<tr><td>'+(i+1)+'</td><td>'+p.nick+'</td><td>'+waitTxt(p)+'</td></tr>'}).join(''):'<tr><td colspan="3" class="empty">대기 고객이 없습니다</td></tr>';
   var g=o.game;if(USE){$('gameBtn').innerHTML='<button class="btn ps" onclick="useMode()">취소</button><button class="btn pri ps" '+(USEL.length?'':'disabled')+' onclick="doUse()">사용 처리'+(USEL.length?' ('+USEL.length+')':'')+'</button>';}else $('gameBtn').innerHTML=g?'<button class="btn end" onclick="askEnd()">⊘ 게임 종료</button>':'<button class="btn pri ps" onclick="startGame()">▶ 게임 시작</button>';
   $('useBtn').classList.toggle('kept',false);$('useBtn').textContent=USE?'▣ 사용 처리 중':'▣ 티켓 사용 처리';
   $('mchip').innerHTML='<span class="mchip'+(g?'':' idle')+'"><i></i>'+mname(a,o)+(g?' ('+g.t+')':'')+'</span>';
   $('mTh').innerHTML='<tr>'+(USE?'<th><input type="checkbox" id="uAll" onchange="useAll(this.checked)"></th>':'')+'<th>No</th><th>닉네임</th><th>장비 번호</th><th>상태</th>'+(g?'':'<th>취소</th>')+'</tr>';
-  $('mTb').innerHTML=o.match.length?o.match.map(function(p,i){return '<tr>'+(USE?'<td>'+(p.used?'<span class="pill p-blue">사용</span>':'<input type="checkbox" class="uck" data-i="'+i+'" '+(USEL.indexOf(i)>=0?'checked':'')+' onchange="useTog('+i+',this.checked)">')+'</td>':'')+'<td>'+(i+1)+'</td><td>'+p.nick+'</td><td class="code">'+(p.eq||'-')+'</td><td><span class="pill '+(p.st==='게임중'?'p-blue':'p-warn')+'">'+p.st+'</span></td>'+(g?'':'<td><button class="xbtn" onclick="askCancel('+i+')">✕</button></td>')+'</tr>'}).join(''):'<tr><td colspan="'+((g?4:5)+(USE?1:0))+'" class="empty">매치에 넣은 고객이 없어요</td></tr>';
+  $('mTb').innerHTML=o.match.length?o.match.map(function(p,i){return '<tr>'+(USE?'<td>'+(p.used?'<span class="pill p-blue">사용</span>':'<input type="checkbox" class="uck" data-i="'+i+'" '+(USEL.indexOf(i)>=0?'checked':'')+' onchange="useTog('+i+',this.checked)">')+'</td>':'')+'<td>'+(i+1)+'</td><td>'+p.nick+'</td><td class="code">'+(p.eq||'-')+'</td><td><span class="pill '+(p.st==='게임중'?'p-blue':'p-warn')+'">'+p.st+'</span></td>'+(g?'':'<td><button class="xbtn" onclick="askCancel('+i+')">✕</button></td>')+'</tr>'}).join(''):'<tr><td colspan="'+((g?4:5)+(USE?1:0))+'" class="empty">매치에 넣은 고객이 없습니다</td></tr>';
   var list=o.eq.filter(function(e){return !F||e.st===F});
   $('eTb').innerHTML=list.map(function(e){var seg=[['run','운영','s-run'],['chg','충전','s-chg'],['bad','고장','s-bad']].map(function(x){return '<span class="'+x[2]+(e.st===x[0]?' on':'')+'" onclick="setSt(\''+e.no+'\',\''+x[0]+'\')">'+x[1]+'</span>'}).join('');
     var rp={done:['done','수리완료'],ing:['ing','수리중'],req:['req','수리요청']}[e.rp];
-    return '<tr><td><span class="code kept" style="padding:1px 4px;cursor:pointer;text-decoration:underline dotted" title="수리 이력 보기" onclick="showHist(\''+a.id+'\',\''+e.no+'\')">'+e.no+'</span></td><td><span class="eseg">'+seg+'</span></td><td><span class="rp '+rp[0]+'">'+rp[1]+'</span></td></tr>'}).join('')||'<tr><td colspan="3" class="empty">해당하는 장비가 없어요</td></tr>';
+    return '<tr><td><span class="code kept" style="padding:1px 4px;cursor:pointer;text-decoration:underline dotted" title="수리 이력 보기" onclick="showHist(\''+a.id+'\',\''+e.no+'\')">'+e.no+'</span></td><td><span class="eseg">'+seg+'</span></td><td><span class="rp '+rp[0]+'">'+rp[1]+'</span></td></tr>'}).join('')||'<tr><td colspan="3" class="empty">해당하는 장비가 없습니다</td></tr>';
   var c={run:0,chg:0,bad:0};o.eq.forEach(function(e){c[e.st]++});$('eqSum').textContent='운영 '+c.run+' · 충전 '+c.chg+' · 고장 '+c.bad;
   $('fLbl').textContent='('+(F?{run:'운영',chg:'충전',bad:'고장'}[F]:'모두보기')+')';
   $('fMenu').innerHTML=FOPEN?'<div class="fmenu">'+[['','모두보기'],['run','운영'],['chg','충전'],['bad','고장']].map(function(x){return '<div class="'+(F===x[0]?'on':'')+'" onclick="setF(event,\''+x[0]+'\')">'+x[1]+'</div>'}).join('')+'</div>':'';
@@ -244,11 +244,11 @@ document.addEventListener('click',function(e){if(FOPEN&&!e.target.closest('th.f'
 function pop(h,wide){$('pb').className='pb'+(wide?' wide':'');$('pb').innerHTML=h;$('mw').hidden=false;}
 function closeM(){$('mw').hidden=true;}
 function openManual(where){MODE=where;pop('<div class="t">티켓 번호 입력</div><input id="tk" inputmode="numeric" maxlength="13" placeholder="티켓 번호를 입력하세요 (13자리)" oninput="this.value=this.value.replace(/\\D/g,\'\');$(\'tkOk\').disabled=this.value.length!==13"><div class="pbtns"><button class="btn light" onclick="closeM()">닫기</button><button class="btn pri" id="tkOk" disabled onclick="gotTicket($(\'tk\').value)">확인</button></div>');setTimeout(function(){$('tk')&&$('tk').focus()},50);}
-function openNfc(where){MODE=where;pop('<div class="nfc"><div class="rings"><span></span><span></span><span></span><b>✊</b></div><div>티켓을 태그해주세요</div><button class="btn kept" style="height:30px;font-size:12px" onclick="gotTicket()">예시: 태그한 것으로 넣기</button></div>');}
-function gotTicket(tk){var o=initAct(cur());if(tk&&o.wait.concat(o.match).some(function(p){return p.ticket===tk})){toast('이미 들어 있는 티켓이에요.');return;}
+function openNfc(where){MODE=where;pop('<div class="nfc"><div class="rings"><span></span><span></span><span></span><b>✊</b></div><div>티켓을 태그해 주시기 바랍니다</div><button class="btn kept" style="height:30px;font-size:12px" onclick="gotTicket()">예시: 태그한 것으로 넣기</button></div>');}
+function gotTicket(tk){var o=initAct(cur());if(tk&&o.wait.concat(o.match).some(function(p){return p.ticket===tk})){toast('이미 들어 있는 티켓입니다.');return;}
   var p=mkP(o,0,tk);
   if(MODE==='wait'){o.wait.push(p);closeM();render();tTop('대기 목록에 추가되었습니다.');return;}
-  if(o.game){o.wait.push(p);closeM();render();tTop('대기 목록에 추가되었습니다.');toast('<span style="color:#C9B8FF">게임 중에는 매치에 넣을 수 없어서 대기에 넣었어요. (정하는 중)</span>');return;}
+  if(o.game){o.wait.push(p);closeM();render();tTop('대기 목록에 추가되었습니다.');toast('<span style="color:#C9B8FF">게임 중에는 매치에 넣을 수 없어서 대기에 넣었습니다. (정하는 중)</span>');return;}
   PICK={p:p,sel:'',rng:0};openPick();}
 function ranges(a){var r=[['모두보기',1,a.cnt]];if(a.cnt>30)for(var s=1;s<=a.cnt;s+=30)r.push([s+'~'+Math.min(a.cnt,s+29)+'번',s,Math.min(a.cnt,s+29)]);return r;}
 function openPick(){var a=cur(),o=initAct(a),rg=ranges(a),R=rg[PICK.rng];var used=o.match.map(function(p){return p.eq});
@@ -259,21 +259,21 @@ function openPick(){var a=cur(),o=initAct(a),rg=ranges(a),R=rg[PICK.rng];var use
 function doPick(){var o=initAct(cur());PICK.p.eq=PICK.sel;PICK.p.st='대기중';o.match.push(PICK.p);PICK=null;closeM();render();}
 function askCancel(i){var a=cur(),o=initAct(a),p=o.match[i];pop('<div class="t">'+mname(a,o)+'</div>'+p.eq+'번 장비를 맵핑해제 하시겠습니까?<div class="pbtns"><button class="btn light" onclick="closeM()">닫기</button><button class="btn pri" onclick="doCancel('+i+')">확인</button></div>',true);}
 function doCancel(i){var o=initAct(cur());var p=o.match.splice(i,1)[0];closeM();render();tTop(p.nick+'님의 맵핑이 해제되었습니다.');}
-function startGame(){var o=initAct(cur());if(!o.match.length){toast('<span style="color:#C9B8FF">매치에 고객을 먼저 넣어 주세요. (비었을 때 동작은 정하는 중)</span>');return;}o.game={t:hm(new Date())};o.match.forEach(function(p){p.st='게임중'});render();}
+function startGame(){var o=initAct(cur());if(!o.match.length){toast('<span style="color:#C9B8FF">매치에 고객을 먼저 넣어 주시기 바랍니다. (비었을 때 동작은 정하는 중)</span>');return;}o.game={t:hm(new Date())};o.match.forEach(function(p){p.st='게임중'});render();}
 function askEnd(){var a=cur(),o=initAct(a);pop('<div class="t">'+mname(a,o)+'  ('+o.game.t+')</div>해당 매치의 게임을 종료하시겠습니까?<div class="pbtns"><button class="btn light" onclick="closeM()">닫기</button><button class="btn pri" onclick="endGame()">게임 종료</button></div>',true);}
 function endGame(){var a=cur(),o=initAct(a);var label=mname(a,o)+'  ('+o.game.t+')';
   o.match.forEach(function(p,i){o.recs.push({match:label,used:p.used,nick:p.nick,ticket:p.ticket,eq:p.eq||'-',rank:i+1,score:Math.max(10,230-i*47-(p.nick.length*3)),kill:Math.max(0,8-i*2),death:2+i*2,lap:(62.4+i*1.83).toFixed(3)});});
   o.match=[];o.game=null;o.mno+=1;closeM();tTop(label+'가 종료되었습니다.');
   if(AUTO&&o.wait.length){var free=o.eq.filter(function(e){return e.st==='run'});var n=0;while(o.wait.length&&n<free.length&&n<Math.min(12,a.cnt)){var p=o.wait.shift();p.eq=free[n].no;p.st='대기중';o.match.push(p);n++;}
-    if(n)setTimeout(function(){toast('<span style="color:#C9B8FF">대기 고객 '+n+'명을 다음 매치에 자동으로 넣었어요. (정하는 중)</span>')},400);}
+    if(n)setTimeout(function(){toast('<span style="color:#C9B8FF">대기 고객 '+n+'명을 다음 매치에 자동으로 넣었습니다. (정하는 중)</span>')},400);}
   render();}
 
 /* 티켓 사용 처리: 오류로 사용 처리가 안 된 티켓을 크루가 수동 처리 */
 var USE=false,USEL=[];
-function useMode(){USE=!USE;USEL=[];var o=initAct(cur());if(USE&&!o.match.length){USE=false;toast('매치 정보에 고객이 없어요.');}render();}
+function useMode(){USE=!USE;USEL=[];var o=initAct(cur());if(USE&&!o.match.length){USE=false;toast('매치 정보에 고객이 없습니다.');}render();}
 function useTog(i,on){var k=USEL.indexOf(i);if(on&&k<0)USEL.push(i);if(!on&&k>=0)USEL.splice(k,1);render();}
 function useAll(on){var o=initAct(cur());USEL=on?o.match.map(function(p,i){return p.used?-1:i}).filter(function(i){return i>=0}):[];render();}
-function doUse(){var o=initAct(cur());var n=USEL.length;USEL.forEach(function(i){o.match[i].used=true;});USE=false;USEL=[];render();tTop('<span style="color:var(--note)">'+n+'명의 티켓을 사용 처리했어요. (안내 문구는 정하는 중)</span>');}
+function doUse(){var o=initAct(cur());var n=USEL.length;USEL.forEach(function(i){o.match[i].used=true;});USE=false;USEL=[];render();tTop('<span style="color:var(--note)">'+n+'명의 티켓을 사용 처리했습니다. (안내 문구는 정하는 중)</span>');}
 /* 고장 접수 */
 var BADSEL=[],BADMEMO='';
 function setSt(no,st){var o=initAct(cur());var e=o.eq.filter(function(x){return x.no===no})[0];if(e.st===st)return;
@@ -293,10 +293,10 @@ function saveBad(no){var a=cur();var e=initAct(a).eq.filter(function(x){return x
 function recCols(a){var c=[['닉네임','nick'],['티켓 No','ticket','code'],['장비 번호','eq','code'],['사용 처리','use'],['기록 상태','rs'],['랭킹','rank','num'],['스코어','score','num']];if(a.rec==='kd')c.push(['킬','kill','num'],['데스','death','num']);if(a.rec==='race')c.push(['랩타임','lap','num']);return c;}
 var KEPTC=['rank','score','kill','death','lap'];
 function renderRec(){var a=cur(),o=initAct(a),C=recCols(a);var matches=[];o.recs.forEach(function(r){if(matches.indexOf(r.match)<0)matches.push(r.match)});
-  var sel=$('rMatch');var prev=sel.value;sel.innerHTML=matches.length?matches.slice().reverse().map(function(m){return '<option>'+m+'</option>'}).join(''):'<option value="">매치가 없어요</option>';if(matches.indexOf(prev)>=0)sel.value=prev;
+  var sel=$('rMatch');var prev=sel.value;sel.innerHTML=matches.length?matches.slice().reverse().map(function(m){return '<option>'+m+'</option>'}).join(''):'<option value="">매치가 없습니다</option>';if(matches.indexOf(prev)>=0)sel.value=prev;
   $('rTh').innerHTML='<tr>'+C.map(function(c){return '<th'+(KEPTC.indexOf(c[1])>=0?' class="kept"':'')+'>'+c[0]+'</th>'}).join('')+'</tr>';
   var q=$('rQ').value.trim();var k=$('rK').value;var list=o.recs.filter(function(r){return r.match===sel.value&&(!q||String(r[k]).indexOf(k==='ticket'?q.replace(/\s/g,''):q)>=0)});
-  $('rTb').innerHTML=list.length?list.map(function(r){return '<tr>'+C.map(function(c){var v=c[1]==='use'?(r.used?'<span class="pill p-blue">사용</span>':'<span class="pill p-gray">미사용</span>'):c[1]==='rs'?'<span class="pill p-blue">정상</span>':r[c[1]];return '<td class="'+(c[2]||'')+(KEPTC.indexOf(c[1])>=0?' kept':'')+'">'+v+'</td>'}).join('')+'</tr>'}).join(''):'<tr><td colspan="'+C.length+'" class="empty">기록이 없어요. 운영 관리에서 게임을 시작하고 종료해 보세요.</td></tr>';}
+  $('rTb').innerHTML=list.length?list.map(function(r){return '<tr>'+C.map(function(c){var v=c[1]==='use'?(r.used?'<span class="pill p-blue">사용</span>':'<span class="pill p-gray">미사용</span>'):c[1]==='rs'?'<span class="pill p-blue">정상</span>':r[c[1]];return '<td class="'+(c[2]||'')+(KEPTC.indexOf(c[1])>=0?' kept':'')+'">'+v+'</td>'}).join('')+'</tr>'}).join(''):'<tr><td colspan="'+C.length+'" class="empty">기록이 없습니다. 운영 관리에서 게임을 시작하고 종료해 보시기 바랍니다.</td></tr>';}
 
 /* AI 상태 반영 (정하는 중) — GR 정비 관리 방식:
    운영방 메시지(한 줄에 장비 하나: "번호 / 증상 / 조치")를 읽어 상태를 바로 반영하고, 장비별 수리 이력을 남긴다.
@@ -305,7 +305,7 @@ var LKEY='icnActLog';
 function lLoad(){try{var v=JSON.parse(localStorage.getItem(LKEY)||'null');if(Array.isArray(v))return v;}catch(e){}return [];}
 function logSt(act,no,kind,by){var L=lLoad();L.push({act:act,no:no,kind:kind,by:by||'크루 (나)',date:nowStr()});try{localStorage.setItem(LKEY,JSON.stringify(L));}catch(e){}}
 var AI_SUG=['하레나 12 / 방아쇠 안 눌림 / 운영 제외','12 조끼 센서 오류\n15 정비완료 운영복귀','벡토 3 충전','오늘 수리 현황 알려줘'];
-function toggleAi(force){var e=$('ai');e.hidden=force===true?false:!e.hidden;if(!e.hidden&&!$('aiB').children.length){bot('운영방에 올리던 메시지를 그대로 붙여 넣으세요. 한 줄에 장비 하나씩 읽어서 바로 반영해요.\n예) 12 / 방아쇠 안 눌림 / 운영 제외');$('aiS').innerHTML=AI_SUG.map(function(s){return '<span onclick="$(\'aiQ\').value=this.dataset.v;aiSend()" data-v="'+s.replace(/"/g,'&quot;')+'">'+s.replace(/\n/g,' ⏎ ')+'</span>'}).join('');}
+function toggleAi(force){var e=$('ai');e.hidden=force===true?false:!e.hidden;if(!e.hidden&&!$('aiB').children.length){bot('운영방에 올리던 메시지를 그대로 붙여 넣으시기 바랍니다. 한 줄에 장비 하나씩 읽어서 바로 반영합니다.\n예) 12 / 방아쇠 안 눌림 / 운영 제외');$('aiS').innerHTML=AI_SUG.map(function(s){return '<span onclick="$(\'aiQ\').value=this.dataset.v;aiSend()" data-v="'+s.replace(/"/g,'&quot;')+'">'+s.replace(/\n/g,' ⏎ ')+'</span>'}).join('');}
   if(!e.hidden){renderBoard();$('aiQ').focus();}}
 function bot(h){var d=document.createElement('div');d.className='msg bot';d.innerHTML=h;$('aiB').appendChild(d);$('aiB').scrollTop=1e6;return d;}
 function me(t){var d=document.createElement('div');d.className='msg me';d.textContent=t;$('aiB').appendChild(d);$('aiB').scrollTop=1e6;}
@@ -325,28 +325,28 @@ function showHist(actId,no){toggleAi(true);var a=actById(actId),o=initAct(a),e=o
   var stLbl={run:'운영',chg:'충전',bad:'고장'}[e.st];
   var h='<div class="hist"><div class="hh"><b class="code">'+no+'</b><span class="vt">'+a.n+'</span><span class="hb '+e.st+'">현재 '+stLbl+(e.rp!=='done'?' · '+RPN2[e.rp]:'')+'</span></div>'+
     '<div class="hs"><div><small>누적 수리</small><b>'+RL.length+'건</b></div><div><small>최근 수리</small><b>'+(RL.length?RL.map(function(r){return r.req}).sort().pop().slice(5,10):'-')+'</b></div><div><small>자주 고장 난 곳</small><b>'+(top?top+' ('+cnt[top]+')':'-')+'</b></div></div>'+
-    (items.length?'<div class="tl">'+items.map(function(it,i){var tg=it.st==='log'?'<span class="tg t-log">'+it.kind+'</span>':'<span class="tg t-'+it.st+'">'+RPN2[it.st]+'</span>';return '<div class="ti '+(i===0?'cur':'')+'"><span class="nd"></span><div class="tr"><span class="td">'+it.date.slice(5)+'</span>'+tg+'<span class="to">담당 '+it.owner+'</span></div>'+(it.parts.length?'<div>'+it.parts.map(function(p){return '<span class="pc">'+p+'</span>'}).join('')+'</div>':'')+(it.st!=='log'?'<div class="tx">'+it.tx+'</div>':'')+(it.meta?'<div class="tm">'+it.meta+'</div>':'')+'</div>'}).join('')+'</div>':'<div class="muted" style="padding:8px 0">수리 이력이 없어요.</div>')+'</div>';
+    (items.length?'<div class="tl">'+items.map(function(it,i){var tg=it.st==='log'?'<span class="tg t-log">'+it.kind+'</span>':'<span class="tg t-'+it.st+'">'+RPN2[it.st]+'</span>';return '<div class="ti '+(i===0?'cur':'')+'"><span class="nd"></span><div class="tr"><span class="td">'+it.date.slice(5)+'</span>'+tg+'<span class="to">담당 '+it.owner+'</span></div>'+(it.parts.length?'<div>'+it.parts.map(function(p){return '<span class="pc">'+p+'</span>'}).join('')+'</div>':'')+(it.st!=='log'?'<div class="tx">'+it.tx+'</div>':'')+(it.meta?'<div class="tm">'+it.meta+'</div>':'')+'</div>'}).join('')+'</div>':'<div class="muted" style="padding:8px 0">수리 이력이 없습니다.</div>')+'</div>';
   bot(h);}
 /* 운영방 메시지 한 줄씩 반영 */
 function aiSend(){var t=$('aiQ').value.trim();if(!t)return;$('aiQ').value='';me(t);
   setTimeout(function(){
-    if(/현황|알려|목록|어떤/.test(t)&&!/\d/.test(t)){renderBoard();bot('위쪽 수리 현황을 새로 고쳤어요. 번호를 누르면 그 장비의 수리 이력이 보여요.');return;}
+    if(/현황|알려|목록|어떤/.test(t)&&!/\d/.test(t)){renderBoard();bot('위쪽 수리 현황을 새로 고쳤습니다. 번호를 누르면 그 장비의 수리 이력이 보입니다.');return;}
     var lastAct=cur(),out=[];
     t.split(/\n+/).forEach(function(line){line=line.trim();if(!line)return;var fa=findActIn(line);var a=fa?fa.a:lastAct;lastAct=a;var o=initAct(a);
-      var rest=fa?line.replace(new RegExp(fa.k,'i'),''):line;var m=rest.match(/(\d{1,2})\s*번?/);if(!m){out.push({line:line,err:'장비 번호를 못 찾았어요'});return;}
-      var no=eqNo(a,+m[1]);var e=o.eq.filter(function(x){return x.no===no})[0];if(!e){out.push({line:line,err:a.n+'에 '+no+' 장비가 없어요'});return;}
+      var rest=fa?line.replace(new RegExp(fa.k,'i'),''):line;var m=rest.match(/(\d{1,2})\s*번?/);if(!m){out.push({line:line,err:'장비 번호를 못 찾았습니다'});return;}
+      var no=eqNo(a,+m[1]);var e=o.eq.filter(function(x){return x.no===no})[0];if(!e){out.push({line:line,err:a.n+'에 '+no+' 장비가 없습니다'});return;}
       var seg=rest.replace(m[0],'').split('/').map(function(s){return s.trim()}).filter(Boolean);var sym=seg[0]||'';
       var parts=a.parts.filter(function(p){return line.indexOf(p)>=0});
       if(/완료|복귀|끝/.test(line)){var RL=rLoad(),r=repairOf(RL,a.id,no);if(r&&r.rp!=='done'){if(!r.acc){r.accBy='크루 (나)';r.acc=nowStr();}r.rp='done';r.doneBy='크루 (나)';r.done=nowStr();if(sym&&!/완료|복귀/.test(sym))r.memo=(r.memo?r.memo+' / ':'')+sym;rSave(RL);}e.rp='done';e.st='run';logSt(a.id,no,'운영 복귀');out.push({a:a,no:no,res:'수리완료 → 운영'});return;}
-      if(/고장|파손|오류|안\s?돼|안\s?눌|제외|이상|불량|소음/.test(line)){if(e.rp==='req'||e.rp==='ing'){out.push({a:a,no:no,err:'이미 '+RPN2[e.rp]+' 상태예요'});return;}
+      if(/고장|파손|오류|안\s?돼|안\s?눌|제외|이상|불량|소음/.test(line)){if(e.rp==='req'||e.rp==='ing'){out.push({a:a,no:no,err:'이미 '+RPN2[e.rp]+' 상태입니다'});return;}
         e.st='bad';e.rp='req';addRepair(a.id,no,parts.length?parts:['판단불가'],seg.join(' / ')||sym);out.push({a:a,no:no,res:'고장 → 수리요청'+(parts.length?' · '+parts.join(', '):' · 판단불가')});return;}
-      var st=/충전/.test(line)?'chg':/운영|투입/.test(line)?'run':null;if(!st){out.push({a:a,no:no,err:'바꿀 상태를 못 찾았어요 (운영 · 충전 · 고장 · 완료)'});return;}
+      var st=/충전/.test(line)?'chg':/운영|투입/.test(line)?'run':null;if(!st){out.push({a:a,no:no,err:'바꿀 상태를 못 찾았습니다 (운영 · 충전 · 고장 · 완료)'});return;}
       if(e.rp==='req'||e.rp==='ing'){out.push({a:a,no:no,err:'수리요청 장비는 상태 변경이 불가합니다.'});return;}
       e.st=st;logSt(a.id,no,st==='run'?'운영 전환':'충전 전환');out.push({a:a,no:no,res:(st==='run'?'운영':'충전')+'으로 변경'});});
     var ok=out.filter(function(x){return !x.err}).length;
     if(ok&&lastAct.id!==ACT){for(var i=0;i<SPACES.length;i++)for(var j=0;j<SPACES[i].acts.length;j++)if(SPACES[i].acts[j].id===lastAct.id){SP=i;ACT=lastAct.id;}}
     render();renderBoard();
-    bot('메시지 '+out.length+'줄 중 '+ok+'줄을 반영했어요.<div class="prop">'+out.map(function(x){return '<div class="r">'+(x.no?'<a class="code lk" onclick="showHist(\''+x.a.id+'\',\''+x.no+'\')">'+x.no+'</a>':'<span class="muted">'+x.line.slice(0,16)+'</span>')+(x.err?'<span style="color:var(--red)">'+x.err+'</span>':'<b>'+x.res+'</b>')+'</div>'}).join('')+'</div><div class="muted" style="font-size:11.5px;margin-top:4px">번호를 누르면 수리 이력이 보여요.</div>');},300);}
+    bot('메시지 '+out.length+'줄 중 '+ok+'줄을 반영했습니다.<div class="prop">'+out.map(function(x){return '<div class="r">'+(x.no?'<a class="code lk" onclick="showHist(\''+x.a.id+'\',\''+x.no+'\')">'+x.no+'</a>':'<span class="muted">'+x.line.slice(0,16)+'</span>')+(x.err?'<span style="color:var(--red)">'+x.err+'</span>':'<b>'+x.res+'</b>')+'</div>'}).join('')+'</div><div class="muted" style="font-size:11.5px;margin-top:4px">번호를 누르면 수리 이력이 보입니다.</div>');},300);}
 
 render();setInterval(function(){if($('mw').hidden)render();},30000);
 </script>

@@ -44,20 +44,20 @@
   <div class="card">
     <div class="bar"><label class="datef">▦ <input type="date" id="d" value="2026-11-14" onchange="run()"></label>
       <div class="sbox">⌕ <select><option>GR 번호</option></select><input id="kw" placeholder="검색조건에 맞는 검색어를 입력하세요" oninput="run()"></div></div>
-    <div class="listhd">심사 목록<span class="sp"></span><button class="btn sm pri" onclick="toast('예시 화면이라 파일을 내려받지 않아요.')">CSV 다운로드</button></div>
+    <div class="listhd">심사 목록<span class="sp"></span><button class="btn sm pri" onclick="toast('예시 화면이라 파일을 내려받지 않습니다.')">CSV 다운로드</button></div>
     <div class="tblwrap"><table><thead><tr><th>No.</th><th>이용 일시</th><th>닉네임</th><th>액티비티 상태<span class="dd">▼</span></th><th>기록 상태<span class="dd">▼</span></th><th>미디어 상태<br>(없음)<span class="dd">▼</span></th><th>코스<span class="dd">▼</span></th><th>트랙<span class="dd">▼</span></th><th>GR 번호</th><th>요청 일시</th></tr></thead><tbody id="tb"></tbody></table></div>
     <div class="dspager"><span id="tot">총 0개 항목</span><span>1 페이지 중 1 페이지</span><span class="rpp">페이지당 행 수 : <select style="border:none;background:none;font-size:13.5px;font-family:var(--font)"><option>20</option><option>50</option><option>100</option></select></span><span class="sp"></span><div class="pgs"><span>«</span><span>‹</span><span class="on">1</span><span>›</span><span>»</span></div></div>
   </div>
   <div class="memo"><div class="mh">안내</div>
   <ul>
-    <li>심사 요청한 레이스가 여기에 쌓여요.</li>
-    <li>날짜와 GR 번호로 찾아요.</li>
-    <li>줄을 누르면 레이스 심사 창이 열려요. 처음은 접수 상태예요.</li>
-    <li>[접수]를 누르면 심사중이 되고 정상 / 실격을 고를 수 있어요.</li>
-    <li>실격은 실격 사유를 골라야 [심사 완료]가 나와요.</li>
-    <li>심사 완료하면 "심사가 완료되었습니다." 안내가 떠요.</li>
-    <li><b>재심사하기</b>를 누르면 다시 심사중으로 돌아가요.</li>
-    <li>심사 정보에 요청 · 접수 · 판정한 크루와 시각이 남아요.</li>
+    <li>심사 요청한 레이스가 여기에 쌓입니다.</li>
+    <li>날짜와 GR 번호로 찾습니다.</li>
+    <li>줄을 누르면 레이스 심사 창이 열립니다. 처음은 접수 상태입니다.</li>
+    <li>[접수]를 누르면 심사중이 되고 정상 / 실격을 고를 수 있습니다.</li>
+    <li>실격은 실격 사유를 골라야 [심사 완료]가 나옵니다.</li>
+    <li>심사 완료하면 "심사가 완료되었습니다." 안내가 뜹니다.</li>
+    <li><b>재심사하기</b>를 누르면 다시 심사중으로 돌아갑니다.</li>
+    <li>심사 정보에 요청 · 접수 · 판정한 크루와 시각이 남습니다.</li>
   </ul>
   <div style="margin-top:8px;color:var(--note)"><b style="color:var(--note)">정하는 중</b></div>
   <ul style="color:var(--note)">
@@ -79,7 +79,7 @@ J.forEach(function(x,i){if(!x.nick)x.nick='임시레이서'+(0x6F0D+i*37).toStri
 var CUR=-1,DR={pick:null,reason:''};
 function chipRow(x){return {act:'종료',rec:'정상',media:'오류'};}
 function run(){var kw=$('kw').value.trim().toUpperCase();var list=J.filter(function(x){return x.use.slice(0,10)===$('d').value&&(!kw||x.gr.indexOf(kw)>=0)});
-  $('tb').innerHTML=list.length?list.map(function(x,i){var c=chipRow(x);return '<tr class="row" onclick="openJ('+J.indexOf(x)+')"><td class="num">'+(list.length-i)+'</td><td class="code">'+x.use+'</td><td>'+x.nick+'</td><td><span class="pill p-blue">'+c.act+'</span></td><td><span class="pill p-blue">'+c.rec+'</span></td><td><span class="pill p-red">'+c.media+'</span></td><td>'+x.course+'</td><td class="kept">'+x.track+'</td><td class="code">'+x.gr+'</td><td class="code">'+x.req+'</td></tr>'}).join(''):'<tr><td colspan="10" style="padding:40px;color:var(--muted)">데이터가 없어요</td></tr>';
+  $('tb').innerHTML=list.length?list.map(function(x,i){var c=chipRow(x);return '<tr class="row" onclick="openJ('+J.indexOf(x)+')"><td class="num">'+(list.length-i)+'</td><td class="code">'+x.use+'</td><td>'+x.nick+'</td><td><span class="pill p-blue">'+c.act+'</span></td><td><span class="pill p-blue">'+c.rec+'</span></td><td><span class="pill p-red">'+c.media+'</span></td><td>'+x.course+'</td><td class="kept">'+x.track+'</td><td class="code">'+x.gr+'</td><td class="code">'+x.req+'</td></tr>'}).join(''):'<tr><td colspan="10" style="padding:40px;color:var(--muted)">데이터가 없습니다</td></tr>';
   $('tot').textContent='총 '+list.length+'개 항목';}
 var STC={'접수':'#6F6F6F','심사중':'#FF9800','정상':'#008000','실격':'#DA222B'};
 function openJ(i){CUR=i;DR={pick:null,reason:''};renderJ();$('ov').classList.add('show');$('dw').classList.add('show');}
@@ -93,7 +93,7 @@ function renderJ(){var x=J[CUR],st=x.st;var act='';
     if(DR.pick==='정상'||(DR.pick==='실격'&&DR.reason))act+='<button class="big" style="background:var(--accent)" onclick="done()">심사 완료</button>';}
   else{act='<button class="big" style="background:#6F6F6F" onclick="rejudge()">재심사하기</button><div class="jbtns"><button class="half" style="background:'+(st==='정상'?'#008000':'#DADADA')+'">정상</button><button class="half" style="background:'+(st==='실격'?'#DA222B':'#DADADA')+'">실격</button></div>'+
     (st==='실격'?'<label class="rsn">실격 사유 | <span style="color:var(--fg)">'+x.reason+'</span></label>':'');}
-  $('jb').innerHTML='<div class="card"><h2>심사 영상 (FULL)</h2><div class="vbox"><span class="st" style="background:'+STC[st]+'">'+st+'</span><div class="ctl"><div class="prog"><i></i></div><div class="row"><span style="cursor:pointer" onclick="toast(\'예시 화면이라 영상이 재생되지 않아요.\')">▶</span><span>0:00 / 0:00</span><span class="sp"></span><span>1X</span><span>⤓</span><span>⛶</span></div></div></div>'+act+'</div>'+
+  $('jb').innerHTML='<div class="card"><h2>심사 영상 (FULL)</h2><div class="vbox"><span class="st" style="background:'+STC[st]+'">'+st+'</span><div class="ctl"><div class="prog"><i></i></div><div class="row"><span style="cursor:pointer" onclick="toast(\'예시 화면이라 영상이 재생되지 않습니다.\')">▶</span><span>0:00 / 0:00</span><span class="sp"></span><span>1X</span><span>⤓</span><span>⛶</span></div></div></div>'+act+'</div>'+
   '<div class="card"><div class="info"><div><h4>사용자 정보</h4><div class="r"><span class="k">닉네임</span>'+x.nick+'</div><div class="r"><span class="k">상품명</span>레이스 포함 패키지</div></div>'+
   '<div><h4>레이싱 정보</h4><div class="r"><span class="k">이용 일시</span><span class="code">'+x.use+'</span></div><div class="r"><span class="k">코스/트랙</span>'+x.course+' 코스 / <span class="ktxt">'+x.track+' 트랙</span></div><div class="r"><span class="k">차량 번호</span><span class="code">'+x.gr+'</span></div></div>'+
   '<div><h4>심사 정보</h4><div class="r"><span class="k">요청</span>'+(x.req?x.reqBy+'&nbsp;&nbsp;<span class="code">'+x.req+'</span>':'')+'</div><div class="r"><span class="k">접수</span>'+(x.acc?x.accBy+'&nbsp;&nbsp;<span class="code">'+x.acc+'</span>':'')+'</div><div class="r"><span class="k">판정</span>'+(x.jdg?x.jdgBy+'&nbsp;&nbsp;<span class="code">'+x.jdg+'</span>':'')+'</div></div></div></div>';}

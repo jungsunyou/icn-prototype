@@ -23,10 +23,10 @@
   <div class="memo">
     <div class="mh">안내</div>
     <ul>
-      <li>운영자가 레이스 구간 이동 · 체크인 · 모드 전환에 쓰는 티켓을 발급해요.</li>
-      <li>티켓 종류를 골라야 발급하기가 켜져요.</li>
-      <li>발급 이력은 날짜별로 봐요.</li>
-      <li>운영자 체크인 티켓만 운영자를 정하고, 나머지(구간 · 모드 티켓)는 '공통'으로 발급돼요.</li>
+      <li>운영자가 레이스 구간 이동 · 체크인 · 모드 전환에 쓰는 티켓을 발급합니다.</li>
+      <li>티켓 종류를 골라야 발급하기가 켜집니다.</li>
+      <li>발급 이력은 날짜별로 봅니다.</li>
+      <li>운영자 체크인 티켓만 운영자를 정하고, 나머지(구간 · 모드 티켓)는 '공통'으로 발급됩니다.</li>
     </ul>
     <div style="margin-top:8px;color:var(--note)"><b style="color:var(--note)">정하는 중</b></div>
     <ul style="color:var(--note)">
@@ -45,7 +45,7 @@ function render(){var L=H.filter(function(h){return h.at.slice(0,10)===$('d').va
   $('tb').innerHTML=L.length?L.map(function(h,i){return '<tr><td>'+(i+1)+'</td><td class="kept">'+h.ty+'</td><td>'+h.op+'</td><td>'+h.id+'</td><td>'+h.by+'</td><td>'+kdt(h.at)+'</td></tr>'}).join(''):'<tr><td colspan="6" class="empty" style="border:1px dashed var(--border)">데이터가 없습니다.</td></tr>';}
 function chg(){var t=$('ty').value,ci=t.indexOf('CHECK-IN')>=0;$('opw').hidden=!ci;$('go').disabled=!t||(ci&&!$('op').value);}
 function ask(){var t=$('ty').value;pop('<div class="t">운영자 티켓 발급</div>'+t+' 티켓을 발급하시겠습니까?<div class="pbtns"><button class="btn light" onclick="closeM()">취소</button><button class="btn pri" onclick="doIt()">확인</button></div>');}
-function doIt(){var t=$('ty').value,ci=t.indexOf('CHECK-IN')>=0,o=ci?$('op').value.split('|'):['공통','-'];var d=new Date();H.push({ty:t,op:o[0],id:o[1],by:'최별 (SA)',at:'2026-11-12 '+('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2)});closeM();$('ty').value='';$('op').value='';chg();render();toast('<span style="color:#C9B8FF">발급했어요. (안내 문구는 정하는 중)</span>');}
+function doIt(){var t=$('ty').value,ci=t.indexOf('CHECK-IN')>=0,o=ci?$('op').value.split('|'):['공통','-'];var d=new Date();H.push({ty:t,op:o[0],id:o[1],by:'최별 (SA)',at:'2026-11-12 '+('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2)});closeM();$('ty').value='';$('op').value='';chg();render();toast('<span style="color:#C9B8FF">발급했습니다. (안내 문구는 정하는 중)</span>');}
 render();
 </script>
 </body>

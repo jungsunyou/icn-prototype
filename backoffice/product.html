@@ -81,6 +81,21 @@
   .db{overflow:auto;padding:4px 16px 16px;flex:1}
   .dfoot{display:flex;gap:8px;align-items:center;padding:12px 16px;border-top:1px solid var(--line);background:var(--surface-2)}
   .dfoot .sp{flex:1}.vnote{font-size:11.5px;color:var(--muted)}
+  .toggle{cursor:pointer;border:none;background:none;padding:0;font-family:inherit;color:var(--fg)}
+  .toggle.off .sw{background:var(--off)}.toggle.off .sw::after{right:auto;left:2px}
+
+  .mdl{position:fixed;inset:0;background:rgba(33,37,41,.38);display:flex;align-items:center;justify-content:center;z-index:70;padding:16px}
+  .mdl[hidden]{display:none}
+  .mdl .box{background:var(--surface);border-radius:12px;box-shadow:0 12px 40px rgba(10,14,22,.25);width:min(400px,100%);padding:20px 20px 16px;font-size:13px;line-height:1.6}
+  .mdl .t{font-weight:700;font-size:15px;margin-bottom:8px}
+  .mdl .use{margin:8px 0 0;padding-left:18px}
+  .mdl .bt{display:flex;justify-content:flex-end;gap:8px;margin-top:16px}
+  .btn.delbtn{color:#c62828 !important;border-color:#e5a3a3 !important;background:transparent !important}
+  .btn.dangerbtn{background:#c62828 !important;border-color:#c62828 !important;color:#fff !important}
+  .ktxt{color:var(--note) !important;background:var(--note-soft);border-radius:4px;padding:0 3px}
+  .dtoast{position:fixed;left:50%;top:18px;transform:translateX(-50%);background:#212529;color:#fff;border-radius:8px;padding:9px 16px;font-size:13px;z-index:80;opacity:0;transition:opacity .2s;pointer-events:none}
+  .dtoast.show{opacity:1}
+
 
   .sec{padding:14px 0;border-bottom:1px solid var(--line-2)}
   .sec:last-child{border-bottom:none}
@@ -282,10 +297,10 @@ tr.row:hover td,tr.click:hover td{background:rgba(33,37,41,.05) !important}
     <button class="btn pri" onclick="openProd(null)">+ 상품 등록</button>
   </div>
 
-  <div class="note"><span>상품은 <b>PSU 여러 개를 묶어서 파는 단위</b>예요. 여기서 구성, 노출 정보, 판매 조건을 정해요. 정가는 구성한 PSU로 자동 계산돼요. 실제 판매가는 <b>가격 정책 관리</b>, 재고·한정 판매·판매 제외는 <b>재고 관리</b>, 할인은 <b>프로모션 관리</b>에서 다뤄요. 화면의 값은 예시예요.</span></div>
+  <div class="note"><span>상품은 <b>PSU 여러 개를 묶어서 파는 단위</b>입니다. 여기서 구성, 노출 정보, 판매 조건을 정합니다. 정가는 구성한 PSU로 자동 계산됩니다. 실제 판매가는 <b>가격 정책 관리</b>, 재고·한정 판매·판매 제외는 <b>재고 관리</b>, 할인은 <b>프로모션 관리</b>에서 다룹니다. 화면의 값은 예시입니다.</span></div>
 
   <div class="filters">
-    <div class="f search"><label>검색</label><input class="ipt" placeholder="상품명 또는 상품 코드를 입력하세요"></div>
+    <div class="f search"><label>검색</label><input class="ipt" placeholder="상품명 또는 상품 ID를 입력하세요"></div>
     <div class="f" style="justify-content:flex-end"><button class="btn pri sm" style="height:34px">검색</button></div>
     <div class="f"><label>유형</label><select class="sel"><option>전체</option><option>패키지</option><option>추가구매</option></select></div>
     <div class="f"><label>상태</label><select class="sel"><option>전체</option><option>활성</option><option>판매중지</option></select></div>
@@ -294,13 +309,15 @@ tr.row:hover td,tr.click:hover td{background:rgba(33,37,41,.05) !important}
   <div class="panel">
     <div class="ph">상품 목록 <span class="cnt">· 6건</span><span class="sp"></span><span class="cnt">정렬: 수정일</span></div>
     <div class="tblwrap"><table>
-      <thead><tr><th>상태</th><th>상품 코드</th><th>상품명</th><th>유형</th><th class="r">정가</th><th>버전</th><th>수정일시</th><th></th></tr></thead>
+      <thead><tr><th>상태</th><th>상품 ID</th><th>상품명</th><th>유형</th><th class="r">정가</th><th>버전</th><th>수정일시</th><th></th></tr></thead>
       <tbody id="rows"></tbody>
     </table></div>
     <div class="dspager"><span>총 6개 항목</span><span>1 페이지 중 1 페이지</span><span>페이지당 행 수 : 20</span><span class="sp"></span><div class="pgs"><span>«</span><span>‹</span><span class="on">1</span><span>›</span><span>»</span></div></div>
   </div>
 </div>
 
+<div class="mdl" id="mdl" hidden onclick="if(event.target===this)closeMdl()"><div class="box" id="mdlBox"></div></div>
+<div class="dtoast" id="dtoast"></div>
 <!-- 상품 드로어 -->
 <div class="ov" id="ov" onclick="closeProd()"></div>
 <aside class="drawer" id="dw">
@@ -314,14 +331,14 @@ tr.row:hover td,tr.click:hover td{background:rgba(33,37,41,.05) !important}
         <select class="sel" id="fType"><option value="패키지">패키지</option><option value="추가구매">추가구매</option></select>
         <div class="lockval" id="typeRO" hidden></div>
       </div>
-      <div class="fld"><div class="fl">상품 코드</div><div class="autoval code" id="fCode">ICN-PKG-RACE</div></div>
-      <div class="fld"><div class="fl">상태</div><span class="toggle"><span class="sw"></span> 활성</span></div>
+      <div class="fld"><div class="fl">상품 ID</div><div class="autoval code" id="fCode">ICN-PKG-RACE</div></div>
+      <div class="fld"><div class="fl">상태</div><button type="button" class="toggle" id="fSt" onclick="setSt(this.classList.contains('off'))"><span class="sw"></span> <span id="fStT">활성</span></button></div>
     </div>
 
     <div class="sec">
       <p class="sl">상품 구성 (PSU)</p>
       <div class="tblwrap"><table class="subtbl">
-        <thead><tr><th>PSU 코드</th><th>노출명</th><th class="r">원가</th><th class="r">제공 수량</th><th class="r">원가 소계</th><th>버전</th><th></th></tr></thead>
+        <thead><tr><th>PSU ID</th><th>노출명</th><th class="r">원가</th><th class="r">제공 수량</th><th class="r">원가 소계</th><th>버전</th><th></th></tr></thead>
         <tbody id="psuBody"></tbody>
         <tfoot><tr class="sumrow"><td colspan="4">원가 합계</td><td class="r" id="costSum">0</td><td colspan="2"></td></tr></tfoot>
       </table></div>
@@ -387,29 +404,33 @@ tr.row:hover td,tr.click:hover td{background:rgba(33,37,41,.05) !important}
     <div class="memo">
       <div class="mh">안내</div>
       <ul>
-        <li>상품명은 관리자용 이름이에요. 고객용 이름은 노출 · 이미지에서 넣어요.</li>
-        <li>판매가는 가격 정책 관리에서 정해요. 아래 판매가 칸은 연동 예정이라 보라색이에요.</li>
-        <li>할인은 프로모션 관리에서 연결해요. 여기서는 보기만 해요.</li>
-        <li>재고 연결 · 한정 판매 · 판매 제외는 재고 관리에서 정해요.</li>
-        <li>판매 기간은 고객이 고를 수 있는 이용일 범위예요.</li>
-        <li>판매를 여는 시각은 노출 기간으로 정해요.</li>
-        <li>판매 채널은 채널마다 켜고 꺼요. 저장하면 바로 반영돼요.</li>
-        <li>구성이 다를 때만 상품을 따로 만들어요.</li>
-        <li>추가구매는 오픈 때부터 팔고, 패키지를 산 사람만 살 수 있어요.</li>
-        <li>네이버는 제주와 같은 방식으로 운영해요.</li>
-        <li>외부 채널 전용 노출 정보는 이번 범위에서 빠졌어요.</li>
-        <li>노출 · 이미지는 앱과 키오스크가 함께 써요.</li>
-        <li>노출명 · 설명 · 이미지는 한국어 / 영어 / 중국어로 넣어요.</li>
-        <li>언어 탭 옆 점이 파란색이면 그 언어 노출명을 넣은 거예요.</li>
-        <li>이미지는 종류마다 여러 장 올릴 수 있어요.</li>
-        <li>원가는 구성한 PSU의 정가를 가져와요.</li>
-        <li><b>원가 × 수량</b>의 합이 상품 <b>정가</b>예요. 직접 고칠 수 없어요.</li>
-        <li>더 싸게 팔거나 금액을 맞추려면 가격 정책 관리에서 판매가를 정해요.</li>
-        <li>정가는 환불 · 정산 때 PSU별로 금액을 나누는 기준이에요.</li>
-        <li>원가가 없는 PSU가 있으면 정가가 '미정'으로 보여요.</li>
-        <li>상품 코드는 저장하면 자동으로 만들어져요.</li>
-        <li>코드 · 유형 · 구성(PSU)은 바꿀 수 없어요.</li>
-        <li>이름 · 가격 · 기간만 바꿀 수 있고, 저장하면 버전이 올라가요.</li>
+        <li>상품명은 관리자용 이름입니다. 고객용 이름은 노출 · 이미지에서 넣습니다.</li>
+        <li>판매가는 가격 정책 관리에서 정합니다. 아래 판매가 칸은 연동 예정이라 보라색입니다.</li>
+        <li>할인은 프로모션 관리에서 연결합니다. 여기서는 보기만 합니다.</li>
+        <li>재고 연결 · 한정 판매 · 판매 제외는 재고 관리에서 정합니다.</li>
+        <li>판매 기간은 고객이 고를 수 있는 이용일 범위입니다.</li>
+        <li>판매를 여는 시각은 노출 기간으로 정합니다.</li>
+        <li>판매 채널은 채널마다 켜고 끕니다. 저장하면 바로 반영됩니다.</li>
+        <li>구성이 다를 때만 상품을 따로 만듭니다.</li>
+        <li>추가구매는 오픈 때부터 팔고, 패키지를 산 사람만 살 수 있습니다.</li>
+        <li>네이버는 제주와 같은 방식으로 운영합니다.</li>
+        <li>외부 채널 전용 노출 정보는 이번 범위에서 빠졌습니다.</li>
+        <li>노출 · 이미지는 앱과 키오스크가 함께 씁니다.</li>
+        <li>노출명 · 설명 · 이미지는 한국어 / 영어 / 중국어로 넣습니다.</li>
+        <li>언어 탭 옆 점이 파란색이면 그 언어 노출명을 넣은 것입니다.</li>
+        <li>이미지는 종류마다 여러 장 올릴 수 있습니다.</li>
+        <li>원가는 구성한 PSU의 정가를 가져옵니다.</li>
+        <li><b>원가 × 수량</b>의 합이 상품 <b>정가</b>입니다. 직접 고칠 수 없습니다.</li>
+        <li>더 싸게 팔거나 금액을 맞추려면 가격 정책 관리에서 판매가를 정합니다.</li>
+        <li>정가는 환불 · 정산 때 PSU별로 금액을 나누는 기준입니다.</li>
+        <li>원가가 없는 PSU가 있으면 정가가 '미정'으로 보입니다.</li>
+        <li>상품 ID는 저장하면 자동으로 만들어집니다.</li>
+        <li>상품 ID · 유형 · 구성(PSU)은 바꿀 수 없습니다.</li>
+        <li>이름 · 가격 · 기간만 바꿀 수 있고, 저장하면 버전이 올라갑니다.</li>
+        <li>편집 창 왼쪽 아래 <b>삭제</b>를 누르면 확인을 두 번 받고 지웁니다.</li>
+        <li>이미 판매된 상품도 같은 방법으로 지울 수 있습니다.</li>
+        <li>삭제하면 완전히 지워지고 되돌릴 수 없습니다.</li>
+        <li>삭제한 상품은 가격 정책과 프로모션 적용 상품에서도 같이 빠집니다.</li>
       </ul>
       <div style="margin-top:8px;color:var(--note)"><b style="color:var(--note)">정하는 중</b></div>
       <ul style="color:var(--note)">
@@ -418,10 +439,11 @@ tr.row:hover td,tr.click:hover td{background:rgba(33,37,41,.05) !important}
         <li>영어 · 중국어가 꼭 필요한지, 비면 한국어로 보여줄지</li>
         <li>이미지를 언어마다 받을지, 공통에 예외만 둘지</li>
         <li>PSU 정가가 바뀌면 상품 정가가 바로 바뀔지, 다시 저장해야 할지</li>
+        <li>삭제 · 삭제 불가 안내 문구</li>
       </ul>
     </div>
   </div>
-  <div class="dfoot"><span class="vnote">저장 시 버전 +1 · 기존 주문 금액 불변</span><span class="sp"></span><button class="btn ghost sm" onclick="closeProd()">취소</button><button class="btn pri sm" onclick="closeProd()">저장</button></div>
+  <div class="dfoot"><button class="btn ghost sm delbtn" id="delBtn" onclick="askDelProd()">삭제</button><span class="vnote">저장 시 버전 +1 · 기존 주문 금액 불변</span><span class="sp"></span><button class="btn ghost sm" onclick="closeProd()">취소</button><button class="btn pri sm" onclick="saveProd()">저장</button></div>
 </aside>
 
 <!-- PSU 추가 피커 -->
@@ -429,7 +451,7 @@ tr.row:hover td,tr.click:hover td{background:rgba(33,37,41,.05) !important}
 <aside class="drawer two" id="pick">
   <div class="dh"><h3>PSU 추가</h3><span class="sp"></span><button class="x" onclick="closePick()">✕</button></div>
   <div class="db">
-    <input class="ipt" id="pickSearch" placeholder="PSU 코드·이름 검색" style="width:100%;margin-bottom:10px" oninput="renderPick()">
+    <input class="ipt" id="pickSearch" placeholder="PSU ID·이름 검색" style="width:100%;margin-bottom:10px" oninput="renderPick()">
     <div id="pickList"></div>
   </div>
   <div class="dfoot"><span class="vnote" id="pickCnt">0개 선택</span><span class="sp"></span><button class="btn ghost sm" onclick="closePick()">취소</button><button class="btn pri sm" onclick="addPicked()">추가</button></div>
@@ -473,7 +495,7 @@ PRODUCTS.forEach(function(p){
     '<td class="ver">v'+p.ver+'</td>'+
     '<td class="ver">'+p.up+'</td>'+
     '<td><button class="mini">편집</button></td>';
-  tr.addEventListener('click',function(e){openProd(p)});
+  tr.addEventListener('click',function(e){openProd(p)}); p._tr=tr;
   rows.appendChild(tr);
 });
 
@@ -582,7 +604,7 @@ function lockDef(lock,type){
 
 /* ===== 열기/닫기 ===== */
 function openProd(p){
-  curEx=!!(p&&p.ex);
+  curEx=!!(p&&p.ex); CURP=p||null; document.getElementById('delBtn').hidden=!p; setSt(!p||p.st==='on');
   if(p){
     document.getElementById('dwTitle').textContent='상품 편집';
     document.getElementById('dwCode').textContent='· '+p.code;
@@ -614,5 +636,23 @@ function openProd(p){
   document.getElementById('ov').classList.add('show');
   document.getElementById('dw').classList.add('show');
 }
+// 삭제 — 판매된 상품도 확인 두 번 뒤 삭제
+var CURP=null;
+function askDelProd(){var p=CURP;if(!p)return;
+  openMdl('<div class="t">상품 삭제</div><b>'+p.name+'</b> ('+p.code+')를 삭제하시겠습니까?<div class="muted" style="font-size:12px;margin-top:6px">가격 정책 · 프로모션 적용 상품에서도 같이 빠집니다.</div><div class="bt"><button class="btn ghost sm" onclick="closeMdl()">취소</button><button class="btn sm dangerbtn" onclick="askDelProd2()">삭제</button></div>');}
+function askDelProd2(){var p=CURP;openMdl('<div class="t">한 번 더 확인해 주시기 바랍니다</div><b>'+p.name+'</b>을(를) 완전히 삭제합니다.<br>삭제하면 되돌릴 수 없습니다. 정말 삭제하시겠습니까?<div class="bt"><button class="btn ghost sm" onclick="closeMdl()">취소</button><button class="btn sm dangerbtn" onclick="doDelProd()">삭제</button></div>');}
+function doDelProd(){var p=CURP;PRODUCTS.splice(PRODUCTS.indexOf(p),1);p._tr.remove();CURP=null;closeMdl();closeProd();
+  var n=PRODUCTS.length;document.querySelector('.ph .cnt').textContent='· '+n+'건';document.querySelector('.dspager span').textContent='총 '+n+'개 항목';
+  dToast('<span style="color:#C9B8FF">'+p.name+'을(를) 삭제했습니다. (안내 문구는 정하는 중)</span>');}
+
+function openMdl(h){document.getElementById('mdlBox').innerHTML=h;document.getElementById('mdl').hidden=false;}
+function closeMdl(){document.getElementById('mdl').hidden=true;}
+function dToast(t){var el=document.getElementById('dtoast');el.innerHTML=t;el.classList.add('show');clearTimeout(el._t);el._t=setTimeout(function(){el.classList.remove('show')},2200);}
+function setSt(on){var b=document.getElementById('fSt');b.classList.toggle('off',!on);document.getElementById('fStT').textContent=on?'활성':'판매중지';}
+function stChip(on){return '<span class="st '+(on?'on':'off')+'"><span class="d"></span>'+(on?'활성':'판매중지')+'</span>';}
+function saveProd(){var p=CURP;if(p){var on=!document.getElementById('fSt').classList.contains('off'),chg=(on?'on':'off')!==p.st;p.st=on?'on':'off';
+  var nm=document.getElementById('fName').value.trim();if(nm)p.name=nm;p.ver++;p.up='2026-11-13 '+new Date().toTimeString().slice(0,5);
+  var td=p._tr.children;td[0].innerHTML=stChip(on);td[2].innerHTML=p.name+(p.ex?' <span class="ex">예시 · 구성 미정</span>':'');td[5].textContent='v'+p.ver;td[6].textContent=p.up;}
+  closeProd();}
 function closeProd(){document.getElementById('ov').classList.remove('show');document.getElementById('dw').classList.remove('show');}
 </script>

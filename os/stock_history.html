@@ -19,7 +19,7 @@
   <div class="memo">
     <div class="mh">안내</div>
     <ul>
-      <li>재고가 바뀐 기록을 봐요. 기간과 부품명 · 부품번호로 찾아요.</li>
+      <li>재고가 바뀐 기록을 봅니다. 기간과 부품명 · 부품번호로 찾습니다.</li>
       <li><b>이동</b>: 보관 장소를 옮기거나 재고 상세에서 수량을 고친 기록.</li>
       <li><b>사용</b>: 정비 등으로 부품을 쓴 기록.</li>
     </ul>
@@ -37,7 +37,7 @@ var S=sLoad(),TAB='이동';
 function render(){$('tabs').innerHTML=['이동','사용'].map(function(t){return '<button class="'+(t===TAB?'on':'')+'" onclick="TAB=\''+t+'\';render()">'+t+'</button>'}).join('');
   $('th').innerHTML='<tr><th>부품번호</th><th>부품명</th><th>보관장소(기존)</th><th>보관장소(변경)</th><th>수량</th><th>System 처리 내역</th><th>사유</th><th>처리일시</th></tr>';
   var q=$('q').value.trim(),d0=$('d0').value,d1=$('d1').value;var L=S.moves.filter(function(m){var d=m.at.slice(0,10);return m.type===TAB&&d>=d0&&d<=d1&&(!q||(m.no+m.name).indexOf(q)>=0)});
-  $('tb').innerHTML=L.length?L.map(function(m){return '<tr><td class="code">'+m.no+'</td><td>'+esc(m.name)+'</td><td>'+m.from+'</td><td>'+m.to+'</td><td class="num">'+(m.qty>0&&m.type==='이동'&&m.from===m.to?'+':'')+m.qty+'</td><td class="kept">'+m.sys+'</td><td>'+esc(m.why)+'</td><td class="code">'+m.at+'</td></tr>'}).join(''):'<tr><td colspan="8" class="empty">이력이 없어요</td></tr>';
+  $('tb').innerHTML=L.length?L.map(function(m){return '<tr><td class="code">'+m.no+'</td><td>'+esc(m.name)+'</td><td>'+m.from+'</td><td>'+m.to+'</td><td class="num">'+(m.qty>0&&m.type==='이동'&&m.from===m.to?'+':'')+m.qty+'</td><td class="kept">'+m.sys+'</td><td>'+esc(m.why)+'</td><td class="code">'+m.at+'</td></tr>'}).join(''):'<tr><td colspan="8" class="empty">이력이 없습니다</td></tr>';
   $('pg').innerHTML=pager(L.length);}
 render();
 </script>

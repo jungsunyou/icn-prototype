@@ -60,16 +60,16 @@
   <div class="memo">
     <div class="mh">안내</div>
     <ul>
-      <li>운영 관리에서 고장으로 수리요청한 장비가 여기에 쌓여요.</li>
-      <li>기간은 7일이 기본이고, 14일까지 볼 수 있어요.</li>
-      <li>7일 · 14일을 누르거나, 달력에서 시작일과 종료일을 골라요.</li>
-      <li><b>수리요청</b>을 누르면 수리중으로 바뀌어요.</li>
-      <li><b>수리중</b>을 누르면 "총 n건의 기구 수리가 완료되었습니까?"를 묻고, 확인하면 수리완료가 돼요.</li>
-      <li>바뀐 수리 상태는 운영 관리의 운영 장비에도 그대로 보여요.</li>
-      <li>같은 수리 상태끼리 여러 줄을 골라 한 번에 바꿀 수 있어요.</li>
-      <li>줄을 누르면 수리 현황이 열리고, 메모를 남길 수 있어요. (저장 뒤 안내는 없어요)</li>
-      <li>14일을 넘게 고르면 "날짜 선택 범위는 14일 이내여야 합니다."가 떠요.</li>
-      <li>머리글의 ≡를 누르면 값으로 거를 수 있어요.</li>
+      <li>운영 관리에서 고장으로 수리요청한 장비가 여기에 쌓입니다.</li>
+      <li>기간은 7일이 기본이고, 14일까지 볼 수 있습니다.</li>
+      <li>7일 · 14일을 누르거나, 달력에서 시작일과 종료일을 고릅니다.</li>
+      <li><b>수리요청</b>을 누르면 수리중으로 바뀝니다.</li>
+      <li><b>수리중</b>을 누르면 "총 n건의 기구 수리가 완료되었습니까?"를 묻고, 확인하면 수리완료가 됩니다.</li>
+      <li>바뀐 수리 상태는 운영 관리의 운영 장비에도 그대로 보입니다.</li>
+      <li>같은 수리 상태끼리 여러 줄을 골라 한 번에 바꿀 수 있습니다.</li>
+      <li>줄을 누르면 수리 현황이 열리고, 메모를 남길 수 있습니다. (저장 뒤 안내는 없습니다)</li>
+      <li>14일을 넘게 고르면 "날짜 선택 범위는 14일 이내여야 합니다."가 뜹니다.</li>
+      <li>머리글의 ≡를 누르면 값으로 거를 수 있습니다.</li>
     </ul>
     <div style="margin-top:8px;color:var(--note)"><b style="color:var(--note)">정하는 중</b></div>
     <ul style="color:var(--note)">
@@ -109,13 +109,13 @@ function render(){if(!D1)return;var n=days(D0,D1),toEnd=same(D1,TODAY);$('q7').c
     return '<th class="f" onclick="tog(\''+c[1]+'\',event)">'+c[0]+'<span class="dd">≡</span>'+(v?'<small>('+v+')</small>':'')+(OPEN===c[1]?'<div class="fmenu">'+['전체'].concat(opts).map(function(o){return '<div class="'+((o==='전체'&&!v)||o===v?'on':'')+'" onclick="setF(\''+c[1]+'\',\''+o+'\',event)">'+o+'</div>'}).join('')+'</div>':'')+'</th>'}).join('')+'</tr>';
   var list=all.filter(function(r){return Object.keys(F).every(function(k){return !F[k]||(r[k]||'-')===F[k]})}).sort(function(a,b){return b.id-a.id});
   $('tb').innerHTML=list.length?list.map(function(r){var on=SEL.indexOf(r.id)>=0;var btn=r.rp==='done'?'<span class="rp done">수리완료</span>':'<button class="rp '+r.rp+'" onclick="event.stopPropagation();step('+r.id+')">'+r.rpn+'</button>';
-    return '<tr class="row'+(on?' sel':'')+'" onclick="openD('+r.id+')"><td onclick="event.stopPropagation()"><input type="checkbox" '+(on?'checked':'')+' onchange="pick('+r.id+',this.checked)"></td><td>'+r.actn+'</td><td><span class="code kept" style="padding:1px 4px">'+r.no+'</span></td><td>'+r.part+'</td><td>'+btn+'</td><td>'+r.reqBy+'</td><td class="code">'+r.req+'</td><td>'+(r.accBy||'-')+'</td><td class="code">'+(r.acc||'-')+'</td><td>'+(r.doneBy||'-')+'</td><td class="code">'+(r.done||'-')+'</td></tr>'}).join(''):'<tr><td colspan="11" class="empty">수리 요청이 없어요</td></tr>';
+    return '<tr class="row'+(on?' sel':'')+'" onclick="openD('+r.id+')"><td onclick="event.stopPropagation()"><input type="checkbox" '+(on?'checked':'')+' onchange="pick('+r.id+',this.checked)"></td><td>'+r.actn+'</td><td><span class="code kept" style="padding:1px 4px">'+r.no+'</span></td><td>'+r.part+'</td><td>'+btn+'</td><td>'+r.reqBy+'</td><td class="code">'+r.req+'</td><td>'+(r.accBy||'-')+'</td><td class="code">'+(r.acc||'-')+'</td><td>'+(r.doneBy||'-')+'</td><td class="code">'+(r.done||'-')+'</td></tr>'}).join(''):'<tr><td colspan="11" class="empty">수리 요청이 없습니다</td></tr>';
   $('tot').textContent='총 '+list.length+'개 항목';}
 function tog(k,e){OPEN=OPEN===k?null:k;render();}
 function setF(k,o,e){e.stopPropagation();F[k]=o==='전체'?'':o;OPEN=null;render();}
 document.addEventListener('click',function(e){if(OPEN&&!e.target.closest('th.f')){OPEN=null;render();}});
 function byId(id){return rLoad().filter(function(r){return r.id===id})[0];}
-function pick(id,on){var r=byId(id);if(on){var first=SEL.length?byId(SEL[0]):null;if(first&&first.rp!==r.rp){toast('동일한 수리상태의 기구만 선택해주세요');render();return;}SEL.push(id);}else SEL=SEL.filter(function(x){return x!==id});render();}
+function pick(id,on){var r=byId(id);if(on){var first=SEL.length?byId(SEL[0]):null;if(first&&first.rp!==r.rp){toast('동일한 수리상태의 기구만 선택해 주시기 바랍니다');render();return;}SEL.push(id);}else SEL=SEL.filter(function(x){return x!==id});render();}
 function targets(id){var r=byId(id);if(SEL.indexOf(id)>=0&&SEL.length>1)return SEL.slice();return [id];}
 function step(id){var r=byId(id),ids=targets(id);
   if(r.rp==='req'){var L=rLoad();L.forEach(function(x){if(ids.indexOf(x.id)>=0&&x.rp==='req'){x.rp='ing';x.accBy='크루 (나)';x.acc=nowStr();}});rSave(L);SEL=[];render();toast('수리상태가 변경됐습니다.');return;}

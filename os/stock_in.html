@@ -18,10 +18,10 @@
   <div class="memo">
     <div class="mh">안내</div>
     <ul>
-      <li>재고 관리에서 입고 처리한 기록이에요.</li>
-      <li>기간과 부품명 · 부품번호로 찾아요.</li>
+      <li>재고 관리에서 입고 처리한 기록입니다.</li>
+      <li>기간과 부품명 · 부품번호로 찾습니다.</li>
       <li>총액 = 부품단가 × 입고수량.</li>
-      <li>입고 처리일과 처리자는 입고를 확정한 날짜와 크루예요.</li>
+      <li>입고 처리일과 처리자는 입고를 확정한 날짜와 크루입니다.</li>
     </ul>
   </div>
 </div>
@@ -30,7 +30,7 @@
 <script>
 var S=sLoad();
 function render(){var q=$('q').value.trim(),d0=$('d0').value,d1=$('d1').value;var L=S.ins.filter(function(r){var d=r.at.slice(0,10);return d>=d0&&d<=d1&&(!q||(r.no+r.name).indexOf(q)>=0)});
-  $('tb').innerHTML=L.length?L.map(function(r,i){return '<tr><td>'+(L.length-i)+'</td><td>'+esc(r.name)+'</td><td class="code">'+r.no+'</td><td>'+esc(r.vendor)+'</td><td class="num">'+won(r.price)+'</td><td class="num">'+r.qty+'</td><td class="num">'+won(r.price*r.qty)+'</td><td class="code">'+r.at+'</td><td>'+r.by+'</td></tr>'}).join(''):'<tr><td colspan="9" class="empty">입고 이력이 없어요</td></tr>';
+  $('tb').innerHTML=L.length?L.map(function(r,i){return '<tr><td>'+(L.length-i)+'</td><td>'+esc(r.name)+'</td><td class="code">'+r.no+'</td><td>'+esc(r.vendor)+'</td><td class="num">'+won(r.price)+'</td><td class="num">'+r.qty+'</td><td class="num">'+won(r.price*r.qty)+'</td><td class="code">'+r.at+'</td><td>'+r.by+'</td></tr>'}).join(''):'<tr><td colspan="9" class="empty">입고 이력이 없습니다</td></tr>';
   $('pg').innerHTML=pager(L.length);}
 render();
 </script>

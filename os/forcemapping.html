@@ -40,16 +40,16 @@
   <div class="memo">
     <div class="mh">안내</div>
     <ul>
-      <li>티켓에 연결된 회원을 크루가 직접 연결하거나 끊어요.</li>
-      <li>고객 인증 없이 처리하는 점이 사후 매핑과 달라요.</li>
-      <li>티켓 번호를 넣거나 NFC로 태그하면 매핑 정보가 보여요.</li>
-      <li>이전 닉네임은 매핑 전 임시 닉네임이에요.</li>
-      <li>실명 · 전화번호는 보여주지 않아요.</li>
-      <li><b>해제</b>는 연결을 끊고, <b>매핑</b>은 강제로 연결해요.</li>
-      <li>회원 ID를 넣거나 회원을 고르는 단계는 없어요.</li>
+      <li>티켓에 연결된 회원을 크루가 직접 연결하거나 끊습니다.</li>
+      <li>고객 인증 없이 처리하는 점이 사후 매핑과 다릅니다.</li>
+      <li>티켓 번호를 넣거나 NFC로 태그하면 매핑 정보가 보입니다.</li>
+      <li>이전 닉네임은 매핑 전 임시 닉네임입니다.</li>
+      <li>실명 · 전화번호는 보여주지 않습니다.</li>
+      <li><b>해제</b>는 연결을 끊고, <b>매핑</b>은 강제로 연결합니다.</li>
+      <li>회원 ID를 넣거나 회원을 고르는 단계는 없습니다.</li>
       <li>요청 유형: FIRST · MAPPING · FORCE_MAPPING · UNMAPPING</li>
       <li>요청 상태: REQUEST · ACCEPT · REJECT</li>
-      <li>없는 티켓이면 '티켓이 존재하지 않습니다.'라고 알려줘요.</li>
+      <li>없는 티켓이면 '티켓이 존재하지 않습니다.'라고 알려줍니다.</li>
     </ul>
     <div style="margin-top:8px;color:var(--note)"><b style="color:var(--note)">정하는 중</b></div>
     <ul style="color:var(--note)">
@@ -73,7 +73,7 @@ function $(i){return document.getElementById(i);}
 function toast(m){var e=$('toast');e.innerHTML=m;e.classList.add('show');clearTimeout(e._t);e._t=setTimeout(function(){e.classList.remove('show')},2400);}
 function clearAll(){$('kw').value='';$('cInfo').hidden=true;$('err').hidden=true;$('clr').hidden=true;}
 function tag(){$('kw').value='041288301192';find();}
-function find(){$('err').hidden=true;$('cInfo').hidden=true;var k=$('kw').value.replace(/\D/g,'');$('clr').hidden=!k;if(!k){toast('티켓 번호를 입력해 주세요.');return;}
+function find(){$('err').hidden=true;$('cInfo').hidden=true;var k=$('kw').value.replace(/\D/g,'');$('clr').hidden=!k;if(!k){toast('티켓 번호를 입력해 주시기 바랍니다.');return;}
   var t=T[k];if(!t){$('err').textContent='티켓이 존재하지 않습니다.';$('err').hidden=false;return;}
   CUR=k;render();$('cInfo').hidden=false;}
 function render(){var k=CUR,t=T[k];
@@ -83,7 +83,7 @@ function render(){var k=CUR,t=T[k];
 }
 function act(n){var t=T[CUR];if(n==='해제'){t.type='UNMAPPING';t.keep=t.nick||t.keep;t.nick='';}else{t.type='FORCE_MAPPING';t.nick=t.nick||t.keep||t.prev;}
   t.st='ACCEPT';t.at='2026.11.14 '+new Date().toTimeString().slice(0,5);t.chg=true;render();
-  toast('예시 화면이라 실제로 '+n+'되지 않아요. 바뀐 값은 추정이라 보라로 표시했어요.');}
+  toast('예시 화면이라 실제로 '+n+'되지 않습니다. 바뀐 값은 추정이라 보라로 표시했습니다.');}
 </script>
 </body>
 </html>

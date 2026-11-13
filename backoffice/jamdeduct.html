@@ -276,12 +276,12 @@ tr.row:hover td,tr.click:hover td{background:rgba(33,37,41,.05) !important}
     <button class="btn pri" onclick="openRule(null)">+ 차감 규칙 등록</button>
   </div>
 
-  <div class="note"><span>액티비티를 <b>1번 이용할 때 어떤 JAM을 몇 개 쓰는지</b> 정하는 화면이에요. 고객이 티켓을 살 때 그 시점에 적용 중인 규칙이 티켓에 기록되고, 이용할 때는 <b>산 날의 규칙대로</b> JAM이 줄어요. 규칙을 바꾸려면 적용 시작일시를 넣어 새 규칙을 등록해 주세요.</span></div>
+  <div class="note"><span>액티비티를 <b>1번 이용할 때 어떤 JAM을 몇 개 쓰는지</b> 정하는 화면입니다. 고객이 티켓을 살 때 그 시점에 적용 중인 규칙이 티켓에 기록되고, 이용할 때는 <b>산 날의 규칙대로</b> JAM이 줄어듭니다. 규칙을 바꾸려면 적용 시작일시를 넣어 새 규칙을 등록해 주시기 바랍니다.</span></div>
 
   <div class="filters">
     <div class="f search"><label>검색</label><input class="ipt" placeholder="액티비티 이름을 입력해 주세요"></div>
     <div class="f" style="justify-content:flex-end"><button class="btn pri sm" style="height:34px">검색</button></div>
-    <div class="f"><label>PSU 코드</label><select class="sel"><option>전체</option><option>RACE</option><option>GENERAL</option><option>MST-RACE</option></select></div>
+    <div class="f"><label>PSU ID</label><select class="sel"><option>전체</option><option>RACE</option><option>GENERAL</option><option>MST-RACE</option></select></div>
     <div class="f"><label>상태</label><select class="sel"><option>전체</option><option>적용 예정</option><option>적용 중</option><option>만료</option></select></div>
   </div>
 
@@ -289,7 +289,7 @@ tr.row:hover td,tr.click:hover td{background:rgba(33,37,41,.05) !important}
     <div class="ph">차감 규칙 목록 <span class="cnt" id="cnt"></span></div>
     <div class="tblwrap">
       <table>
-        <thead><tr><th>상태</th><th>액티비티</th><th>PSU 코드</th><th class="r">1회 차감</th><th>적용 시작일시</th><th>수정일시</th><th></th></tr></thead>
+        <thead><tr><th>상태</th><th>액티비티</th><th>PSU ID</th><th class="r">1회 차감</th><th>적용 시작일시</th><th>수정일시</th><th></th></tr></thead>
         <tbody id="rows"></tbody>
       </table>
     </div>
@@ -298,8 +298,8 @@ tr.row:hover td,tr.click:hover td{background:rgba(33,37,41,.05) !important}
 
   <div class="keep">
     <div class="kh">아직 정하지 않은 것</div>
-    <p><b>마스터 레이스:</b> 1번 이용할 때 마스터 레이스 JAM을 몇 개 쓰는지 정해야 해요.</p>
-    <p><b>예시 행 2개:</b> "적용 예정"(아레나 4개)과 "만료"(디지털 레이스 3개) 상태를 보여 주려고 넣은 예시예요. 실제로 정해진 변경이나 예전 값이 아니에요.</p>
+    <p><b>마스터 레이스:</b> 1번 이용할 때 마스터 레이스 JAM을 몇 개 쓰는지 정해야 합니다.</p>
+    <p><b>예시 행 2개:</b> "적용 예정"(아레나 4개)과 "만료"(디지털 레이스 3개) 상태를 보여 주려고 넣은 예시입니다. 실제로 정해진 변경이나 예전 값이 아닙니다.</p>
   </div>
 </div>
 
@@ -310,7 +310,7 @@ tr.row:hover td,tr.click:hover td{background:rgba(33,37,41,.05) !important}
   <div class="db">
     <div class="lockmsg" id="lockMsg" hidden></div>
     <div class="fld"><div class="fl">액티비티 <span class="req">*</span></div><select class="sel" id="fAct"></select></div>
-    <div class="fld"><div class="fl">PSU 코드 <span class="req">*</span></div><select class="sel" id="fJam"><option value="RACE">RACE · 레이스 JAM</option><option value="GENERAL">GENERAL · 일반 JAM</option><option value="MST-RACE">MST-RACE · 마스터 레이스 JAM</option></select></div>
+    <div class="fld"><div class="fl">PSU ID <span class="req">*</span></div><select class="sel" id="fJam"><option value="RACE">RACE · 레이스 JAM</option><option value="GENERAL">GENERAL · 일반 JAM</option><option value="MST-RACE">MST-RACE · 마스터 레이스 JAM</option></select></div>
     <div class="fld"><div class="fl">1회 차감 <span class="req">*</span></div><div class="won"><input class="ipt" id="fQty"><span class="u">개</span></div></div>
     <div class="fld"><div class="fl">적용 시작일시 <span class="req">*</span></div><input class="ipt" id="fFrom" type="datetime-local" style="max-width:240px"></div>
 
@@ -324,20 +324,20 @@ tr.row:hover td,tr.click:hover td{background:rgba(33,37,41,.05) !important}
     <div class="memo">
       <div class="mh">안내</div>
       <ul>
-        <li>티켓을 <b>살 때</b> 적용 중인 규칙이 티켓에 기록돼요.</li>
-        <li>규칙이 바뀌어도 그 티켓은 기록된 규칙대로 차감해요.</li>
-        <li>환불할 때 이용한 JAM 원가도 같은 기록으로 계산해요.</li>
-        <li>규칙을 바꿀 때는 <b>적용 시작일시를 넣어 새 규칙을 등록</b>해요.</li>
-        <li>그 시각이 되면 새 규칙은 '적용 중', 이전 규칙은 '만료'가 돼요.</li>
-        <li><b>적용 예정</b> 규칙만 고치거나 지울 수 있어요.</li>
-        <li>한 액티비티에 같은 적용 시작일시로 두 개를 등록할 수 없어요.</li>
-        <li>적용 시작일시는 지금보다 뒤로만 넣어요.</li>
-        <li>상태는 적용 시작일시에 따라 자동으로 정해져요.</li>
-        <li>액티비티를 멈추는 일은 액티비티 운영 상태에서 다뤄요.</li>
-        <li>PSU 코드는 PSU 관리에 등록된 것 중에서 골라요. 이름도 함께 보여요.</li>
-        <li>1회 차감은 1 이상의 정수로 넣어요.</li>
-        <li>JAM은 고객이 <b>이용을 시작할 때</b> 줄어요.</li>
-        <li>아레나 · 벡토는 장비 체크인, 레이스는 차량 탑승, 비전 · 스포츠랩은 이용 처리 때예요.</li>
+        <li>티켓을 <b>살 때</b> 적용 중인 규칙이 티켓에 기록됩니다.</li>
+        <li>규칙이 바뀌어도 그 티켓은 기록된 규칙대로 차감합니다.</li>
+        <li>환불할 때 이용한 JAM 원가도 같은 기록으로 계산합니다.</li>
+        <li>규칙을 바꿀 때는 <b>적용 시작일시를 넣어 새 규칙을 등록</b>합니다.</li>
+        <li>그 시각이 되면 새 규칙은 '적용 중', 이전 규칙은 '만료'가 됩니다.</li>
+        <li><b>적용 예정</b> 규칙만 고치거나 지울 수 있습니다.</li>
+        <li>한 액티비티에 같은 적용 시작일시로 두 개를 등록할 수 없습니다.</li>
+        <li>적용 시작일시는 지금보다 뒤로만 넣습니다.</li>
+        <li>상태는 적용 시작일시에 따라 자동으로 정해집니다.</li>
+        <li>액티비티를 멈추는 일은 액티비티 운영 상태에서 다룹니다.</li>
+        <li>PSU ID는 PSU 관리에 등록된 것 중에서 고릅니다. 이름도 함께 보입니다.</li>
+        <li>1회 차감은 1 이상의 정수로 넣습니다.</li>
+        <li>JAM은 고객이 <b>이용을 시작할 때</b> 줄어듭니다.</li>
+        <li>아레나 · 벡토는 장비 체크인, 레이스는 차량 탑승, 비전 · 스포츠랩은 이용 처리 때입니다.</li>
       </ul>
     </div>
   </div>
@@ -396,8 +396,8 @@ function openRule(r){
     $('mUp').textContent=r.up;
     lock(!edit); $('fAct').disabled=true;
     $('lockMsg').hidden=edit;
-    $('lockMsg').textContent='이미 시작된 규칙이라 고칠 수 없어요. 차감 개수를 바꾸려면 "새 규칙으로 등록"을 눌러 적용 시작일시를 넣어 주세요.';
-    $('vnote').textContent=edit?'시작 전이라 고치거나 지울 수 있어요':'';
+    $('lockMsg').textContent='이미 시작된 규칙이라 고칠 수 없습니다. 차감 개수를 바꾸려면 "새 규칙으로 등록"을 눌러 적용 시작일시를 넣어 주시기 바랍니다.';
+    $('vnote').textContent=edit?'시작 전이라 고치거나 지울 수 있습니다':'';
     $('footBtns').innerHTML=edit
       ?'<button class="btn ghost sm" onclick="closeRule()">삭제</button> <button class="btn ghost sm" onclick="closeRule()">취소</button> <button class="btn pri sm" onclick="closeRule()">저장</button>'
       :'<button class="btn ghost sm" onclick="closeRule()">닫기</button> <button class="btn pri sm" onclick="openRule(null,cur)">새 규칙으로 등록</button>';
@@ -417,8 +417,8 @@ openRule=function(r,base){
   $('fJam').value=base?base.jam:'GENERAL';
   $('fQty').value=base&&base.qty!=null?base.qty:''; $('fQty').placeholder='';
   $('fFrom').value='';
-  $('mUp').textContent='저장할 때 기록돼요';
-  $('vnote').textContent='적용 시작일시부터 새로 산 티켓에 적용돼요';
+  $('mUp').textContent='저장할 때 기록됩니다';
+  $('vnote').textContent='적용 시작일시부터 새로 산 티켓에 적용됩니다';
   $('footBtns').innerHTML='<button class="btn ghost sm" onclick="closeRule()">취소</button> <button class="btn pri sm" onclick="closeRule()">저장</button>';
   $('ov').classList.add('show'); $('dw').classList.add('show');
 };

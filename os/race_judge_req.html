@@ -28,7 +28,7 @@
 <div class="app">
   <h1>레이스 심사 요청 <span class="ex">예시 데이터</span></h1>
   <div class="card req">
-    <div class="rh"><b>심사 요청</b><span title="심사가 필요한 레이스의 트랙을 고르거나 GR 번호로 찾아 요청해요" style="color:var(--accent);cursor:help">ⓘ</span><span class="sp"></span>
+    <div class="rh"><b>심사 요청</b><span title="심사가 필요한 레이스의 트랙을 고르거나 GR 번호로 찾아 요청합니다" style="color:var(--accent);cursor:help">ⓘ</span><span class="sp"></span>
       <span class="gi"><input id="gr" placeholder="GR 번호" oninput="chk()"><button id="grx" hidden onclick="$('gr').value='';chk()">✕</button></span><button class="btn sm pri" id="sb" disabled onclick="byGr()">검색</button></div>
     <div class="grid" id="grid"></div>
     <button class="btn pri go" id="go" disabled onclick="byTrack()">요청</button>
@@ -36,11 +36,11 @@
   <div class="memo" style="max-width:480px;margin-left:auto;margin-right:auto">
     <div class="mh">안내</div>
     <ul>
-      <li>트랙을 고르고 <b>요청</b>을 누르면 진행 중인 레이스가 떠요.</li>
-      <li>심사할 레이스의 <b>확인</b>을 누르고, 한 번 더 확인하면 요청이 끝나요.</li>
-      <li>진행 중인 레이스가 없으면 "진행중인 레이스가 없습니다."가 떠요. (예시: 4 · R 트랙)</li>
-      <li>GR 번호로 검색해도 같은 방식으로 요청해요.</li>
-      <li>요청한 레이스는 레이스 심사 목록에 '접수'로 올라가요.</li>
+      <li>트랙을 고르고 <b>요청</b>을 누르면 진행 중인 레이스가 뜹니다.</li>
+      <li>심사할 레이스의 <b>확인</b>을 누르고, 한 번 더 확인하면 요청이 끝납니다.</li>
+      <li>진행 중인 레이스가 없으면 "진행중인 레이스가 없습니다."가 뜹니다. (예시: 4 · R 트랙)</li>
+      <li>GR 번호로 검색해도 같은 방식으로 요청합니다.</li>
+      <li>요청한 레이스는 레이스 심사 목록에 '접수'로 올라갑니다.</li>
     </ul>
     <div style="margin-top:8px;color:var(--note)"><b style="color:var(--note)">정하는 중</b></div>
     <ul style="color:var(--note)">
@@ -64,10 +64,10 @@ function pop(h){$('pb').innerHTML=h;$('mw').hidden=false;}
 function close_(){$('mw').hidden=true;}
 function byTrack(){var list=LIVE.filter(function(r){return r.track===SEL});
   if(!list.length){pop('진행중인 레이스가 없습니다.<div class="pbtns"><button class="btn light" onclick="close_()">닫기</button></div>');return;}
-  pop(SEL+' 트랙에<br>'+list.length+'개의 레이스가 진행중입니다.<br>심사 대상을 선택해주세요.<div class="pl">'+list.map(function(r){return '<div class="pr"><span class="code">'+r.gr+'</span><span>'+r.time+' 이용</span><button class="btn sm pri" onclick="ask('+LIVE.indexOf(r)+')">확인</button></div>'}).join('')+'</div>');}
+  pop(SEL+' 트랙에<br>'+list.length+'개의 레이스가 진행중입니다.<br>심사 대상을 선택해 주시기 바랍니다.<div class="pl">'+list.map(function(r){return '<div class="pr"><span class="code">'+r.gr+'</span><span>'+r.time+' 이용</span><button class="btn sm pri" onclick="ask('+LIVE.indexOf(r)+')">확인</button></div>'}).join('')+'</div>');}
 function byGr(){var q=$('gr').value.trim().toUpperCase();var list=LIVE.filter(function(r){return r.gr.indexOf(q)>=0});
   if(!list.length){pop('<span class="ktxt">GR '+q+'을(를) 탑승한 레이스가 없습니다.</span><div class="pbtns"><button class="btn light" onclick="close_()">닫기</button></div>');return;}
-  pop('GR '+list[0].gr+'을(를) 탑승한<br>'+list.length+'개의 레이스가 존재합니다.<br>심사 대상을 선택하세요.<div class="pl">'+list.map(function(r){return '<div class="pr"><span>'+r.course+'코스</span><span>'+r.track+'트랙</span><span>'+r.time+' 이용</span><button class="btn sm pri" onclick="ask('+LIVE.indexOf(r)+')">확인</button></div>'}).join('')+'</div>');}
+  pop('GR '+list[0].gr+'을(를) 탑승한<br>'+list.length+'개의 레이스가 존재합니다.<br>심사 대상을 선택하시기 바랍니다.<div class="pl">'+list.map(function(r){return '<div class="pr"><span>'+r.course+'코스</span><span>'+r.track+'트랙</span><span>'+r.time+' 이용</span><button class="btn sm pri" onclick="ask('+LIVE.indexOf(r)+')">확인</button></div>'}).join('')+'</div>');}
 function ask(i){var r=LIVE[i];pop(r.gr+'<br>'+trackLbl(r)+'<br>'+r.time+' 이용<br>심사를 요청하시겠습니까?<div class="pbtns"><button class="btn light" onclick="close_()">닫기</button><button class="btn pri" onclick="send('+i+')">확인</button></div>');}
 function send(i){var r=LIVE[i];var a=jLoad()||[];a.unshift({gr:r.gr,course:r.course,track:r.track,use:'2026-11-14 '+r.time+':'+String(10+a.length%50),req:nowFull(),reqBy:'크루 (나)',st:'접수'});jSave(a);
   close_();SEL=null;render();chk();tTop('심사 요청이 완료되었습니다.');}

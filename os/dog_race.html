@@ -40,9 +40,9 @@
 <body>
 <div class="app">
   <div class="top"><h1 style="margin:0">강아지레이스 <span class="ex">예시 데이터</span></h1><span class="sp"></span>
-    <button class="btn ol kept" onclick="toast('<span style=&quot;color:#C9B8FF&quot;>영상 테스트를 누른 뒤 동작은 제주 화면을 확인한 뒤 그려요.</span>')">▶ 영상 테스트</button>
+    <button class="btn ol kept" onclick="toast('<span style=&quot;color:#C9B8FF&quot;>영상 테스트를 누른 뒤 동작은 제주 화면을 확인한 뒤 그립니다.</span>')">▶ 영상 테스트</button>
     <span id="topAct" class="kept" style="border-radius:8px;padding:2px"></span></div>
-  <div class="keptline" style="margin-bottom:12px"><b>정하는 중</b> · 인천에서 강아지레이스를 할지, 한다면 어떻게 할지 아직 정하지 않았어요. 화면 전체가 제주 구성을 옮긴 예시예요.</div>
+  <div class="keptline" style="margin-bottom:12px"><b>정하는 중</b> · 인천에서 강아지레이스를 할지, 한다면 어떻게 할지 아직 정하지 않았습니다. 화면 전체가 제주 구성을 옮긴 예시입니다.</div>
   <div class="card kept">
     <div class="pills" id="races"></div>
     <div class="wrap">
@@ -54,13 +54,13 @@
   <div class="memo">
     <div class="mh">안내</div>
     <ul>
-      <li>댕댕레이스(반려견)와 촉감레이스(사람)를 같은 방식으로 운영해요.</li>
+      <li>댕댕레이스(반려견)와 촉감레이스(사람)를 같은 방식으로 운영합니다.</li>
       <li>순서: 티켓 번호 등록 → 이름 등록 → 10초 카운트다운 → 레이스 → 기록.</li>
-      <li>위쪽 막대 4칸이 지금 단계를 보여줘요.</li>
-      <li>티켓 번호는 13자리를 넣거나 NFC로 태그해요.</li>
-      <li>레이스가 끝나면 <b>티켓 사용 처리</b>로 사용 처리할 반려견(참가자)을 골라요.</li>
-      <li>기록 관리에서 날짜별 기록을 보고, <b>티켓 취소 처리</b>로 여러 건을 골라 취소해요.</li>
-      <li>구성은 제주 실서비스, 단계별 화면은 2026-06 강아지레이스 프로토타입을 따랐어요.</li>
+      <li>위쪽 막대 4칸이 지금 단계를 보여줍니다.</li>
+      <li>티켓 번호는 13자리를 넣거나 NFC로 태그합니다.</li>
+      <li>레이스가 끝나면 <b>티켓 사용 처리</b>로 사용 처리할 반려견(참가자)을 고릅니다.</li>
+      <li>기록 관리에서 날짜별 기록을 보고, <b>티켓 취소 처리</b>로 여러 건을 골라 취소합니다.</li>
+      <li>구성은 제주 실서비스, 단계별 화면은 2026-06 강아지레이스 프로토타입을 따랐습니다.</li>
     </ul>
     <div style="margin-top:8px;color:var(--note)"><b style="color:var(--note)">정하는 중</b></div>
     <ul style="color:var(--note)">
@@ -105,23 +105,23 @@ function renderOp(){var s=ST[R],k=RACES[R];var h='<div class="phase">'+[1,2,3,4]
   else h+='<button class="go" '+(s.phase===2&&s.name?'':'disabled')+' onclick="startRace()">▶ 시작</button>';
   h+='</div>';
   if(s.phase===4&&s.last)h+='<div class="res'+(R==='touch'?' touch':'')+'"><b>'+fmt(s.last.ms)+'</b><span>'+s.last.name+'</span></div>';
-  if(s.use){var list=s.recs.filter(function(r){return r.st==='정상'});h+='<div class="box"><div class="bt"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="vertical-align:-2px"><path d="M4 7h16v3a2 2 0 0 0 0 4v3H4v-3a2 2 0 0 0 0-4z"/></svg> 사용 처리할 '+k.who+'을(를) 선택하세요</div>'+list.map(function(r){var i=s.recs.indexOf(r);return '<div class="uitem'+(r.used?' used':'')+'" '+(r.used?'':'onclick="useOne('+i+')"')+'><span><b>'+r.name+'</b> <span class="code muted" style="font-size:12px">'+r.ticket+'</span></span><span>'+(r.used?'<span class="pill p-blue">사용</span>':'<span class="code">'+fmt(r.ms)+'</span>')+'</span></div>'}).join('')+'</div>';}
+  if(s.use){var list=s.recs.filter(function(r){return r.st==='정상'});h+='<div class="box"><div class="bt"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="vertical-align:-2px"><path d="M4 7h16v3a2 2 0 0 0 0 4v3H4v-3a2 2 0 0 0 0-4z"/></svg> 사용 처리할 '+k.who+'을(를) 선택하시기 바랍니다</div>'+list.map(function(r){var i=s.recs.indexOf(r);return '<div class="uitem'+(r.used?' used':'')+'" '+(r.used?'':'onclick="useOne('+i+')"')+'><span><b>'+r.name+'</b> <span class="code muted" style="font-size:12px">'+r.ticket+'</span></span><span>'+(r.used?'<span class="pill p-blue">사용</span>':'<span class="code">'+fmt(r.ms)+'</span>')+'</span></div>'}).join('')+'</div>';}
   $('vOp').innerHTML=h;}
-function nfc(){var t='26111214189'+String(20+ST[R].recs.length).padStart(2,'0');ST[R].ticket=t;toast('<span style="color:#C9B8FF">예시 화면이라 NFC 태그한 것처럼 번호를 넣었어요.</span>');render();}
+function nfc(){var t='26111214189'+String(20+ST[R].recs.length).padStart(2,'0');ST[R].ticket=t;toast('<span style="color:#C9B8FF">예시 화면이라 NFC 태그한 것처럼 번호를 넣었습니다.</span>');render();}
 function regTicket(){var s=ST[R];if(s.ticket.length!==13)return;s.phase=2;s.name='';render();setTimeout(function(){$('nm')&&$('nm').focus()},50);}
-function regName(){var v=($('nm').value||'').trim();if(!v){toast(RACES[R].who+' 이름을 넣어 주세요.');return;}ST[R].name=v;render();}
+function regName(){var v=($('nm').value||'').trim();if(!v){toast(RACES[R].who+' 이름을 넣어 주시기 바랍니다.');return;}ST[R].name=v;render();}
 function startRace(){var s=ST[R];s.phase=3;s.cd=10;render();var key=R;s.timer=setInterval(function(){var x=ST[key];x.cd--;if(x.cd<=0){clearInterval(x.timer);x.t0=performance.now();x.timer=setInterval(function(){x.ms=performance.now()-x.t0;if(R===key&&$('tm'))$('tm').textContent=fmt(x.ms);},30);}if(R===key)render();},1000);}
 function stopRace(){var s=ST[R];clearInterval(s.timer);s.ms=performance.now()-s.t0;var rec={name:s.name,ticket:s.ticket,at:'2026-11-12 '+hm(),ms:s.ms,st:'정상',vid:'정상',used:false};s.recs.push(rec);s.last=rec;s.phase=4;render();}
 function cancelRace(){var s=ST[R];clearInterval(s.timer);s.phase=2;s.cd=10;s.ms=0;render();}
 function resetRace(){var s=ST[R];s.phase=1;s.ticket='';s.name='';s.ms=0;s.last=null;s.use=false;render();}
-function useOne(i){var s=ST[R];s.recs[i].used=true;if(!s.recs.some(function(r){return !r.used&&r.st==='정상'}))s.use=false;render();tTop('<span style="color:var(--note)">'+s.recs[i].name+' 티켓을 사용 처리했어요. (안내 문구는 정하는 중)</span>');}
+function useOne(i){var s=ST[R];s.recs[i].used=true;if(!s.recs.some(function(r){return !r.used&&r.st==='정상'}))s.use=false;render();tTop('<span style="color:var(--note)">'+s.recs[i].name+' 티켓을 사용 처리했습니다. (안내 문구는 정하는 중)</span>');}
 function renderRec(){var s=ST[R];var list=s.recs.filter(function(r){return r.at.slice(0,10)===($('rd')?$('rd').value:'2026-11-12')});
   var h='<div class="box" style="margin-top:12px"><div class="rh"><div class="bt" style="margin:0">⟲ 기록 목록</div><span class="sp"></span><label class="date">▦ <input type="date" id="rd" value="'+($('rd')?$('rd').value:'2026-11-12')+'" onchange="renderRec()"></label></div>'+
    '<table><thead><tr>'+(s.cmode?'<th></th>':'')+'<th>이름</th><th>티켓번호</th><th>탑승 시간</th><th>상태</th><th class="kept">영상 상태</th><th>기록</th></tr></thead><tbody>'+
    (list.length?list.map(function(r){var i=s.recs.indexOf(r),cx=r.st==='취소';return '<tr class="'+(cx?'cx':'')+'">'+(s.cmode?'<td class="nostrike">'+(cx?'':'<input type="checkbox" '+(s.sel.indexOf(i)>=0?'checked':'')+' onchange="togSel('+i+',this.checked)">')+'</td>':'')+'<td>'+r.name+'</td><td class="code">'+r.ticket+'</td><td class="code">'+r.at.slice(11)+'</td><td class="nostrike"><span class="pill '+(cx?'p-red':'p-blue')+'">'+r.st+'</span></td><td class="nostrike kept">'+r.vid+'</td><td class="num">'+fmt(r.ms)+'</td></tr>'}).join(''):'<tr><td colspan="'+(s.cmode?7:6)+'" class="empty">아직 기록이 없습니다.</td></tr>')+'</tbody></table></div>';
   $('vRec').innerHTML=h;}
 function togSel(i,on){var s=ST[R];var k=s.sel.indexOf(i);if(on&&k<0)s.sel.push(i);if(!on&&k>=0)s.sel.splice(k,1);render();}
-function doCancel(){var s=ST[R];var n=s.sel.length;s.sel.forEach(function(i){s.recs[i].st='취소'});s.sel=[];s.cmode=false;render();tTop('<span style="color:var(--note)">'+n+'건을 취소했어요. (안내 문구는 정하는 중)</span>');}
+function doCancel(){var s=ST[R];var n=s.sel.length;s.sel.forEach(function(i){s.recs[i].st='취소'});s.sel=[];s.cmode=false;render();tTop('<span style="color:var(--note)">'+n+'건을 취소했습니다. (안내 문구는 정하는 중)</span>');}
 render();
 </script>
 </body>

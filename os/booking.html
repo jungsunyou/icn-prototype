@@ -49,7 +49,7 @@
   <h1>티켓 예매 <span class="ex">예시 데이터</span></h1>
 
   <div class="card kept">
-    <h2>시간대별 레이스 판매 <span class="ktag">정하는 중</span><span class="sp"></span><span class="muted" style="font-size:12px;font-weight:400">30분 단위 · 레이스 시간표와 수량은 예시예요</span></h2>
+    <h2>시간대별 레이스 판매 <span class="ktag">정하는 중</span><span class="sp"></span><span class="muted" style="font-size:12px;font-weight:400">30분 단위 · 레이스 시간표와 수량은 예시입니다</span></h2>
     <div class="slotwrap"><div class="slots" id="slots"></div></div>
   </div>
 
@@ -63,16 +63,16 @@
       </div>
       <div class="pick">
         <div class="col"><div class="hd">유형</div><div id="types"></div></div>
-        <div class="col"><div class="hd">상품명</div><div id="prods"><div class="empty">유형을 선택해 주세요</div></div></div>
-        <div class="col"><div class="hd">시간 [재고]</div><div id="times"><div class="empty">상품을 선택해 주세요</div></div></div>
+        <div class="col"><div class="hd">상품명</div><div id="prods"><div class="empty">유형을 선택해 주시기 바랍니다</div></div></div>
+        <div class="col"><div class="hd">시간 [재고]</div><div id="times"><div class="empty">상품을 선택해 주시기 바랍니다</div></div></div>
       </div>
-      <div class="rule">레이스가 들어간 상품은 시간을 골라야 해요. 실내 패키지처럼 일반 JAM만 있는 상품은 시간 없이 바로 담겨요.</div>
+      <div class="rule">레이스가 들어간 상품은 시간을 골라야 합니다. 실내 패키지처럼 일반 JAM만 있는 상품은 시간 없이 바로 담깁니다.</div>
     </div>
 
     <!-- 주문 정보 -->
     <div class="card">
       <h2>주문 정보</h2>
-      <div id="emptyOrder" class="placeholder">상품을 먼저 선택해 주세요</div>
+      <div id="emptyOrder" class="placeholder">상품을 먼저 선택해 주시기 바랍니다</div>
       <div id="order" hidden>
         <div class="sec">주문자 정보</div>
         <div class="row2">
@@ -81,7 +81,7 @@
           <div class="k">전화번호</div><input class="ipt kept" placeholder="010-0000-0000 (정하는 중)">
           <div class="k">예약 채널</div><select class="sel" style="max-width:200px"><option>INFO DESK</option><option>현장 키오스크</option><option>전화 예약</option></select>
         </div>
-        <div class="keptline" style="margin-top:8px"><b>정하는 중</b> · 현장 예매 때 주문자 이름·전화번호를 받을지 정하고 있어요. 받더라도 조회 화면에는 보여주지 않아요.</div>
+        <div class="keptline" style="margin-top:8px"><b>정하는 중</b> · 현장 예매 때 주문자 이름·전화번호를 받을지 정하고 있습니다. 받더라도 조회 화면에는 보여주지 않습니다.</div>
 
         <div class="sec">상품 정보</div>
         <div class="tblwrap"><table>
@@ -102,7 +102,7 @@
             <input class="ipt" id="adWhy" placeholder="직권 할인 사유를 입력하세요" style="flex:1;min-width:180px">
           </div>
         </div>
-        <div class="rule">자격 할인은 하나만 쓸 수 있어요. OS에서는 예외로 자격 할인과 직권 할인을 함께 적용할 수 있어요.</div>
+        <div class="rule">자격 할인은 하나만 쓸 수 있습니다. OS에서는 예외로 자격 할인과 직권 할인을 함께 적용할 수 있습니다.</div>
 
         <div class="acc" onclick="toggleList()">개별 상품 리스트 (총 <span id="cnt">0</span>매)<span class="sp"></span><span id="accIco">⌄</span></div>
         <div id="tickets" hidden>
@@ -118,7 +118,7 @@
           <div class="k">총 할인 금액</div><div class="v" id="sDc">₩0</div>
           <div class="k">총 결제 금액</div><div class="v" id="sPay" style="color:var(--accent)">₩0</div>
           <div class="k">결제 방식</div><div><span class="seg" id="payMode"><span class="on" onclick="pmSet('single')">단일 결제</span><span onclick="pmSet('split')">분할 결제</span></span></div>
-          <div class="k" id="payByL">결제 수단</div><div id="paySingle"><select class="sel" id="payBy" onchange="pmCheck()"><option value="">결제 수단을 선택해 주세요</option><option>카드</option><option>현금</option><option>통장입금</option><option>PG</option></select></div>
+          <div class="k" id="payByL">결제 수단</div><div id="paySingle"><select class="sel" id="payBy" onchange="pmCheck()"><option value="">결제 수단을 선택해주세요</option><option>카드</option><option>현금</option><option>통장입금</option><option>PG</option></select></div>
         </div>
         <div id="paySplit" hidden style="margin-left:122px;margin-top:-30px">
           <div id="pmRows"></div>
@@ -126,9 +126,9 @@
             <button class="btn sm" style="border-color:var(--accent);color:var(--accent);min-width:140px" onclick="pmAdd()">+ 결제수단 추가</button>
             <span id="pmLeft" style="background:var(--warn-soft);color:var(--warn);border-radius:11px;padding:6px 12px;font-size:12px;font-weight:600"></span>
           </div>
-          <div class="rule">분할 결제는 현금·통장입금·PG만 선택할 수 있어요.</div>
+          <div class="rule">분할 결제는 현금·통장입금·PG만 선택할 수 있습니다.</div>
         </div>
-        <div class="foot"><button class="btn" onclick="reset()">취소하기</button><button class="btn pri" id="payBtn" disabled onclick="toast('예시 화면이라 실제로 결제되지 않아요.')">결제하기</button></div>
+        <div class="foot"><button class="btn" onclick="reset()">취소하기</button><button class="btn pri" id="payBtn" disabled onclick="toast('예시 화면이라 실제로 결제되지 않습니다.')">결제하기</button></div>
       </div>
     </div>
   </div>
@@ -136,20 +136,20 @@
   <div class="memo">
     <div class="mh">안내</div>
     <ul>
-      <li>상품은 상품 관리에 등록된 ICN 상품이에요.</li>
-      <li>상품은 <b>패키지 / 추가구매</b>로 나눠요.</li>
-      <li>판매가는 그날 정규가예요. 앱 −10% 할인은 적용하지 않아요.</li>
-      <li>레이스 시간은 <b>30분 단위</b> 재고로 보여줘요. 레이스가 없는 상품은 시간 자유예요.</li>
+      <li>상품은 상품 관리에 등록된 ICN 상품입니다.</li>
+      <li>상품은 <b>패키지 / 추가구매</b>로 나눕니다.</li>
+      <li>판매가는 그날 정규가입니다. 앱 −10% 할인은 적용하지 않습니다.</li>
+      <li>레이스 시간은 <b>30분 단위</b> 재고로 보여줍니다. 레이스가 없는 상품은 시간 자유입니다.</li>
       <li>레이스 패키지 인원: 직접 운전 · 주니어 운전 · 동승자</li>
       <li>실내 패키지 인원: 이용자 · 동반자녀</li>
-      <li>한 명이 티켓 한 장이에요.</li>
-      <li>주니어 운전도 운전자로 보고 같은 가격이에요. 이용 자격은 발권할 때 확인해요.</li>
-      <li>동승자는 운전자 수만큼만 넣을 수 있어요.</li>
-      <li>동승자 · 동반자녀는 한 명에 40,000원이에요. 동반자녀는 없어도 돼요.</li>
-      <li>추가구매는 패키지를 산 고객만 살 수 있어요.</li>
-      <li>자격 할인은 신분 · 지역 · 크루 중 하나만 골라요. 증빙만 보고 바로 적용해요.</li>
-      <li>OS에서는 자격 할인과 <b>직권 할인을 함께</b> 쓸 수 있어요.</li>
-      <li>쿠폰은 티켓마다 번호를 넣어요.</li>
+      <li>한 명이 티켓 한 장입니다.</li>
+      <li>주니어 운전도 운전자로 보고 같은 가격입니다. 이용 자격은 발권할 때 확인합니다.</li>
+      <li>동승자는 운전자 수만큼만 넣을 수 있습니다.</li>
+      <li>동승자 · 동반자녀는 한 명에 40,000원입니다. 동반자녀는 없어도 됩니다.</li>
+      <li>추가구매는 패키지를 산 고객만 살 수 있습니다.</li>
+      <li>자격 할인은 신분 · 지역 · 크루 중 하나만 고릅니다. 증빙만 보고 바로 적용합니다.</li>
+      <li>OS에서는 자격 할인과 <b>직권 할인을 함께</b> 쓸 수 있습니다.</li>
+      <li>쿠폰은 티켓마다 번호를 넣습니다.</li>
     </ul>
     <div style="margin-top:8px;color:var(--note)"><b style="color:var(--note)">정하는 중</b></div>
     <ul style="color:var(--note)">
@@ -177,13 +177,13 @@ function toast(m){var t=document.getElementById('toast');t.textContent=m;t.class
 function seg(el){el.parentNode.querySelectorAll('span').forEach(function(s){s.classList.toggle('on',s===el)});}
 (function(){var h='';SLOT_T.forEach(function(t){h+='<div class="t">'+t+'</div>'});SLOT_V.forEach(function(v){h+='<div class="v'+(v>=19?' busy':'')+'">'+v+'</div>'});document.getElementById('slots').innerHTML=h;})();
 function renderTypes(){var h='';['패키지','추가구매'].forEach(function(t){h+='<div class="it'+(state.type===t?' on':'')+'" onclick="pickType(\''+t+'\')">'+t+'</div>'});document.getElementById('types').innerHTML=h;}
-function pickType(t){state.type=t;state.prod=null;renderTypes();renderProducts();document.getElementById('times').innerHTML='<div class="empty">상품을 선택해 주세요</div>';}
+function pickType(t){state.type=t;state.prod=null;renderTypes();renderProducts();document.getElementById('times').innerHTML='<div class="empty">상품을 선택해 주시기 바랍니다</div>';}
 function renderProducts(){
   var q=document.getElementById('q').value.trim();
   var list=PRODUCTS.filter(function(p){return (q?p.name.indexOf(q)>=0:p.type===state.type)});
-  if(!q&&!state.type){document.getElementById('prods').innerHTML='<div class="empty">유형을 선택해 주세요</div>';return;}
+  if(!q&&!state.type){document.getElementById('prods').innerHTML='<div class="empty">유형을 선택해 주시기 바랍니다</div>';return;}
   var h=list.map(function(p){return '<div class="it'+(state.prod===p.id?' on':'')+(p.ex?' kept':'')+'" onclick="pickProd(\''+p.id+'\')">'+p.name+'<span class="s">'+p.comp+' · '+(p.ex?'예시 · 구성 미정':won(p.price))+'</span></div>'}).join('');
-  document.getElementById('prods').innerHTML=h||'<div class="empty">검색 결과가 없어요</div>';
+  document.getElementById('prods').innerHTML=h||'<div class="empty">검색 결과가 없습니다</div>';
 }
 function pickProd(id){
   var p=PRODUCTS.filter(function(x){return x.id===id})[0];state.prod=id;renderProducts();
@@ -204,8 +204,8 @@ function addLine(id,time){
   render();
 }
 function chg(i,k,d){var l=state.lines[i];l[k]=Math.max(0,l[k]+d);
-  if(l.id==='race'){if(l.d+l.j<1){l[k]-=d;toast('운전자(직접 또는 주니어)가 한 명 이상 있어야 해요.');}else if(l.p>l.d+l.j){l.p=l.d+l.j;toast('동승자는 운전자 수만큼만 넣을 수 있어요.');}}
-  else if(l.id==='indoor'){if(l.a<1){l.a=1;toast('이용자가 한 명 이상 있어야 해요.');}}
+  if(l.id==='race'){if(l.d+l.j<1){l[k]-=d;toast('운전자(직접 또는 주니어)가 한 명 이상 있어야 합니다.');}else if(l.p>l.d+l.j){l.p=l.d+l.j;toast('동승자는 운전자 수만큼만 넣을 수 있습니다.');}}
+  else if(l.id==='indoor'){if(l.a<1){l.a=1;toast('이용자가 한 명 이상 있어야 합니다.');}}
   else if(l.q<1)l.q=1;
   render();}
 function del(i){state.lines.splice(i,1);render();}
@@ -238,7 +238,7 @@ var PM={mode:'single',rows:[{by:'',v:''},{by:'',v:''}],amt:0,undec:false,has:fal
 function pmSet(m){PM.mode=m;var sp=document.querySelectorAll('#payMode span');sp[0].classList.toggle('on',m==='single');sp[1].classList.toggle('on',m==='split');
   document.getElementById('paySingle').hidden=m!=='single';document.getElementById('payByL').style.visibility=m==='single'?'visible':'hidden';document.getElementById('paySplit').hidden=m!=='split';pmRender();}
 function pmLeft(){return PM.amt-PM.rows.reduce(function(a,x){return a+(+x.v||0)},0);}
-function pmRender(){document.getElementById('pmRows').innerHTML=PM.rows.map(function(x,i){return '<div style="display:flex;gap:8px;align-items:center;margin-bottom:6px"><select class="sel" style="flex:1" onchange="PM.rows['+i+'].by=this.value;pmCheck()"><option value="">결제 수단을 선택해 주세요</option>'+['현금','통장입금','PG'].map(function(o){return '<option'+(x.by===o?' selected':'')+'>'+o+'</option>'}).join('')+'</select><input class="ipt" style="flex:1;text-align:right" placeholder="금액 입력" value="'+(x.v?(+x.v).toLocaleString('ko-KR'):'')+'" oninput="PM.rows['+i+'].v=this.value.replace(/[^0-9]/g,\'\');pmCheck()"><button class="del" style="color:var(--ok);font-size:12px;white-space:nowrap" onclick="pmFill('+i+')">⇥ 잔액</button><button class="del" style="color:var(--red);font-size:12px;white-space:nowrap" onclick="PM.rows.splice('+i+',1);pmRender()">🗑 삭제</button></div>'}).join('');pmCheck();}
+function pmRender(){document.getElementById('pmRows').innerHTML=PM.rows.map(function(x,i){return '<div style="display:flex;gap:8px;align-items:center;margin-bottom:6px"><select class="sel" style="flex:1" onchange="PM.rows['+i+'].by=this.value;pmCheck()"><option value="">결제 수단을 선택해주세요</option>'+['현금','통장입금','PG'].map(function(o){return '<option'+(x.by===o?' selected':'')+'>'+o+'</option>'}).join('')+'</select><input class="ipt" style="flex:1;text-align:right" placeholder="금액 입력" value="'+(x.v?(+x.v).toLocaleString('ko-KR'):'')+'" oninput="PM.rows['+i+'].v=this.value.replace(/[^0-9]/g,\'\');pmCheck()"><button class="del" style="color:var(--ok);font-size:12px;white-space:nowrap" onclick="pmFill('+i+')">⇥ 잔액</button><button class="del" style="color:var(--red);font-size:12px;white-space:nowrap" onclick="PM.rows.splice('+i+',1);pmRender()">🗑 삭제</button></div>'}).join('');pmCheck();}
 function pmAdd(){PM.rows.push({by:'',v:''});pmRender();}
 function pmFill(i){PM.rows[i].v=String(Math.max(0,(+PM.rows[i].v||0)+pmLeft()));pmRender();}
 function pmCheck(){var ok;if(PM.mode==='single'){ok=!!document.getElementById('payBy').value;}

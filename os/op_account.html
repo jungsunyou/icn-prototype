@@ -22,12 +22,12 @@
   <div class="memo">
     <div class="mh">안내</div>
     <ul>
-      <li>OS에 로그인하는 운영자(크루) 계정을 관리해요.</li>
-      <li>이름 · 계정 · 연락처로 찾아요.</li>
+      <li>OS에 로그인하는 운영자(크루) 계정을 관리합니다.</li>
+      <li>이름 · 계정 · 연락처로 찾습니다.</li>
       <li><b>사용자 추가</b> → 이름 · 전화번호 · 계정 입력, 역할/권한 칩 선택 → 위쪽 <b>계정 생성</b> → 인증 메일 발송.</li>
-      <li>운영자 정보(이름 · 연락처 · 계정)는 가리지 않고 보여줘요.</li>
-      <li>인증 전 계정은 '미인증'으로 보여요.</li>
-      <li>줄을 누르면 사용자 정보를 보고, 편집할 수 있어요.</li>
+      <li>운영자 정보(이름 · 연락처 · 계정)는 가리지 않고 보여줍니다.</li>
+      <li>인증 전 계정은 '미인증'으로 보입니다.</li>
+      <li>줄을 누르면 사용자 정보를 보고, 편집할 수 있습니다.</li>
     </ul>
     <div style="margin-top:8px;color:var(--note)"><b style="color:var(--note)">정하는 중</b></div>
     <ul style="color:var(--note)">
@@ -58,11 +58,11 @@ function chkF(){var ok=$('fn').value.trim()&&$('ft').value.replace(/\D/g,'').len
 function openAdd(){openD('사용자 추가','<button class="lk" id="fs" disabled onclick="askCreate()">계정 생성</button><button onclick="closeD()">닫기</button>');$('db').innerHTML=form({name:'',tel:'',id:'',roles:[]});}
 function askCreate(){pop('<div class="t">계정 생성</div>'+esc($('fi').value)+' 계정을 생성하시겠습니까?<div class="pbtns"><button class="btn light" onclick="closeM()">취소</button><button class="btn pri" onclick="doCreate()">확인</button></div>');}
 function doCreate(){U.push({name:$('fn').value.trim(),tel:$('ft').value.trim(),id:$('fi').value.trim(),roles:SEL.slice(),ok:false});
-  pop('<div class="t">인증 메일 발송</div>'+esc($('fi').value)+'로 인증 메일을 보냈습니다.<br><span class="muted" style="font-size:12.5px">메일에서 인증을 마치면 로그인할 수 있어요.</span><div class="pbtns"><button class="btn pri" onclick="closeM();closeD();render()">확인</button></div>');}
+  pop('<div class="t">인증 메일 발송</div>'+esc($('fi').value)+'로 인증 메일을 보냈습니다.<br><span class="muted" style="font-size:12.5px">메일에서 인증을 마치면 로그인할 수 있습니다.</span><div class="pbtns"><button class="btn pri" onclick="closeM();closeD();render()">확인</button></div>');}
 function openView(i){var u=U[i];openD('사용자 정보','<button class="lk" onclick="openEdit('+i+')">편집</button><button onclick="closeD()">닫기</button>');
   $('db').innerHTML='<div class="dcard">'+AV+'<div class="kf"><div>이름</div><div>'+esc(u.name)+'</div><div>전화번호</div><div class="code">'+esc(u.tel)+'</div><div>계정</div><div>'+esc(u.id)+'</div><div>역할/권한</div><div class="rchips">'+u.roles.map(function(r){return '<span class="on">'+r+'</span>'}).join('')+'</div><div class="kept">인증</div><div class="kept">'+(u.ok?'인증 완료':'미인증 · 인증 메일 발송됨')+'</div></div></div>';}
 function openEdit(i){var u=U[i];openD('사용자 정보 편집','<button class="lk" id="fs" onclick="saveEdit('+i+')">저장</button><button onclick="openView('+i+')">취소</button>');$('db').innerHTML=form(u);}
-function saveEdit(i){var u=U[i];u.name=$('fn').value.trim();u.tel=$('ft').value.trim();u.id=$('fi').value.trim();if(SEL.length)u.roles=SEL.slice();render();openView(i);toast('<span style="color:#C9B8FF">저장했어요. (안내 문구는 정하는 중)</span>');}
+function saveEdit(i){var u=U[i];u.name=$('fn').value.trim();u.tel=$('ft').value.trim();u.id=$('fi').value.trim();if(SEL.length)u.roles=SEL.slice();render();openView(i);toast('<span style="color:#C9B8FF">저장했습니다. (안내 문구는 정하는 중)</span>');}
 render();
 </script>
 </body>
