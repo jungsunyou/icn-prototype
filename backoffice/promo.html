@@ -49,6 +49,7 @@
   .nav button.on{background:var(--surface);color:var(--fg);box-shadow:0 1px 2px rgba(0,0,0,.06)}
   .nav button .sub{font-weight:400;font-size:10px;color:var(--muted);display:block}
   .tabpane[hidden]{display:none}
+  .dhk{display:flex;flex-direction:column;gap:2px;min-width:0}.dhk .kick{font-size:11.5px;color:var(--muted);font-weight:500}.dhk h3{margin:0}
   #dw{width:min(1000px,96vw)!important}
   #dwC,#dwB{z-index:8!important;width:min(820px,94vw)!important;box-shadow:-12px 0 30px rgba(0,0,0,.14)}
   .overlay.l2{z-index:7}
@@ -459,7 +460,7 @@ tr.row:hover td,tr.click:hover td{background:rgba(33,37,41,.05) !important}
 <!-- 프로모션(정책) 편집 드로어 -->
 <div class="overlay" id="ov" onclick="closeDrawer()"></div>
 <aside class="drawer" id="dw">
-  <div class="dh"><h3 id="dwTitle">프로모션 편집</h3><span class="sp"></span><button class="x" onclick="closeDrawer()">✕</button></div>
+  <div class="dh"><div class="dhk"><span class="kick" id="dwKick">프로모션</span><h3 id="dwTitle">프로모션 편집</h3></div><span class="sp"></span><button class="x" onclick="closeDrawer()">✕</button></div>
   <div class="db">
     <div class="fld"><div class="fl">유형 <span class="req">*</span></div><div class="fc"><div class="radio" id="typeRadio"><span class="opt on" data-y="일반" onclick="setPromoType('일반')">일반</span><span class="opt" data-y="신분" onclick="setPromoType('신분')">신분(자격)</span><span class="opt" data-y="교환" onclick="setPromoType('교환')">교환</span></div></div></div>
     <div class="fld"><div class="fl">프로모션 ID</div><div class="fc"><div class="autoval code" id="pIdVal">저장하면 시스템이 번호를 붙입니다 (예: 1001)</div></div></div>
@@ -626,7 +627,7 @@ tr.row:hover td,tr.click:hover td{background:rgba(33,37,41,.05) !important}
 <!-- 쿠폰 발급 드로어 -->
 <div class="overlay l2" id="ov2" onclick="closeCp()"></div>
 <aside class="drawer" id="dwC">
-  <div class="dh"><h3>쿠폰 만들기</h3><span class="sp"></span><button class="x" onclick="closeCp()">✕</button></div>
+  <div class="dh"><div class="dhk"><span class="kick" id="cKick">쿠폰</span><h3>쿠폰 만들기</h3></div><span class="sp"></span><button class="x" onclick="closeCp()">✕</button></div>
   <div class="db">
     <div class="sec">
       <div class="fld"><div class="fl">연결 프로모션</div><div class="fc"><div class="roprom" id="cPromoRo"></div><select class="sel" id="cPromo" style="width:100%;display:none" onchange="cPromoChange()"><option data-exc="0">오픈 기념 할인 (1001 · −5,000)</option><option data-exc="1">F&amp;B 교환 (1005 · 교환)</option></select></div></div>
@@ -722,7 +723,7 @@ tr.row:hover td,tr.click:hover td{background:rgba(33,37,41,.05) !important}
 
 <!-- 발급 배치 상세 드로어 -->
 <aside class="drawer" id="dwB">
-  <div class="dh"><h3 id="b_name">쿠폰 상세</h3><span class="sp"></span><button class="x" onclick="closeCp()">✕</button></div>
+  <div class="dh"><div class="dhk"><span class="kick" id="bKick">쿠폰</span><h3 id="b_name">쿠폰 상세</h3></div><span class="sp"></span><button class="x" onclick="closeCp()">✕</button></div>
   <div class="db">
     <div style="display:flex;align-items:center;gap:10px;margin:8px 0 12px">
       <span class="pill s-on" id="b_status">활성</span><span class="typ y-gen" id="b_method">난수번호</span>
@@ -793,7 +794,7 @@ function nf(n){return n.toLocaleString('en-US');}
 })();
 function openBatch(i){
   var x=BATCH[i], unused=x.issued-x.used-x.cancel, rate=Math.round(x.used/x.issued*100);
-  document.getElementById('b_name').textContent=x.name;
+  document.getElementById('b_name').textContent=x.name;document.getElementById('bKick').textContent='쿠폰 · '+x.promo;
   document.getElementById('b_status').textContent=x.st;
   var m=document.getElementById('b_method'); m.textContent=x.method; m.className='typ '+x.mcls;
   document.getElementById('b_issued').textContent=nf(x.issued);
@@ -815,7 +816,7 @@ function openBatch(i){
   if(x.send){sendK.hidden=false;send.hidden=false;send.textContent=x.send;document.getElementById('b_sendbox').style.display='';}else{sendK.hidden=true;send.hidden=true;document.getElementById('b_sendbox').style.display='none';}
   document.getElementById('b_img').src=x.img||'';
   var NK=['주말드라이버','하늘달리기','바다소년','별빛레이서','초록우산'];
-  document.getElementById('b_list').innerHTML=NK.map(function(n,k){var u=k<2;return '<tr><td class="code">'+(x.code?x.code.split(' ')[0]:'OPEN-')+(k?('-'+(7301+k*41)):'')+'</td><td>'+n+'</td><td><span class="pill '+(u?'s-on':'')+'">'+(u?'사용':'미사용')+'</span></td><td class="code">'+(u?'2026-11-1'+(2+k):'-')+'</td></tr>';}).join('');
+  document.getElementById('b_list').innerHTML=NK.map(function(n,k){var u=k<2;return '<tr><td class="code">'+(x.code?x.code.split(' ')[0]+'-':'OPEN-')+(7301+k*41)+'</td><td>'+n+'</td><td><span class="pill '+(u?'s-on':'')+'">'+(u?'사용':'미사용')+'</span></td><td class="code">'+(u?'2026-11-1'+(2+k):'-')+'</td></tr>';}).join('');
   document.getElementById('ov2').classList.add('show');
   document.getElementById('dwB').classList.add('show');
 }
@@ -853,7 +854,7 @@ function cPromoChange(){
 }
 
 var CURPROMO=null;
-function openDrawer(n,t,m,tg){CURPROMO={name:n,type:t||'일반',jam:m==='jam'};var PIDS={'오픈 기념 할인':1001,'국가유공자·장애인':1002,'인천시민 할인':1003,'크루 할인':1004,'F&B 교환':1005,'트레이니 교환':1006,'마스터 교환':1007};document.getElementById('pIdVal').textContent=PIDS[n]?String(PIDS[n]):'저장하면 시스템이 번호를 붙입니다';document.getElementById('dwTitle').textContent=n;setTimeout(renderCpSec,0);setPromoType(t||'일반');setExcMode(m||'item');if(m==='jam'){document.getElementById('jxTarget').value=tg||'trn';setJamTarget(tg||'trn');}document.getElementById('ov').classList.add('show');document.getElementById('dw').classList.add('show');}
+function openDrawer(n,t,m,tg){CURPROMO={name:n,type:t||'일반',jam:m==='jam'};var PIDS={'오픈 기념 할인':1001,'국가유공자·장애인':1002,'인천시민 할인':1003,'크루 할인':1004,'F&B 교환':1005,'트레이니 교환':1006,'마스터 교환':1007};document.getElementById('pIdVal').textContent=PIDS[n]?String(PIDS[n]):'저장하면 시스템이 번호를 붙입니다';document.getElementById('dwKick').textContent=PIDS[n]?'프로모션 · ID '+PIDS[n]:'프로모션 · 새로 만들기';document.getElementById('dwTitle').textContent=n;setTimeout(renderCpSec,0);setPromoType(t||'일반');setExcMode(m||'item');if(m==='jam'){document.getElementById('jxTarget').value=tg||'trn';setJamTarget(tg||'trn');}document.getElementById('ov').classList.add('show');document.getElementById('dw').classList.add('show');}
 function setPromoType(t){
   document.querySelectorAll('#typeRadio .opt').forEach(function(o){o.classList.toggle('on',o.dataset.y===t)});
   var exc=(t==='교환');
@@ -880,7 +881,7 @@ function renderCpSec(){var sec=document.getElementById('cpSec');if(!sec||!CURPRO
   else if(!list.length)h='<div class="cpnone">아직 쿠폰이 없습니다. <b>+ 쿠폰 만들기</b>로 만듭니다.</div>';
   else h='<div class="tblwrap" style="border:1px solid var(--line);border-radius:10px;overflow:auto"><table class="cptbl"><thead><tr><th>이미지</th><th>쿠폰명</th><th>발급 방식</th><th class="r">발급</th><th class="r">사용</th><th>사용 기간</th><th>상태</th></tr></thead><tbody>'+list.map(function(r){var x=r.x;return '<tr class="click" onclick="openBatch('+r.i+')"><td><img class="cpthumb" src="'+(x.img||'')+'" alt=""></td><td>'+x.name+'</td><td><span class="typ '+x.mcls+'">'+x.method+'</span>'+(x.code?' <span class="code">'+x.code.split(' ')[0]+'</span>':'')+'</td><td class="r">'+nf(x.issued)+'</td><td class="r">'+nf(x.used)+'</td><td>'+x.use+'</td><td><span class="pill s-on">'+x.st+'</span></td></tr>'}).join('')+'</tbody></table></div>';
   document.getElementById('cpList').innerHTML=h;}
-function openIssue(){var m=promoMeta();document.getElementById('cPromoRo').innerHTML='<b>'+(CURPROMO?CURPROMO.name:'')+'</b> (ID '+m.id+') · '+m.disc+' <span style="color:var(--muted)">· 바꿀 수 없음 · 활성 기간 '+m.from+' ~ '+m.to+'</span>';
+function openIssue(){var m=promoMeta();document.getElementById('cKick').textContent='쿠폰 · '+(CURPROMO?CURPROMO.name+' (ID '+m.id+')':'');document.getElementById('cPromoRo').innerHTML='<b>'+(CURPROMO?CURPROMO.name:'')+'</b> (ID '+m.id+') · '+m.disc+' <span style="color:var(--muted)">· 바꿀 수 없음 · 활성 기간 '+m.from+' ~ '+m.to+'</span>';
   document.getElementById('cExcBlock').hidden=!m.exc;document.getElementById('cErr').textContent='';
   document.getElementById('ov2').classList.add('show');document.getElementById('dwC').classList.add('show');}
 function chkCpPeriod(){var m=promoMeta(),f=document.getElementById('cFrom').value,t=document.getElementById('cTo').value,e='';
