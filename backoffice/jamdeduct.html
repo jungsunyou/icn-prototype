@@ -276,20 +276,19 @@ tr.row:hover td,tr.click:hover td{background:rgba(33,37,41,.05) !important}
     <button class="btn pri" onclick="openRule(null)">+ 차감 규칙 등록</button>
   </div>
 
-  <div class="note"><span>액티비티를 <b>1번 이용할 때 어떤 JAM을 몇 개 쓰는지</b> 정하는 화면입니다. 고객이 티켓을 살 때 그 시점에 적용 중인 규칙이 티켓에 기록되고, 이용할 때는 <b>산 날의 규칙대로</b> JAM이 줄어듭니다. 규칙을 바꾸려면 적용 시작일시를 넣어 새 규칙을 등록해 주시기 바랍니다.</span></div>
+  <div class="note"><span>액티비티를 <b>1번 이용할 때 어떤 JAM을 몇 개 쓰는지</b> 정하는 화면입니다. 액티비티마다 규칙은 하나이며, 고치면 그 즉시 새로 사는 티켓부터 적용됩니다. <b>이미 산 티켓은 산 때의 차감 개수로</b> JAM이 줄어듭니다.</span></div>
 
   <div class="filters">
     <div class="f search"><label>검색</label><input class="ipt" placeholder="액티비티 이름을 입력해 주세요"></div>
     <div class="f" style="justify-content:flex-end"><button class="btn pri sm" style="height:34px">검색</button></div>
     <div class="f"><label>PSU ID</label><select class="sel"><option>전체</option><option>RACE</option><option>GENERAL</option><option>MST-RACE</option></select></div>
-    <div class="f"><label>상태</label><select class="sel"><option>전체</option><option>적용 예정</option><option>적용 중</option><option>만료</option></select></div>
   </div>
 
   <div class="panel">
     <div class="ph">차감 규칙 목록 <span class="cnt" id="cnt"></span></div>
     <div class="tblwrap">
       <table>
-        <thead><tr><th>상태</th><th>액티비티</th><th>PSU ID</th><th class="r">1회 차감</th><th>적용 시작일시</th><th>수정일시</th><th></th></tr></thead>
+        <thead><tr><th>액티비티</th><th>PSU ID</th><th class="r">1회 차감</th><th>수정일시</th><th></th></tr></thead>
         <tbody id="rows"></tbody>
       </table>
     </div>
@@ -299,7 +298,7 @@ tr.row:hover td,tr.click:hover td{background:rgba(33,37,41,.05) !important}
   <div class="keep">
     <div class="kh">아직 정하지 않은 것</div>
     <p><b>마스터 레이스:</b> 1번 이용할 때 마스터 레이스 JAM을 몇 개 쓰는지 정해야 합니다.</p>
-    <p><b>예시 행 2개:</b> "적용 예정"(아레나 4개)과 "만료"(디지털 레이스 3개) 상태를 보여 주려고 넣은 예시입니다. 실제로 정해진 변경이나 예전 값이 아닙니다.</p>
+    <p><b>산 때의 차감 개수를 어디에 저장할지:</b> 티켓마다 적어 둘지, 상품 버전에 적어 두고 티켓은 산 상품 버전을 따를지 개발팀과 정해야 합니다. 어느 쪽이든 화면과 운영 방법은 같습니다.</p>
   </div>
 </div>
 
@@ -308,11 +307,9 @@ tr.row:hover td,tr.click:hover td{background:rgba(33,37,41,.05) !important}
 <aside class="drawer" id="dw">
   <div class="dh"><h3 id="dwTitle">차감 규칙</h3><span class="code" id="dwCode"></span><span class="sp"></span><button class="x" onclick="closeRule()">✕</button></div>
   <div class="db">
-    <div class="lockmsg" id="lockMsg" hidden></div>
     <div class="fld"><div class="fl">액티비티 <span class="req">*</span></div><select class="sel" id="fAct"></select></div>
     <div class="fld"><div class="fl">PSU ID <span class="req">*</span></div><select class="sel" id="fJam"><option value="RACE">RACE · 레이스 JAM</option><option value="GENERAL">GENERAL · 일반 JAM</option><option value="MST-RACE">MST-RACE · 마스터 레이스 JAM</option></select></div>
     <div class="fld"><div class="fl">1회 차감 <span class="req">*</span></div><div class="won"><input class="ipt" id="fQty"><span class="u">개</span></div></div>
-    <div class="fld"><div class="fl">적용 시작일시 <span class="req">*</span></div><input class="ipt" id="fFrom" type="datetime-local" style="max-width:240px"></div>
 
     <div class="fld"><div class="fl">등록 정보</div>
       <div class="metagrid">
@@ -324,15 +321,12 @@ tr.row:hover td,tr.click:hover td{background:rgba(33,37,41,.05) !important}
     <div class="memo">
       <div class="mh">안내</div>
       <ul>
-        <li>티켓을 <b>살 때</b> 적용 중인 규칙이 티켓에 기록됩니다.</li>
-        <li>규칙이 바뀌어도 그 티켓은 기록된 규칙대로 차감합니다.</li>
-        <li>환불할 때 이용한 JAM 원가도 같은 기록으로 계산합니다.</li>
-        <li>규칙을 바꿀 때는 <b>적용 시작일시를 넣어 새 규칙을 등록</b>합니다.</li>
-        <li>그 시각이 되면 새 규칙은 '적용 중', 이전 규칙은 '만료'가 됩니다.</li>
-        <li><b>적용 예정</b> 규칙만 고치거나 지울 수 있습니다.</li>
-        <li>한 액티비티에 같은 적용 시작일시로 두 개를 등록할 수 없습니다.</li>
-        <li>적용 시작일시는 지금보다 뒤로만 넣습니다.</li>
-        <li>상태는 적용 시작일시에 따라 자동으로 정해집니다.</li>
+        <li>한 액티비티에는 차감 규칙을 하나만 둡니다.</li>
+        <li>규칙을 고쳐 저장하면 그 즉시 새로 사는 티켓부터 적용됩니다.</li>
+        <li>이미 산 티켓은 <b>산 때의 차감 개수</b>로 차감합니다.</li>
+        <li>추가구매로 산 JAM도 산 때의 차감 개수로 차감합니다.</li>
+        <li>환불할 때 이용한 JAM 원가도 산 때의 차감 개수로 계산합니다.</li>
+        <li>규칙을 고쳐도 상품은 바뀌지 않습니다.</li>
         <li>액티비티를 멈추는 일은 액티비티 운영 상태에서 다룹니다.</li>
         <li>PSU ID는 PSU 관리에 등록된 것 중에서 고릅니다. 이름도 함께 보입니다.</li>
         <li>1회 차감은 1 이상의 정수로 넣습니다.</li>
@@ -345,83 +339,69 @@ tr.row:hover td,tr.click:hover td{background:rgba(33,37,41,.05) !important}
 </aside>
 
 <script>
-// 차감 규칙 (예시). st: plan=적용 예정, now=적용 중, past=만료 / qty가 null이면 정하는 중
+// 차감 규칙 (예시). 액티비티마다 하나 / qty가 null이면 정하는 중
 var RULES=[
-  {act:'레이스',jam:'RACE',qty:1,from:'2026-09-21T00:00',st:'now',up:'2026-09-21 10:00'},
-  {act:'마스터 트레이니',jam:'MST-RACE',qty:null,from:'',st:'now',up:'—'},
-  {act:'마스터 레이스',jam:'MST-RACE',qty:null,from:'',st:'now',up:'—'},
-  {act:'아레나',jam:'GENERAL',qty:4,from:'2026-12-01T00:00',st:'plan',up:'2026-11-05 09:30',ex:true},
-  {act:'아레나',jam:'GENERAL',qty:5,from:'2026-09-21T00:00',st:'now',up:'2026-09-21 10:00'},
-  {act:'벡토',jam:'GENERAL',qty:5,from:'2026-09-21T00:00',st:'now',up:'2026-09-21 10:00'},
-  {act:'디지털 레이스',jam:'GENERAL',qty:4,from:'2026-09-21T00:00',st:'now',up:'2026-09-21 10:00'},
-  {act:'디지털 레이스',jam:'GENERAL',qty:3,from:'2026-08-01T00:00',st:'past',up:'2026-07-25 15:10',ex:true},
-  {act:'비전',jam:'GENERAL',qty:2,from:'2026-09-21T00:00',st:'now',up:'2026-09-21 10:00'},
-  {act:'스포츠랩',jam:'GENERAL',qty:2,from:'2026-09-21T00:00',st:'now',up:'2026-09-21 10:00'}
+  {act:'레이스',jam:'RACE',qty:1,up:'2026-09-21 10:00'},
+  {act:'마스터 트레이니',jam:'MST-RACE',qty:null,up:'—'},
+  {act:'마스터 레이스',jam:'MST-RACE',qty:null,up:'—'},
+  {act:'아레나',jam:'GENERAL',qty:5,up:'2026-09-21 10:00'},
+  {act:'벡토',jam:'GENERAL',qty:5,up:'2026-09-21 10:00'},
+  {act:'디지털 레이스',jam:'GENERAL',qty:4,up:'2026-09-21 10:00'},
+  {act:'비전',jam:'GENERAL',qty:2,up:'2026-09-21 10:00'},
+  {act:'스포츠랩',jam:'GENERAL',qty:2,up:'2026-09-21 10:00'}
 ];
-var ST={plan:'적용 예정',now:'적용 중',past:'만료'};
-var CLS={plan:'plan',now:'on',past:'past'};
 var TBD='<span class="pnote">정하는 중</span>';
 var ACTS=['레이스','마스터 트레이니','마스터 레이스','아레나','벡토','디지털 레이스','비전','스포츠랩'];
 function $(id){return document.getElementById(id);}
-function fmt(d){return d?d.replace('T',' '):TBD;}
-
-$('rows').innerHTML=RULES.map(function(r,i){
-  return '<tr class="row'+(r.qty==null||r.ex?' keeprow':'')+'" data-i="'+i+'">'+
-    '<td><span class="st '+CLS[r.st]+'"><span class="d"></span>'+ST[r.st]+'</span></td>'+
-    '<td>'+r.act+(r.ex?'<span class="exrow">예시 행</span>':'')+'</td>'+
-    '<td class="code">'+r.jam+'</td>'+
-    '<td class="r">'+(r.qty==null?TBD:r.qty+'개')+'</td>'+
-    '<td class="ver">'+fmt(r.from)+'</td>'+
-    '<td class="ver">'+r.up+'</td>'+
-    '<td><button class="mini">'+(r.st==='plan'?'편집':'보기')+'</button></td></tr>';
-}).join('');
-$('cnt').textContent='· '+RULES.length+'건';
-$('tot').textContent='총 '+RULES.length+'개 항목';
-$('fAct').innerHTML=ACTS.map(function(a){return '<option>'+a+'</option>';}).join('');
+function paint(){
+  $('rows').innerHTML=RULES.map(function(r,i){
+    return '<tr class="row'+(r.qty==null?' keeprow':'')+'" data-i="'+i+'">'+
+      '<td>'+r.act+'</td>'+
+      '<td class="code">'+r.jam+'</td>'+
+      '<td class="r">'+(r.qty==null?TBD:r.qty+'개')+'</td>'+
+      '<td class="ver">'+r.up+'</td>'+
+      '<td><button class="mini">편집</button></td></tr>';
+  }).join('');
+  $('cnt').textContent='· '+RULES.length+'건';
+  $('tot').textContent='총 '+RULES.length+'개 항목';
+}
+paint();
 $('rows').addEventListener('click',function(e){
   var tr=e.target.closest('tr.row'); if(tr) openRule(RULES[+tr.dataset.i]);
 });
-
-function lock(on){['fAct','fJam','fQty','fFrom'].forEach(function(id){$(id).disabled=on;});}
 var cur=null;
 function openRule(r){
   cur=r;
   if(r){
-    var edit=(r.st==='plan');
-    $('dwTitle').textContent=edit?'차감 규칙 편집':'차감 규칙 보기';
-    $('dwCode').textContent='· '+r.act+' · '+ST[r.st];
-    $('fAct').value=r.act; $('fJam').value=r.jam;
+    $('dwTitle').textContent='차감 규칙 편집';
+    $('dwCode').textContent='· '+r.act;
+    $('fAct').innerHTML='<option>'+r.act+'</option>'; $('fAct').disabled=true;
+    $('fJam').value=r.jam;
     $('fQty').value=(r.qty==null?'':r.qty); $('fQty').placeholder=(r.qty==null?'정하는 중':'');
-    $('fFrom').value=r.from;
     $('mUp').textContent=r.up;
-    lock(!edit); $('fAct').disabled=true;
-    $('lockMsg').hidden=edit;
-    $('lockMsg').textContent='이미 시작된 규칙이라 고칠 수 없습니다. 차감 개수를 바꾸려면 "새 규칙으로 등록"을 눌러 적용 시작일시를 넣어 주시기 바랍니다.';
-    $('vnote').textContent=edit?'시작 전이라 고치거나 지울 수 있습니다':'';
-    $('footBtns').innerHTML=edit
-      ?'<button class="btn ghost sm" onclick="closeRule()">삭제</button> <button class="btn ghost sm" onclick="closeRule()">취소</button> <button class="btn pri sm" onclick="closeRule()">저장</button>'
-      :'<button class="btn ghost sm" onclick="closeRule()">닫기</button> <button class="btn pri sm" onclick="openRule(null,cur)">새 규칙으로 등록</button>';
+    $('vnote').textContent='저장하면 새로 사는 티켓부터 적용됩니다';
+  }else{
+    var free=ACTS.filter(function(a){return !RULES.some(function(x){return x.act===a;});});
+    $('dwTitle').textContent='차감 규칙 등록';
+    $('dwCode').textContent='· 신규';
+    $('fAct').disabled=false;
+    $('fAct').innerHTML=free.length?free.map(function(a){return '<option>'+a+'</option>';}).join(''):'<option value="">규칙이 없는 액티비티가 없습니다</option>';
+    $('fJam').value='GENERAL'; $('fQty').value=''; $('fQty').placeholder='';
+    $('mUp').textContent='저장할 때 기록됩니다';
+    $('vnote').textContent='규칙이 없는 액티비티만 고를 수 있습니다';
   }
+  $('footBtns').innerHTML='<button class="btn ghost sm" onclick="closeRule()">취소</button> <button class="btn pri sm" onclick="saveRule()">저장</button>';
   $('ov').classList.add('show'); $('dw').classList.add('show');
 }
-// 새 규칙 등록 (base가 있으면 그 규칙 값을 미리 채움)
-var _open=openRule;
-openRule=function(r,base){
-  if(r) return _open(r);
-  cur=null;
-  $('dwTitle').textContent='차감 규칙 등록';
-  $('dwCode').textContent='· 신규';
-  lock(false);
-  $('lockMsg').hidden=true;
-  $('fAct').value=base?base.act:ACTS[0];
-  $('fJam').value=base?base.jam:'GENERAL';
-  $('fQty').value=base&&base.qty!=null?base.qty:''; $('fQty').placeholder='';
-  $('fFrom').value='';
-  $('mUp').textContent='저장할 때 기록됩니다';
-  $('vnote').textContent='적용 시작일시부터 새로 산 티켓에 적용됩니다';
-  $('footBtns').innerHTML='<button class="btn ghost sm" onclick="closeRule()">취소</button> <button class="btn pri sm" onclick="closeRule()">저장</button>';
-  $('ov').classList.add('show'); $('dw').classList.add('show');
-};
+function saveRule(){
+  var q=$('fQty').value.trim();
+  if(q!==''&&!/^[1-9]\d*$/.test(q)){alertMsg('1회 차감은 1 이상의 정수로 넣어 주시기 바랍니다.');return;}
+  var now='2026-11-17 10:00';
+  if(cur){cur.jam=$('fJam').value; cur.qty=q===''?null:+q; cur.up=now;}
+  else{ if(!$('fAct').value){closeRule();return;} RULES.push({act:$('fAct').value,jam:$('fJam').value,qty:q===''?null:+q,up:now}); }
+  paint(); closeRule();
+}
+function alertMsg(t){$('vnote').textContent=t;$('vnote').style.color='#DA222B';setTimeout(function(){$('vnote').style.color='';},2500);}
 function closeRule(){$('ov').classList.remove('show');$('dw').classList.remove('show');}
 </script>
 
