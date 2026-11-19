@@ -63,6 +63,12 @@
   .cpthumb{width:44px;height:32px;border-radius:6px;object-fit:cover;border:1px solid var(--line);display:block}
   .cpnone{border:1px dashed var(--line);border-radius:10px;padding:12px;color:var(--muted);font-size:12.5px;text-align:center}
   .cphd{display:flex;align-items:center;gap:8px;margin:18px 0 8px}.cphd b{font-size:14px}.cphd .sp{flex:1}
+  .discbox{display:flex;align-items:center;gap:16px;flex-wrap:wrap;background:var(--accent-soft);border:1px solid var(--accent);border-radius:12px;padding:12px 16px;margin:14px 0 4px}
+  .discbox .amt{font-size:22px;font-weight:700;color:var(--accent);font-variant-numeric:tabular-nums;white-space:nowrap}
+  .discbox .amt.exc{color:#8a5a20}
+  .discbox .meta{display:flex;flex-direction:column;gap:3px;font-size:12.5px;min-width:0;flex:1}
+  .discbox .meta .k{color:var(--muted);display:inline-block;min-width:56px}
+  .discbox .lk{font-size:11px;color:var(--muted);white-space:nowrap;align-self:flex-start}
   .roprom{background:var(--surface-2);border-radius:10px;padding:10px 12px;font-size:12.5px;margin:10px 0 4px}
   [hidden]{display:none !important}
 
@@ -637,7 +643,8 @@ tr.row:hover td,tr.click:hover td{background:rgba(33,37,41,.05) !important}
   <div class="dh"><div class="dhk"><span class="kick" id="cKick">쿠폰</span><h3>쿠폰 만들기</h3></div><span class="sp"></span><button class="x" onclick="closeCp()">✕</button></div>
   <div class="db">
     <div class="sec">
-      <div class="fld"><div class="fl">연결 프로모션</div><div class="fc"><div class="roprom" id="cPromoRo"></div><select class="sel" id="cPromo" style="width:100%;display:none" onchange="cPromoChange()"><option data-exc="0">오픈 기념 할인 (1001 · −5,000)</option><option data-exc="1">F&amp;B 교환 (1005 · 교환)</option></select></div></div>
+      <div id="cDisc"></div>
+      <div class="fld" style="display:none"><div class="fl">연결 프로모션</div><div class="fc"><div class="roprom" id="cPromoRo"></div><select class="sel" id="cPromo" style="width:100%;display:none" onchange="cPromoChange()"><option data-exc="0">오픈 기념 할인 (1001 · −5,000)</option><option data-exc="1">F&amp;B 교환 (1005 · 교환)</option></select></div></div>
       <div class="fld" id="cExcBlock" hidden><div class="fl">교환 상품 <span class="req">*</span></div><div class="fc"><select class="sel" style="width:100%"><option value="">상품 관리에 등록된 상품 중 선택</option><optgroup label="추가구매"><option>레이스 JAM 1개권 · ICN-ADD-RACE1</option><option>일반 6 JAM · ICN-ADD-GEN6</option><option>F&amp;B 음료 1잔 · ICN-ADD-FNB01</option><option>굿즈 티셔츠 · ICN-ADD-GDS01</option></optgroup><optgroup label="패키지"><option>실내 패키지 · ICN-PKG-INDOOR</option></optgroup></select><div class="keptline" style="margin-top:6px"><b>개발팀 확인 중</b> · 교환 상품을 쿠폰 발급 때 고를지, 프로모션에 둘지 · F&amp;B·굿즈를 상품으로 등록하는 방법</div></div></div>
       <div class="fld"><div class="fl">쿠폰명 <span class="req">*</span></div><div class="fc"><div class="row3"><input class="ipt" value="오픈 기념 5천원 쿠폰" placeholder="KR"><input class="ipt" placeholder="EN"><input class="ipt" placeholder="中"></div></div></div>
       <div class="fld"><div class="fl">이미지</div><div class="fc"><label class="slot" id="cpImgSlot" style="cursor:pointer"><input type="file" accept="image/*" hidden onchange="cpImg(this)"><span class="plus">+</span><span class="nm">쿠폰 이미지</span><span class="spec">규격 미확정</span></label><div class="cpimg" id="cpImgPrev" hidden><img id="cpImgEl" alt="쿠폰 이미지 미리보기"><button type="button" class="del" title="이미지 삭제" onclick="cpImgDel()">✕</button><span class="nm" id="cpImgName"></span></div></div></div>
@@ -736,6 +743,7 @@ tr.row:hover td,tr.click:hover td{background:rgba(33,37,41,.05) !important}
       <span class="pill s-on" id="b_status">활성</span><span class="typ y-gen" id="b_method">난수번호</span>
       <span class="sp" style="flex:1"></span><span class="ex" style="background:var(--note-soft);color:var(--note)">예시</span>
     </div>
+    <div id="bDisc"></div>
     <div class="keptlbl">※ 발급·사용 집계 항목·표시 방식 검토(킵)</div>
     <div class="statrow kept">
       <span class="stat">발급<b id="b_issued">10,000</b></span>
@@ -813,6 +821,7 @@ function openBatch(i){
   document.getElementById('b_bar').style.width=rate+'%';
   document.getElementById('b_rate').textContent='사용률 '+rate+'%';
   document.getElementById('b_promo').textContent=x.promo;
+  document.getElementById('bDisc').innerHTML=discBox(metaByLabel(x.promo),x.promo.replace(/ \(ID \d+\)$/,''));
   document.getElementById('b_method2').textContent=x.method;
   document.getElementById('b_use').textContent=x.use;
   document.getElementById('b_issuedAt').textContent=x.issuedAt;
@@ -878,17 +887,20 @@ function setPromoType(t){
 }
 function setCrew(on){var sw=document.getElementById('crewSw');sw.classList.toggle('off',!on);document.getElementById('crewLbl').textContent=on?'사용':'사용 안 함';document.getElementById('crewBlock').hidden=!on;}
 function toggleCrew(){setCrew(document.getElementById('crewSw').classList.contains('off'));}
-function promoMeta(){var map={'오픈 기념 할인':{id:1001,disc:'−5,000원',from:'2026-11-01',to:'2026-12-31',exc:false},'F&B 교환':{id:1005,disc:'교환',from:'2026-11-01',to:'2026-12-31',exc:true}};return CURPROMO&&map[CURPROMO.name]||{id:'',disc:'',from:'2026-11-01',to:'2026-12-31',exc:CURPROMO&&CURPROMO.type==='교환'};}
+var PMETA={'오픈 기념 할인':{id:1001,disc:'−5,000원',amt:'5,000원 할인',kind:'고정 금액 할인',prods:'레이스 포함 패키지 · 실내 패키지',from:'2026-11-01',to:'2026-12-31',exc:false},'F&B 교환':{id:1005,disc:'교환',amt:'상품 교환',kind:'교환',prods:'F&B PSU',from:'2026-11-01',to:'2026-12-31',exc:true}};
+function promoMeta(){return CURPROMO&&PMETA[CURPROMO.name]||{id:'',disc:'',amt:'',kind:'',prods:'',from:'2026-11-01',to:'2026-12-31',exc:CURPROMO&&CURPROMO.type==='교환'};}
+function metaByLabel(l){var n=(l||'').replace(/ \(ID \d+\)$/,'').replace('&amp;','&');return PMETA[n]||null;}
+function discBox(m,name){if(!m)return '';return '<div class="discbox"><span class="amt'+(m.exc?' exc':'')+'">'+m.amt+'</span><div class="meta"><span><span class="k">할인 방식</span>'+m.kind+'</span><span><span class="k">적용 상품</span>'+m.prods+'</span><span><span class="k">프로모션</span>'+name+' (ID '+m.id+') · 활성 기간 '+m.from+' ~ '+m.to+'</span></div><span class="lk">할인은 프로모션에서 정합니다</span></div>';}
 function renderCpSec(){var sec=document.getElementById('cpSec');if(!sec||!CURPROMO)return;var t=CURPROMO.type,noCp=(t==='신분'||CURPROMO.jam);
   var isNew=CURPROMO.name==='신규 프로모션';document.getElementById('cpNewBtn').hidden=noCp||isNew;
   var list=BATCH.map(function(x,i){return {x:x,i:i}}).filter(function(r){return r.x.promo.indexOf(CURPROMO.name+' (')===0});
-  document.getElementById('cpCnt').textContent=noCp||isNew?'':'· '+list.length+'개';
+  var pm=promoMeta();document.getElementById('cpCnt').textContent=noCp||isNew?'':'· '+list.length+'개'+(pm.amt?' · 모든 쿠폰에 '+pm.amt+' 적용':'');
   var h;if(noCp)h='<div class="cpnone">'+(t==='신분'?'신분 할인':'JAM 교환')+'은 쿠폰 없이 적용됩니다. 쿠폰을 만들지 않습니다.</div>';
   else if(isNew)h='<div class="cpnone">프로모션을 저장하면 이 프로모션의 쿠폰을 만들 수 있습니다.</div>';
   else if(!list.length)h='<div class="cpnone">아직 쿠폰이 없습니다. <b>+ 쿠폰 만들기</b>로 만듭니다.</div>';
   else h='<div class="tblwrap" style="border:1px solid var(--line);border-radius:10px;overflow:auto"><table class="cptbl"><thead><tr><th>이미지</th><th>쿠폰명</th><th>발급 방식</th><th class="r">발급</th><th class="r">사용</th><th>사용 기간</th><th>상태</th></tr></thead><tbody>'+list.map(function(r){var x=r.x;return '<tr class="click" onclick="openBatch('+r.i+')"><td><img class="cpthumb" src="'+(x.img||'')+'" alt=""></td><td>'+x.name+'</td><td><span class="typ '+x.mcls+'">'+x.method+'</span>'+(x.code?' <span class="code">'+x.code.split(' ')[0]+'</span>':'')+'</td><td class="r">'+nf(x.issued)+'</td><td class="r">'+nf(x.used)+'</td><td>'+x.use+'</td><td><span class="pill s-on">'+x.st+'</span></td></tr>'}).join('')+'</tbody></table></div>';
   document.getElementById('cpList').innerHTML=h;}
-function openIssue(){var m=promoMeta();document.getElementById('cKick').textContent='쿠폰 · '+(CURPROMO?CURPROMO.name+' (ID '+m.id+')':'');document.getElementById('cPromoRo').innerHTML='<b>'+(CURPROMO?CURPROMO.name:'')+'</b> (ID '+m.id+') · '+m.disc+' <span style="color:var(--muted)">· 바꿀 수 없음 · 활성 기간 '+m.from+' ~ '+m.to+'</span>';
+function openIssue(){var m=promoMeta();document.getElementById('cKick').textContent='쿠폰 · '+(CURPROMO?CURPROMO.name+' (ID '+m.id+')':'');document.getElementById('cDisc').innerHTML=discBox(m,CURPROMO?CURPROMO.name:'');
   document.getElementById('cExcBlock').hidden=!m.exc;document.getElementById('cErr').textContent='';
   document.getElementById('ov2').classList.add('show');document.getElementById('dwC').classList.add('show');}
 function chkCpPeriod(){var m=promoMeta(),f=document.getElementById('cFrom').value,t=document.getElementById('cTo').value,e='';

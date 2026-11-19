@@ -417,6 +417,8 @@ tr.row:hover td,tr.click:hover td{background:rgba(33,37,41,.05) !important}
         <li>외부 채널 전용 노출 정보는 이번 범위에서 빠졌습니다.</li>
         <li>노출 · 이미지는 앱과 키오스크가 함께 씁니다.</li>
         <li>노출명 · 설명 · 이미지는 한국어 / 영어 / 중국어로 넣습니다.</li>
+        <li>노출명은 한국어가 꼭 있어야 합니다. 영어 · 중국어는 비워 둘 수 있습니다.</li>
+        <li>중국어 노출명이 비어 있으면 영어 노출명으로 보여줍니다.</li>
         <li>언어 탭 옆 점이 파란색이면 그 언어 노출명을 넣은 것입니다.</li>
         <li>이미지는 종류마다 여러 장 올릴 수 있습니다.</li>
         <li>원가는 구성한 PSU의 정가를 가져옵니다.</li>
@@ -436,7 +438,8 @@ tr.row:hover td,tr.click:hover td{background:rgba(33,37,41,.05) !important}
       <ul style="color:var(--note)">
         <li>추가구매 구성과 가격 (목록의 3개는 예시)</li>
         <li>보여주기만 하고 판매는 막는 경우, 노출 · 판매를 나눌지</li>
-        <li>영어 · 중국어가 꼭 필요한지, 비면 한국어로 보여줄지</li>
+        <li>영어 노출명이 비어 있을 때 무엇으로 보여줄지</li>
+        <li>설명 · 이미지도 중국어가 비면 영어로 보여줄지</li>
         <li>이미지를 언어마다 받을지, 공통에 예외만 둘지</li>
         <li>PSU 정가가 바뀌면 상품 정가가 바로 바뀔지, 다시 저장해야 할지</li>
         <li>삭제 · 삭제 불가 안내 문구</li>
@@ -508,7 +511,7 @@ function renderLangs(d){
   LANGS.forEach(function(g,i){
     var v=d[g.k]||{};
     var pane=document.createElement('div'); pane.className='langpane'+(i===0?' on':''); pane.dataset.l=g.k;
-    pane.innerHTML='<div class="fld"><div class="fl">노출명'+(g.req?' <span class="req">*</span>':'')+'</div><input class="ipt" value="'+(v.name||'')+'" oninput="document.getElementById(\'dot_'+g.k+'\').classList.toggle(\'ok\',!!this.value)"></div>'+
+    pane.innerHTML='<div class="fld"><div class="fl">노출명'+(g.req?' <span class="req">*</span>':'')+'</div><input class="ipt" value="'+(v.name||'')+'"'+(g.k==='zh'?' placeholder="비워 두면 영어 노출명으로 보여줍니다"':'')+' oninput="document.getElementById(\'dot_'+g.k+'\').classList.toggle(\'ok\',!!this.value)"></div>'+
       '<div class="fld"><div class="fl">노출 설명</div><textarea class="ipt">'+(v.desc||'')+'</textarea></div>'+
       '<div class="fld"><div class="fl">이미지</div><div class="imgwrap"></div></div>';
     wrap.appendChild(pane);

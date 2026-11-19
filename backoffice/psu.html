@@ -313,7 +313,7 @@ tr.row:hover td,tr.click:hover td{background:rgba(33,37,41,.05) !important}
 <aside class="drawer" id="dw">
   <div class="dh"><h3 id="dwTitle">PSU 편집</h3><span class="code" id="dwCode"></span><span class="verbadge" id="dwVer">v1</span><span class="sp"></span><button class="x" onclick="closePsu()">✕</button></div>
   <div class="db">
-    <div class="fld"><div class="fl">노출명 <span class="req">*</span></div><div class="row3"><input class="ipt" id="fName" placeholder="KR 예) 레이스 JAM" oninput="if(!$('fId').hidden)chkId()"><input class="ipt" placeholder="EN"><input class="ipt" placeholder="中"></div></div>
+    <div class="fld"><div class="fl">노출명 <span class="req">*</span></div><div class="row3"><input class="ipt" id="fName" placeholder="KR 예) 레이스 JAM" oninput="if(!$('fId').hidden)chkId()"><input class="ipt" placeholder="EN"><input class="ipt" placeholder="中 (비우면 영어로 보여줍니다)" title="비워 두면 영어 노출명으로 보여줍니다"></div></div>
 
     <div class="fld"><div class="fl">정가 <span class="req">*</span></div><div class="won"><input class="ipt" id="fPrice"><span class="u">원 / 1개</span></div></div>
 
@@ -334,7 +334,9 @@ tr.row:hover td,tr.click:hover td{background:rgba(33,37,41,.05) !important}
       <div class="mh">안내</div>
       <ul>
         <li>PSU는 유형을 고르지 않습니다. 이름과 정가만 넣습니다.</li>
-        <li>노출명은 한국어가 꼭 있어야 합니다. 다른 언어가 비면 영어로 보여줍니다.</li>
+        <li>노출명은 한국어가 꼭 있어야 합니다. 영어 · 중국어는 비워 둘 수 있습니다.</li>
+        <li>중국어 노출명이 비어 있으면 영어 노출명으로 보여줍니다.</li>
+        <li>PSU 노출명은 앱에도 보입니다.</li>
         <li>정가는 1개 기준입니다. 상품 구성과 정산을 나누는 기준이 됩니다.</li>
         <li>고객이 내는 판매가는 상품 관리 · 가격 정책 관리에서 정합니다.</li>
         <li>1회 이용에 쓰는 JAM 수는 액티비티 차감 관리에서 정합니다.</li>
@@ -348,6 +350,7 @@ tr.row:hover td,tr.click:hover td{background:rgba(33,37,41,.05) !important}
       <ul style="color:var(--note)">
         <li>PSU ID 형식 (지금 예시: 영문 대문자 · 숫자 · 하이픈, 20자까지)</li>
         <li>중복 · 형식 안내 문구</li>
+        <li>영어 노출명이 비어 있을 때 무엇으로 보여줄지</li>
       </ul>
     </div>
   </div>
