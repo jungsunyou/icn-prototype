@@ -53,7 +53,7 @@
   .tabs .tab.on{background:var(--surface);color:var(--fg);box-shadow:0 1px 2px rgba(0,0,0,.06)}
   .tabpane[hidden]{display:none}
   #dw.view .db input,#dw.view .db select,#dw.view .db textarea{pointer-events:none;background:var(--bg)}
-  #dw.view .db .radio .opt,#dw.view .db .toggle,#dw.view .db .cand,#dw.view .db .chip .rm,#dw.view .db .datepick,#dw.view .db .psearch button,#dw.view .db #cpNewBtn,#dw.view .db .seg button,#dw.view .db .btn.ghost.sm{pointer-events:none;opacity:.6}
+  #dw.view .db .radio .opt,#dw.view .db .toggle,#dw.view .db .cand,#dw.view .db .chip .rm,#dw.view .db .datepick,#dw.view .db .psearch button,#dw.view .db .seg button,#dw.view .db .btn.ghost.sm{pointer-events:none;opacity:.6}
   #dwC.view .db input,#dwC.view .db select,#dwC.view .db textarea{pointer-events:none;background:var(--bg)}
   #dwC.view .db .radio .opt,#dwC.view .db .toggle,#dwC.view .db .cand,#dwC.view .db .slot,#dwC.view .db .seg button,#dwC.view .db .btn.ghost.sm{pointer-events:none;opacity:.6}
   .pmdl{position:fixed;inset:0;background:rgba(33,37,41,.38);display:flex;align-items:center;justify-content:center;z-index:40;padding:16px}.pmdl[hidden]{display:none}
@@ -1015,7 +1015,7 @@ function discBox(m,name){if(!m)return '';return '<div class="discbox"><span clas
 function renderCpSec(){var sec=document.getElementById('cpSec');if(!sec||!CURPROMO)return;var t=CURPROMO.type,noCp=(t==='신분'||CURPROMO.jam);
   sec.hidden=(t==='신분');
   if(t==='신분')return;
-  var isNew=CURPROMO.name==='신규 프로모션';document.getElementById('cpNewBtn').hidden=noCp||isNew;
+  var isNew=(CURPROMO.name==='신규 프로모션'&&!CURPROMO.saved);document.getElementById('cpNewBtn').hidden=noCp||isNew;
   var list=BATCH.map(function(x,i){return {x:x,i:i}}).filter(function(r){return r.x.promo.indexOf(CURPROMO.name+' (')===0});
   var pm=promoMeta();document.getElementById('cpCnt').textContent=noCp||isNew?'':'· '+list.length+'개'+(pm.amt?' · 모든 쿠폰에 '+pm.amt+' 적용':'');
   var h;if(noCp)h='<div class="cpnone">JAM 교환은 쿠폰 없이 적용됩니다. 쿠폰을 만들지 않습니다.</div>';
@@ -1054,11 +1054,20 @@ function saveCp(){if(!chkCpPeriod())return;var mb=document.querySelector('#metho
   BATCH.push({name:nm,promo:CURPROMO.name+' (ID '+promoMeta().id+')',method:mt,mcls:mt==='난수번호'?'y-gen':mt==='수동'?'y-id':'y-exc',issued:0,used:0,cancel:0,wait:0,use:document.getElementById('cFrom').value+' ~ '+document.getElementById('cTo').value,issuedAt:'2026-11-13',by:'옵집사',st:'활성',img:img||CIMG('#878a99','NEW')});
   closeCp();renderCpSec();toastP('쿠폰을 만들었습니다. (안내 문구는 정하는 중)');}
 var PORIG=null;
+function finishSavePromo(){
+  setDwMode('view');
+  if(CURPROMO&&CURPROMO.name==='신규 프로모션'&&!CURPROMO.saved){
+    CURPROMO.saved=true;
+    document.getElementById('pIdVal').textContent='9999 (예시)';
+    document.getElementById('dwKick').textContent='프로모션 · ID 9999 (예시)';
+  }
+  renderCpSec();
+}
 function savePromo(){var f=document.getElementById('pFrom').value,t=document.getElementById('pTo').value;
-  if(!CURPROMO||CURPROMO.name==='신규 프로모션'||!PORIG||(f===PORIG.f&&t===PORIG.t)){closeDrawer();toastP('저장했습니다. (안내 문구는 정하는 중)');return;}
+  if(!CURPROMO||CURPROMO.name==='신규 프로모션'||!PORIG||(f===PORIG.f&&t===PORIG.t)){finishSavePromo();toastP('저장했습니다. (안내 문구는 정하는 중)');return;}
   var act=BATCH.filter(function(x){return x.promo.indexOf(CURPROMO.name+' (')===0&&x.st==='활성';});
-  if(!act.length){PORIG={f:f,t:t};closeDrawer();toastP('저장했습니다. (안내 문구는 정하는 중)');return;}
-  document.getElementById('pmdlBox').innerHTML='<div class="t">활성 기간 변경</div>프로모션 활성 기간('+f+' ~ '+t+')이 활성 쿠폰의 사용 기간과 다릅니다.<br>이대로 저장하시겠습니까?<table><thead><tr><th>쿠폰</th><th>사용 기간</th></tr></thead><tbody>'+act.map(function(x){return '<tr><td>'+x.name+'</td><td>'+x.use+'</td></tr>'}).join('')+'</tbody></table><div style="font-size:12px;color:var(--muted);margin-top:8px">쿠폰 사용 기간은 바뀌지 않습니다. 필요하면 쿠폰 상세에서 따로 바꿉니다.</div><div class="bt"><button class="btn ghost sm" onclick="document.getElementById(\'pmdl\').hidden=true">취소</button><button class="btn pri sm" onclick="document.getElementById(\'pmdl\').hidden=true;PORIG=null;closeDrawer();toastP(\'저장했습니다. (안내 문구는 정하는 중)\')">이대로 저장</button></div>';
+  if(!act.length){PORIG={f:f,t:t};finishSavePromo();toastP('저장했습니다. (안내 문구는 정하는 중)');return;}
+  document.getElementById('pmdlBox').innerHTML='<div class="t">활성 기간 변경</div>프로모션 활성 기간('+f+' ~ '+t+')이 활성 쿠폰의 사용 기간과 다릅니다.<br>이대로 저장하시겠습니까?<table><thead><tr><th>쿠폰</th><th>사용 기간</th></tr></thead><tbody>'+act.map(function(x){return '<tr><td>'+x.name+'</td><td>'+x.use+'</td></tr>'}).join('')+'</tbody></table><div style="font-size:12px;color:var(--muted);margin-top:8px">쿠폰 사용 기간은 바뀌지 않습니다. 필요하면 쿠폰 상세에서 따로 바꿉니다.</div><div class="bt"><button class="btn ghost sm" onclick="document.getElementById(\'pmdl\').hidden=true">취소</button><button class="btn pri sm" onclick="document.getElementById(\'pmdl\').hidden=true;PORIG=null;finishSavePromo();toastP(\'저장했습니다. (안내 문구는 정하는 중)\')">이대로 저장</button></div>';
   document.getElementById('pmdl').hidden=false;}
 function closeCp(){document.getElementById('ov2').classList.remove('show');document.getElementById('dwC').classList.remove('show');document.getElementById('dwB').classList.remove('show');}
 function toastP(t){var e=document.getElementById('ptoast');if(!e){e=document.createElement('div');e.id='ptoast';e.style.cssText='position:fixed;left:50%;top:18px;transform:translateX(-50%);background:#212529;color:#C9B8FF;border-radius:8px;padding:9px 16px;font-size:13px;z-index:30;transition:opacity .2s';document.body.appendChild(e);}e.textContent=t;e.style.opacity=1;clearTimeout(e._t);e._t=setTimeout(function(){e.style.opacity=0},2200);}
