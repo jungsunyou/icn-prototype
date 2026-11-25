@@ -48,7 +48,14 @@
   .nav button{font-family:var(--font-display);font-size:12.5px;font-weight:600;color:var(--muted);background:none;border:none;border-radius:6px;padding:7px 14px;cursor:pointer}
   .nav button.on{background:var(--surface);color:var(--fg);box-shadow:0 1px 2px rgba(0,0,0,.06)}
   .nav button .sub{font-weight:400;font-size:10px;color:var(--muted);display:block}
+  .tabs{display:flex;gap:4px;margin-bottom:14px}
+  .tabs .tab{font-family:var(--font-display);font-size:12.5px;font-weight:600;color:var(--muted);background:none;border:none;border-radius:6px;padding:7px 14px;cursor:pointer}
+  .tabs .tab.on{background:var(--surface);color:var(--fg);box-shadow:0 1px 2px rgba(0,0,0,.06)}
   .tabpane[hidden]{display:none}
+  #dw.view .db input,#dw.view .db select,#dw.view .db textarea{pointer-events:none;background:var(--bg)}
+  #dw.view .db .radio .opt,#dw.view .db .toggle,#dw.view .db .cand,#dw.view .db .chip .rm,#dw.view .db .datepick,#dw.view .db .psearch button,#dw.view .db #cpNewBtn,#dw.view .db .seg button,#dw.view .db .btn.ghost.sm{pointer-events:none;opacity:.6}
+  #dwC.view .db input,#dwC.view .db select,#dwC.view .db textarea{pointer-events:none;background:var(--bg)}
+  #dwC.view .db .radio .opt,#dwC.view .db .toggle,#dwC.view .db .cand,#dwC.view .db .slot,#dwC.view .db .seg button,#dwC.view .db .btn.ghost.sm{pointer-events:none;opacity:.6}
   .pmdl{position:fixed;inset:0;background:rgba(33,37,41,.38);display:flex;align-items:center;justify-content:center;z-index:40;padding:16px}.pmdl[hidden]{display:none}
   .pmdl .box{background:var(--surface);border-radius:12px;box-shadow:0 12px 40px rgba(10,14,22,.25);width:min(440px,100%);padding:20px 20px 16px;font-size:13px;line-height:1.6}
   .pmdl .t{font-weight:700;font-size:15px;margin-bottom:8px}.pmdl .bt{display:flex;justify-content:flex-end;gap:8px;margin-top:16px}
@@ -103,6 +110,10 @@
   .seg{display:flex;gap:4px;background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:3px;width:fit-content;flex-wrap:wrap}
   .seg button{font-size:12px;font-weight:600;color:var(--muted);background:none;border:none;border-radius:6px;padding:6px 12px;cursor:pointer}.seg button.on{background:var(--surface);color:var(--fg)}
   .radio{display:flex;gap:6px;flex-wrap:wrap}.radio .opt{border:1px solid var(--line);border-radius:7px;padding:6px 11px;font-size:12.5px;background:var(--field);cursor:pointer}.radio .opt.on{border-color:var(--accent);background:var(--accent-soft);color:var(--accent);font-weight:600}
+  .radio .opt.kept{border-style:dashed;border-color:var(--note);color:var(--note)}.radio .opt.kept.on{border-style:dashed;border-color:var(--note);background:var(--note-soft);color:var(--note)}
+  .ipt.kept{border-style:dashed;border-color:var(--note);background:var(--note-soft)}
+  .kbadge{color:var(--note);font-weight:700;font-size:10.5px;margin-left:5px;border:1px dashed var(--note);border-radius:9999px;padding:1px 6px;vertical-align:1px}
+  .typ.y-kept{background:var(--note-soft);color:var(--note);border:1px dashed var(--note)}
   .fh{color:var(--note);font-size:11px;margin-top:4px}
   .toggle{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;cursor:pointer}
   .sw{width:34px;height:19px;border-radius:20px;background:var(--on);position:relative}.sw::after{content:"";position:absolute;top:2px;right:2px;width:15px;height:15px;border-radius:50%;background:#fff}
@@ -337,15 +348,16 @@ tr.row:hover td,tr.click:hover td{background:rgba(33,37,41,.05) !important}
 
   <div class="nav">
     <button class="on" data-t="promo">프로모션 <span class="sub">정책 정의</span></button>
-    <button data-t="lookup">쿠폰 조회 <span class="sub">쿠폰 번호 · 닉네임으로 찾기</span></button>
-    <button data-t="auto" class="keptnav">자동 혜택</button>
+    <button data-t="lookup">쿠폰·이용 조회 <span class="sub">쿠폰 번호 · 닉네임으로 찾기</span></button>
+    <button data-t="partner">신분·제휴</button>
+    <button data-t="auto" class="keptnav">자동 발급</button>
   </div>
 
   <!-- 탭1: 프로모션 (정책) -->
   <section class="tabpane" data-p="promo">
     <div class="filters">
       <input class="ipt search" placeholder="프로모션명·프로모션 ID 검색">
-      <select class="sel"><option>전체 유형</option><option>일반</option><option>신분</option><option>교환</option></select>
+      <select class="sel"><option>전체 유형</option><option>일반</option><option>교환</option><option>신분</option><option>제휴</option></select>
       <select class="sel"><option>전체 상태</option><option>활성</option><option>종료</option></select>
       <span class="sp"></span>
       <button class="btn pri sm" onclick="openDrawer('신규 프로모션','일반')">+ 프로모션 등록</button>
@@ -353,24 +365,30 @@ tr.row:hover td,tr.click:hover td{background:rgba(33,37,41,.05) !important}
     <div class="panel">
       <div class="ph">프로모션 <span class="cnt">· 44건</span><span class="sp"></span><span class="cnt">정렬: 최신순</span></div>
       <div class="tblwrap"><table>
-        <thead><tr><th>유형</th><th>프로모션명</th><th>프로모션 ID</th><th>할인</th><th>적용 상품</th><th>상태</th><th>활성 기간</th><th class="r">쿠폰</th><th></th></tr></thead>
+        <thead><tr><th>유형</th><th>프로모션명</th><th>프로모션 ID</th><th>할인</th><th>적용 상품</th><th>상태</th><th>활성 기간</th><th class="r">쿠폰</th></tr></thead>
         <tbody>
-          <tr class="click" onclick="openDrawer('오픈 기념 할인','일반')"><td><span class="typ y-gen">일반</span></td><td>오픈 기념 할인</td><td class="code">1001</td><td>−5,000</td><td>2개</td><td><span class="pill s-on">활성</span></td><td>11-01 ~ 12-31</td><td class="r">3개</td><td><button class="mini">편집</button></td></tr>
-          <tr class="click" onclick="openDrawer('국가유공자·장애인','신분')"><td><span class="typ y-id">신분</span></td><td>국가유공자·장애인</td><td class="code">1002</td><td>−15%</td><td>전체</td><td><span class="pill s-on">활성</span></td><td>상시</td><td class="r">—</td><td><button class="mini">편집</button></td></tr>
-          <tr class="click" onclick="openDrawer('인천시민 할인','신분')"><td><span class="typ y-id">신분</span></td><td>인천시민 할인</td><td class="code">1003</td><td>−20%</td><td>전체</td><td><span class="pill s-on">활성</span></td><td>상시</td><td class="r">—</td><td><button class="mini">편집</button></td></tr>
-          <tr class="click" onclick="openDrawer('크루 할인','신분')"><td><span class="typ y-id">신분</span></td><td>크루 할인</td><td class="code">1004</td><td>−30%</td><td>전체</td><td><span class="pill s-on">활성</span></td><td>상시</td><td class="r">—</td><td><button class="mini">편집</button></td></tr>
-          <tr class="click" onclick="openDrawer('F&amp;B 교환','교환')"><td><span class="typ y-exc">교환</span></td><td>F&amp;B 교환</td><td class="code">1005</td><td>교환</td><td>F&amp;B PSU</td><td><span class="pill s-on">활성</span></td><td>11-01 ~ 12-31</td><td class="r">1개</td><td><button class="mini">편집</button></td></tr>
-          <tr class="click" onclick="openDrawer('트레이니 교환','교환','jam','trn')"><td><span class="typ y-exc">교환</span></td><td>트레이니 교환</td><td class="code">1006</td><td>JAM 교환</td><td class="code">RACE 1 → MST-RACE 1</td><td><span class="pill s-on">활성</span></td><td>상시</td><td class="r">—</td><td><button class="mini">편집</button></td></tr>
-          <tr class="click" onclick="openDrawer('마스터 교환','교환','jam','mst')"><td><span class="typ y-exc">교환</span></td><td>마스터 교환</td><td class="code">1007</td><td>JAM 교환</td><td class="code">GENERAL <span style="color:var(--note);font-weight:700">미결</span> → MST-RACE 1</td><td><span class="pill s-on">활성</span></td><td>상시</td><td class="r">—</td><td><button class="mini">편집</button></td></tr>
+          <tr class="click" onclick="openDrawer('오픈 기념 할인','일반')"><td><span class="typ y-gen">일반</span></td><td>오픈 기념 할인</td><td class="code">1001</td><td>−5,000</td><td>2개</td><td><span class="pill s-on">활성</span></td><td>11-01 ~ 12-31</td><td class="r">3개</td></tr>
+          <tr class="click" onclick="openDrawer('국가유공자·장애인','신분')"><td><span class="typ y-id">신분</span></td><td>국가유공자·장애인</td><td class="code">1002</td><td>−15%</td><td>전체</td><td><span class="pill s-on">활성</span></td><td>상시</td><td class="r">—</td></tr>
+          <tr class="click" onclick="openDrawer('인천시민 할인','신분')"><td><span class="typ y-id">신분</span></td><td>인천시민 할인</td><td class="code">1003</td><td>−20%</td><td>전체</td><td><span class="pill s-on">활성</span></td><td>상시</td><td class="r">—</td></tr>
+          <tr class="click" onclick="openDrawer('크루 할인','일반')"><td><span class="typ y-gen">일반</span></td><td>크루 할인</td><td class="code">1004</td><td>−30%</td><td>전체</td><td><span class="pill s-on">활성</span></td><td>상시</td><td class="r">0개</td></tr>
+          <tr class="click" onclick="openDrawer('F&amp;B 교환','교환')"><td><span class="typ y-exc">교환</span></td><td>F&amp;B 교환</td><td class="code">1005</td><td>교환</td><td>F&amp;B PSU</td><td><span class="pill s-on">활성</span></td><td>11-01 ~ 12-31</td><td class="r">1개</td></tr>
+          <tr class="click" onclick="openDrawer('트레이니 교환','교환','jam','trn')"><td><span class="typ y-exc">교환</span></td><td>트레이니 교환</td><td class="code">1006</td><td>JAM 교환</td><td class="code">RACE 1 → MST-RACE 1</td><td><span class="pill s-on">활성</span></td><td>상시</td><td class="r">—</td></tr>
+          <tr class="click" onclick="openDrawer('마스터 교환','교환','jam','mst')"><td><span class="typ y-exc">교환</span></td><td>마스터 교환</td><td class="code">1007</td><td>JAM 교환</td><td class="code">GENERAL <span style="color:var(--note);font-weight:700">미결</span> → MST-RACE 1</td><td><span class="pill s-on">활성</span></td><td>상시</td><td class="r">—</td></tr>
         </tbody>
       </table></div>
       <div class="pager"><span style="margin-right:auto">총 44건 · 20/페이지</span><span class="pg">‹</span><span class="pg on">1</span><span class="pg">2</span><span class="pg">3</span><span class="pg">›</span></div>
     </div>
+
+    <!-- 미정 표시 안내 -->
+    <div class="warnbox" style="margin-top:14px"><span class="material-symbols-outlined">info</span> <span><b>미정(킵)</b> — 신분 프로모션 안 <b>크루 확인 필요</b> 토글(유지 여부 미정)에 직접 보라색으로 표시했습니다. 제휴는 위 <b>신분·제휴</b> 탭에서 따로 다룹니다. 눌러서 확인해 주세요.</span></div>
   </section>
 
   <!-- 탭: 쿠폰 조회 -->
   <section class="tabpane" data-p="lookup" hidden>
+    <div class="tabs" id="lookupSubtabs"><button class="tab on" data-sp="search" onclick="setLookupSub('search')">쿠폰 검색</button><button class="tab" data-sp="jam" onclick="setLookupSub('jam')">JAM 교환 이력</button></div>
+
     <!-- A. 쿠폰 검색 (대량 개별 쿠폰 조회) -->
+    <div data-sp="search">
     <div class="warnbox" style="margin-bottom:12px"><span class="material-symbols-outlined">lock</span> <span><b>개인정보는 최소한으로</b> — <b>티켓번호</b>로 찾고, 화면에는 <b>닉네임</b>만 보여줍니다. 실명·전화번호 같은 개인정보는 보여주지 않습니다(개인정보보호법). 값은 예시입니다.</span></div>
     <div class="panel">
       <div class="ph">쿠폰 검색 <span class="cnt">· 개별 쿠폰 단위</span></div>
@@ -387,43 +405,35 @@ tr.row:hover td,tr.click:hover td{background:rgba(33,37,41,.05) !important}
             </div>
           </div>
         </div>
-        <div class="seg" id="ctypeSeg" style="margin-top:12px"><button class="on" data-c="전체" onclick="filterType('전체')">전체</button><button data-c="할인" onclick="filterType('할인')">할인 쿠폰</button><button data-c="교환" onclick="filterType('교환')">교환 쿠폰</button></div>
+        <div class="seg" id="ctypeSeg" style="margin-top:12px"><button class="on" data-c="전체" onclick="filterType('전체')">전체</button><button data-c="할인" onclick="filterType('할인')">할인 쿠폰</button><button data-c="제휴" onclick="filterType('제휴')">제휴 쿠폰</button><button data-c="교환" onclick="filterType('교환')">교환 쿠폰</button></div>
         <div style="display:flex;gap:8px;margin-top:12px"><button class="btn pri sm">조회</button><button class="btn ghost sm">엑셀 다운로드</button><span class="sp" style="flex:1"></span><span class="cnt" style="align-self:center;color:var(--muted)">검색 결과 <b style="color:var(--fg)">5,764</b>건</span></div>
       </div>
       <div class="tblwrap"><table>
-        <thead><tr><th>쿠폰코드</th><th>쿠폰명</th><th>티켓</th><th>소유(닉네임)</th><th>상태</th><th>발급일</th><th>사용일</th><th>사용 기간</th><th></th></tr></thead>
+        <thead><tr><th>쿠폰코드</th><th>쿠폰명</th><th>티켓</th><th>소유(닉네임)</th><th>상태</th><th>발급일</th><th>사용일</th><th>사용 기간</th></tr></thead>
         <tbody id="lookupBody">
-          <tr class="click" onclick="openCoupon(this)" data-code="OPEN-7K3P9QF2WX8A" data-name="오픈 기념 5천원" data-promo="오픈 기념 할인 (ID 1001)" data-disc="−5,000" data-owner="질주하는곰" data-ticket="TKT-114A" data-issue="난수번호" data-issued="2026-11-02" data-use="2026-11-01 ~ 12-31" data-status="발급됨" data-status-c="s-on" data-gift="0"><td class="code">OPEN-7K3P9QF2WX8A</td><td>오픈 기념 5천원</td><td class="code">TKT-114A</td><td>질주하는곰</td><td><span class="pill s-on">미사용</span></td><td>11-02</td><td>—</td><td>~12-31</td><td><button class="mini">상세</button></td></tr>
-          <tr class="click" onclick="openCoupon(this)" data-code="OPEN-2M4D8H7T1CQZ" data-name="오픈 기념 5천원" data-promo="오픈 기념 할인 (ID 1001)" data-disc="−5,000" data-owner="번개레이서" data-ticket="TKT-227B" data-issue="난수번호" data-issued="2026-11-02" data-use="2026-11-01 ~ 12-31" data-usedat="2026-11-14" data-status="사용완료" data-status-c="s-used" data-gift="0"><td class="code">OPEN-2M4D8H7T1CQZ</td><td>오픈 기념 5천원</td><td class="code">TKT-227B</td><td>번개레이서</td><td><span class="pill s-used">사용완료</span></td><td>11-02</td><td>11-14</td><td>~12-31</td><td><button class="mini">상세</button></td></tr>
-          <tr class="click" onclick="openCoupon(this)" data-code="OPEN-5H8N2P4T9WQR" data-name="오픈 기념 5천원" data-promo="오픈 기념 할인 (ID 1001)" data-disc="−5,000" data-owner="드리프트킹" data-ticket="TKT-330C" data-issue="난수번호" data-issued="2026-11-03" data-use="2026-11-01 ~ 12-31" data-status="사용취소" data-status-c="s-cancel" data-gift="0"><td class="code">OPEN-5H8N2P4T9WQR</td><td>오픈 기념 5천원</td><td class="code">TKT-330C</td><td>드리프트킹</td><td><span class="pill s-cancel">사용취소</span></td><td>11-03</td><td>—</td><td>~12-31</td><td><button class="mini">상세</button></td></tr>
-          <tr class="click" onclick="openCoupon(this)" data-code="FNB-QX72KD" data-name="F&amp;B 교환권" data-promo="F&amp;B 교환 (ID 1005)" data-disc="교환 · F&amp;B 음료 1잔" data-owner="선물 받기 전" data-ticket="—" data-issue="수동" data-issued="2026-11-10" data-use="2026-11-01 ~ 12-31" data-status="미사용" data-status-c="s-on" data-gift="1" data-gift-to="선물 링크"><td class="code">FNB-QX72KD</td><td>F&amp;B 교환권</td><td class="code">—</td><td>선물 받기 전</td><td><span class="pill s-on">미사용</span></td><td>11-10</td><td>—</td><td>~12-31</td><td><button class="mini">상세</button></td></tr>
-          <tr class="click" onclick="openCoupon(this)" data-code="OPEN-9K2M7QX4P1ND" data-name="오픈 기념 5천원" data-promo="오픈 기념 할인 (ID 1001)" data-disc="−5,000" data-owner="코너의달인" data-ticket="TKT-455D" data-issue="난수번호" data-issued="2026-11-05" data-use="2026-11-01 ~ 12-31" data-status="발급됨" data-status-c="s-on" data-gift="0"><td class="code">OPEN-9K2M7QX4P1ND</td><td>오픈 기념 5천원</td><td class="code">TKT-455D</td><td>코너의달인</td><td><span class="pill s-on">미사용</span></td><td>11-05</td><td>—</td><td>~12-31</td><td><button class="mini">상세</button></td></tr>
+          <tr class="click" onclick="openCoupon(this)" data-code="OPEN-7K3P9QF2WX8A" data-name="오픈 기념 5천원" data-promo="오픈 기념 할인 (ID 1001)" data-disc="−5,000" data-owner="질주하는곰" data-ticket="TKT-114A" data-issue="난수번호" data-issued="2026-11-02" data-use="2026-11-01 ~ 12-31" data-status="발급됨" data-status-c="s-on" data-gift="0"><td class="code">OPEN-7K3P9QF2WX8A</td><td>오픈 기념 5천원</td><td class="code">TKT-114A</td><td>질주하는곰</td><td><span class="pill s-on">미사용</span></td><td>11-02</td><td>—</td><td>~12-31</td></tr>
+          <tr class="click" onclick="openCoupon(this)" data-code="OPEN-2M4D8H7T1CQZ" data-name="오픈 기념 5천원" data-promo="오픈 기념 할인 (ID 1001)" data-disc="−5,000" data-owner="번개레이서" data-ticket="TKT-227B" data-issue="난수번호" data-issued="2026-11-02" data-use="2026-11-01 ~ 12-31" data-usedat="2026-11-14" data-status="사용완료" data-status-c="s-used" data-gift="0"><td class="code">OPEN-2M4D8H7T1CQZ</td><td>오픈 기념 5천원</td><td class="code">TKT-227B</td><td>번개레이서</td><td><span class="pill s-used">사용완료</span></td><td>11-02</td><td>11-14</td><td>~12-31</td></tr>
+          <tr class="click" onclick="openCoupon(this)" data-code="OPEN-5H8N2P4T9WQR" data-name="오픈 기념 5천원" data-promo="오픈 기념 할인 (ID 1001)" data-disc="−5,000" data-owner="드리프트킹" data-ticket="TKT-330C" data-issue="난수번호" data-issued="2026-11-03" data-use="2026-11-01 ~ 12-31" data-status="사용취소" data-status-c="s-cancel" data-gift="0"><td class="code">OPEN-5H8N2P4T9WQR</td><td>오픈 기념 5천원</td><td class="code">TKT-330C</td><td>드리프트킹</td><td><span class="pill s-cancel">사용취소</span></td><td>11-03</td><td>—</td><td>~12-31</td></tr>
+          <tr class="click" onclick="openCoupon(this)" data-code="FNB-QX72KD" data-name="F&amp;B 교환권" data-promo="F&amp;B 교환 (ID 1005)" data-disc="교환 · F&amp;B 음료 1잔" data-owner="선물 받기 전" data-ticket="—" data-issue="수동" data-issued="2026-11-10" data-use="2026-11-01 ~ 12-31" data-status="미사용" data-status-c="s-on" data-gift="1" data-gift-to="선물 링크"><td class="code">FNB-QX72KD</td><td>F&amp;B 교환권</td><td class="code">—</td><td>선물 받기 전</td><td><span class="pill s-on">미사용</span></td><td>11-10</td><td>—</td><td>~12-31</td></tr>
+          <tr class="click" onclick="openCoupon(this)" data-code="MEGA-7F2KQ9XD" data-name="메가커피 아메리카노 할인" data-promo="메가커피 제휴 할인 (ID 1008)" data-disc="−30%" data-owner="질주하는곰" data-ticket="TKT-114A" data-issue="프로모션 코드" data-issued="2026-11-08" data-use="2026-11-01 ~ 12-31" data-status="미사용" data-status-c="s-on" data-gift="0"><td class="code">MEGA-7F2KQ9XD</td><td>메가커피 아메리카노 할인</td><td class="code">TKT-114A</td><td>질주하는곰</td><td><span class="pill s-on">미사용</span></td><td>11-08</td><td>—</td><td>~12-31</td></tr>
+          <tr class="click" onclick="openCoupon(this)" data-code="OPEN-9K2M7QX4P1ND" data-name="오픈 기념 5천원" data-promo="오픈 기념 할인 (ID 1001)" data-disc="−5,000" data-owner="코너의달인" data-ticket="TKT-455D" data-issue="난수번호" data-issued="2026-11-05" data-use="2026-11-01 ~ 12-31" data-status="발급됨" data-status-c="s-on" data-gift="0"><td class="code">OPEN-9K2M7QX4P1ND</td><td>오픈 기념 5천원</td><td class="code">TKT-455D</td><td>코너의달인</td><td><span class="pill s-on">미사용</span></td><td>11-05</td><td>—</td><td>~12-31</td></tr>
         </tbody>
       </table></div>
       <div class="pager"><span style="margin-right:auto">총 5,764건 · 50/페이지</span><span class="pg">‹</span><span class="pg on">1</span><span class="pg">2</span><span class="pg">3</span><span class="pg">…</span><span class="pg">›</span></div>
     </div>
+    </div>
 
-    <!-- B. 교환쿠폰 크루 사용처리 (킵) -->
-    <div class="panel notep" style="margin-top:14px">
-      <div class="ph">교환쿠폰 사용처리 (크루) <span class="cnt">· 위치 검토 중 · 킵</span></div>
-      <div class="sec">
-        <div class="warnbox" style="margin:0 0 12px"><span class="material-symbols-outlined">info</span> <span><b>검토 중(킵)</b> — 크루가 교환쿠폰(F&amp;B·굿즈)을 찾아 현장에서 사용 처리하는 기능입니다. <b>이 화면에 둘지, 현장 운영 화면(OS/POS)으로 옮길지</b> 정하는 중입니다.</span></div>
-        <div class="filters" style="margin:0 0 12px">
-          <input class="ipt search" placeholder="교환쿠폰 코드 스캔·입력">
-          <button class="btn pri sm">조회</button>
-        </div>
-        <div class="panel" style="box-shadow:none">
-          <div class="sec" style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
-            <div>
-              <div style="font-family:var(--font-display);font-size:15px;font-weight:600">F&amp;B 교환권 <span class="typ y-exc">교환</span></div>
-              <div style="font-size:12px;color:var(--muted);margin-top:3px"><span class="code">FNB-QX72KD</span> · 소유 <b style="color:var(--fg)">번개레이서</b> · 티켓 <span class="code">TKT-227B</span> · 사용 기간 ~12-31</div>
-              <div style="font-size:12px;color:var(--muted);margin-top:2px">교환 상품: <b style="color:var(--fg)">F&amp;B 음료 1잔</b> <span style="font-family:var(--mono)">ICN-ADD-FNB01</span></div>
-            </div>
-            <span class="sp" style="flex:1"></span>
-            <span class="pill s-on" style="align-self:flex-start">사용 가능</span>
-            <button class="btn pri">사용처리</button>
-          </div>
-        </div>
+    <!-- B. JAM 교환 이력 (새로 추가, 구조 전체 킵) -->
+    <div data-sp="jam" hidden>
+      <div class="panel">
+        <div class="ph">JAM 교환 이력 <span class="cnt">· 쿠폰 없이 처리된 교환</span></div>
+        <div class="tblwrap"><table>
+          <thead><tr><th>일시</th><th>닉네임</th><th>프로모션</th><th>교환 내용</th><th>대상</th></tr></thead>
+          <tbody>
+            <tr><td>11-12 14:02</td><td>번개레이서</td><td>트레이니 교환 (ID 1006)</td><td>RACE 1 → MST-RACE 1</td><td>마스터 트레이니 자격 달성</td></tr>
+            <tr><td>11-09 10:31</td><td>코너의달인</td><td>마스터 교환 (ID 1007)</td><td>GENERAL 3 → MST-RACE 1</td><td>마스터 조건 달성</td></tr>
+          </tbody>
+        </table></div>
       </div>
     </div>
   </section>
@@ -431,17 +441,53 @@ tr.row:hover td,tr.click:hover td{background:rgba(33,37,41,.05) !important}
   
 
   <!-- 탭4: 자동 혜택 -->
-  <section class="tabpane keptzone" data-p="auto" hidden>
-      <div class="keptbanner">자동 혜택은 <b>전체가 아직 정하는 중(킵)</b>입니다 — 어떤 일이 생기면 쿠폰을 줄지(트리거)와 규칙 구조를 검토하고 있습니다.</div>
-      <div class="grouphd">자동 발급 규칙 <span class="cnt">· 사건 → 쿠폰 발급</span><span class="sp"></span><button class="btn pri sm" onclick="openRule(null)">+ 규칙</button></div>
-      <div class="rulecards" id="ruleCards"></div>
+  <section class="tabpane" data-p="auto" hidden>
+      <div class="keptzone" style="padding:16px;border-radius:14px">
+        <div class="keptbanner">사건 기반 자동 발급은 <b>아직 정하는 중(킵)</b>입니다 — 가입·구매처럼 <b>사건</b>이 생기면 규칙만 걸어두고 시스템이 알아서 쿠폰을 주는 기능입니다. <b>주기 기반</b>은 확정했고 아래에서 바로 쓸 수 있습니다.</div>
 
-      <div class="grouphd sub">시스템 기본 · 환불 연동 <span class="cnt">· 읽기전용</span></div>
-      <div class="rulecards">
-        <div class="rulecard ro"><span class="trg">전체 환불 완료</span><span class="arrow">→</span><div class="act">사용 쿠폰 복구 · 미사용 발급분 회수·삭제</div></div>
-        <div class="rulecard ro"><span class="trg">부분 환불 완료</span><span class="arrow">→</span><div class="act">쿠폰 유지</div></div>
+        <div class="grouphd">사건 기반 <span class="cnt">· 사건 → 쿠폰 발급</span><span class="sp"></span><button class="btn pri sm" onclick="openRule(null)">+ 규칙</button></div>
+        <div class="rulecards" id="ruleCards"></div>
+
+        <div class="grouphd sub">시스템 기본 · 환불 연동 <span class="cnt">· 읽기전용</span></div>
+        <div class="rulecards">
+          <div class="rulecard ro"><span class="trg">전체 환불 완료</span><span class="arrow">→</span><div class="act">사용 쿠폰 복구 · 미사용 발급분 회수·삭제</div></div>
+          <div class="rulecard ro"><span class="trg">부분 환불 완료</span><span class="arrow">→</span><div class="act">쿠폰 유지</div></div>
+        </div>
+        <div class="warnbox" style="margin-top:16px"><span class="material-symbols-outlined">info</span> <span><b>늘리기 쉬운 구조</b> — 규칙은 <b>'언제(트리거) + 무엇을(쿠폰 발급)'</b> 조합으로 카드가 자동으로 만들어집니다. 새 트리거를 추가하면 규칙도 바로 쓸 수 있습니다. 지금은 <b>가입·구매·환불</b>만 되고, 생일·자격 취득은 트리거를 새로 개발해야 합니다(킵).</span></div>
       </div>
-      <div class="warnbox" style="margin-top:16px"><span class="material-symbols-outlined">info</span> <span><b>늘리기 쉬운 구조</b> — 규칙은 <b>'언제(트리거) + 무엇을(쿠폰 발급)'</b> 조합으로 카드가 자동으로 만들어집니다. 새 트리거를 추가하면 규칙도 바로 쓸 수 있습니다. 지금은 <b>가입·구매·환불</b>만 되고, 생일·자격 취득은 트리거를 새로 개발해야 합니다(킵).</span></div>
+
+      <div class="grouphd" style="margin-top:22px">주기 기반 <span class="cnt">· 주기 → 쿠폰 발급</span><span class="sp"></span><button class="btn pri sm" onclick="togglePeriodicForm()">+ 규칙</button></div>
+      <div class="rulecards" id="periodicCards"></div>
+      <div class="panel" id="periodicForm" style="margin-top:14px" hidden>
+        <div class="ph">주기 기반 규칙</div>
+        <div class="sec">
+          <div class="fld"><div class="fl">연결 프로모션 <span class="req">*</span></div><div class="fc"><select class="sel" id="pdPromo" style="width:100%"><option>크루 할인 (ID 1004)</option><option>오픈 기념 할인 (ID 1001)</option></select></div></div>
+          <div class="fld"><div class="fl">지급 주기 <span class="req">*</span></div><div class="fc"><div class="row3" style="max-width:200px"><input class="ipt" id="pdQty" value="3" style="max-width:60px"><select class="sel" id="pdUnit" style="max-width:90px"><option value="일">일마다</option><option value="주">주마다</option><option value="개월" selected>개월마다</option><option value="년">년마다</option></select></div></div></div>
+          <div class="fld"><div class="fl">대상 <span class="kbadge">구조화는 정하는 중</span></div><div class="fc"><input class="ipt kept" id="pdTarget" value="크루 전체" style="width:100%"><div class="keptline" style="margin-top:6px">지금은 자유 텍스트입니다. 나중에 <b>신분·제휴</b> 탭에서 고르는 방식으로 바꿀 수 있습니다.</div></div></div>
+          <div class="fld"><div class="fl">시작·종료 기준</div><div class="fc"><div class="keptline"><b>정하는 중(킵)</b> — 가입일 기준인지 특정 날짜 기준인지, 반복을 몇 번까지 할지는 아직 정하지 않았습니다. 지금은 무제한 반복으로 가정합니다.</div></div></div>
+        </div>
+        <div class="dfoot" style="position:static;border-top:1px solid var(--line)"><span class="sp"></span><button class="btn ghost sm" onclick="togglePeriodicForm()">취소</button><button class="btn pri sm" onclick="savePeriodic()">저장</button></div>
+      </div>
+  </section>
+
+  <!-- 탭: 자격 (신분 + 제휴 통합, 독립, 전체 킵) -->
+  <section class="tabpane" data-p="partner" hidden>
+      <div class="panel">
+        <div class="ph">자격 목록 <span class="cnt" id="qualifCnt">· 4건</span><span class="sp"></span><button class="btn pri sm" onclick="toggleQualifForm()">+ 자격 등록</button></div>
+        <div class="tblwrap"><table>
+          <thead><tr><th>이름</th><th>종류</th><th>상태</th></tr></thead>
+          <tbody id="qualifBody"></tbody>
+        </table></div>
+      </div>
+      <div class="panel" id="qualifForm" style="margin-top:14px" hidden>
+        <div class="ph">자격 등록</div>
+        <div class="sec">
+          <div class="fld"><div class="fl">종류 <span class="req">*</span></div><div class="fc"><div class="radio" id="qfKindRadio"><span class="opt on" data-k="신분" onclick="setQfKind('신분')">신분</span><span class="opt" data-k="제휴" onclick="setQfKind('제휴')">제휴</span></div></div></div>
+          <div class="fld"><div class="fl">이름 <span class="req">*</span></div><div class="fc"><input class="ipt" id="qfName" placeholder="예: 소방공무원 · OO카드" style="width:100%"></div></div>
+          <div class="warnbox" style="margin:4px 0 0"><span class="material-symbols-outlined">info</span> <span>할인율·쿠폰은 등록 후 <b>프로모션</b>에서 이 자격을 선택해 만듭니다.</span></div>
+        </div>
+        <div class="dfoot" style="position:static;border-top:1px solid var(--line)"><span class="sp"></span><button class="btn ghost sm" onclick="toggleQualifForm()">취소</button><button class="btn pri sm" onclick="saveQualif()">저장</button></div>
+      </div>
   </section>
 
   <!-- 안내(비구현) -->
@@ -449,19 +495,22 @@ tr.row:hover td,tr.click:hover td{background:rgba(33,37,41,.05) !important}
     <div class="ph">정책 안내 (구현 아님)</div>
     <div class="guide"><ul>
       <li><span class="material-symbols-outlined">lock</span> <b>개인정보는 최소한으로</b> — 티켓번호로 찾고 닉네임만 보여줍니다. 실명·전화번호는 보여주지 않습니다(개인정보보호법). 모든 화면에 똑같이 적용합니다.</li>
-      <li><b>화면 구조</b> — 프로모션 목록 → 프로모션 상세 → 그 아래 쿠폰 → 쿠폰 상세에서 발급된 쿠폰을 봅니다. 쿠폰 번호 · 닉네임으로 바로 찾을 때는 <b>쿠폰 조회</b> 탭을 씁니다.</li>
+      <li><b>화면 구조</b> — 프로모션 목록 → 프로모션 상세 → 그 아래 쿠폰 → 쿠폰 상세에서 발급된 쿠폰을 봅니다. 쿠폰 번호 · 닉네임으로 바로 찾거나 제휴·JAM 교환 이력을 볼 때는 <b>쿠폰·이용 조회</b> 탭을 씁니다.</li>
       <li><b>프로모션과 쿠폰의 차이</b> — 프로모션은 '어떤 할인을, 어떤 상품에, 누구에게, 언제까지' 정하는 <b>규칙</b>이고, 쿠폰은 그 규칙으로 <b>실제로 나눠주는 것</b>(이름·이미지·사용 기간)입니다.</li>
+      <li><b>같은 프로모션의 쿠폰은 할인율·금액이 모두 같습니다</b> — 한 프로모션 안에서 쿠폰을 여러 개 만들어도 이름·이미지·사용 기간만 다를 뿐, 할인율이나 금액은 전부 동일하게 적용됩니다. 할인이 다르면 프로모션을 새로 만듭니다.</li>
       <li><b>활성 기간</b>(프로모션) — 이 프로모션으로 쿠폰을 발급하고 운영할 수 있는 기간입니다.</li>
+      <li><b>쿠폰(발급 배치) 활성/비활성</b> — 정해둔 기간과 별도로, 급하게 멈춰야 할 때 끄는 스위치입니다. 비활성화하면 <b>새 발급만 막히고</b>, 이미 발급된 쿠폰은 그대로 쓸 수 있습니다.</li>
       <li><b>사용 기간</b>(쿠폰) — 받은 쿠폰을 쓸 수 있는 기간입니다. 시작일과 종료일을 넣습니다. 프로모션 활성 기간이 끝나도 사용 기간 안이면 쓸 수 있습니다.</li>
       <li><b>환불로 되살아난 쿠폰</b> — 상태는 미사용으로 돌아가지만, 사용 기간이 이미 지났으면 쓸 수 없고 만료로 보입니다. 만료는 따로 상태로 두지 않습니다.</li>
-      <li><b>발급 방식</b>은 세 가지입니다 — 겹치지 않는 번호를 만들어 나눠주기(난수번호), 고객이 공용 코드를 입력하면 받기(프로모션 코드), 대상을 골라 직접 보내기(수동).</li>
+      <li><b>발급 방식</b>은 세 가지입니다 — 겹치지 않는 번호를 만들어 나눠주기(난수번호), 고객이 공용 코드를 입력하면 받기(프로모션 코드), 대상을 골라 직접 보내기(수동). <b>제휴</b>는 보낼 대상을 지정할 수 없어 수동 발급을 쓸 수 없습니다.</li>
+      <li><b>발급 수량</b>은 지정(숫자로 제한) 또는 무제한 중에서 고릅니다 — 난수번호 발급 수량, 프로모션 코드 총 발급 한도 모두 같은 방식입니다.</li>
       <li><b>ID · 번호는 자동으로</b> — 프로모션 ID와 쿠폰 번호는 시스템이 겹치지 않게 만듭니다. 고객이 입력하는 공용 코드(예: WELCOME2026)만 관리자가 정합니다.</li>
-      <li><b>교환쿠폰 사용 처리</b> — 크루가 현장에서 처리합니다. 어느 화면에 둘지는 정하는 중입니다(킵).</li>
-      <li><b>프로모션 유형</b> — 일반·신분·교환 세 가지입니다. 현장 직원 재량 할인(직권할인)은 OS에서만 따로 다룹니다.</li>
+      <li><b>프로모션 유형</b> — 일반·신분·제휴·교환 네 가지입니다. 신분은 쿠폰 없이 자동 할인되고, 제휴는 쿠폰(프로모션 코드 포함)으로 발급됩니다. 할인율·쿠폰은 <b>신분·제휴</b> 탭이 아니라 프로모션에서 만듭니다 — 신분·제휴 탭에서는 자격(이 사람·소속이 무엇에 해당하는지)만 등록합니다. 현장 직원 재량 할인(직권할인)은 OS에서만 따로 다룹니다.</li>
       <li><b>신분 할인</b> — 신분·지역·크루 할인은 한 번에 하나만 적용됩니다. 다른 할인과 같이 쓸 수 없습니다. 단, <b>OS에서는 예외로 직권할인과 함께</b> 적용할 수 있습니다.</li>
       <li><b>난수번호 쿠폰</b> — 겹치지 않는 번호를 한 번에 많이 만들 수 있습니다.</li>
       <li><b>크루 승인코드</b> — 크루마다 <b>매일 새 코드</b>가 자동으로 생깁니다. '크루 확인 필요'를 켠 프로모션을 적용할 때 크루가 입력하고, 누가 승인했는지 주문에 남습니다.</li>
-      <li><b>선물</b> — 보낸 선물은 취소할 수 없습니다. 받기 전 대기 중인 쿠폰도 회수하거나 지우지 않습니다.</li>
+      <li><b>크루 확인 안내</b> — 크루가 무엇을 확인해야 하는지 보여줍니다(예: 신분은 '신분증 확인'). 확인 시점은 신분은 할인 적용 시, 교환(상품 교환권)은 교환(사용) 시입니다.</li>
+      <li><b>선물</b> — 본인이 바로 쓰거나, 앱에서 휴대폰 번호로 지인에게 <b>알림톡 + 딥링크</b>로 선물할 수 있습니다. 받은 사람은 앱에서 등록해야 적용됩니다. 보낸 선물은 취소할 수 없고, 받기 전 대기 중인 쿠폰도 회수하거나 지우지 않습니다.</li>
       <li><b>적용 상품</b> — 할인이 적용될 상품은 프로모션에서 연결합니다. 상품 관리 화면에서는 보기만 합니다.</li>
       <li><b>정산 연동</b> — 정산에는 프로모션 ID·유형·이름만 넘깁니다.</li>
     </ul></div>
@@ -472,17 +521,17 @@ tr.row:hover td,tr.click:hover td{background:rgba(33,37,41,.05) !important}
 <div class="pmdl" id="pmdl" hidden><div class="box" id="pmdlBox"></div></div>
 <div class="overlay" id="ov" onclick="closeDrawer()"></div>
 <aside class="drawer" id="dw">
-  <div class="dh"><div class="dhk"><span class="kick" id="dwKick">프로모션</span><h3 id="dwTitle">프로모션 편집</h3></div><span class="sp"></span><button class="x" onclick="closeDrawer()">✕</button></div>
+  <div class="dh"><div class="dhk"><span class="kick" id="dwKick">프로모션</span><h3 id="dwTitle">프로모션 편집</h3></div><span class="sp"></span><button class="btn ghost sm" id="dwEditBtn" onclick="enterDwEdit()">수정</button><button class="x" onclick="closeDrawer()">✕</button></div>
   <div class="db">
-    <div class="fld"><div class="fl">유형 <span class="req">*</span></div><div class="fc"><div class="radio" id="typeRadio"><span class="opt on" data-y="일반" onclick="setPromoType('일반')">일반</span><span class="opt" data-y="신분" onclick="setPromoType('신분')">신분(자격)</span><span class="opt" data-y="교환" onclick="setPromoType('교환')">교환</span></div></div></div>
+    <div class="fld"><div class="fl">유형 <span class="req">*</span></div><div class="fc"><div class="radio" id="typeRadio"><span class="opt on" data-y="일반" onclick="setPromoType('일반')">일반</span><span class="opt" data-y="교환" onclick="setPromoType('교환')">교환</span><span class="opt" data-y="신분" onclick="setPromoType('신분')">신분</span><span class="opt" data-y="제휴" onclick="setPromoType('제휴')">제휴</span></div></div></div>
     <div class="fld"><div class="fl">프로모션 ID</div><div class="fc"><div class="autoval code" id="pIdVal">저장하면 시스템이 번호를 붙입니다 (예: 1001)</div></div></div>
     <div class="fld"><div class="fl">프로모션명 <span class="req">*</span></div><div class="fc"><input class="ipt" value="오픈 기념 할인" style="width:100%"></div></div>
 
-    <!-- 일반·신분: 할인 -->
+    <!-- 일반·신분·제휴: 할인 -->
     <div class="fld" id="discBlock"><div class="fl">할인 <span class="req">*</span></div><div class="fc"><div class="row3"><select class="sel" style="max-width:110px"><option>고정</option><option>비율</option></select><input class="ipt" value="5,000" style="max-width:120px"><input class="ipt" placeholder="최대 할인금액" style="max-width:130px"></div></div></div>
 
-    <!-- 신분: 자격 (유형=신분일 때만) -->
-    <div class="fld" id="qualBlock" hidden><div class="fl">자격 <span class="req">*</span></div><div class="fc"><div style="display:flex;gap:8px"><select class="sel" id="qualSel" style="flex:1"></select><button class="btn ghost sm" onclick="addQual()">+ 자격</button></div></div></div>
+    <!-- 신분·제휴: 자격 (유형=신분·제휴일 때만, 종류에 맞는 자격만 보임) -->
+    <div class="fld" id="qualBlock" hidden><div class="fl">자격 <span class="req">*</span></div><div class="fc"><select class="sel" id="qualSel" style="width:100%"></select><div class="keptline" style="margin-top:6px">자격을 새로 등록하려면 <b>신분·제휴</b> 탭에서 합니다. 여기서는 고르기만 합니다.</div></div></div>
 
     <!-- 교환: 교환 대상은 쿠폰에서 지정 -->
     <div class="fld" id="excModeBlock" hidden><div class="fl">교환 방식 <span class="req">*</span></div><div class="fc"><div class="radio" id="excModeRadio"><span class="opt on" data-m="item" onclick="setExcMode('item')">상품 교환권</span><span class="opt" data-m="jam" onclick="setExcMode('jam')">JAM 교환</span></div></div></div>
@@ -494,11 +543,7 @@ tr.row:hover td,tr.click:hover td{background:rgba(33,37,41,.05) !important}
         <select class="sel" id="jxIn"><option value="MST-RACE">MST-RACE · 마스터 레이스 JAM</option></select>
         <input class="ipt" style="width:52px" value="1"><span style="color:var(--muted)">개</span>
       </div><div class="keptline" id="jxQtyNote" style="margin-top:6px" hidden><b>미결</b> · 일반 JAM 수량은 마스터 레이스 JAM 가격에 맞춰 정할 예정입니다.</div></div></div>
-      <div class="fld"><div class="fl">성인 인증</div><div class="fc"><div class="autoval" id="jxAdult">필요 없음 · 미성년자도 교환할 수 있습니다</div></div></div>
-      <div class="fld"><div class="fl">교환 조건</div><div class="fc"><div class="autoval">교환마다 1인 1회 · 달성한 당일만 · 교환할 JAM이 부족하면 교환할 수 없습니다</div></div></div>
     </div>
-    <div class="fld" id="excBlock" hidden><div class="fl">교환</div><div class="fc"><div class="keptline">교환 프로모션은 <b>교환권을 주는 규칙</b>만 정합니다. <b>어떤 상품으로 바꿔줄지는 쿠폰을 발급할 때</b> 고릅니다.</div></div></div>
-
     <!-- 일반·신분: 적용 상품 -->
     <div class="fld" id="applyBlock"><div class="fl">적용 상품 <span class="req">*</span></div><div class="fc">
       <div class="picker">
@@ -517,11 +562,7 @@ tr.row:hover td,tr.click:hover td{background:rgba(33,37,41,.05) !important}
       </div>
     </div></div>
 
-    <div class="fld" id="crewRow"><div class="fl">크루 확인 필요</div><div class="fc"><span class="toggle" onclick="toggleCrew()"><span class="sw off" id="crewSw"></span> <span id="crewLbl">사용 안 함</span></span></div></div>
-    <div id="crewBlock" hidden>
-      <div class="fld"><div class="fl">크루 확인 안내</div><div class="fc"><input class="ipt" id="crewGuide" style="width:100%" placeholder="예: 국가유공자증 확인"></div></div>
-      <div class="fld"><div class="fl">확인 시점</div><div class="fc"><div class="autoval" id="crewWhen">할인 적용 시</div></div></div>
-    </div>
+    <div class="fld" id="crewRow"><div class="fl">크루 확인 필요<span class="kbadge" title="구매 키오스크는 결제만 하기로 했는데, 이 토글과 크루 승인코드는 아직 그대로입니다">유지 여부 미정</span></div><div class="fc"><span class="toggle" onclick="toggleCrew()"><span class="sw off" id="crewSw"></span> <span id="crewLbl">사용 안 함</span></span></div></div>
 
     <div class="fld"><div class="fl">활성 기간 <span class="req">*</span></div><div class="fc"><div class="dtrow"><input class="ipt" type="date" id="pFrom" value="2026-11-01"><span class="t">~</span><input class="ipt" type="date" id="pTo" value="2026-12-31"></div></div></div>
     <div class="fld"><div class="fl">상태</div><div class="fc"><span class="toggle"><span class="sw"></span> 활성</span></div></div>
@@ -537,9 +578,9 @@ tr.row:hover td,tr.click:hover td{background:rgba(33,37,41,.05) !important}
         <li>고객에게 보이는 이름 · 이미지는 쿠폰에서 넣습니다.</li>
         <li>쿠폰은 이 화면 아래 <b>쿠폰</b>에서 만들고 봅니다. 한 프로모션에 쿠폰을 여러 개 만들 수 있고, 쿠폰마다 이름 · 이미지가 다를 수 있습니다.</li>
         <li>쿠폰은 할인 내용을 바꿀 수 없습니다. 할인이 다르면 프로모션을 새로 만듭니다.</li>
-        <li>신분 할인과 JAM 교환은 쿠폰 없이 적용되므로 쿠폰 칸이 없습니다.</li>
-        <li>유형은 일반 · 신분 · 교환 중 하나입니다. 직권할인은 OS에서만 다룹니다.</li>
-        <li>신분(자격) 할인은 자격 이름으로 만들고 다시 쓸 수 있습니다.</li>
+        <li>신분 할인과 JAM 교환은 쿠폰 없이 적용되므로 쿠폰 칸이 없습니다. 제휴는 쿠폰 칸이 있습니다.</li>
+        <li>유형은 일반 · 신분 · 제휴 · 교환 중 하나입니다. 직권할인은 OS에서만 다룹니다.</li>
+        <li>신분·제휴 할인은 자격 이름으로 만들고 다시 쓸 수 있습니다.</li>
         <li>신분 할인은 한 번에 하나만, 다른 할인과 함께 쓸 수 없습니다.</li>
         <li>단, <b>OS에서는 직권할인과 함께</b> 쓸 수 있습니다.</li>
         <li>교환은 할인 금액이 없습니다. 교환 상품은 쿠폰 발급 때 꼭 고릅니다.</li>
@@ -564,7 +605,12 @@ tr.row:hover td,tr.click:hover td{background:rgba(33,37,41,.05) !important}
       </ul>
     </div>
   </div>
-  <div class="dfoot"><span class="sp"></span><button class="btn ghost sm" onclick="closeDrawer()">취소</button><button class="btn pri sm" onclick="savePromo()">저장</button></div>
+  <div class="dfoot">
+    <span class="sp"></span>
+    <button class="btn ghost sm" id="dwCloseBtn" onclick="closeDrawer()">닫기</button>
+    <button class="btn ghost sm" id="dwCancelBtn" onclick="closeDrawer()" hidden>취소</button>
+    <button class="btn pri sm" id="dwSaveBtn" onclick="savePromo()" hidden>저장</button>
+  </div>
 </aside>
 
 <!-- 쿠폰 상세 드로어 (전체 킵 · 필요 여부 검토) -->
@@ -640,7 +686,7 @@ tr.row:hover td,tr.click:hover td{background:rgba(33,37,41,.05) !important}
 <!-- 쿠폰 발급 드로어 -->
 <div class="overlay l2" id="ov2" onclick="closeCp()"></div>
 <aside class="drawer" id="dwC">
-  <div class="dh"><div class="dhk"><span class="kick" id="cKick">쿠폰</span><h3>쿠폰 만들기</h3></div><span class="sp"></span><button class="x" onclick="closeCp()">✕</button></div>
+  <div class="dh"><div class="dhk"><span class="kick" id="cKick">쿠폰</span><h3>쿠폰 만들기</h3></div><span class="sp"></span><button class="btn ghost sm" id="dwcEditBtn" onclick="enterDwcEdit()" hidden>수정</button><button class="x" onclick="closeCp()">✕</button></div>
   <div class="db">
     <div class="sec">
       <div id="cDisc"></div>
@@ -649,11 +695,11 @@ tr.row:hover td,tr.click:hover td{background:rgba(33,37,41,.05) !important}
       <div class="fld"><div class="fl">쿠폰명 <span class="req">*</span></div><div class="fc"><div class="row3"><input class="ipt" value="오픈 기념 5천원 쿠폰" placeholder="KR"><input class="ipt" placeholder="EN"><input class="ipt" placeholder="中"></div></div></div>
       <div class="fld"><div class="fl">이미지</div><div class="fc"><label class="slot" id="cpImgSlot" style="cursor:pointer"><input type="file" accept="image/*" hidden onchange="cpImg(this)"><span class="plus">+</span><span class="nm">쿠폰 이미지</span><span class="spec">규격 미확정</span></label><div class="cpimg" id="cpImgPrev" hidden><img id="cpImgEl" alt="쿠폰 이미지 미리보기"><button type="button" class="del" title="이미지 삭제" onclick="cpImgDel()">✕</button><span class="nm" id="cpImgName"></span></div></div></div>
       <div class="fld"><div class="fl">설명</div><div class="fc"><textarea class="ipt" placeholder="쿠폰 상세 설명(다국어)">전 상품 5,000원 즉시 할인. 1인 1매.</textarea></div></div>
-      <div class="fld"><div class="fl">발급 방식 <span class="req">*</span></div><div class="fc"><div class="seg" id="methodSeg"><button class="on" data-m="random" onclick="setMethod('random')">난수번호 생성</button><button data-m="code" onclick="setMethod('code')">프로모션 코드</button><button data-m="manual" onclick="setMethod('manual')">수동(대상 지정)</button></div><div style="font-size:11.5px;color:var(--muted);margin-top:4px">저장한 뒤에는 발급 방식을 바꿀 수 없습니다.</div></div></div>
+      <div class="fld"><div class="fl">발급 방식 <span class="req">*</span></div><div class="fc"><div class="seg" id="methodSeg"><button class="on" data-m="random" onclick="setMethod('random')">난수번호 생성</button><button data-m="code" onclick="setMethod('code')">프로모션 코드</button><button data-m="manual" id="mManualBtn" onclick="setMethod('manual')">수동(대상 지정)</button></div><div style="font-size:11.5px;color:var(--muted);margin-top:4px">저장한 뒤에는 발급 방식을 바꿀 수 없습니다. 3개월마다처럼 <b>정기 자동</b>으로 주려면 여기가 아니라 <b>자동 발급</b> 탭의 주기 기반 구역에서 만듭니다. <b>제휴</b>는 보낼 대상을 지정할 수 없어 수동 발급을 쓸 수 없습니다.</div></div></div>
 
       <!-- 난수번호 생성 -->
       <div id="mRandom">
-        <div class="fld"><div class="fl">발급 수량 <span class="req">*</span></div><div class="fc"><div class="row3" style="max-width:150px"><input class="ipt" value="1,000"></div></div></div>
+        <div class="fld"><div class="fl">발급 수량 <span class="req">*</span></div><div class="fc"><div class="radio" id="rqtyModeRadio"><span class="opt on" data-qm="fixed" onclick="setRqtyMode('fixed')">지정</span><span class="opt" data-qm="inf" onclick="setRqtyMode('inf')">무제한</span></div><div class="row3" style="max-width:150px;margin-top:6px" id="rqtyFixedRow"><input class="ipt" value="1,000"></div></div></div>
         <div class="fld"><div class="fl">코드 형식</div><div class="fc"><div class="row3"><select class="sel" style="max-width:120px"><option>영문+숫자</option><option>숫자</option></select><input class="ipt" value="12" style="max-width:64px"><input class="ipt" value="OPEN-" placeholder="접두어" style="max-width:100px"></div></div></div>
         <div class="fld"><div class="fl">미리보기</div><div class="fc"><div class="codeprev"><span>OPEN-7K3P9QF2WX8A</span><span>OPEN-2M4D8H7T1CQZ</span><span style="color:var(--note)">… 외 998건</span></div></div></div>
       </div>
@@ -661,7 +707,7 @@ tr.row:hover td,tr.click:hover td{background:rgba(33,37,41,.05) !important}
       <!-- 프로모션 코드(입력형) -->
       <div id="mCode" hidden>
         <div class="fld"><div class="fl">프로모션 코드 <span class="req">*</span></div><div class="fc"><div class="row3"><input class="ipt" value="WELCOME2026" style="font-family:var(--mono)"><button class="btn ghost sm">랜덤</button></div></div></div>
-        <div class="fld"><div class="fl">총 발급 한도</div><div class="fc"><div class="row3" style="max-width:160px"><input class="ipt" value="500"><span class="t" style="align-self:center;color:var(--muted)">장까지</span></div></div></div>
+        <div class="fld"><div class="fl">총 발급 한도</div><div class="fc"><div class="radio" id="cqtyModeRadio"><span class="opt on" data-qm="fixed" onclick="setCqtyMode('fixed')">지정</span><span class="opt" data-qm="inf" onclick="setCqtyMode('inf')">무제한</span></div><div class="row3" style="max-width:160px;margin-top:6px" id="cqtyFixedRow"><input class="ipt" value="500"><span class="t" style="align-self:center;color:var(--muted)">장까지</span></div></div></div>
         <div class="fld"><div class="fl">1인 1회 제한</div><div class="fc"><span class="toggle"><span class="sw"></span> 제한함</span></div></div>
       </div>
 
@@ -693,7 +739,12 @@ tr.row:hover td,tr.click:hover td{background:rgba(33,37,41,.05) !important}
       </ul>
     </div>
   </div>
-  <div class="dfoot"><span style="flex:1"></span><button class="btn ghost sm" onclick="closeCp()">취소</button><button class="btn pri sm" onclick="saveCp()">저장 · 발급</button></div>
+  <div class="dfoot">
+    <span style="flex:1"></span>
+    <button class="btn ghost sm" id="dwcCloseBtn" onclick="closeCp()">닫기</button>
+    <button class="btn ghost sm" id="dwcCancelBtn" onclick="closeCp()" hidden>취소</button>
+    <button class="btn pri sm" id="dwcSaveBtn" onclick="saveCp()" hidden>저장 · 발급</button>
+  </div>
 </aside>
 
 <!-- 자동 혜택 규칙 생성/편집 드로어 -->
@@ -709,7 +760,7 @@ tr.row:hover td,tr.click:hover td{background:rgba(33,37,41,.05) !important}
       </select>
     </div></div>
 
-    <div class="fld"><div class="fl">대상 조건</div><div class="fc"><div class="keptline">지금은 <b>그 일이 생긴 모든 사람</b>에게 발급됩니다. 특정 상품·채널·자격 같은 조건을 거는 건 <b>추가 개발</b>이 필요합니다(킵).</div></div></div>
+    <div class="fld"><div class="fl">대상 조건</div><div class="fc"><div class="keptline">지금은 <b>그 일이 생긴 모든 사람</b>에게 발급됩니다. 특정 상품·채널·자격 같은 조건을 거는 건 <b>추가 개발</b>이 필요합니다(킵). 3개월마다처럼 <b>주기로</b> 주는 건 여기가 아니라 아래 <b>주기 기반</b> 구역에서 따로 만듭니다.</div></div></div>
 
     <div class="fld"><div class="fl">연결 프로모션 <span class="req">*</span></div><div class="fc"><select class="sel" id="r_promo" style="width:100%"><option>오픈 기념 할인 (ID 1001)</option><option>크루 할인 (ID 1004)</option><option>F&amp;B 교환 (ID 1005)</option></select></div></div>
     <div class="fld"><div class="fl">발급 수량</div><div class="fc"><div class="row3" style="max-width:130px"><input class="ipt" id="r_qty" value="1"><span class="t" style="align-self:center;color:var(--muted)">인당</span></div></div></div>
@@ -740,9 +791,10 @@ tr.row:hover td,tr.click:hover td{background:rgba(33,37,41,.05) !important}
   <div class="dh"><div class="dhk"><span class="kick" id="bKick">쿠폰</span><h3 id="b_name">쿠폰 상세</h3></div><span class="sp"></span><button class="x" onclick="closeCp()">✕</button></div>
   <div class="db">
     <div style="display:flex;align-items:center;gap:10px;margin:8px 0 12px">
-      <span class="pill s-on" id="b_status">활성</span><span class="typ y-gen" id="b_method">난수번호</span>
+      <div class="radio" id="bStatusRadio"><span class="opt on" data-s="활성" onclick="setBatchStatus('활성')">활성</span><span class="opt" data-s="비활성" onclick="setBatchStatus('비활성')">비활성</span></div><span class="typ y-gen" id="b_method">난수번호</span>
       <span class="sp" style="flex:1"></span><span class="ex" style="background:var(--note-soft);color:var(--note)">예시</span>
     </div>
+    <div style="font-size:11.5px;color:var(--muted);margin:-6px 0 12px">비활성화하면 <b>새 발급만 막습니다</b>. 이미 발급된 쿠폰은 그대로 사용할 수 있습니다.</div>
     <div id="bDisc"></div>
     <div class="keptlbl">※ 발급·사용 집계 항목·표시 방식 검토(킵)</div>
     <div class="statrow kept">
@@ -796,21 +848,32 @@ var BATCH=[
   {name:'단골 감사 쿠폰',promo:'오픈 기념 할인 (ID 1001)',method:'수동',mcls:'y-id',issued:80,used:33,cancel:0,wait:0,use:'~12-31',issuedAt:'2026-11-05',by:'정산이',st:'활성',send:'앱 푸시',img:CIMG('#b4700f','THANKS')}
 ];
 function nf(n){return n.toLocaleString('en-US');}
-(function(){
+function stCls(st){return st==='활성'?'s-on':'s-mid';}
+var CURBATCH=null;
+function renderBatchList(){
   var b=document.getElementById('batchBody');if(!b)return;
   b.innerHTML=BATCH.map(function(x,i){
     var unused=x.issued-x.used-x.cancel;
     return '<tr class="click" onclick="openBatch('+i+')"><td>'+x.name+'</td><td>'+x.promo+'</td>'+
       '<td><span class="typ '+x.mcls+'">'+x.method+'</span></td>'+
       '<td class="r">'+nf(x.issued)+'</td><td class="r">'+nf(x.used)+'</td><td class="r">'+nf(unused)+'</td>'+
-      '<td>'+x.use+'</td><td><span class="pill s-on">'+x.st+'</span></td>'+
+      '<td>'+x.use+'</td><td><span class="pill '+stCls(x.st)+'">'+x.st+'</span></td>'+
       '<td><button class="mini" onclick="event.stopPropagation();openBatch('+i+')">상세</button></td></tr>';
   }).join('');
-})();
+}
+renderBatchList();
+function setBatchStatus(s){
+  if(CURBATCH==null)return;
+  BATCH[CURBATCH].st=s;
+  document.querySelectorAll('#bStatusRadio .opt').forEach(function(o){o.classList.toggle('on',o.dataset.s===s)});
+  renderBatchList();
+  renderCpSec();
+}
 function openBatch(i){
+  CURBATCH=i;
   var x=BATCH[i], unused=x.issued-x.used-x.cancel, rate=Math.round(x.used/x.issued*100);
   document.getElementById('b_name').textContent=x.name;document.getElementById('bKick').textContent='쿠폰 · '+x.promo;
-  document.getElementById('b_status').textContent=x.st;
+  document.querySelectorAll('#bStatusRadio .opt').forEach(function(o){o.classList.toggle('on',o.dataset.s===x.st)});
   var m=document.getElementById('b_method'); m.textContent=x.method; m.className='typ '+x.mcls;
   document.getElementById('b_issued').textContent=nf(x.issued);
   document.getElementById('b_used').textContent=nf(x.used);
@@ -856,13 +919,63 @@ function setMethod(m){
   document.getElementById('mManual').hidden=(m!=='manual');
 }
 var QUALS=['군경·유공자·장애인','인천시민','크루'];
-function renderQuals(sel){
+var QUALS_PARTNER=['메가커피'];
+
+// ===== 자격(신분+제휴 통합) =====
+var QUALIFS=[
+  {name:'군경·유공자·장애인',kind:'신분',st:'활성'},
+  {name:'인천시민',kind:'신분',st:'활성'},
+  {name:'크루',kind:'신분',st:'활성'},
+  {name:'메가커피',kind:'제휴',st:'활성'}
+];
+function renderQualifs(){
+  var tb=document.getElementById('qualifBody'); if(!tb) return;
+  tb.innerHTML=QUALIFS.map(function(q){return '<tr><td>'+q.name+'</td><td><span class="typ '+(q.kind==='신분'?'y-id':'y-exc')+'">'+q.kind+'</span></td><td><span class="pill s-on">'+q.st+'</span></td></tr>'}).join('');
+  document.getElementById('qualifCnt').textContent='· '+QUALIFS.length+'건';
+}
+function toggleQualifForm(){
+  var f=document.getElementById('qualifForm');
+  f.hidden=!f.hidden;
+  if(!f.hidden){document.getElementById('qfName').value='';setQfKind('신분');}
+}
+function setQfKind(k){
+  document.querySelectorAll('#qfKindRadio .opt').forEach(function(o){o.classList.toggle('on',o.dataset.k===k)});
+}
+function saveQualif(){
+  var name=document.getElementById('qfName').value.trim();
+  if(!name){document.getElementById('qfName').style.borderColor='#c62828';return;}
+  var kind=document.querySelector('#qfKindRadio .opt.on').dataset.k;
+  QUALIFS.push({name:name,kind:kind,st:'활성'});
+  if(kind==='신분'&&QUALS.indexOf(name)<0){QUALS.push(name);}
+  if(kind==='제휴'&&QUALS_PARTNER.indexOf(name)<0){QUALS_PARTNER.push(name);}
+  renderQualifs();
+  toggleQualifForm();
+  toastP('자격을 등록했습니다. 할인·쿠폰은 프로모션에서 만들어주세요.');
+}
+
+// ===== 주기 기반 자동 발급 =====
+var PERIODIC=[{promo:'크루 할인 (ID 1004)',qty:'3',unit:'개월',target:'크루 전체'}];
+function renderPeriodic(){
+  var c=document.getElementById('periodicCards'); if(!c) return;
+  c.innerHTML=PERIODIC.map(function(r){return '<div class="rulecard"><span class="trg">'+r.qty+(r.unit||'개월')+'마다</span><span class="arrow">→</span><div class="act">'+r.promo+' · '+r.target+'</div></div>'}).join('');
+}
+function togglePeriodicForm(){document.getElementById('periodicForm').hidden=!document.getElementById('periodicForm').hidden;}
+function savePeriodic(){
+  var promo=document.getElementById('pdPromo').value,qty=document.getElementById('pdQty').value.trim()||'1',unit=document.getElementById('pdUnit').value,target=document.getElementById('pdTarget').value.trim()||'전체';
+  PERIODIC.push({promo:promo,qty:qty,unit:unit,target:target});
+  renderPeriodic();
+  togglePeriodicForm();
+  toastP('주기 기반 규칙을 만들었습니다. (안내 문구는 정하는 중)');
+}
+renderQualifs();
+renderPeriodic();
+function renderQuals(t,sel){
   var s=document.getElementById('qualSel'); if(!s) return; s.innerHTML='';
-  QUALS.forEach(function(q){var o=document.createElement('option');o.textContent=q;s.appendChild(o);});
+  var list=(t==='제휴')?QUALS_PARTNER:QUALS;
+  list.forEach(function(q){var o=document.createElement('option');o.textContent=q;s.appendChild(o);});
   if(sel) s.value=sel;
 }
-function addQual(){var n=prompt('추가할 자격 이름 (예: OO대학교 재학생)'); if(!n) return; n=n.trim(); if(!n) return; if(QUALS.indexOf(n)<0) QUALS.push(n); renderQuals(n);}
-renderQuals();
+renderQuals('신분');
 
 function cPromoChange(){
   var s=document.getElementById('cPromo'); var exc=s.options[s.selectedIndex].dataset.exc==='1';
@@ -870,39 +983,69 @@ function cPromoChange(){
 }
 
 var CURPROMO=null;
-function openDrawer(n,t,m,tg){CURPROMO={name:n,type:t||'일반',jam:m==='jam'};document.getElementById('pFrom').value='2026-11-01';document.getElementById('pTo').value='2026-12-31';PORIG={f:'2026-11-01',t:'2026-12-31'};var PIDS={'오픈 기념 할인':1001,'국가유공자·장애인':1002,'인천시민 할인':1003,'크루 할인':1004,'F&B 교환':1005,'트레이니 교환':1006,'마스터 교환':1007};document.getElementById('pIdVal').textContent=PIDS[n]?String(PIDS[n]):'저장하면 시스템이 번호를 붙입니다';document.getElementById('dwKick').textContent=PIDS[n]?'프로모션 · ID '+PIDS[n]:'프로모션 · 새로 만들기';document.getElementById('dwTitle').textContent=n;setTimeout(renderCpSec,0);setPromoType(t||'일반');setExcMode(m||'item');if(m==='jam'){document.getElementById('jxTarget').value=tg||'trn';setJamTarget(tg||'trn');}document.getElementById('ov').classList.add('show');document.getElementById('dw').classList.add('show');}
+function openDrawer(n,t,m,tg){CURPROMO={name:n,type:t||'일반',jam:m==='jam'};document.getElementById('pFrom').value='2026-11-01';document.getElementById('pTo').value='2026-12-31';PORIG={f:'2026-11-01',t:'2026-12-31'};var PIDS={'오픈 기념 할인':1001,'국가유공자·장애인':1002,'인천시민 할인':1003,'크루 할인':1004,'F&B 교환':1005,'트레이니 교환':1006,'마스터 교환':1007};document.getElementById('pIdVal').textContent=PIDS[n]?String(PIDS[n]):'저장하면 시스템이 번호를 붙입니다';document.getElementById('dwKick').textContent=PIDS[n]?'프로모션 · ID '+PIDS[n]:'프로모션 · 새로 만들기';document.getElementById('dwTitle').textContent=n;setTimeout(renderCpSec,0);setPromoType(t||'일반');setExcMode(m||'item');if(m==='jam'){document.getElementById('jxTarget').value=tg||'trn';setJamTarget(tg||'trn');}setDwMode(n==='신규 프로모션'?'edit':'view');document.getElementById('ov').classList.add('show');document.getElementById('dw').classList.add('show');}
+function setDwMode(mode){
+  var dw=document.getElementById('dw');
+  dw.classList.toggle('view',mode==='view');
+  document.getElementById('dwEditBtn').hidden=(mode==='edit');
+  document.getElementById('dwCloseBtn').hidden=(mode==='edit');
+  document.getElementById('dwCancelBtn').hidden=(mode==='view');
+  document.getElementById('dwSaveBtn').hidden=(mode==='view');
+}
+function enterDwEdit(){setDwMode('edit');}
 function setPromoType(t){
   document.querySelectorAll('#typeRadio .opt').forEach(function(o){o.classList.toggle('on',o.dataset.y===t)});
+  if(CURPROMO){CURPROMO.type=t;renderCpSec();}
   var exc=(t==='교환');
   document.getElementById('discBlock').hidden=exc;
   document.getElementById('applyBlock').hidden=exc;
-  document.getElementById('qualBlock').hidden=(t!=='신분');
+  document.getElementById('qualBlock').hidden=(t!=='신분'&&t!=='제휴');
+  if(t==='신분'||t==='제휴') renderQuals(t);
   document.getElementById('excModeBlock').hidden=!exc;
-  document.getElementById('excBlock').hidden=!exc;
-  if(!exc){document.getElementById('jamBlock').hidden=true;document.getElementById('crewRow').hidden=false;}
+  if(!exc){document.getElementById('jamBlock').hidden=true;document.getElementById('crewRow').hidden=(t!=='신분');}
   setCrew(t==='신분');
-  document.getElementById('crewWhen').textContent=exc?'교환(사용) 시':'할인 적용 시';
-  document.getElementById('crewGuide').value=(t==='신분')?'신분증 확인':'';
   if(exc){var cm=document.querySelector('#excModeRadio .opt.on');setExcMode(cm?cm.dataset.m:'item');}
 }
-function setCrew(on){var sw=document.getElementById('crewSw');sw.classList.toggle('off',!on);document.getElementById('crewLbl').textContent=on?'사용':'사용 안 함';document.getElementById('crewBlock').hidden=!on;}
+function setCrew(on){var sw=document.getElementById('crewSw');sw.classList.toggle('off',!on);document.getElementById('crewLbl').textContent=on?'사용':'사용 안 함';}
 function toggleCrew(){setCrew(document.getElementById('crewSw').classList.contains('off'));}
 var PMETA={'오픈 기념 할인':{id:1001,disc:'−5,000원',amt:'5,000원 할인',kind:'고정 금액 할인',prods:'레이스 포함 패키지 · 실내 패키지',from:'2026-11-01',to:'2026-12-31',exc:false},'F&B 교환':{id:1005,disc:'교환',amt:'상품 교환',kind:'교환',prods:'F&B PSU',from:'2026-11-01',to:'2026-12-31',exc:true}};
 function promoMeta(){return CURPROMO&&PMETA[CURPROMO.name]||{id:'',disc:'',amt:'',kind:'',prods:'',from:'2026-11-01',to:'2026-12-31',exc:CURPROMO&&CURPROMO.type==='교환'};}
 function metaByLabel(l){var n=(l||'').replace(/ \(ID \d+\)$/,'').replace('&amp;','&');return PMETA[n]||null;}
 function discBox(m,name){if(!m)return '';return '<div class="discbox"><span class="amt'+(m.exc?' exc':'')+'">'+m.amt+'</span><div class="meta"><span><span class="k">할인 방식</span>'+m.kind+'</span><span><span class="k">적용 상품</span>'+m.prods+'</span><span><span class="k">프로모션</span>'+name+' (ID '+m.id+') · 활성 기간 '+m.from+' ~ '+m.to+'</span></div><span class="lk">할인은 프로모션에서 정합니다</span></div>';}
 function renderCpSec(){var sec=document.getElementById('cpSec');if(!sec||!CURPROMO)return;var t=CURPROMO.type,noCp=(t==='신분'||CURPROMO.jam);
+  sec.hidden=(t==='신분');
+  if(t==='신분')return;
   var isNew=CURPROMO.name==='신규 프로모션';document.getElementById('cpNewBtn').hidden=noCp||isNew;
   var list=BATCH.map(function(x,i){return {x:x,i:i}}).filter(function(r){return r.x.promo.indexOf(CURPROMO.name+' (')===0});
   var pm=promoMeta();document.getElementById('cpCnt').textContent=noCp||isNew?'':'· '+list.length+'개'+(pm.amt?' · 모든 쿠폰에 '+pm.amt+' 적용':'');
-  var h;if(noCp)h='<div class="cpnone">'+(t==='신분'?'신분 할인':'JAM 교환')+'은 쿠폰 없이 적용됩니다. 쿠폰을 만들지 않습니다.</div>';
+  var h;if(noCp)h='<div class="cpnone">JAM 교환은 쿠폰 없이 적용됩니다. 쿠폰을 만들지 않습니다.</div>';
   else if(isNew)h='<div class="cpnone">프로모션을 저장하면 이 프로모션의 쿠폰을 만들 수 있습니다.</div>';
   else if(!list.length)h='<div class="cpnone">아직 쿠폰이 없습니다. <b>+ 쿠폰 만들기</b>로 만듭니다.</div>';
-  else h='<div class="tblwrap" style="border:1px solid var(--line);border-radius:10px;overflow:auto"><table class="cptbl"><thead><tr><th>이미지</th><th>쿠폰명</th><th>발급 방식</th><th class="r">발급</th><th class="r">사용</th><th>사용 기간</th><th>상태</th></tr></thead><tbody>'+list.map(function(r){var x=r.x;return '<tr class="click" onclick="openBatch('+r.i+')"><td><img class="cpthumb" src="'+(x.img||'')+'" alt=""></td><td>'+x.name+'</td><td><span class="typ '+x.mcls+'">'+x.method+'</span>'+(x.code?' <span class="code">'+x.code.split(' ')[0]+'</span>':'')+'</td><td class="r">'+nf(x.issued)+'</td><td class="r">'+nf(x.used)+'</td><td>'+x.use+'</td><td><span class="pill s-on">'+x.st+'</span></td></tr>'}).join('')+'</tbody></table></div>';
+  else h='<div class="tblwrap" style="border:1px solid var(--line);border-radius:10px;overflow:auto"><table class="cptbl"><thead><tr><th>이미지</th><th>쿠폰명</th><th>발급 방식</th><th class="r">발급</th><th class="r">사용</th><th>사용 기간</th><th>상태</th></tr></thead><tbody>'+list.map(function(r){var x=r.x;return '<tr class="click" onclick="openBatch('+r.i+')"><td><img class="cpthumb" src="'+(x.img||'')+'" alt=""></td><td>'+x.name+'</td><td><span class="typ '+x.mcls+'">'+x.method+'</span>'+(x.code?' <span class="code">'+x.code.split(' ')[0]+'</span>':'')+'</td><td class="r">'+nf(x.issued)+'</td><td class="r">'+nf(x.used)+'</td><td>'+x.use+'</td><td><span class="pill '+stCls(x.st)+'">'+x.st+'</span></td></tr>'}).join('')+'</tbody></table></div>';
   document.getElementById('cpList').innerHTML=h;}
 function openIssue(){var m=promoMeta();document.getElementById('cKick').textContent='쿠폰 · '+(CURPROMO?CURPROMO.name+' (ID '+m.id+')':'');document.getElementById('cDisc').innerHTML=discBox(m,CURPROMO?CURPROMO.name:'');
   document.getElementById('cExcBlock').hidden=!m.exc;document.getElementById('cErr').textContent='';
-  document.getElementById('ov2').classList.add('show');document.getElementById('dwC').classList.add('show');}
+  var isPartner=CURPROMO&&CURPROMO.type==='제휴';
+  document.getElementById('mManualBtn').hidden=isPartner;
+  if(isPartner&&document.getElementById('mManualBtn').classList.contains('on')) setMethod('random');
+  document.getElementById('ov2').classList.add('show');document.getElementById('dwC').classList.add('show');setDwcMode('edit');}
+function setDwcMode(mode){
+  var d=document.getElementById('dwC');
+  d.classList.toggle('view',mode==='view');
+  document.getElementById('dwcEditBtn').hidden=(mode==='edit');
+  document.getElementById('dwcCloseBtn').hidden=(mode==='edit');
+  document.getElementById('dwcCancelBtn').hidden=(mode==='view');
+  document.getElementById('dwcSaveBtn').hidden=(mode==='view');
+}
+function enterDwcEdit(){setDwcMode('edit');}
+function setRqtyMode(qm){
+  document.querySelectorAll('#rqtyModeRadio .opt').forEach(function(o){o.classList.toggle('on',o.dataset.qm===qm)});
+  document.getElementById('rqtyFixedRow').hidden=(qm==='inf');
+}
+function setCqtyMode(qm){
+  document.querySelectorAll('#cqtyModeRadio .opt').forEach(function(o){o.classList.toggle('on',o.dataset.qm===qm)});
+  document.getElementById('cqtyFixedRow').hidden=(qm==='inf');
+}
 function chkCpPeriod(){var m=promoMeta(),f=document.getElementById('cFrom').value,t=document.getElementById('cTo').value,e='';
   if(f&&t&&t<f)e='종료일은 시작일 이후로 선택해 주시기 바랍니다.';
   document.getElementById('cErr').textContent=e;return !e;}
@@ -924,16 +1067,14 @@ function setExcMode(m){
   document.querySelectorAll('#excModeRadio .opt').forEach(function(o){o.classList.toggle('on',o.dataset.m===m)});
   var jam=exc&&m==='jam';
   document.getElementById('jamBlock').hidden=!jam;
-  document.getElementById('excBlock').hidden=!(exc&&m!=='jam');
-  document.getElementById('crewRow').hidden=jam;
-  if(jam){document.getElementById('crewBlock').hidden=true;}
+  if(exc) document.getElementById('crewRow').hidden=jam;
+  if(CURPROMO){CURPROMO.jam=jam;renderCpSec();}
 }
 function setJamTarget(v){
   var mst=(v==='mst');
   document.getElementById('jxOut').value=mst?'GENERAL':'RACE';
   var q=document.getElementById('jxOutQty');q.value=mst?'미결':'1';q.style.color=mst?'var(--note)':'';q.style.borderColor=mst?'var(--note)':'';
   document.getElementById('jxQtyNote').hidden=!mst;
-  document.getElementById('jxAdult').textContent=mst?'필요 · 본인인증으로 성인이 확인된 고객만 교환할 수 있습니다':'필요 없음 · 미성년자도 교환할 수 있습니다';
 }
 function closeDrawer(){closeCp();document.getElementById('ov').classList.remove('show');document.getElementById('dw').classList.remove('show');document.getElementById('dw2').classList.remove('show');document.getElementById('dwC').classList.remove('show');document.getElementById('dwB').classList.remove('show');document.getElementById('dwR').classList.remove('show');}
 /* ===== 달력 date picker (CJU 스타일) ===== */
@@ -1019,9 +1160,14 @@ renderRules();
 function filterType(c){
   document.querySelectorAll('#ctypeSeg button').forEach(function(b){b.classList.toggle('on',b.dataset.c===c)});
   document.querySelectorAll('#lookupBody tr').forEach(function(tr){
-    var t=(tr.dataset.disc||'').indexOf('교환')>=0?'교환':'할인';
+    var promo=tr.dataset.promo||'',disc=tr.dataset.disc||'';
+    var t=promo.indexOf('제휴')>=0?'제휴':(disc.indexOf('교환')>=0?'교환':'할인');
     tr.style.display=(c==='전체'||c===t)?'':'none';
   });
+}
+function setLookupSub(sp){
+  document.querySelectorAll('#lookupSubtabs .tab').forEach(function(b){b.classList.toggle('on',b.dataset.sp===sp)});
+  document.querySelectorAll('section[data-p="lookup"] > div[data-sp]').forEach(function(d){d.hidden=(d.dataset.sp!==sp)});
 }
 function openCoupon(tr){
   var d=tr.dataset;
