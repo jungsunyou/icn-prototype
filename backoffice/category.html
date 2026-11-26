@@ -1,0 +1,509 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<style>[hidden]{display:none!important}</style>
+<title>카테고리 관리</title>
+</head><body>
+<style>
+  :root{
+    --bg:#fafafa; --surface:#ffffff; --surface-2:#f5f5f5; --field:#fcfcfc;
+    --fg:#212529; --muted:#878a99; --line:#ebebeb; --line-2:#efefef;
+    --accent:#245ec3; --accent-soft:#e9f0fb;
+    --jam:#1f7a5a; --jam-soft:#dcf1e9; --nonjam:#8a5a20; --nonjam-soft:#f6ead6;
+    --on:#1a7f4b; --off:#9aa4b2; --wire:#aeb6c1;
+    --warn:#b4700f; --warn-soft:#f8ecd6;
+    --note:#6a5acd;--note-soft:rgba(106,90,205,.12);
+    --font-display:"Space Grotesk","Pretendard",-apple-system,BlinkMacSystemFont,sans-serif;
+    --font-body:"Pretendard",-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo",sans-serif;
+    --mono:"SF Mono",ui-monospace,"Roboto Mono",Menlo,monospace;
+  }
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+    --bg:#0f1218; --surface:#181c24; --surface-2:#1f242e; --field:#141821;
+    --fg:#e8ebf0; --muted:#98a2b0; --line:#2b313c; --line-2:#242a34;
+    --accent:#5b8cff; --accent-soft:#1b2640;
+    --jam:#4cc585; --jam-soft:#12301f; --nonjam:#d69a52; --nonjam-soft:#2f2410;
+    --on:#4cc585; --off:#5c6675; --wire:#3a414d;
+    --warn:#e0a44a; --warn-soft:#2f2410;
+    --note:#a99cf0;--note-soft:rgba(169,156,240,.16); color-scheme:dark;
+  }}
+  :root[data-theme="dark"]{
+    --bg:#0f1218; --surface:#181c24; --surface-2:#1f242e; --field:#141821;
+    --fg:#e8ebf0; --muted:#98a2b0; --line:#2b313c; --line-2:#242a34;
+    --accent:#5b8cff; --accent-soft:#1b2640;
+    --jam:#4cc585; --jam-soft:#12301f; --nonjam:#d69a52; --nonjam-soft:#2f2410;
+    --on:#4cc585; --off:#5c6675; --wire:#3a414d;
+    --warn:#e0a44a; --warn-soft:#2f2410;
+    --note:#a99cf0;--note-soft:rgba(169,156,240,.16); color-scheme:dark;
+  }
+  *{box-sizing:border-box}
+  body{background:var(--bg);color:var(--fg);font-family:var(--font-body);line-height:1.45;font-size:13.5px;margin:0}
+  .app{max-width:1160px;margin:0 auto;padding:16px 16px 56px}
+  .crumb{font-size:12px;color:var(--muted)}
+  .crumb b{color:var(--fg);font-weight:600}
+  .toolbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:8px 0 12px}
+  .toolbar h1{font-family:var(--font-display);font-size:20px;margin:0}
+  .toolbar .sp{flex:1;min-width:0}
+  .btn{font-family:var(--font-body);font-size:13px;border-radius:8px;padding:8px 14px;border:1px solid var(--line);background:var(--surface);color:var(--fg);cursor:pointer}
+  .btn.pri{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+  .btn.ghost{background:none}
+  .btn.sm{padding:6px 11px;font-size:12.5px}
+  .ex{font-size:10px;font-weight:700;color:var(--note);background:var(--note-soft);border-radius:5px;padding:1px 6px;font-family:var(--font-display)}
+
+  .filters{display:flex;gap:8px;flex-wrap:wrap;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px;margin-bottom:12px}
+  .filters .f{display:flex;flex-direction:column;gap:3px}
+  .filters label{font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;font-family:var(--font-display)}
+  .ipt,.sel{background:var(--field);border:1px solid var(--line);border-radius:7px;padding:7px 9px;font-size:13px;color:var(--fg);font-family:var(--font-body)}
+  .ipt::placeholder{color:var(--wire)}
+  .search{min-width:200px;flex:1}
+
+  .panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+  .panel .ph{display:flex;align-items:center;gap:8px;padding:11px 14px;border-bottom:1px solid var(--line);font-family:var(--font-display);font-weight:600;font-size:13px}
+  .panel .ph .cnt{color:var(--muted);font-weight:400;font-size:12px}
+  .panel .ph .sp{flex:1}
+  .tblwrap{overflow-x:auto}
+  table{border-collapse:collapse;width:100%;font-size:12.5px;min-width:820px}
+  th,td{padding:9px 12px;text-align:left;border-bottom:1px solid var(--line-2);white-space:nowrap}
+  th{background:var(--surface-2);font-family:var(--font-display);font-weight:600;font-size:11px;color:var(--muted)}
+  td.r,th.r{text-align:right;font-variant-numeric:tabular-nums}
+  tr.row{cursor:pointer}
+  tr.row:hover td{background:var(--surface-2)}
+  .code{font-family:var(--mono);font-size:12px}
+  .ver{font-family:var(--mono);font-size:11px;color:var(--muted)}
+  .tag{font-size:10.5px;font-weight:700;border-radius:5px;padding:2px 7px}
+  .t-jam{background:var(--jam-soft);color:var(--jam)}
+  .t-non{background:var(--nonjam-soft);color:var(--nonjam)}
+  .st{display:inline-flex;align-items:center;gap:5px;font-size:12px}
+  .st .d{width:7px;height:7px;border-radius:50%}
+  .st.on .d{background:var(--on)} .st.off .d{background:var(--off)}
+  .st.off{color:var(--muted)}
+  .mini{font-size:11px;border:1px solid var(--line);background:var(--surface);border-radius:6px;padding:3px 8px;cursor:pointer;color:var(--fg)}
+
+  /* 드로어 */
+  .ov{position:fixed;inset:0;background:rgba(10,14,22,.42);opacity:0;pointer-events:none;transition:opacity .18s;z-index:40}
+  .ov.show{opacity:1;pointer-events:auto}
+  .drawer{position:fixed;top:0;right:0;height:100%;width:min(520px,94vw);background:var(--surface);border-left:1px solid var(--line);box-shadow:-16px 0 40px rgba(10,14,22,.18);transform:translateX(100%);transition:transform .22s cubic-bezier(.4,0,.2,1);z-index:41;display:flex;flex-direction:column}
+  .drawer.show{transform:none}
+  .drawer .dh{display:flex;align-items:center;gap:8px;padding:13px 16px;border-bottom:1px solid var(--line)}
+  .drawer .dh h3{font-family:var(--font-display);font-size:15px;margin:0}
+  .drawer .dh .sp{flex:1}
+  .drawer .dh .code{color:var(--muted)}
+  .verbadge{font-family:var(--mono);font-size:11px;font-weight:700;color:var(--accent);background:var(--accent-soft);border:1px solid var(--accent);border-radius:6px;padding:2px 7px}
+  .x{border:1px solid var(--line);background:var(--surface);border-radius:7px;width:30px;height:30px;cursor:pointer;color:var(--fg);font-size:14px}
+  .db{overflow:auto;padding:12px 16px 16px;flex:1}
+  .dfoot{display:flex;gap:8px;align-items:center;padding:12px 16px;border-top:1px solid var(--line);background:var(--surface-2)}
+  .dfoot .sp{flex:1}
+  .vnote{font-size:11.5px;color:var(--muted)}
+
+  .fld{margin:0 0 13px}
+  .fl{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;font-family:var(--font-display);margin:0 0 5px}
+  .fl .req{color:var(--accent)}
+  .fld .ipt,.fld .sel{width:100%}
+  .row3{display:flex;gap:6px}.row3 .ipt{flex:1;min-width:70px}
+  .won{display:flex;align-items:center;gap:6px}.won .ipt{max-width:160px;text-align:right}.won .u{font-size:12px;color:var(--muted)}
+  .seg{display:inline-flex;background:var(--field);border:1px solid var(--line);border-radius:9px;padding:3px;gap:3px}
+  .seg span{padding:7px 14px;font-size:12.5px;border-radius:6px;cursor:pointer;color:var(--muted)}
+  .seg span.on{background:var(--accent);color:#fff;font-weight:600}
+  .toggle{display:inline-flex;align-items:center;gap:7px;font-size:12.5px}
+  .sw{width:34px;height:19px;border-radius:20px;background:var(--on);position:relative}
+  .sw::after{content:"";position:absolute;top:2px;right:2px;width:15px;height:15px;border-radius:50%;background:#fff}
+  .ipt:disabled,.sel:disabled{background:var(--surface-2);color:var(--muted);border-style:dashed;cursor:not-allowed;-webkit-text-fill-color:var(--muted);opacity:1}
+  .lockval{background:var(--surface-2);border:1px dashed var(--line);border-radius:8px;padding:8px 11px;font-size:12.5px;color:var(--muted);font-weight:600}
+  .autoval{background:var(--surface-2);border:1px dashed var(--line);border-radius:8px;padding:8px 11px;font-size:12.5px;color:var(--muted)}
+  .autoval.code{font-family:var(--mono)}
+  .sub.lock{opacity:.85}
+  .sub{background:var(--surface-2);border:1px solid var(--line-2);border-radius:10px;padding:11px 12px;margin-top:8px}
+  .sub .fld:last-child{margin-bottom:0}
+  .two{display:flex;gap:10px}.two .fld{flex:1}
+
+  /* 메타/버전 */
+  .metagrid{display:grid;grid-template-columns:1fr 1fr;gap:8px 14px;background:var(--surface-2);border:1px solid var(--line-2);border-radius:10px;padding:11px 13px}
+  .metagrid>div{display:flex;flex-direction:column;gap:2px}
+  .metagrid .mk{font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.03em;font-family:var(--font-display)}
+  .metagrid .mv{font-size:12.5px;font-weight:600}
+  .metagrid .mv.mono{font-family:var(--mono);font-weight:700}
+  /* 사용 중 상품 */
+  .uselist{border:1px solid var(--line-2);border-radius:10px;overflow:hidden}
+  .urow{display:flex;align-items:center;gap:8px;padding:9px 12px;border-bottom:1px solid var(--line-2);font-size:12.5px}
+  .urow:last-child{border-bottom:none}
+  .urow .un{flex:1}
+  .uv{font-family:var(--mono);font-size:11px;padding:2px 6px;border-radius:5px}
+  .uv.ok{background:var(--jam-soft);color:var(--jam)}
+  .uv.old{background:var(--warn-soft);color:var(--warn)}
+  .uempty{padding:11px 12px;font-size:12px;color:var(--muted)}
+
+  /* 안내(보라 · 구현 시 제외 가능) */
+  .note{display:flex;gap:8px;background:var(--note-soft);border:1px solid var(--note);border-radius:10px;padding:10px 13px;font-size:12px;color:var(--fg);margin:0 0 12px}
+  .note::before{content:"안내";font-family:var(--font-display);font-size:9.5px;font-weight:700;color:#fff;background:var(--note);border-radius:5px;padding:2px 6px;height:fit-content;letter-spacing:.03em}
+  .memo{background:var(--note-soft);border:1px solid var(--note);border-radius:11px;padding:11px 13px;margin-top:16px;font-size:12px}
+  .memo .mh{font-family:var(--font-display);font-weight:700;font-size:11px;color:var(--note);margin:0 0 6px;display:flex;align-items:center;gap:6px}
+  .memo .mh::before{content:"안내";font-size:9px;background:var(--note);color:#fff;border-radius:5px;padding:2px 6px;letter-spacing:.03em}
+  .memo .mh .sub2{font-family:var(--font-body);font-weight:400;color:var(--muted);font-size:10.5px}
+  .memo ul{margin:0;padding-left:16px}.memo li{margin:3px 0}
+  .memo b{color:var(--fg)}
+</style>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,400,0..1,0&display=swap">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<style id="ds">
+/* ===== 9.81 PARK Admin 디자인 시스템(DESIGN.md) 적용 레이어 · 라이트 모드 전용 ===== */
+:root,:root[data-theme]{
+  --bg:#FAFAFA !important; --surface:#FFFFFF !important; --surface-2:#FAFAFA !important; --field:#FFFFFF !important;
+  --fg:#212529 !important; --muted:#878A99 !important; --line:#EBEBEB !important; --line-2:#EFEFEF !important;
+  --accent:#245EC3 !important; --accent-soft:rgba(36,94,195,.10) !important;
+  --on:#008000 !important; --off:#C8C8C8 !important; --wire:#C8C8C8 !important;
+  --font-display:"Pretendard",-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Noto Sans KR",sans-serif !important;
+  --font-body:"Pretendard",-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Noto Sans KR",sans-serif !important;
+  --mono:"JetBrains Mono","Pretendard",ui-monospace,monospace !important;
+  color-scheme:light !important;
+}
+body{background:#FAFAFA !important;color:#212529;font-size:13.5px}
+.material-symbols-outlined{font-family:"Material Symbols Outlined";font-weight:400;font-style:normal;font-size:18px;line-height:1;display:inline-block;vertical-align:-4px;font-variation-settings:"FILL" 0,"wght" 400;color:#878A99}
+
+/* 페이지 헤더 */
+.app{max-width:none !important;padding:18px 24px 48px !important}
+.crumb{font-size:10.5px !important;color:#878A99 !important}
+.crumb b{color:#878A99 !important;font-weight:400 !important}
+.toolbar h1{font-size:16.5px !important;font-weight:600 !important;letter-spacing:0}
+
+/* 버튼 */
+.btn{height:34px;padding:0 18px !important;border-radius:8px !important;font-size:13.5px !important;font-weight:500 !important;border:.7px solid #878A99 !important;color:#878A99 !important;background:transparent !important;box-shadow:none !important}
+.btn.pri{background:#245EC3 !important;border-color:#245EC3 !important;color:#FFFFFF !important}
+.btn.sm{height:28px;padding:0 12px !important;border-radius:6px !important;font-size:12px !important}
+.btn.keptbtn{border-color:var(--note) !important;color:var(--note) !important}
+.mini{font-family:var(--font-body)}
+
+/* 입력 */
+.ipt,.sel,.capedit{min-height:34px;border:1px solid #EBEBEB !important;border-radius:8px !important;background:#FFFFFF !important;font-size:13.5px !important;padding:0 8px !important}
+textarea.ipt{padding:8px !important}
+.ipt:focus,.sel:focus,.capedit:focus{outline:none;border-color:#245EC3 !important}
+.ipt::placeholder{color:#C8C8C8 !important}
+.filters label,.fl,.lf label,.sl{text-transform:none !important;letter-spacing:0 !important;font-family:var(--font-body) !important}
+.fl{font-size:13.5px !important;color:#485056 !important}
+.fl .req{color:#DA222B !important}
+.filters label{font-size:12px !important;color:#485056 !important}
+
+/* 섹션 카드 */
+.panel,.filters,.ctrlbar{background:#FFFFFF !important;border:1px solid #EFEFEF !important;border-radius:16px !important;box-shadow:none !important}
+.panel .ph{font-size:15px !important;font-weight:600 !important;padding:12px 18px !important;border-bottom:1px solid #EFEFEF !important}
+.filters,.ctrlbar{padding:12px 18px !important}
+
+/* 테이블: 헤더 12/600 가운데, 셀 13.5 가운데, 행 36 */
+table:not(.subtbl) th,table:not(.subtbl) td{text-align:center !important}
+th{font-size:12px !important;font-weight:600 !important;color:#212529 !important;background:#FFFFFF !important;text-transform:none !important;letter-spacing:0 !important;height:36px;padding:0 12px !important;font-family:var(--font-body) !important}
+td{font-size:13.5px !important;height:36px;padding:6px 12px !important;border-bottom:1px solid #EFEFEF !important}
+.subtbl th,.subtbl td{text-align:center !important}
+tr.row:hover td,tr.click:hover td{background:rgba(33,37,41,.05) !important}
+.code,.num,.slot,.ver,.verbadge,td.r{font-family:var(--mono) !important;letter-spacing:-.25px}
+
+/* 상태 칩: 10% 틴트 알약 */
+.st,.pill,.tag,.chip{display:inline-flex;align-items:center;gap:6px;height:22px;padding:0 10px !important;border-radius:9999px !important;font-size:12px !important;font-weight:400 !important;font-family:var(--font-body) !important}
+.st{background:rgba(0,128,0,.10);color:#008000 !important}
+.st .d{width:6px !important;height:6px !important;background:#008000 !important}
+.st.off{background:rgba(183,183,183,.18);color:#878A99 !important}
+.st.off .d{background:#B7B7B7 !important}
+.p-ok,.s-on{background:rgba(0,128,0,.10) !important;color:#008000 !important}
+.p-near,.s-hi{background:rgba(255,152,0,.10) !important;color:#E08600 !important}
+.p-out,.s-stop,.s-cancel,.unset{background:rgba(218,34,43,.10) !important;color:#DA222B !important}
+.p-stop,.s-mid,.s-used{background:rgba(183,183,183,.18) !important;color:#878A99 !important}
+.s-lo,.s-type,.t-pkg,.t-jam{background:rgba(36,94,195,.10) !important;color:#245EC3 !important}
+.t-single,.t-non{background:rgba(183,183,183,.18) !important;color:#485056 !important}
+.chip.k{background:var(--note) !important;color:#fff !important}
+
+/* 알약형 탭 (선택 = primary 채움) */
+.nav,.tabs,.topnav{background:transparent !important;border:none !important;padding:0 !important;gap:4px !important;margin-bottom:12px}
+.nav button,.tabs .tab,.topnav button{height:30px;padding:0 12px !important;border-radius:16px !important;font-size:15px !important;font-weight:400 !important;color:#878A99 !important;background:transparent !important;box-shadow:none !important;font-family:var(--font-body) !important;display:inline-flex;align-items:center;gap:6px}
+.nav button.on,.tabs .tab.on,.topnav button.on{background:#245EC3 !important;color:#FFFFFF !important;font-weight:600 !important}
+.nav button .sub{display:none !important}
+.nav button.keptnav{color:var(--note) !important}
+.nav button.keptnav.on{background:var(--note) !important;color:#fff !important}
+.tabs .tab{font-size:12px !important;height:24px}
+/* 섹션 안 작은 탭 · 세그먼트 */
+.langseg,.seg{background:#FFFFFF !important;border:1px solid #EBEBEB !important;border-radius:8px !important;padding:2px !important;gap:2px !important}
+.langseg button,.seg button,.seg span{border-radius:6px !important;background:#FCFCFC !important;color:#878A99 !important;font-weight:500 !important;font-size:13.5px !important;box-shadow:none !important}
+.langseg button.on,.seg button.on,.seg span.on{background:#245EC3 !important;color:#FFFFFF !important;font-weight:600 !important}
+.langseg .dot.ok{background:#FFFFFF !important}
+
+/* 드로어: 오른쪽, #FAFAFA, 폭 = 화면 − 200 */
+.ov{background:rgba(33,37,41,.30) !important}
+.drawer:not(.two){width:max(min(560px,100vw),calc(100vw - 200px)) !important;max-width:100vw !important;background:#FAFAFA !important;border-left:none !important;box-shadow:-5px 5px 4px rgba(0,0,0,.10) !important}
+.drawer.two{width:min(500px,100vw) !important;background:#FAFAFA !important}
+.dh{background:#FAFAFA !important;border-bottom:1px solid #EFEFEF !important;padding:16px 24px !important}
+.dh h3{font-size:16.5px !important;font-weight:600 !important;font-family:var(--font-body) !important}
+.db{padding:6px 24px 24px !important}
+.dfoot{background:#FFFFFF !important;border-top:1px solid #EFEFEF !important;padding:12px 24px !important}
+.drawer .sec{background:#FFFFFF;border:1px solid #EFEFEF !important;border-radius:16px;padding:18px !important;margin:18px 0 0}
+.drawer .sl{font-size:15px !important;font-weight:600 !important;color:#212529 !important}
+.x{border:none !important;background:transparent !important;color:#878A99 !important}
+
+/* 페이저 */
+.pager{gap:24px;font-size:13.5px !important;color:#212529 !important}
+.pager .pg,.pg{min-width:26px;height:26px;padding:0 6px !important;border-radius:4px !important;border:none !important;background:transparent !important;font-family:var(--mono)}
+.pager .pg.on,.pg.on{background:#245EC3 !important;color:#FFFFFF !important}
+.dspager{display:flex;align-items:center;gap:24px;padding:10px 18px;border-top:1px solid #EFEFEF;font-size:13.5px;color:#212529;flex-wrap:wrap}
+.dspager .sp{flex:1}
+.dspager .pgs{display:flex;gap:2px}
+.dspager .pgs span{min-width:26px;height:26px;display:inline-flex;align-items:center;justify-content:center;border-radius:4px;font-family:var(--mono);font-size:13px;color:#878A99}
+.dspager .pgs span.on{background:#245EC3;color:#FFFFFF;font-weight:500}
+
+/* 빈 상태 */
+.dsempty{height:120px;display:flex;align-items:center;justify-content:center;border:1px dashed rgba(200,200,200,.7);border-radius:8px;color:rgba(200,200,200,.9);font-size:15px;font-weight:500;margin:12px 18px}
+</style>
+<script>document.documentElement.setAttribute("data-theme","light")</script>
+<style>
+  .keep{background:var(--note-soft);border:1px dashed var(--note);border-radius:12px;padding:12px 14px;margin-top:16px;font-size:12.5px}
+  .keep .kh{display:flex;align-items:center;gap:6px;font-weight:700;font-size:12px;color:var(--note);margin:0 0 6px}
+  .keep .kh::before{content:"정하는 중";font-size:9.5px;background:var(--note);color:#fff;border-radius:5px;padding:2px 6px}
+  .keep p{margin:3px 0;color:var(--fg)}
+  .tbd{color:var(--note);font-weight:600}
+  .toggle{cursor:pointer;border:none;background:none;padding:0;font-family:inherit;color:var(--fg)}
+  .toggle.off .sw{background:var(--off)}.toggle.off .sw::after{right:auto;left:2px}
+
+  .mdl{position:fixed;inset:0;background:rgba(33,37,41,.38);display:flex;align-items:center;justify-content:center;z-index:70;padding:16px}
+  .mdl[hidden]{display:none}
+  .mdl .box{background:var(--surface);border-radius:12px;box-shadow:0 12px 40px rgba(10,14,22,.25);width:min(400px,100%);padding:20px 20px 16px;font-size:13px;line-height:1.6}
+  .mdl .t{font-weight:700;font-size:15px;margin-bottom:8px}
+  .mdl .use{margin:8px 0 0;padding-left:18px}
+  .mdl .bt{display:flex;justify-content:flex-end;gap:8px;margin-top:16px}
+  .btn.delbtn{color:#c62828 !important;border-color:#e5a3a3 !important;background:transparent !important}
+  .btn.dangerbtn{background:#c62828 !important;border-color:#c62828 !important;color:#fff !important}
+  .ktxt{color:var(--note) !important;background:var(--note-soft);border-radius:4px;padding:0 3px}
+  .dtoast{position:fixed;left:50%;top:18px;transform:translateX(-50%);background:#212529;color:#fff;border-radius:8px;padding:9px 16px;font-size:13px;z-index:80;opacity:0;transition:opacity .2s;pointer-events:none}
+  .dtoast.show{opacity:1}
+
+  .idmsg{font-size:11.5px;margin-top:5px;min-height:15px}.idmsg .bad{color:#c62828;font-weight:600}.idmsg .good{color:var(--on);font-weight:600}.idmsg .tbdmsg{color:var(--note);background:var(--note-soft);border-radius:4px;padding:1px 5px}
+  .btn:disabled{opacity:.45;cursor:not-allowed}
+</style>
+
+<style>
+  .dh .acts{display:flex;gap:6px;align-items:center}
+  .lnk{background:none;border:none;color:#245EC3;font-size:13px;cursor:pointer;display:inline-flex;align-items:center;gap:4px;padding:4px 6px;font-family:var(--font-body)}
+  .lnk.del{color:#DA222B}
+  .lnk .material-symbols-outlined{color:inherit;font-size:16px}
+  .kv{display:grid;grid-template-columns:150px 1fr;gap:0;font-size:13.5px}
+  .kv>div{padding:9px 0;border-bottom:1px solid #EFEFEF}
+  .kv .k{color:#485056}
+  .kv .v.mono{font-family:var(--mono)}
+  .kv .v .none{color:#878A99}
+  .frow{display:grid;grid-template-columns:150px 1fr;align-items:start;gap:10px;margin:0 0 12px}
+  .frow .fl{margin:8px 0 0}
+  .dt2{display:flex;gap:8px}.dt2 .ipt{flex:1}
+  .langseg{display:inline-flex;margin:0 0 14px}
+  .langseg button{border:none;padding:6px 14px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;font-family:var(--font-body)}
+  .langseg .bd{font-size:10.5px;border-radius:4px;padding:1px 5px;background:rgba(183,183,183,.25);color:#878A99}
+  .langseg button.on .bd{background:rgba(255,255,255,.25);color:#fff}
+  .ferr{font-size:12px;color:#DA222B;margin-top:5px;min-height:0}
+  .fok{font-size:12px;color:#008000;margin-top:5px}
+  .fhint{font-size:12px;color:#878A99;margin-top:5px}
+  .kept{background:var(--note-soft);border:1px dashed var(--note);border-radius:8px;padding:8px 11px;font-size:12px;color:var(--fg);margin-top:6px}
+  .kept b{color:var(--note)}
+  .linkbox{display:flex;flex-direction:column;gap:6px}
+  .linkbox .lr{display:flex;gap:8px;align-items:center;font-size:13px}
+  .linkbox .lr .lk{width:70px;color:#485056}
+  .pillk{display:inline-flex;align-items:center;height:22px;padding:0 9px;border-radius:9999px;font-size:12px;background:var(--note-soft);color:var(--note);border:1px dashed var(--note)}
+  #dw.view .edit-only{display:none}
+  #dw:not(.view) .view-only{display:none}
+</style>
+<div class="app">
+  <div class="crumb">인천 판매 관리 &gt; <b>카테고리 관리</b></div>
+  <div class="toolbar">
+    <h1>카테고리 관리</h1>
+    <span class="ex">예시 데이터</span>
+    <span class="sp"></span>
+    <button class="btn pri" onclick="openCat(null)">카테고리 등록</button>
+  </div>
+
+  <div class="note"><span>카테고리는 상품을 묶어 보여주는 기준입니다. 판매 채널에는 카테고리를 연결하고, 상품에서는 속할 카테고리를 고릅니다. 화면 구성은 개발 서버(2026-11-26 확인)를 옮긴 것이고, 값은 모두 예시입니다.</span></div>
+
+  <div class="filters">
+    <div class="f search"><label>검색</label><input class="ipt" id="q" placeholder="카테고리 코드, 카테고리명" oninput="render()"></div>
+    <div class="f"><label>상태</label><select class="sel" id="fst" onchange="render()"><option value="">전체</option><option value="on">활성</option><option value="off">비활성</option></select></div>
+  </div>
+
+  <div class="panel">
+    <div class="ph">카테고리 목록 <span class="sp"></span><span class="cnt" id="cnt">총 3건</span></div>
+    <div class="tblwrap">
+      <table>
+        <thead><tr><th>ID</th><th>상태</th><th>카테고리 코드</th><th>카테고리명</th><th>노출순서</th><th>노출 시작 (KST)</th><th>노출 종료 (KST)</th><th>수정일시</th></tr></thead>
+        <tbody id="rows"></tbody>
+      </table>
+    </div>
+    <div class="dspager"><span id="pgTotal">총 3개 항목</span><span>1 페이지 중 1 페이지</span><span>페이지당 행 수 : 20</span><span class="sp"></span><div class="pgs"><span>«</span><span>‹</span><span class="on">1</span><span>›</span><span>»</span></div></div>
+  </div>
+  <div class="kept" style="margin-top:10px"><b>정하는 중</b> · 목록은 노출순서가 작은 것부터 보여줍니다. 노출 기간이 지났거나 아직 시작 전인 카테고리를 상태 칸에 따로 표시할지 정하지 않았습니다(지금은 활성 · 비활성만 보입니다).</div>
+</div>
+
+<div class="mdl" id="mdl" hidden onclick="if(event.target===this)closeMdl()"><div class="box" id="mdlBox"></div></div>
+<div class="dtoast" id="dtoast"></div>
+
+<div class="ov" id="ov" onclick="closeCat()"></div>
+<aside class="drawer" id="dw">
+  <div class="dh"><h3 id="dwTitle">카테고리 상세</h3><span class="sp"></span>
+    <div class="acts">
+      <button class="lnk view-only" onclick="setMode('edit')"><span class="material-symbols-outlined">edit</span>수정</button>
+      <button class="lnk del view-only" onclick="askDel()"><span class="material-symbols-outlined">delete</span>삭제</button>
+      <button class="lnk edit-only" onclick="saveCat()"><span class="material-symbols-outlined">save</span>저장</button>
+      <button class="lnk edit-only" id="cancelBtn" onclick="cancelEdit()">취소</button>
+      <button class="lnk" onclick="closeCat()">닫기</button>
+    </div>
+  </div>
+  <div class="db">
+    <div class="sec">
+      <div class="sl" style="margin-bottom:14px">기본 정보</div>
+      <!-- 보기 모드 -->
+      <div class="kv view-only" id="kvBasic"></div>
+      <!-- 수정 · 등록 모드 -->
+      <div class="edit-only">
+        <div class="frow"><div class="fl">카테고리 코드 <span class="req">*</span></div><div>
+          <input class="ipt code" id="fCode" style="width:100%" placeholder="카테고리 코드를 입력하세요" onblur="chkCode()" oninput="codeMsg('')">
+          <div class="autoval code" id="fCodeRo" hidden></div>
+          <div id="codeMsg" class="fhint">다른 항목으로 이동하면 중복 여부를 확인합니다.</div></div></div>
+        <div class="frow"><div class="fl">카테고리명 (ko) <span class="req">*</span></div><div><input class="ipt" id="fKo" style="width:100%"><div class="ferr" id="errKo"></div></div></div>
+        <div class="frow"><div class="fl">카테고리명 (en)</div><div><input class="ipt" id="fEn" style="width:100%"><div class="ferr" id="errEn"></div></div></div>
+        <div class="frow"><div class="fl">카테고리명 (zh)</div><div><input class="ipt" id="fZh" style="width:100%"><div class="ferr" id="errZh"></div></div></div>
+        <div class="frow"><div class="fl">노출순서 <span class="req">*</span></div><div><input class="ipt" id="fOrd" style="width:160px" value="0"><div class="kept"><b>정하는 중</b> · 음수(예: -1)를 허용할지, 같은 노출순서를 여러 카테고리에 쓸 수 있는지 정하지 않았습니다. 개발 서버에서는 둘 다 저장됩니다.</div></div></div>
+        <div class="frow"><div class="fl">노출 시작 (KST)</div><div class="dt2"><input class="ipt" type="date" id="fFromD"><input class="ipt" type="time" id="fFromT"></div></div>
+        <div class="frow"><div class="fl">노출 종료 (KST)</div><div><div class="dt2"><input class="ipt" type="date" id="fToD"><input class="ipt" type="time" id="fToT"></div><div class="ferr" id="errTo"></div><div class="fhint">비워 두면 제한 없음으로 저장됩니다. 날짜만 고르면 시각은 오전 12:00(0시)로 들어갑니다.</div></div></div>
+        <div class="frow"><div class="fl">상태</div><div><button type="button" class="toggle" id="fSt" onclick="setSt(this.classList.contains('off'))"><span class="sw"></span> <span id="fStT">활성</span></button></div></div>
+      </div>
+    </div>
+
+    <div class="sec">
+      <div class="sl" style="margin-bottom:14px">노출 정보</div>
+      <div class="langseg" id="langSeg"></div>
+      <div class="kv view-only" id="kvLang"></div>
+      <div class="edit-only">
+        <div class="frow"><div class="fl">제목</div><div><input class="ipt" id="fTitle" style="width:100%" oninput="storeLang()"></div></div>
+        <div class="frow"><div class="fl">부제목</div><div><input class="ipt" id="fSub" style="width:100%" oninput="storeLang()"></div></div>
+        <div class="frow"><div class="fl">설명</div><div><textarea class="ipt" id="fDesc" rows="3" style="width:100%" oninput="storeLang()"></textarea></div></div>
+        <div class="fhint">언어를 바꿔도 입력한 내용은 그대로 남습니다. 제목 · 부제목 · 설명은 언어마다 선택 항목입니다.</div>
+      </div>
+    </div>
+
+    <div class="sec view-only" id="secLink">
+      <div class="sl" style="margin-bottom:10px">연결 <span class="pillk" style="margin-left:6px">정하는 중</span></div>
+      <div class="linkbox" id="linkBox"></div>
+      <div class="kept"><b>정하는 중</b> · 개발 서버의 카테고리 상세에는 연결된 채널 · 상품이 보이지 않습니다. 삭제하면 연결이 풀리므로, 상세에서 미리 보여줄지 정해야 합니다.</div>
+    </div>
+
+    <div class="sec">
+      <div class="sl" style="margin-bottom:14px">등록 정보</div>
+      <div class="kv" id="kvMeta"></div>
+    </div>
+
+    <div class="memo">
+      <div class="mh">안내</div>
+      <ul>
+        <li>카테고리 코드는 등록할 때 직접 입력합니다. 저장한 뒤에는 바꿀 수 없습니다.</li>
+        <li>이미 있는 카테고리 코드는 쓸 수 없습니다. 입력 칸을 벗어나면 바로 확인합니다.</li>
+        <li>카테고리명은 한국어가 꼭 있어야 합니다. 영어 · 중국어는 비워 둘 수 있습니다.</li>
+        <li>영어나 중국어 제목 · 부제목 · 설명을 넣으면, 그 언어의 카테고리명도 꼭 넣어야 합니다.</li>
+        <li>카테고리명 · 제목 · 부제목은 각각 255자까지 쓸 수 있습니다.</li>
+        <li>노출 기간을 비워 두면 기간 제한 없이 보여줍니다.</li>
+        <li>판매 채널과의 연결은 채널 관리에서, 상품과의 연결은 상품 관리에서 정합니다.</li>
+        <li>삭제하면 채널 · 상품과의 연결이 함께 풀립니다. 채널과 상품은 그대로 남습니다.</li>
+      </ul>
+      <div style="margin-top:8px;color:var(--note)"><b style="color:var(--note)">정하는 중</b></div>
+      <ul style="color:var(--note)">
+        <li>카테고리 코드의 대소문자 구분 여부 (개발 서버는 RACE981과 race981을 다른 코드로 봅니다)</li>
+        <li>노출순서 음수 허용 · 같은 순서 허용 여부</li>
+        <li>노출 종료를 날짜만 고를 때 그날을 포함할지 (지금은 그날 0시에 끝나 그날이 빠집니다)</li>
+        <li>상품이 들어 있는 카테고리를 바로 삭제할 수 있게 할지, 비활성으로만 바꾸게 할지</li>
+        <li>노출 정보 탭의 "n/3 항목" 표시에 카테고리명을 포함할지</li>
+      </ul>
+    </div>
+  </div>
+</aside>
+
+<script>
+var CATS=[
+  {id:1,code:'ICN_ACTIVITY',ko:'액티비티 패스',en:'',zh:'',ord:1,from:'',to:'',st:'on',up:'2026-11-25 10:52:26',by:'파수꾼',cr:'2026-11-23 17:05:08',
+   lang:{ko:{t:'인천 액티비티를 한 번에',s:'',d:''},en:{t:'',s:'',d:''},zh:{t:'',s:'',d:''}},ch:['9.81파크 앱 (APP)','현장 판매 (ONSITE)','클룩 (KLOOK)'],pr:['스포츠·레이저 패스','아레나·플레이 패스']},
+  {id:2,code:'ICN_RACE',ko:'레이스 패스',en:'Race Pass',zh:'',ord:2,from:'2026-11-25 00:00',to:'',st:'on',up:'2026-11-25 10:50:21',by:'정산이',cr:'2026-11-25 10:50:21',
+   lang:{ko:{t:'레이스와 실내 액티비티',s:'레이스 JAM 포함',d:''},en:{t:'Race and indoor',s:'',d:''},zh:{t:'',s:'',d:''}},ch:['9.81파크 앱 (APP)'],pr:['레이스 포함 패키지']},
+  {id:3,code:'ICN_ADDON',ko:'추가구매',en:'',zh:'',ord:3,from:'',to:'2026-12-31 00:00',st:'off',up:'2026-11-26 09:10:02',by:'옵집사',cr:'2026-11-24 15:12:40',
+   lang:{ko:{t:'',s:'',d:''},en:{t:'',s:'',d:''},zh:{t:'',s:'',d:''}},ch:[],pr:[]}
+];
+var NEXTID=4, CUR=null, MODE='view', LANG='ko', DRAFT=null, CODEOK=false;
+function $(i){return document.getElementById(i);}
+function esc(s){return (s||'').replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+function stChip(on){return '<span class="st '+(on?'on':'off')+'"><span class="d"></span>'+(on?'활성':'비활성')+'</span>';}
+function fmt(v){return v?v+':00':'제한 없음';}
+function render(){
+  var q=$('q').value.trim().toLowerCase(), fs=$('fst').value;
+  var list=CATS.filter(function(c){return (!q||c.code.toLowerCase().indexOf(q)>=0||c.ko.toLowerCase().indexOf(q)>=0)&&(!fs||c.st===fs);})
+    .sort(function(a,b){return a.ord-b.ord;});
+  $('rows').innerHTML=list.map(function(c){return '<tr class="row" onclick="openCat('+c.id+')"><td class="code">'+c.id+'</td><td>'+stChip(c.st==='on')+'</td><td class="code">'+esc(c.code)+'</td><td>'+esc(c.ko)+'</td><td class="code">'+c.ord+'</td><td class="code">'+fmt(c.from)+'</td><td class="code">'+fmt(c.to)+'</td><td class="code">'+c.up+'</td></tr>';}).join('')||'<tr><td colspan="8">검색 결과가 없습니다.</td></tr>';
+  $('cnt').textContent='총 '+list.length+'건'; $('pgTotal').textContent='총 '+list.length+'개 항목';
+}
+function cnt(l){var n=0;['t','s','d'].forEach(function(k){if((l[k]||'').trim())n++;});return n;}
+function paintLangSeg(){
+  var src=MODE==='view'?CUR.lang:DRAFT.lang;
+  var names={ko:'한국어 (KO)',en:'English (EN)',zh:'中文 (ZH)'};
+  $('langSeg').innerHTML=['ko','en','zh'].map(function(k){var n=cnt(src[k]);return '<button type="button" class="'+(LANG===k?'on':'')+'" onclick="pickLang(\''+k+'\')">'+(LANG===k?'✓ ':'')+names[k]+' <span class="bd">'+(n?n+'/3 항목':'미입력')+'</span></button>';}).join('');
+}
+function pickLang(k){if(MODE!=='view')storeLang();LANG=k;paintLangSeg();fillLang();}
+function fillLang(){
+  if(MODE==='view'){var l=CUR.lang[LANG];
+    $('kvLang').innerHTML=[['제목',l.t],['부제목',l.s],['설명',l.d]].map(function(r){return '<div class="k">'+r[0]+'</div><div class="v">'+(r[1]?esc(r[1]):'<span class="none">미입력</span>')+'</div>';}).join('');}
+  else{var d=DRAFT.lang[LANG];$('fTitle').value=d.t;$('fSub').value=d.s;$('fDesc').value=d.d;}
+}
+function storeLang(){if(!DRAFT)return;DRAFT.lang[LANG]={t:$('fTitle').value,s:$('fSub').value,d:$('fDesc').value};paintLangSeg();}
+function paintView(){
+  var c=CUR, none='<span class="none">미입력</span>';
+  $('kvBasic').innerHTML=[['ID',c.id,1],['카테고리 코드 *',esc(c.code),1],['카테고리명 (ko) *',esc(c.ko)],['카테고리명 (en)',c.en?esc(c.en):none],['카테고리명 (zh)',c.zh?esc(c.zh):none],['노출순서 *',c.ord,1],['노출 시작 (KST)',fmt(c.from),1],['노출 종료 (KST)',fmt(c.to),1],['상태',c.st==='on'?'활성':'비활성']]
+    .map(function(r){return '<div class="k">'+r[0]+'</div><div class="v'+(r[2]?' mono':'')+'">'+r[1]+'</div>';}).join('');
+  $('linkBox').innerHTML='<div class="lr"><span class="lk">채널</span>'+(c.ch.length?c.ch.map(function(x){return '<span class="pillk">'+x+'</span>';}).join(' '):'<span class="none" style="color:#878A99">연결 없음</span>')+'</div>'+
+    '<div class="lr"><span class="lk">상품</span>'+(c.pr.length?c.pr.map(function(x){return '<span class="pillk">'+x+'</span>';}).join(' '):'<span class="none" style="color:#878A99">연결 없음</span>')+'</div>';
+}
+function paintMeta(){
+  var c=CUR;
+  $('kvMeta').innerHTML=c?['등록자',c.by,'등록일',c.cr,'최종 수정',c.up].reduce(function(a,v,i,arr){if(i%2===0)a+='<div class="k">'+v+'</div><div class="v mono">'+arr[i+1]+'</div>';return a;},'')
+    :'<div class="k">등록자</div><div class="v">파수꾼</div>';
+}
+function setMode(m){
+  MODE=m; $('dw').classList.toggle('view',m==='view');
+  if(m!=='view'){
+    var c=CUR; DRAFT={lang:JSON.parse(JSON.stringify(c?c.lang:{ko:{t:'',s:'',d:''},en:{t:'',s:'',d:''},zh:{t:'',s:'',d:''}}))};
+    $('fCode').hidden=!!c; $('fCodeRo').hidden=!c; $('fCodeRo').textContent=c?c.code:'';
+    $('fCode').value=''; codeMsg(c?'':'hint'); CODEOK=!!c;
+    $('fKo').value=c?c.ko:''; $('fEn').value=c?c.en:''; $('fZh').value=c?c.zh:''; $('fOrd').value=c?c.ord:0;
+    var f=c&&c.from?c.from.split(' '):['',''], t=c&&c.to?c.to.split(' '):['',''];
+    $('fFromD').value=f[0];$('fFromT').value=f[1];$('fToD').value=t[0];$('fToT').value=t[1];
+    setSt(c?c.st==='on':true); ['errKo','errEn','errZh','errTo'].forEach(function(i){$(i).textContent='';});
+    $('dwTitle').textContent=c?'카테고리 상세':'신규 카테고리';
+    $('cancelBtn').hidden=!c;
+  }else{ $('dwTitle').textContent='카테고리 상세'; paintView(); }
+  LANG='ko'; paintLangSeg(); fillLang(); paintMeta();
+}
+function openCat(id){CUR=id?CATS.filter(function(c){return c.id===id;})[0]:null; setMode(CUR?'view':'new'); $('ov').classList.add('show'); $('dw').classList.add('show');}
+function closeCat(){$('ov').classList.remove('show');$('dw').classList.remove('show');}
+function cancelEdit(){setMode('view');}
+function codeMsg(k){var m=$('codeMsg');if(k==='hint'){m.className='fhint';m.textContent='다른 항목으로 이동하면 중복 여부를 확인합니다.';}else if(k==='dup'){m.className='ferr';m.textContent='이미 사용 중인 카테고리 코드입니다.';}else if(k==='ok'){m.className='fok';m.textContent='사용 가능한 카테고리 코드입니다.';}else{m.className='fhint';m.textContent='';CODEOK=false;}}
+function chkCode(){var v=$('fCode').value.trim();if(!v){codeMsg('hint');CODEOK=false;return false;}
+  var dup=CATS.some(function(c){return c.code===v;}); codeMsg(dup?'dup':'ok'); CODEOK=!dup; return !dup;}
+function setSt(on){$('fSt').classList.toggle('off',!on);$('fStT').textContent=on?'활성':'비활성';}
+function saveCat(){
+  storeLang(); var ok=true;
+  ['errKo','errEn','errZh','errTo'].forEach(function(i){$(i).textContent='';});
+  if(!CUR&&!chkCode()){ok=false;if(!$('fCode').value.trim()){$('codeMsg').className='ferr';$('codeMsg').textContent='카테고리 코드를 입력해 주시기 바랍니다.';}}
+  if(!$('fKo').value.trim()){$('errKo').textContent='한국어 카테고리명을 입력해 주시기 바랍니다.';ok=false;}
+  [['en','fEn','errEn','영어'],['zh','fZh','errZh','중국어']].forEach(function(x){if(cnt(DRAFT.lang[x[0]])&&!$(x[1]).value.trim()){$(x[2]).textContent=x[3]+' 제목 · 부제목 · 설명을 넣었으면 '+x[3]+' 카테고리명도 입력해 주시기 바랍니다.';ok=false;}});
+  var from=$('fFromD').value?($('fFromD').value+' '+($('fFromT').value||'00:00')):'', to=$('fToD').value?($('fToD').value+' '+($('fToT').value||'00:00')):'';
+  if(from&&to&&to<=from){$('errTo').textContent='노출 종료는 노출 시작 이후로 선택해 주시기 바랍니다.';ok=false;}
+  if(!ok)return;
+  var now='2026-11-26 '+new Date().toTimeString().slice(0,8);
+  var data={ko:$('fKo').value.trim(),en:$('fEn').value.trim(),zh:$('fZh').value.trim(),ord:parseInt($('fOrd').value,10)||0,from:from,to:to,st:$('fSt').classList.contains('off')?'off':'on',lang:DRAFT.lang,up:now};
+  if(CUR){Object.assign(CUR,data);dToast('저장되었습니다.');}
+  else{CUR=Object.assign({id:NEXTID++,code:$('fCode').value.trim(),by:'파수꾼',cr:now,ch:[],pr:[]},data);CATS.push(CUR);dToast('카테고리가 등록되었습니다.');}
+  render(); setMode('view');
+}
+function askDel(){openMdl('<div class="t">카테고리 삭제</div>'+esc(CUR.ko)+' 카테고리를 삭제하시겠습니까?<br>채널 · 상품과의 연결도 함께 해제됩니다. 채널과 상품은 그대로 남습니다.'+
+  (CUR.ch.length||CUR.pr.length?'<div class="kept" style="margin-top:10px"><b>정하는 중</b> · 연결된 채널 '+CUR.ch.length+'개 · 상품 '+CUR.pr.length+'개를 이 창에 보여줄지 정하지 않았습니다.</div>':'')+
+  '<div class="bt"><button class="btn sm" onclick="closeMdl()">취소</button><button class="btn sm dangerbtn" onclick="doDel()">삭제</button></div>');}
+function doDel(){CATS=CATS.filter(function(c){return c!==CUR;});closeMdl();closeCat();render();dToast('카테고리가 삭제되었습니다.');}
+function openMdl(h){$('mdlBox').innerHTML=h;$('mdl').hidden=false;}
+function closeMdl(){$('mdl').hidden=true;}
+function dToast(t){var el=$('dtoast');el.innerHTML=t;el.classList.add('show');clearTimeout(el._t);el._t=setTimeout(function(){el.classList.remove('show')},2200);}
+render();
+</script>
+
+</body></html>
