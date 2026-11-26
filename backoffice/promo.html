@@ -565,7 +565,11 @@ tr.row:hover td,tr.click:hover td{background:rgba(33,37,41,.05) !important}
     <div class="fld" id="crewRow"><div class="fl">크루 확인 필요<span class="kbadge" title="구매 키오스크는 결제만 하기로 했는데, 이 토글과 크루 승인코드는 아직 그대로입니다">유지 여부 미정</span></div><div class="fc"><span class="toggle" onclick="toggleCrew()"><span class="sw off" id="crewSw"></span> <span id="crewLbl">사용 안 함</span></span></div></div>
 
     <div class="fld"><div class="fl">활성 기간 <span class="req">*</span></div><div class="fc"><div class="dtrow"><input class="ipt" type="date" id="pFrom" value="2026-11-01"><span class="t">~</span><input class="ipt" type="date" id="pTo" value="2026-12-31"></div></div></div>
-    <div class="fld"><div class="fl">상태</div><div class="fc"><span class="toggle"><span class="sw"></span> 활성</span></div></div>
+    <div id="giftDupBlock">
+      <div class="fld"><div class="fl">선물 가능</div><div class="fc"><span class="toggle" onclick="togglePGift()"><span class="sw off" id="pGiftSw"></span> <span id="pGiftLbl">미허용</span></span><div style="font-size:11.5px;color:var(--muted);margin-top:4px">이 프로모션의 모든 쿠폰에 똑같이 적용됩니다.</div></div></div>
+      <div class="fld"><div class="fl">중복 발급 제한</div><div class="fc"><span class="toggle" onclick="togglePDup()"><span class="sw" id="pDupSw"></span> <span id="pDupLbl">제한함</span></span><div style="font-size:11.5px;color:var(--muted);margin-top:4px" id="pDupCap">한 사람은 이 프로모션의 쿠폰을 한 장만 받을 수 있습니다. 쿠폰이 여러 개여도 합쳐서 한 장입니다.</div></div></div>
+    </div>
+    <div class="fld"><div class="fl">상태</div><div class="fc"><span class="toggle" onclick="togglePStatus()"><span class="sw" id="pStSw"></span> <span id="pStLbl">활성</span></span><div style="font-size:11.5px;color:var(--muted);margin-top:4px" id="pStCap">비활성화하면 이 프로모션의 쿠폰이 모두 멈춥니다. 다시 활성화하면 쿠폰은 각자 원래 상태로 돌아갑니다.</div><div class="keptline" style="margin-top:6px"><b>미정</b> · 프로모션을 비활성화하면 이미 발급된 쿠폰도 쓸 수 없게 할지 정하는 중입니다.</div></div></div>
 
     <div id="cpSec">
       <div class="cphd"><b>쿠폰</b><span class="cnt" id="cpCnt" style="color:var(--muted);font-size:12px"></span><span class="sp"></span><button class="btn pri sm" id="cpNewBtn" onclick="openIssue(true)">+ 쿠폰 만들기</button></div>
@@ -598,9 +602,13 @@ tr.row:hover td,tr.click:hover td{background:rgba(33,37,41,.05) !important}
         <li>활성 기간은 쿠폰을 발급 · 운영하는 기간입니다.</li>
         <li>활성 기간을 바꿀 때 활성 쿠폰의 사용 기간과 다르면, 이대로 저장할지 묻는 확인 창이 뜹니다. 쿠폰 사용 기간은 쿠폰 상세에서 따로 바꿉니다.</li>
         <li>쿠폰을 쓸 수 있는 기간은 쿠폰에서 따로 정합니다.</li>
+        <li><b>선물 가능</b>과 <b>중복 발급 제한</b>은 프로모션에서 정합니다. 이 프로모션의 모든 쿠폰이 같은 설정을 따릅니다.</li>
+        <li>프로모션을 <b>비활성</b>으로 바꾸면 이 프로모션의 쿠폰이 모두 멈춥니다. 쿠폰마다 따로 켜고 끌 수 없습니다.</li>
+        <li>다시 <b>활성</b>으로 바꾸면 쿠폰은 멈추기 전 상태로 돌아갑니다. 따로 꺼 둔 쿠폰은 계속 꺼져 있습니다.</li>
       </ul>
       <div style="margin-top:8px;color:var(--note)"><b style="color:var(--note)">정하는 중</b></div>
       <ul style="color:var(--note)">
+        <li>프로모션을 비활성화하면 이미 발급된 쿠폰도 쓸 수 없게 할지</li>
         <li>진행 중인 프로모션의 크루 확인 설정을 바꿀 수 있게 할지</li>
       </ul>
     </div>
@@ -708,7 +716,6 @@ tr.row:hover td,tr.click:hover td{background:rgba(33,37,41,.05) !important}
       <div id="mCode" hidden>
         <div class="fld"><div class="fl">프로모션 코드 <span class="req">*</span></div><div class="fc"><div class="row3"><input class="ipt" value="WELCOME2026" style="font-family:var(--mono)"><button class="btn ghost sm">랜덤</button></div></div></div>
         <div class="fld"><div class="fl">총 발급 한도</div><div class="fc"><div class="radio" id="cqtyModeRadio"><span class="opt on" data-qm="fixed" onclick="setCqtyMode('fixed')">지정</span><span class="opt" data-qm="inf" onclick="setCqtyMode('inf')">무제한</span></div><div class="row3" style="max-width:160px;margin-top:6px" id="cqtyFixedRow"><input class="ipt" value="500"><span class="t" style="align-self:center;color:var(--muted)">장까지</span></div></div></div>
-        <div class="fld"><div class="fl">1인 1회 제한</div><div class="fc"><span class="toggle"><span class="sw"></span> 제한함</span></div></div>
       </div>
 
       <!-- 수동(대상 지정) -->
@@ -718,8 +725,7 @@ tr.row:hover td,tr.click:hover td{background:rgba(33,37,41,.05) !important}
       </div>
 
       <div class="fld"><div class="fl">사용 기간 <span class="req">*</span></div><div class="fc"><div class="dtrow"><input class="ipt" type="date" id="cFrom" value="2026-11-01" oninput="chkCpPeriod()"><span class="t">~</span><input class="ipt" type="date" id="cTo" value="2026-12-31" oninput="chkCpPeriod()"></div><div id="cErr" style="color:#c62828;font-size:11.5px;margin-top:4px"></div></div></div>
-      <div class="fld"><div class="fl">선물 가능</div><div class="fc"><span class="toggle"><span class="sw off"></span> 미허용</span></div></div>
-      <div class="fld"><div class="fl">중복 발급 제한</div><div class="fc"><span class="toggle"><span class="sw"></span> 제한함</span></div></div>
+      <div class="fld"><div class="fl">선물 · 중복 발급</div><div class="fc"><div class="autoval" id="cGiftDup">선물 미허용 · 중복 발급 제한함</div><div style="font-size:11.5px;color:var(--muted);margin-top:4px">프로모션에서 정한 설정을 따릅니다. 바꾸려면 프로모션을 수정합니다.</div></div></div>
     </div>
     <div class="dmemo">
       <div class="mh">안내</div>
@@ -736,6 +742,7 @@ tr.row:hover td,tr.click:hover td{background:rgba(33,37,41,.05) !important}
         <li><b>알림</b> — 앱 푸시 · 알림톡을 먼저 보내고, 못 받으면 문자로 보냅니다.</li>
         <li>사용 기간은 쿠폰을 쓸 수 있는 시작일과 종료일입니다.</li>
         <li><b>발급</b>을 누르면 쿠폰 번호가 만들어지고 '발급됨'이 됩니다.</li>
+        <li>선물 가능과 중복 발급 제한은 프로모션 설정을 따릅니다. 프로모션 코드를 한 사람이 여러 번 받을 수 있는지도 이 설정으로 정해집니다.</li>
       </ul>
     </div>
   </div>
@@ -794,7 +801,8 @@ tr.row:hover td,tr.click:hover td{background:rgba(33,37,41,.05) !important}
       <div class="radio" id="bStatusRadio"><span class="opt on" data-s="활성" onclick="setBatchStatus('활성')">활성</span><span class="opt" data-s="비활성" onclick="setBatchStatus('비활성')">비활성</span></div><span class="typ y-gen" id="b_method">난수번호</span>
       <span class="sp" style="flex:1"></span><span class="ex" style="background:var(--note-soft);color:var(--note)">예시</span>
     </div>
-    <div style="font-size:11.5px;color:var(--muted);margin:-6px 0 12px">비활성화하면 <b>새 발급만 막습니다</b>. 이미 발급된 쿠폰은 그대로 사용할 수 있습니다.</div>
+    <div style="font-size:11.5px;color:var(--muted);margin:-6px 0 12px" id="bStCap">비활성화하면 <b>새 발급만 막습니다</b>. 이미 발급된 쿠폰은 그대로 사용할 수 있습니다.</div>
+    <div id="bPOff" hidden style="margin:-4px 0 12px;padding:8px 11px;border-radius:8px;background:rgba(255,152,0,.12);border:1px solid #FF9800;font-size:12px;color:var(--fg)">프로모션이 비활성이라 이 쿠폰도 멈춰 있습니다. 쿠폰 상태는 여기서 바꿀 수 없고, 프로모션을 다시 활성화하면 원래 상태로 돌아갑니다.</div>
     <div id="bDisc"></div>
     <div class="keptlbl">※ 발급·사용 집계 항목·표시 방식 검토(킵)</div>
     <div class="statrow kept">
@@ -815,6 +823,7 @@ tr.row:hover td,tr.click:hover td{background:rgba(33,37,41,.05) !important}
         <span class="k">발급 방식</span><span><span id="b_method2">난수번호</span><span style="display:block;font-size:11.5px;color:var(--muted)">만든 뒤에는 바꿀 수 없습니다.</span></span>
         <span class="k" id="b_sendK" hidden>발송 방법</span><span id="b_send" hidden></span>
         <span class="k">사용 기간</span><span id="b_use">2026-11-01 ~ 12-31</span>
+        <span class="k">선물 · 중복 발급</span><span><span id="b_giftdup">선물 미허용 · 중복 발급 제한함</span><span style="display:block;font-size:11.5px;color:var(--muted)">프로모션 설정을 따릅니다.</span></span>
         <span class="k">발급일</span><span id="b_issuedAt">2026-11-02</span>
         <span class="k">등록자</span><span id="b_by">옵집사</span>
       </div>
@@ -849,6 +858,11 @@ var BATCH=[
 ];
 function nf(n){return n.toLocaleString('en-US');}
 function stCls(st){return st==='활성'?'s-on':'s-mid';}
+var PSET={};
+function pnameOf(l){return (l||'').replace(/ \(ID [^)]*\)$/,'').replace('&amp;','&');}
+function pset(n){if(!PSET[n])PSET[n]={active:true,gift:(n==='F&B 교환'),dup:true};return PSET[n];}
+function gdText(ps){return '선물 '+(ps.gift?'허용':'미허용')+' · 중복 발급 '+(ps.dup?'제한함':'제한 안 함');}
+function effPill(x){var ps=pset(pnameOf(x.promo));if(!ps.active)return '<span class="pill s-mid" title="프로모션이 비활성이라 멈춰 있습니다">멈춤 (프로모션 비활성)</span>';return '<span class="pill '+stCls(x.st)+'">'+x.st+'</span>';}
 var CURBATCH=null;
 function renderBatchList(){
   var b=document.getElementById('batchBody');if(!b)return;
@@ -857,13 +871,14 @@ function renderBatchList(){
     return '<tr class="click" onclick="openBatch('+i+')"><td>'+x.name+'</td><td>'+x.promo+'</td>'+
       '<td><span class="typ '+x.mcls+'">'+x.method+'</span></td>'+
       '<td class="r">'+nf(x.issued)+'</td><td class="r">'+nf(x.used)+'</td><td class="r">'+nf(unused)+'</td>'+
-      '<td>'+x.use+'</td><td><span class="pill '+stCls(x.st)+'">'+x.st+'</span></td>'+
+      '<td>'+x.use+'</td><td>'+effPill(x)+'</td>'+
       '<td><button class="mini" onclick="event.stopPropagation();openBatch('+i+')">상세</button></td></tr>';
   }).join('');
 }
 renderBatchList();
 function setBatchStatus(s){
   if(CURBATCH==null)return;
+  if(!pset(pnameOf(BATCH[CURBATCH].promo)).active)return;
   BATCH[CURBATCH].st=s;
   document.querySelectorAll('#bStatusRadio .opt').forEach(function(o){o.classList.toggle('on',o.dataset.s===s)});
   renderBatchList();
@@ -874,6 +889,10 @@ function openBatch(i){
   var x=BATCH[i], unused=x.issued-x.used-x.cancel, rate=Math.round(x.used/x.issued*100);
   document.getElementById('b_name').textContent=x.name;document.getElementById('bKick').textContent='쿠폰 · '+x.promo;
   document.querySelectorAll('#bStatusRadio .opt').forEach(function(o){o.classList.toggle('on',o.dataset.s===x.st)});
+  var bps=pset(pnameOf(x.promo));
+  document.getElementById('bStatusRadio').style.cssText=bps.active?'':'pointer-events:none;opacity:.45';
+  document.getElementById('bPOff').hidden=bps.active;document.getElementById('bStCap').hidden=!bps.active;
+  document.getElementById('b_giftdup').textContent=gdText(bps);
   var m=document.getElementById('b_method'); m.textContent=x.method; m.className='typ '+x.mcls;
   document.getElementById('b_issued').textContent=nf(x.issued);
   document.getElementById('b_used').textContent=nf(x.used);
@@ -1013,6 +1032,7 @@ function promoMeta(){return CURPROMO&&PMETA[CURPROMO.name]||{id:'',disc:'',amt:'
 function metaByLabel(l){var n=(l||'').replace(/ \(ID \d+\)$/,'').replace('&amp;','&');return PMETA[n]||null;}
 function discBox(m,name){if(!m)return '';return '<div class="discbox"><span class="amt'+(m.exc?' exc':'')+'">'+m.amt+'</span><div class="meta"><span><span class="k">할인 방식</span>'+m.kind+'</span><span><span class="k">적용 상품</span>'+m.prods+'</span><span><span class="k">프로모션</span>'+name+' (ID '+m.id+') · 활성 기간 '+m.from+' ~ '+m.to+'</span></div><span class="lk">할인은 프로모션에서 정합니다</span></div>';}
 function renderCpSec(){var sec=document.getElementById('cpSec');if(!sec||!CURPROMO)return;var t=CURPROMO.type,noCp=(t==='신분'||CURPROMO.jam);
+  syncPSet();
   sec.hidden=(t==='신분');
   if(t==='신분')return;
   var isNew=(CURPROMO.name==='신규 프로모션'&&!CURPROMO.saved);document.getElementById('cpNewBtn').hidden=noCp||isNew;
@@ -1021,9 +1041,21 @@ function renderCpSec(){var sec=document.getElementById('cpSec');if(!sec||!CURPRO
   var h;if(noCp)h='<div class="cpnone">JAM 교환은 쿠폰 없이 적용됩니다. 쿠폰을 만들지 않습니다.</div>';
   else if(isNew)h='<div class="cpnone">프로모션을 저장하면 이 프로모션의 쿠폰을 만들 수 있습니다.</div>';
   else if(!list.length)h='<div class="cpnone">아직 쿠폰이 없습니다. <b>+ 쿠폰 만들기</b>로 만듭니다.</div>';
-  else h='<div class="tblwrap" style="border:1px solid var(--line);border-radius:10px;overflow:auto"><table class="cptbl"><thead><tr><th>이미지</th><th>쿠폰명</th><th>발급 방식</th><th class="r">발급</th><th class="r">사용</th><th>사용 기간</th><th>상태</th></tr></thead><tbody>'+list.map(function(r){var x=r.x;return '<tr class="click" onclick="openBatch('+r.i+')"><td><img class="cpthumb" src="'+(x.img||'')+'" alt=""></td><td>'+x.name+'</td><td><span class="typ '+x.mcls+'">'+x.method+'</span>'+(x.code?' <span class="code">'+x.code.split(' ')[0]+'</span>':'')+'</td><td class="r">'+nf(x.issued)+'</td><td class="r">'+nf(x.used)+'</td><td>'+x.use+'</td><td><span class="pill '+stCls(x.st)+'">'+x.st+'</span></td></tr>'}).join('')+'</tbody></table></div>';
+  else h='<div class="tblwrap" style="border:1px solid var(--line);border-radius:10px;overflow:auto"><table class="cptbl"><thead><tr><th>이미지</th><th>쿠폰명</th><th>발급 방식</th><th class="r">발급</th><th class="r">사용</th><th>사용 기간</th><th>상태</th></tr></thead><tbody>'+list.map(function(r){var x=r.x;return '<tr class="click" onclick="openBatch('+r.i+')"><td><img class="cpthumb" src="'+(x.img||'')+'" alt=""></td><td>'+x.name+'</td><td><span class="typ '+x.mcls+'">'+x.method+'</span>'+(x.code?' <span class="code">'+x.code.split(' ')[0]+'</span>':'')+'</td><td class="r">'+nf(x.issued)+'</td><td class="r">'+nf(x.used)+'</td><td>'+x.use+'</td><td>'+effPill(x)+'</td></tr>'}).join('')+'</tbody></table></div>';
   document.getElementById('cpList').innerHTML=h;}
-function openIssue(){var m=promoMeta();document.getElementById('cKick').textContent='쿠폰 · '+(CURPROMO?CURPROMO.name+' (ID '+m.id+')':'');document.getElementById('cDisc').innerHTML=discBox(m,CURPROMO?CURPROMO.name:'');
+function syncPSet(){if(!CURPROMO)return;var ps=pset(CURPROMO.name),t=CURPROMO.type,noCp=(t==='신분'||CURPROMO.jam);
+  document.getElementById('giftDupBlock').hidden=noCp;
+  var g=document.getElementById('pGiftSw');g.classList.toggle('off',!ps.gift);document.getElementById('pGiftLbl').textContent=ps.gift?'허용':'미허용';
+  var d=document.getElementById('pDupSw');d.classList.toggle('off',!ps.dup);document.getElementById('pDupLbl').textContent=ps.dup?'제한함':'제한 안 함';
+  document.getElementById('pDupCap').textContent=ps.dup?'한 사람은 이 프로모션의 쿠폰을 한 장만 받을 수 있습니다. 쿠폰이 여러 개여도 합쳐서 한 장입니다.':'한 사람이 이 프로모션의 쿠폰을 여러 장 받을 수 있습니다.';
+  var a=document.getElementById('pStSw');a.classList.toggle('off',!ps.active);document.getElementById('pStLbl').textContent=ps.active?'활성':'비활성';
+  var cap=document.getElementById('pStCap');
+  cap.textContent=noCp?(ps.active?'비활성화하면 이 프로모션 할인이 적용되지 않습니다.':'이 프로모션 할인이 멈춰 있습니다.'):(ps.active?'비활성화하면 이 프로모션의 쿠폰이 모두 멈춥니다. 다시 활성화하면 쿠폰은 각자 원래 상태로 돌아갑니다.':'이 프로모션의 쿠폰이 모두 멈춰 있습니다. 다시 활성화하면 쿠폰은 각자 원래 상태로 돌아갑니다.');
+  cap.nextElementSibling.hidden=noCp;}
+function togglePGift(){if(!CURPROMO)return;var ps=pset(CURPROMO.name);ps.gift=!ps.gift;syncPSet();}
+function togglePDup(){if(!CURPROMO)return;var ps=pset(CURPROMO.name);ps.dup=!ps.dup;syncPSet();}
+function togglePStatus(){if(!CURPROMO)return;var ps=pset(CURPROMO.name);ps.active=!ps.active;renderCpSec();renderBatchList();}
+function openIssue(){var m=promoMeta();document.getElementById('cGiftDup').textContent=gdText(pset(CURPROMO?CURPROMO.name:''));document.getElementById('cKick').textContent='쿠폰 · '+(CURPROMO?CURPROMO.name+' (ID '+m.id+')':'');document.getElementById('cDisc').innerHTML=discBox(m,CURPROMO?CURPROMO.name:'');
   document.getElementById('cExcBlock').hidden=!m.exc;document.getElementById('cErr').textContent='';
   var isPartner=CURPROMO&&CURPROMO.type==='제휴';
   document.getElementById('mManualBtn').hidden=isPartner;
