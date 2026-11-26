@@ -569,7 +569,7 @@ tr.row:hover td,tr.click:hover td{background:rgba(33,37,41,.05) !important}
       <div class="fld"><div class="fl">선물 가능</div><div class="fc"><span class="toggle" onclick="togglePGift()"><span class="sw off" id="pGiftSw"></span> <span id="pGiftLbl">미허용</span></span><div style="font-size:11.5px;color:var(--muted);margin-top:4px">이 프로모션의 모든 쿠폰에 똑같이 적용됩니다.</div></div></div>
       <div class="fld"><div class="fl">중복 발급 제한</div><div class="fc"><span class="toggle" onclick="togglePDup()"><span class="sw" id="pDupSw"></span> <span id="pDupLbl">제한함</span></span><div style="font-size:11.5px;color:var(--muted);margin-top:4px" id="pDupCap">한 사람은 이 프로모션의 쿠폰을 한 장만 받을 수 있습니다. 쿠폰이 여러 개여도 합쳐서 한 장입니다.</div></div></div>
     </div>
-    <div class="fld"><div class="fl">상태</div><div class="fc"><span class="toggle" onclick="togglePStatus()"><span class="sw" id="pStSw"></span> <span id="pStLbl">활성</span></span><div style="font-size:11.5px;color:var(--muted);margin-top:4px" id="pStCap">비활성화하면 이 프로모션의 쿠폰이 모두 멈춥니다. 다시 활성화하면 쿠폰은 각자 원래 상태로 돌아갑니다.</div><div class="keptline" style="margin-top:6px"><b>미정</b> · 프로모션을 비활성화하면 이미 발급된 쿠폰도 쓸 수 없게 할지 정하는 중입니다.</div></div></div>
+    <div class="fld"><div class="fl">상태</div><div class="fc"><span class="toggle" onclick="togglePStatus()"><span class="sw" id="pStSw"></span> <span id="pStLbl">활성</span></span><div style="font-size:11.5px;color:var(--muted);margin-top:4px" id="pStCap">비활성화하면 이 프로모션의 쿠폰이 모두 멈춥니다. 다시 활성화하면 쿠폰은 각자 원래 상태로 돌아갑니다.</div><div style="font-size:11.5px;color:var(--muted);margin-top:2px" id="pStCap2">이미 발급된 쿠폰은 사용 기간 안이면 그대로 쓸 수 있습니다.</div></div></div>
 
     <div id="cpSec">
       <div class="cphd"><b>쿠폰</b><span class="cnt" id="cpCnt" style="color:var(--muted);font-size:12px"></span><span class="sp"></span><button class="btn pri sm" id="cpNewBtn" onclick="openIssue(true)">+ 쿠폰 만들기</button></div>
@@ -605,10 +605,10 @@ tr.row:hover td,tr.click:hover td{background:rgba(33,37,41,.05) !important}
         <li><b>선물 가능</b>과 <b>중복 발급 제한</b>은 프로모션에서 정합니다. 이 프로모션의 모든 쿠폰이 같은 설정을 따릅니다.</li>
         <li>프로모션을 <b>비활성</b>으로 바꾸면 이 프로모션의 쿠폰이 모두 멈춥니다. 쿠폰마다 따로 켜고 끌 수 없습니다.</li>
         <li>다시 <b>활성</b>으로 바꾸면 쿠폰은 멈추기 전 상태로 돌아갑니다. 따로 꺼 둔 쿠폰은 계속 꺼져 있습니다.</li>
+        <li>프로모션이 비활성이어도 이미 발급된 쿠폰은 사용 기간 안이면 그대로 쓸 수 있습니다. 멈추는 것은 새 발급입니다.</li>
       </ul>
       <div style="margin-top:8px;color:var(--note)"><b style="color:var(--note)">정하는 중</b></div>
       <ul style="color:var(--note)">
-        <li>프로모션을 비활성화하면 이미 발급된 쿠폰도 쓸 수 없게 할지</li>
         <li>진행 중인 프로모션의 크루 확인 설정을 바꿀 수 있게 할지</li>
       </ul>
     </div>
@@ -742,7 +742,8 @@ tr.row:hover td,tr.click:hover td{background:rgba(33,37,41,.05) !important}
         <li><b>알림</b> — 앱 푸시 · 알림톡을 먼저 보내고, 못 받으면 문자로 보냅니다.</li>
         <li>사용 기간은 쿠폰을 쓸 수 있는 시작일과 종료일입니다.</li>
         <li><b>발급</b>을 누르면 쿠폰 번호가 만들어지고 '발급됨'이 됩니다.</li>
-        <li>선물 가능과 중복 발급 제한은 프로모션 설정을 따릅니다. 프로모션 코드를 한 사람이 여러 번 받을 수 있는지도 이 설정으로 정해집니다.</li>
+        <li>선물 가능과 중복 발급 제한은 프로모션 설정을 따릅니다.</li>
+        <li>프로모션 코드는 같은 코드로 한 사람당 한 장만 받습니다. 이 규칙은 중복 발급 제한 설정과 관계없이 항상 적용됩니다.</li>
       </ul>
     </div>
   </div>
@@ -802,7 +803,7 @@ tr.row:hover td,tr.click:hover td{background:rgba(33,37,41,.05) !important}
       <span class="sp" style="flex:1"></span><span class="ex" style="background:var(--note-soft);color:var(--note)">예시</span>
     </div>
     <div style="font-size:11.5px;color:var(--muted);margin:-6px 0 12px" id="bStCap">비활성화하면 <b>새 발급만 막습니다</b>. 이미 발급된 쿠폰은 그대로 사용할 수 있습니다.</div>
-    <div id="bPOff" hidden style="margin:-4px 0 12px;padding:8px 11px;border-radius:8px;background:rgba(255,152,0,.12);border:1px solid #FF9800;font-size:12px;color:var(--fg)">프로모션이 비활성이라 이 쿠폰도 멈춰 있습니다. 쿠폰 상태는 여기서 바꿀 수 없고, 프로모션을 다시 활성화하면 원래 상태로 돌아갑니다.</div>
+    <div id="bPOff" hidden style="margin:-4px 0 12px;padding:8px 11px;border-radius:8px;background:rgba(255,152,0,.12);border:1px solid #FF9800;font-size:12px;color:var(--fg)">프로모션이 비활성이라 이 쿠폰의 새 발급도 멈춰 있습니다. 이미 발급된 쿠폰은 사용 기간 안이면 쓸 수 있습니다. 쿠폰 상태는 여기서 바꿀 수 없고, 프로모션을 다시 활성화하면 원래 상태로 돌아갑니다.</div>
     <div id="bDisc"></div>
     <div class="keptlbl">※ 발급·사용 집계 항목·표시 방식 검토(킵)</div>
     <div class="statrow kept">
@@ -1051,7 +1052,7 @@ function syncPSet(){if(!CURPROMO)return;var ps=pset(CURPROMO.name),t=CURPROMO.ty
   var a=document.getElementById('pStSw');a.classList.toggle('off',!ps.active);document.getElementById('pStLbl').textContent=ps.active?'활성':'비활성';
   var cap=document.getElementById('pStCap');
   cap.textContent=noCp?(ps.active?'비활성화하면 이 프로모션 할인이 적용되지 않습니다.':'이 프로모션 할인이 멈춰 있습니다.'):(ps.active?'비활성화하면 이 프로모션의 쿠폰이 모두 멈춥니다. 다시 활성화하면 쿠폰은 각자 원래 상태로 돌아갑니다.':'이 프로모션의 쿠폰이 모두 멈춰 있습니다. 다시 활성화하면 쿠폰은 각자 원래 상태로 돌아갑니다.');
-  cap.nextElementSibling.hidden=noCp;}
+  document.getElementById('pStCap2').hidden=noCp;}
 function togglePGift(){if(!CURPROMO)return;var ps=pset(CURPROMO.name);ps.gift=!ps.gift;syncPSet();}
 function togglePDup(){if(!CURPROMO)return;var ps=pset(CURPROMO.name);ps.dup=!ps.dup;syncPSet();}
 function togglePStatus(){if(!CURPROMO)return;var ps=pset(CURPROMO.name);ps.active=!ps.active;renderCpSec();renderBatchList();}
