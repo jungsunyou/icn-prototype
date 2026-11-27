@@ -299,8 +299,22 @@ tr.row:hover td,tr.click:hover td{background:rgba(33,37,41,.05) !important}
   .linkbox .lr{display:flex;gap:8px;align-items:center;font-size:13px}
   .linkbox .lr .lk{width:70px;color:#485056}
   .pillk{display:inline-flex;align-items:center;height:22px;padding:0 9px;border-radius:9999px;font-size:12px;background:var(--note-soft);color:var(--note);border:1px dashed var(--note)}
+  .ordtbl{width:100%;min-width:0;border-collapse:collapse;font-size:13px}
+  .ordtbl th,.ordtbl td{height:36px;border-bottom:1px solid #EFEFEF;padding:0 8px !important;text-align:center}
+  .ordtbl tr.off td{color:#878A99}
+  .ordtbl .hd{cursor:grab;color:#878A99;font-size:16px;user-select:none}
+  .ordtbl tr.drag td{background:rgba(36,94,195,.08) !important}
+  .ordtbl tr.over td{border-top:2px solid #245EC3}
+  .mv{border:1px solid #EBEBEB;background:#fff;border-radius:6px;width:26px;height:24px;cursor:pointer;color:#485056;font-size:12px;padding:0}
+  .mv:disabled{opacity:.35;cursor:not-allowed}
+  .ordnum{font-family:var(--mono);font-weight:600}
   #dw.view .edit-only{display:none}
   #dw:not(.view) .view-only{display:none}
+  .gpanel{margin-top:16px;border:1px solid var(--note);border-radius:12px;background:var(--surface,#fff)}
+  .gpanel .gph{background:var(--note-soft);color:var(--note);font-weight:700;padding:10px 14px;border-bottom:1px solid var(--note);border-radius:12px 12px 0 0;font-size:13px}
+  .gpanel .gb{padding:12px 14px;font-size:12.5px;line-height:1.6}
+  .gpanel .gh{font-weight:700;margin:12px 0 4px}.gpanel .gh:first-child{margin-top:0}
+  .gpanel ul{margin:0;padding-left:18px}.gpanel li{margin:3px 0}.gpanel .kp,.gpanel ul.kp{color:var(--note)}
 </style>
 <div class="app">
   <div class="crumb">인천 판매 관리 &gt; <b>카테고리 관리</b></div>
@@ -311,7 +325,6 @@ tr.row:hover td,tr.click:hover td{background:rgba(33,37,41,.05) !important}
     <button class="btn pri" onclick="openCat(null)">카테고리 등록</button>
   </div>
 
-  <div class="note"><span>카테고리는 상품을 묶어 보여주는 기준입니다. 판매 채널에는 카테고리를 연결하고, 상품에서는 속할 카테고리를 고릅니다. 화면 구성은 개발 서버(2026-11-26 확인)를 옮긴 것이고, 값은 모두 예시입니다.</span></div>
 
   <div class="filters">
     <div class="f search"><label>검색</label><input class="ipt" id="q" placeholder="카테고리 코드, 카테고리명" oninput="render()"></div>
@@ -328,7 +341,39 @@ tr.row:hover td,tr.click:hover td{background:rgba(33,37,41,.05) !important}
     </div>
     <div class="dspager"><span id="pgTotal">총 3개 항목</span><span>1 페이지 중 1 페이지</span><span>페이지당 행 수 : 20</span><span class="sp"></span><div class="pgs"><span>«</span><span>‹</span><span class="on">1</span><span>›</span><span>»</span></div></div>
   </div>
-  <div class="kept" style="margin-top:10px"><b>정하는 중</b> · 목록은 노출순서가 작은 것부터 보여줍니다. 노출 기간이 지났거나 아직 시작 전인 카테고리를 상태 칸에 따로 표시할지 정하지 않았습니다(지금은 활성 · 비활성만 보입니다).</div>
+  <div class="gpanel"><div class="gph">정책 안내 (구현 아님)</div><div class="gb">
+    <div class="gh">목록</div><ul>
+      <li>화면 구성은 개발 서버(2026-11-26 확인)를 옮긴 것이고, 값은 모두 예시입니다.</li>
+      <li>카테고리는 상품을 묶어 보여주는 기준입니다. 판매 채널에는 채널 관리에서 카테고리를 연결하고, 상품은 상품 관리에서 속할 카테고리를 고릅니다.</li>
+      <li>목록은 노출순서가 작은 것부터 보여줍니다.</li>
+    </ul>
+    <div class="gh">기본 정보</div><ul>
+      <li>카테고리 코드는 등록할 때 직접 입력합니다. 저장한 뒤에는 바꿀 수 없습니다. 대소문자를 구분합니다(예: RACE981과 race981은 다른 코드).</li>
+      <li>이미 있는 카테고리 코드는 쓸 수 없습니다. 입력 칸을 벗어나면 바로 확인합니다.</li>
+      <li>카테고리명은 한국어가 꼭 있어야 합니다. 영어 · 중국어는 비워 둘 수 있습니다. 카테고리명 · 제목 · 부제목은 각각 255자까지 쓸 수 있습니다.</li>
+      <li>노출순서는 0 이상의 숫자로 넣습니다. 다른 카테고리와 같은 노출순서는 쓸 수 없습니다.</li>
+      <li>노출 기간을 비워 두면 기간 제한 없이 보여줍니다. 날짜만 고르면 시각은 0시로 들어갑니다. 그날까지 보이게 하려면 종료 시각을 23:59로 고릅니다.</li>
+    </ul>
+    <div class="gh">노출 정보</div><ul>
+      <li>제목 · 부제목 · 설명은 언어마다 선택 항목입니다. 언어를 바꿔도 입력한 내용은 그대로 남습니다.</li>
+      <li>언어 탭의 "n/3 항목"은 제목 · 부제목 · 설명 중 넣은 개수입니다. 카테고리명은 세지 않습니다.</li>
+      <li>영어나 중국어 제목 · 부제목 · 설명을 넣으면, 그 언어의 카테고리명도 꼭 넣어야 합니다.</li>
+    </ul>
+    <div class="gh">상품 · 노출 순서</div><ul>
+      <li>상품 관리에서 이 카테고리를 고른 상품이 나옵니다. 여기서는 카테고리 안에서 보여주는 순서만 정하고, 고객 화면에는 이 순서대로 보여줍니다.</li>
+      <li>순서는 수정 모드에서 끌어서 옮기거나 ↑ ↓ 버튼으로 바꿉니다. 카테고리를 저장할 때 함께 저장됩니다.</li>
+      <li>이 순서는 앱 · 구매 키오스크 · OS 현장 구매에 똑같이 적용됩니다. 외부 채널(클룩 · 마이리얼트립 등)은 각 채널에서 직접 관리해 이 순서가 적용되지 않습니다.</li>
+      <li>상품 관리에서 이 카테고리를 새로 고른 상품은 맨 뒤에 붙습니다. 고르기를 풀면 목록에서 빠집니다.</li>
+      <li>판매중지 상품은 자리를 지킨 채 흐리게 남고, 고객 화면에서는 빠집니다.</li>
+    </ul>
+    <div class="gh">삭제</div><ul>
+      <li>이 카테고리를 고른 상품이 있으면 삭제할 수 없습니다. 상품 관리에서 카테고리 선택을 해제한 뒤 삭제합니다.</li>
+      <li>삭제하면 채널과의 연결이 함께 풀립니다. 채널은 그대로 남습니다.</li>
+    </ul>
+    <div class="gh kp">정하는 중</div><ul class="kp">
+      <li>노출 기간이 지났거나 아직 시작 전인 카테고리를 목록 상태 칸에 따로 표시할지 (지금은 활성 · 비활성만 보입니다)</li>
+    </ul>
+  </div></div>
 </div>
 
 <div class="mdl" id="mdl" hidden onclick="if(event.target===this)closeMdl()"><div class="box" id="mdlBox"></div></div>
@@ -359,9 +404,9 @@ tr.row:hover td,tr.click:hover td{background:rgba(33,37,41,.05) !important}
         <div class="frow"><div class="fl">카테고리명 (ko) <span class="req">*</span></div><div><input class="ipt" id="fKo" style="width:100%"><div class="ferr" id="errKo"></div></div></div>
         <div class="frow"><div class="fl">카테고리명 (en)</div><div><input class="ipt" id="fEn" style="width:100%"><div class="ferr" id="errEn"></div></div></div>
         <div class="frow"><div class="fl">카테고리명 (zh)</div><div><input class="ipt" id="fZh" style="width:100%"><div class="ferr" id="errZh"></div></div></div>
-        <div class="frow"><div class="fl">노출순서 <span class="req">*</span></div><div><input class="ipt" id="fOrd" style="width:160px" value="0"><div class="kept"><b>정하는 중</b> · 음수(예: -1)를 허용할지, 같은 노출순서를 여러 카테고리에 쓸 수 있는지 정하지 않았습니다. 개발 서버에서는 둘 다 저장됩니다.</div></div></div>
+        <div class="frow"><div class="fl">노출순서 <span class="req">*</span></div><div><input class="ipt" id="fOrd" style="width:160px" value="0"><div class="ferr" id="errOrd"></div></div></div>
         <div class="frow"><div class="fl">노출 시작 (KST)</div><div class="dt2"><input class="ipt" type="date" id="fFromD"><input class="ipt" type="time" id="fFromT"></div></div>
-        <div class="frow"><div class="fl">노출 종료 (KST)</div><div><div class="dt2"><input class="ipt" type="date" id="fToD"><input class="ipt" type="time" id="fToT"></div><div class="ferr" id="errTo"></div><div class="fhint">비워 두면 제한 없음으로 저장됩니다. 날짜만 고르면 시각은 오전 12:00(0시)로 들어갑니다.</div></div></div>
+        <div class="frow"><div class="fl">노출 종료 (KST)</div><div><div class="dt2"><input class="ipt" type="date" id="fToD"><input class="ipt" type="time" id="fToT"></div><div class="ferr" id="errTo"></div></div></div>
         <div class="frow"><div class="fl">상태</div><div><button type="button" class="toggle" id="fSt" onclick="setSt(this.classList.contains('off'))"><span class="sw"></span> <span id="fStT">활성</span></button></div></div>
       </div>
     </div>
@@ -374,54 +419,33 @@ tr.row:hover td,tr.click:hover td{background:rgba(33,37,41,.05) !important}
         <div class="frow"><div class="fl">제목</div><div><input class="ipt" id="fTitle" style="width:100%" oninput="storeLang()"></div></div>
         <div class="frow"><div class="fl">부제목</div><div><input class="ipt" id="fSub" style="width:100%" oninput="storeLang()"></div></div>
         <div class="frow"><div class="fl">설명</div><div><textarea class="ipt" id="fDesc" rows="3" style="width:100%" oninput="storeLang()"></textarea></div></div>
-        <div class="fhint">언어를 바꿔도 입력한 내용은 그대로 남습니다. 제목 · 부제목 · 설명은 언어마다 선택 항목입니다.</div>
       </div>
     </div>
 
-    <div class="sec view-only" id="secLink">
-      <div class="sl" style="margin-bottom:10px">연결 <span class="pillk" style="margin-left:6px">정하는 중</span></div>
-      <div class="linkbox" id="linkBox"></div>
-      <div class="kept"><b>정하는 중</b> · 개발 서버의 카테고리 상세에는 연결된 채널 · 상품이 보이지 않습니다. 삭제하면 연결이 풀리므로, 상세에서 미리 보여줄지 정해야 합니다.</div>
+    <div class="sec" id="secOrder">
+      <div class="sl" style="margin-bottom:6px;display:flex;align-items:center;gap:6px">상품 · 노출 순서 <span class="cnt" id="ordCnt" style="font-weight:400;color:#878A99;font-size:13px"></span></div>
+      <div id="ordWrap"></div>
     </div>
+
 
     <div class="sec">
       <div class="sl" style="margin-bottom:14px">등록 정보</div>
       <div class="kv" id="kvMeta"></div>
     </div>
 
-    <div class="memo">
-      <div class="mh">안내</div>
-      <ul>
-        <li>카테고리 코드는 등록할 때 직접 입력합니다. 저장한 뒤에는 바꿀 수 없습니다.</li>
-        <li>이미 있는 카테고리 코드는 쓸 수 없습니다. 입력 칸을 벗어나면 바로 확인합니다.</li>
-        <li>카테고리명은 한국어가 꼭 있어야 합니다. 영어 · 중국어는 비워 둘 수 있습니다.</li>
-        <li>영어나 중국어 제목 · 부제목 · 설명을 넣으면, 그 언어의 카테고리명도 꼭 넣어야 합니다.</li>
-        <li>카테고리명 · 제목 · 부제목은 각각 255자까지 쓸 수 있습니다.</li>
-        <li>노출 기간을 비워 두면 기간 제한 없이 보여줍니다.</li>
-        <li>판매 채널과의 연결은 채널 관리에서, 상품과의 연결은 상품 관리에서 정합니다.</li>
-        <li>삭제하면 채널 · 상품과의 연결이 함께 풀립니다. 채널과 상품은 그대로 남습니다.</li>
-      </ul>
-      <div style="margin-top:8px;color:var(--note)"><b style="color:var(--note)">정하는 중</b></div>
-      <ul style="color:var(--note)">
-        <li>카테고리 코드의 대소문자 구분 여부 (개발 서버는 RACE981과 race981을 다른 코드로 봅니다)</li>
-        <li>노출순서 음수 허용 · 같은 순서 허용 여부</li>
-        <li>노출 종료를 날짜만 고를 때 그날을 포함할지 (지금은 그날 0시에 끝나 그날이 빠집니다)</li>
-        <li>상품이 들어 있는 카테고리를 바로 삭제할 수 있게 할지, 비활성으로만 바꾸게 할지</li>
-        <li>노출 정보 탭의 "n/3 항목" 표시에 카테고리명을 포함할지</li>
-      </ul>
-    </div>
   </div>
 </aside>
 
 <script>
 var CATS=[
   {id:1,code:'ICN_ACTIVITY',ko:'액티비티 패스',en:'',zh:'',ord:1,from:'',to:'',st:'on',up:'2026-11-25 10:52:26',by:'파수꾼',cr:'2026-11-23 17:05:08',
-   lang:{ko:{t:'인천 액티비티를 한 번에',s:'',d:''},en:{t:'',s:'',d:''},zh:{t:'',s:'',d:''}},ch:['9.81파크 앱 (APP)','현장 판매 (ONSITE)','클룩 (KLOOK)'],pr:['스포츠·레이저 패스','아레나·플레이 패스']},
+   lang:{ko:{t:'인천 액티비티를 한 번에',s:'',d:''},en:{t:'',s:'',d:''},zh:{t:'',s:'',d:''}},ch:['9.81파크 앱 (APP)','현장 판매 (ONSITE)','클룩 (KLOOK)'],pr:[{id:'ICN-PKG-RACE',n:'레이스 포함 패키지',t:'패키지',st:'on'},{id:'ICN-PKG-INDOOR',n:'실내 패키지',t:'패키지',st:'on'},{id:'ICN-ADD-RACE1',n:'레이스 JAM 1개권',t:'추가구매',st:'on'},{id:'ICN-ADD-GEN10',n:'일반 10 JAM',t:'추가구매',st:'off'}]},
   {id:2,code:'ICN_RACE',ko:'레이스 패스',en:'Race Pass',zh:'',ord:2,from:'2026-11-25 00:00',to:'',st:'on',up:'2026-11-25 10:50:21',by:'정산이',cr:'2026-11-25 10:50:21',
-   lang:{ko:{t:'레이스와 실내 액티비티',s:'레이스 JAM 포함',d:''},en:{t:'Race and indoor',s:'',d:''},zh:{t:'',s:'',d:''}},ch:['9.81파크 앱 (APP)'],pr:['레이스 포함 패키지']},
+   lang:{ko:{t:'레이스와 실내 액티비티',s:'레이스 JAM 포함',d:''},en:{t:'Race and indoor',s:'',d:''},zh:{t:'',s:'',d:''}},ch:['9.81파크 앱 (APP)'],pr:[{id:'ICN-PKG-RACE',n:'레이스 포함 패키지',t:'패키지',st:'on'},{id:'ICN-ADD-RACE1',n:'레이스 JAM 1개권',t:'추가구매',st:'on'}]},
   {id:3,code:'ICN_ADDON',ko:'추가구매',en:'',zh:'',ord:3,from:'',to:'2026-12-31 00:00',st:'off',up:'2026-11-26 09:10:02',by:'옵집사',cr:'2026-11-24 15:12:40',
    lang:{ko:{t:'',s:'',d:''},en:{t:'',s:'',d:''},zh:{t:'',s:'',d:''}},ch:[],pr:[]}
 ];
+var PRODUCTS=[{id:'ICN-PKG-RACE',n:'레이스 포함 패키지',t:'패키지',st:'on'},{id:'ICN-PKG-INDOOR',n:'실내 패키지',t:'패키지',st:'on'},{id:'ICN-ADD-RACE1',n:'레이스 JAM 1개권',t:'추가구매',st:'on'},{id:'ICN-ADD-GEN10',n:'일반 10 JAM',t:'추가구매',st:'off'},{id:'ICN-ADD-MIX11',n:'레이스 1 + 일반 10 JAM',t:'추가구매',st:'on'}];
 var NEXTID=4, CUR=null, MODE='view', LANG='ko', DRAFT=null, CODEOK=false;
 function $(i){return document.getElementById(i);}
 function esc(s){return (s||'').replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
@@ -451,28 +475,50 @@ function paintView(){
   var c=CUR, none='<span class="none">미입력</span>';
   $('kvBasic').innerHTML=[['ID',c.id,1],['카테고리 코드 *',esc(c.code),1],['카테고리명 (ko) *',esc(c.ko)],['카테고리명 (en)',c.en?esc(c.en):none],['카테고리명 (zh)',c.zh?esc(c.zh):none],['노출순서 *',c.ord,1],['노출 시작 (KST)',fmt(c.from),1],['노출 종료 (KST)',fmt(c.to),1],['상태',c.st==='on'?'활성':'비활성']]
     .map(function(r){return '<div class="k">'+r[0]+'</div><div class="v'+(r[2]?' mono':'')+'">'+r[1]+'</div>';}).join('');
-  $('linkBox').innerHTML='<div class="lr"><span class="lk">채널</span>'+(c.ch.length?c.ch.map(function(x){return '<span class="pillk">'+x+'</span>';}).join(' '):'<span class="none" style="color:#878A99">연결 없음</span>')+'</div>'+
-    '<div class="lr"><span class="lk">상품</span>'+(c.pr.length?c.pr.map(function(x){return '<span class="pillk">'+x+'</span>';}).join(' '):'<span class="none" style="color:#878A99">연결 없음</span>')+'</div>';
 }
 function paintMeta(){
   var c=CUR;
   $('kvMeta').innerHTML=c?['등록자',c.by,'등록일',c.cr,'최종 수정',c.up].reduce(function(a,v,i,arr){if(i%2===0)a+='<div class="k">'+v+'</div><div class="v mono">'+arr[i+1]+'</div>';return a;},'')
     :'<div class="k">등록자</div><div class="v">파수꾼</div>';
 }
+function renderOrder(){
+  var list=MODE==='view'?(CUR?CUR.pr:[]):DRAFT.order, w=$('ordWrap');
+  var ed=MODE!=='view';
+  $('ordCnt').textContent='· '+list.length+'개';
+  if(!list.length){ w.innerHTML='<div class="dsempty" style="margin:0;height:80px;font-size:13px">'+(CUR?'이 카테고리를 고른 상품이 없습니다. 상품 관리에서 카테고리를 고릅니다.':'카테고리를 저장한 뒤 상품 관리에서 이 카테고리를 고르면 여기에 나옵니다.')+'</div>'; return; }
+  w.innerHTML='<table class="ordtbl"><thead><tr>'+(ed?'<th style="width:36px"></th>':'')+'<th style="width:60px">순서</th><th>상품 ID</th><th>상품명</th><th>유형</th><th>상태</th>'+(ed?'<th style="width:80px">이동</th>':'')+'</tr></thead><tbody>'+
+    list.map(function(x,i){return '<tr data-i="'+i+'" class="'+(x.st==='off'?'off':'')+'"'+(ed?' draggable="true"':'')+'>'+(ed?'<td class="hd" title="끌어서 옮기기">⋮⋮</td>':'')+'<td class="ordnum">'+(i+1)+'</td><td class="code">'+x.id+'</td><td>'+esc(x.n)+'</td><td>'+x.t+'</td><td>'+(x.st==='on'?stChip(true):'<span class="st off"><span class="d"></span>판매중지</span>')+'</td>'+
+      (ed?'<td><button class="mv" '+(i===0?'disabled':'')+' onclick="moveOrd('+i+',-1)">↑</button> <button class="mv" '+(i===list.length-1?'disabled':'')+' onclick="moveOrd('+i+',1)">↓</button></td>':'')+'</tr>';}).join('')+'</tbody></table>';
+  if(ed){var from=null;w.querySelectorAll('tbody tr').forEach(function(tr){
+    tr.addEventListener('dragstart',function(){from=+tr.dataset.i;tr.classList.add('drag');});
+    tr.addEventListener('dragend',function(){tr.classList.remove('drag');});
+    tr.addEventListener('dragover',function(e){e.preventDefault();tr.classList.add('over');});
+    tr.addEventListener('dragleave',function(){tr.classList.remove('over');});
+    tr.addEventListener('drop',function(e){e.preventDefault();tr.classList.remove('over');var to=+tr.dataset.i;if(from===null||from===to)return;var it=DRAFT.order.splice(from,1)[0];DRAFT.order.splice(to,0,it);renderOrder();});
+  });}
+}
+function rmOrd(i){DRAFT.order.splice(i,1);renderOrder();}
+function openPick(){var have=DRAFT.order.map(function(x){return x.id;});var cand=PRODUCTS.filter(function(p){return have.indexOf(p.id)<0;});
+  openMdl('<div class="t">상품 추가</div><input class="ipt" id="pickQ" style="width:100%;margin:4px 0 8px" placeholder="상품명 또는 상품 ID를 입력하세요" oninput="filterPick()"><div id="pickList" style="max-height:260px;overflow:auto;border:1px solid #EFEFEF;border-radius:8px">'+
+    (cand.length?cand.map(function(p){return '<label class="pk" data-k="'+(p.id+' '+p.n).toLowerCase()+'" style="display:flex;gap:8px;align-items:center;padding:8px 10px;border-bottom:1px solid #EFEFEF;cursor:pointer"><input type="checkbox" value="'+p.id+'"><span class="code" style="width:130px">'+p.id+'</span><span style="flex:1">'+esc(p.n)+'</span><span style="color:#878A99;font-size:12px">'+p.t+(p.st==='off'?' · 판매중지':'')+'</span></label>';}).join(''):'<div style="padding:14px;color:#878A99">더 넣을 상품이 없습니다.</div>')+
+    '</div><div class="fhint" style="margin-top:6px">고른 상품은 목록 맨 뒤에 붙습니다.</div><div class="bt"><button class="btn sm" onclick="closeMdl()">취소</button><button class="btn sm pri" onclick="addPicked()">추가</button></div>');}
+function filterPick(){var q=$('pickQ').value.trim().toLowerCase();document.querySelectorAll('#pickList .pk').forEach(function(l){l.style.display=!q||l.dataset.k.indexOf(q)>=0?'':'none';});}
+function addPicked(){document.querySelectorAll('#pickList input:checked').forEach(function(c){var p=PRODUCTS.filter(function(x){return x.id===c.value;})[0];if(p)DRAFT.order.push(Object.assign({},p));});closeMdl();renderOrder();}
+function moveOrd(i,d){var o=DRAFT.order,j=i+d;if(j<0||j>=o.length)return;var t=o[i];o[i]=o[j];o[j]=t;renderOrder();}
 function setMode(m){
   MODE=m; $('dw').classList.toggle('view',m==='view');
   if(m!=='view'){
-    var c=CUR; DRAFT={lang:JSON.parse(JSON.stringify(c?c.lang:{ko:{t:'',s:'',d:''},en:{t:'',s:'',d:''},zh:{t:'',s:'',d:''}}))};
+    var c=CUR; DRAFT={lang:JSON.parse(JSON.stringify(c?c.lang:{ko:{t:'',s:'',d:''},en:{t:'',s:'',d:''},zh:{t:'',s:'',d:''}})),order:c?c.pr.slice():[]};
     $('fCode').hidden=!!c; $('fCodeRo').hidden=!c; $('fCodeRo').textContent=c?c.code:'';
     $('fCode').value=''; codeMsg(c?'':'hint'); CODEOK=!!c;
     $('fKo').value=c?c.ko:''; $('fEn').value=c?c.en:''; $('fZh').value=c?c.zh:''; $('fOrd').value=c?c.ord:0;
     var f=c&&c.from?c.from.split(' '):['',''], t=c&&c.to?c.to.split(' '):['',''];
     $('fFromD').value=f[0];$('fFromT').value=f[1];$('fToD').value=t[0];$('fToT').value=t[1];
-    setSt(c?c.st==='on':true); ['errKo','errEn','errZh','errTo'].forEach(function(i){$(i).textContent='';});
+    setSt(c?c.st==='on':true); ['errKo','errEn','errZh','errTo','errOrd'].forEach(function(i){$(i).textContent='';});
     $('dwTitle').textContent=c?'카테고리 상세':'신규 카테고리';
     $('cancelBtn').hidden=!c;
   }else{ $('dwTitle').textContent='카테고리 상세'; paintView(); }
-  LANG='ko'; paintLangSeg(); fillLang(); paintMeta();
+  LANG='ko'; paintLangSeg(); fillLang(); paintMeta(); renderOrder();
 }
 function openCat(id){CUR=id?CATS.filter(function(c){return c.id===id;})[0]:null; setMode(CUR?'view':'new'); $('ov').classList.add('show'); $('dw').classList.add('show');}
 function closeCat(){$('ov').classList.remove('show');$('dw').classList.remove('show');}
@@ -483,7 +529,8 @@ function chkCode(){var v=$('fCode').value.trim();if(!v){codeMsg('hint');CODEOK=f
 function setSt(on){$('fSt').classList.toggle('off',!on);$('fStT').textContent=on?'활성':'비활성';}
 function saveCat(){
   storeLang(); var ok=true;
-  ['errKo','errEn','errZh','errTo'].forEach(function(i){$(i).textContent='';});
+  ['errKo','errEn','errZh','errTo','errOrd'].forEach(function(i){$(i).textContent='';});
+  var ov=$('fOrd').value.trim();if(!/^-?\d+$/.test(ov)){$('errOrd').textContent='노출순서를 숫자로 입력해 주시기 바랍니다.';ok=false;}else if(parseInt(ov,10)<0){$('errOrd').textContent='노출순서는 0 이상으로 입력해 주시기 바랍니다.';ok=false;}else if(CATS.some(function(x){return x!==CUR&&x.ord===parseInt(ov,10);})){$('errOrd').textContent='다른 카테고리에서 쓰고 있는 노출순서입니다.';ok=false;}
   if(!CUR&&!chkCode()){ok=false;if(!$('fCode').value.trim()){$('codeMsg').className='ferr';$('codeMsg').textContent='카테고리 코드를 입력해 주시기 바랍니다.';}}
   if(!$('fKo').value.trim()){$('errKo').textContent='한국어 카테고리명을 입력해 주시기 바랍니다.';ok=false;}
   [['en','fEn','errEn','영어'],['zh','fZh','errZh','중국어']].forEach(function(x){if(cnt(DRAFT.lang[x[0]])&&!$(x[1]).value.trim()){$(x[2]).textContent=x[3]+' 제목 · 부제목 · 설명을 넣었으면 '+x[3]+' 카테고리명도 입력해 주시기 바랍니다.';ok=false;}});
@@ -492,12 +539,12 @@ function saveCat(){
   if(!ok)return;
   var now='2026-11-26 '+new Date().toTimeString().slice(0,8);
   var data={ko:$('fKo').value.trim(),en:$('fEn').value.trim(),zh:$('fZh').value.trim(),ord:parseInt($('fOrd').value,10)||0,from:from,to:to,st:$('fSt').classList.contains('off')?'off':'on',lang:DRAFT.lang,up:now};
-  if(CUR){Object.assign(CUR,data);dToast('저장되었습니다.');}
+  if(CUR){data.pr=DRAFT.order.slice();Object.assign(CUR,data);dToast('저장되었습니다.');}
   else{CUR=Object.assign({id:NEXTID++,code:$('fCode').value.trim(),by:'파수꾼',cr:now,ch:[],pr:[]},data);CATS.push(CUR);dToast('카테고리가 등록되었습니다.');}
   render(); setMode('view');
 }
-function askDel(){openMdl('<div class="t">카테고리 삭제</div>'+esc(CUR.ko)+' 카테고리를 삭제하시겠습니까?<br>채널 · 상품과의 연결도 함께 해제됩니다. 채널과 상품은 그대로 남습니다.'+
-  (CUR.ch.length||CUR.pr.length?'<div class="kept" style="margin-top:10px"><b>정하는 중</b> · 연결된 채널 '+CUR.ch.length+'개 · 상품 '+CUR.pr.length+'개를 이 창에 보여줄지 정하지 않았습니다.</div>':'')+
+function askDel(){if(CUR.pr.length){openMdl('<div class="t">카테고리 삭제</div>이 카테고리를 고른 상품이 '+CUR.pr.length+'개 있습니다. 상품 관리에서 카테고리 선택을 해제한 뒤 삭제해 주시기 바랍니다.<div class="bt"><button class="btn sm pri" onclick="closeMdl()">확인</button></div>');return;}
+  openMdl('<div class="t">카테고리 삭제</div>'+esc(CUR.ko)+' 카테고리를 삭제하시겠습니까?<br>채널과의 연결도 함께 해제됩니다.'+
   '<div class="bt"><button class="btn sm" onclick="closeMdl()">취소</button><button class="btn sm dangerbtn" onclick="doDel()">삭제</button></div>');}
 function doDel(){CATS=CATS.filter(function(c){return c!==CUR;});closeMdl();closeCat();render();dToast('카테고리가 삭제되었습니다.');}
 function openMdl(h){$('mdlBox').innerHTML=h;$('mdl').hidden=false;}
